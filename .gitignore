@@ -1,4 +1,13 @@
+# Generated files
 *.class
+target
+logs
+*.log
+
+# Eclipse stuff
+.settings
+.project
+.classpath
 
 # Package Files #
 *.jar

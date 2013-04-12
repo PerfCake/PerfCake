@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<chapter xmlns='http://docbook.org/ns/docbook'
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:xi="http://www.w3.org/2001/XInclude"
+	xmlns:db="http://docbook.org/ns/docbook" xml:id="ch-sender"
+	status="draft">
+<title>Senders</title>
+<para>TODO: this chapter describes senders that can be used.</para>
+<sect1>
+<title>Available senders</title>
+<xi:include href="AbstractSender.xml" />
+<xi:include href="AbstractSocketSender.xml" />
+<xi:include href="CommandSender.xml" />
+<xi:include href="DummySender.xml" />
+<xi:include href="GroovySender.xml" />
+<xi:include href="HTTPSender.xml" />
+<xi:include href="HTTPSSender.xml" />
+<xi:include href="ChannelSenderDatagram.xml" />
+<xi:include href="ChannelSenderFile.xml" />
+<xi:include href="ChannelSender.xml" />
+<xi:include href="ChannelSenderSocket.xml" />
+<xi:include href="JDBCSender.xml" />
+<xi:include href="JMSSender.xml" />
+<xi:include href="LDAPSender.xml" />
+<xi:include href="MessageSender.xml" />
+<xi:include href="MessageSenderManager.xml" />
+<xi:include href="PlainSocketSender.xml" />
+<xi:include href="RequestResponseJMSSender.xml" />
+<xi:include href="SOAPSender.xml" />
+<xi:include href="SSLSocketSender.xml" />
+</sect1>
+</chapter>

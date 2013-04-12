@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<env:Envelope xmlns:env="http://schemas.xmlsoap.org/soap/envelope/">
+<env:Header><wsse:Security xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" env:mustUnderstand="1"><wsse:BinarySecurityToken EncodingType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-soap-message-security-1.0#Base64Binary" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3" wsu:Id="token-3-1306740663062-911996452">MIIEQTCCA6qgAwIBAgIBAzANBgkqhkiG9w0BAQUFADCBkjELMAkGA1UEBhMCVVMxEzARBgNVBAgT
+Cldhc2hpbmd0b24xGDAWBgNVBAcTD1Nub3F1YWxtaWUgUGFzczETMBEGA1UEChMKSkJvc3MgSW5j
+LjELMAkGA1UECxMCUUExEjAQBgNVBAMTCWpib3NzLmNvbTEeMBwGCSqGSIb3DQEJARYPYWRtaW5A
+amJvc3MuY29tMB4XDTA1MDkxNTAwMDk0MVoXDTE1MDkxMzAwMDk0MVowgYsxCzAJBgNVBAYTAlVT
+MRMwEQYDVQQIEwpXYXNoaW5ndG9uMRMwEQYDVQQKEwpKQm9zcyBJbmMuMRQwEgYDVQQLEwtEZXZl
+bG9wbWVudDEVMBMGA1UEAxMMSmFzb24gR3JlZW5lMSUwIwYJKoZIhvcNAQkBFhZqYXNvbi5ncmVl
+bmVAamJvc3MuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzzj+VomXdEuHTg4g
+N9mN865eulLiAPITiZMLfz2ODuzF0pj39iTKhHM8IS6YQYbkPGRXMTmnCy0NFfMsVKTXs/9rZBMP
+1ko3kZopaN+XrUT8yxIiydL76QYcRpDGgxG9G4kc+mHdt0rZtARWVwoVPhO4Irx09AONpSYqdSq0
+8jMXscA+yXwvhDHGV+J4CCSmQgYVa95OdDaAMnWp5csAfg4eL/GTLI36Up4tjsFnMq5NFKsCnZ1q
+qxA1OO3CbhsK/IlEZw13alGJPJ1FgvaTZTZNh+h2YIKl//P5iQOtfURrzWsVwGcEa6S+lC72BJHj
+JBOw4byI/FTi1HCe6wd3iQIDAQABo4IBJjCCASIwCQYDVR0TBAIwADAsBglghkgBhvhCAQ0EHxYd
+T3BlblNTTCBHZW5lcmF0ZWQgQ2VydGlmaWNhdGUwHQYDVR0OBBYEFKzdWmBd7MDzEemEN6HMXIeq
+St86MIHHBgNVHSMEgb8wgbyAFEuV2BcIYuw61dmN9JIrAvNK+hZ+oYGYpIGVMIGSMQswCQYDVQQG
+EwJVUzETMBEGA1UECBMKV2FzaGluZ3RvbjEYMBYGA1UEBxMPU25vcXVhbG1pZSBQYXNzMRMwEQYD
+VQQKEwpKQm9zcyBJbmMuMQswCQYDVQQLEwJRQTESMBAGA1UEAxMJamJvc3MuY29tMR4wHAYJKoZI
+hvcNAQkBFg9hZG1pbkBqYm9zcy5jb22CCQCr9VL/ZBpN7zANBgkqhkiG9w0BAQUFAAOBgQDEU/Bs
+M2Pqcr8j8/NdYlgSYXX1R7u2wjYkRnW6jeHlxNm5XeuY0t4nr8fq5S05YOAlU4LTJuGNMB8kZUit
+hAU2QxkMLmKKsb+B1zIdzP756xC6x+5g0dXLIt0ItVjPv5GQIw1SRmQKBkfliwV5jOrkCzJ5/v04
+Hb1iUP9iqcdN2w==</wsse:BinarySecurityToken><xenc:EncryptedKey xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"><xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-1_5"/><ds:KeyInfo><wsse:SecurityTokenReference wsu:Id="reference-4-1306740663072-1028055937"><wsse:Reference URI="#token-3-1306740663062-911996452" ValueType="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-x509-token-profile-1.0#X509v3"/></wsse:SecurityTokenReference></ds:KeyInfo><xenc:CipherData><xenc:CipherValue>zqnH7d1oLi3rrJUwLMxmZL8HseZ2e+wob1KqGbALkDHUJZgVI9G7B2/bAonJLM7H/t15jJUYXiWi
+iVuciz1ZRTZ7mDvOnv+7J7jgTq7SzAVJOx9/A7w3b5aizwSxUokPt3xdR6MjD5lHOQC+UTq7/Hnp
+iihtH3BI5hHCAgQyr6TGdaKlMBJOzW6Zvk1j3VUe0h+lIM08p2Z5Y+6mIENpsv2rTgvvLByU9XDz
+rSw8Fb+Hytiba1QF5vgIkaEst+tGReWQgBGy4ErL95P6pe8B8C06pyC3lYNERCDv0EhMlZbfpHo9
+Sdc//nKJf1h929x+WH7Y96Q6y1qgo1/gTQkSjw==</xenc:CipherValue></xenc:CipherData><xenc:ReferenceList xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"><xenc:DataReference xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" URI="#encrypted-2-1306740662931-392609752"/></xenc:ReferenceList></xenc:EncryptedKey></wsse:Security></env:Header>
+<env:Body xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" wsu:Id="element-1-1306740662931-160634233">
+<xenc:EncryptedData xmlns:xenc="http://www.w3.org/2001/04/xmlenc#" Id="encrypted-2-1306740662931-392609752" Type="http://www.w3.org/2001/04/xmlenc#Content">
+<xenc:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc"/>
+<xenc:CipherData>
+<xenc:CipherValue>pVvt6ymuOf03GjEGoGJwgS+UPzcYUdYgLlm9wMQJk2h32HMgHMmQmPGdL9helvtgTF54QQLddt8D
+aoGqET5TNeqdoXNuZyeeHVKwKHs33mIOpn0Ct9mzUZ/zdgK/kG2Wb9TfE9poaYEMzmYT1W8MwjxE
+e0pszsbtaB2UYwIQUKslz9wwWVx3WLNJMC9STdas8cadBjXL3/dk/1uppZrC2zHAyWkugqb5mmNm
+G/7tNGNiEurOy2y7V28+ogi+/hkD2bRl/QVCbkaUGW+cP7Fz8OtwGF+jbq1FgFzDc/7nJPTgoyqO
+qDEo5jWN5d67oh4IRkH+/xhZRIChxBCJxY0q2DJJJNdrLqOfTMq4IISKlNC6SfRubCpJEJw8xJwK
+yNLaJ+8zR/nk47+q0M3DDNS2i0pLbnEgsIJhI+aaUrtxocJm6Ywo4i+ndk6KBdmJvrctns6qaZul
+BBISOJP4fDBpqMLrDEAGotuQeM3EjY4AOJmNDdQyRSjXO7LdImFfqUGqA4nommH+D8L4XEYJAzgY
+nGvWbzioGz0T5lCVZCdnN3UEKlGH9pj2gAXXYmf7s0eiJr/6R5+3Qo+sHfGEJpaqdyBQwvF7YY6z
+UBqifbU8BAvo+XqybJx3YK28qBAghSFyYwejHTFp7xgdNQrHyTOUm0GOfX2xIfPFfuq0AFOdO/QR
+rKVKW5F3tSc0EeblfARHQZceZT1vn2cd2bnUjW/jQmV/zram6oZHuV2IC6UCHhO/wgEMceB3UZPU
+SS2GJh90DPRUj6/jSFzs/SWiFyQYR2SSPIKZQlX13oMdgl+l/4a43NfDW5D24O3QMVJ44kjDECQP
+l/Sz88gsiVMl10R99ZSyCOVdUtQMGPIPiFedzkqOvTIBsr2V42Xt1Z/PJspFf/gHnzxFgBhSvwfd
+xmzLJz4K/+g63N9MvucTMkIbRRx/wTuqO6r60AO9KHMdfAFuyLRQAsaG/UvdTAz6vxGgtv/WASIE
+JI65L06rQgGrVg0eqfP3vUF50NVxNuotVW1AL/aN+OAZMw7eG2y2XzVbhtHoTUjIv59nm0qLbIhl
+zp3m5QfoQ7BwXkUIgRFaGLG/ZTCeMIyZrwK7IsJX3rqsXaVnrNsR9vUqSwy/PqZZ7WdarCCuZYKm
+msM9TSmGiSEJSHLgqN42wPSyk8KEEPkQ+e5CG3cTPLXfh4MQWnfL36G6xC4Ps/WKkrub2Bim/yIL
+qsVDEeuZ5TVEAsXLg6fJU61aocn/+duLydBbU2vOqeS7f/0PYQXigVkva6hFx+yIiCApc7nW8qI/
+WzNaIarRXdzIeueEgZGjm5jN5OhyiBWWxx3qCaEgasQzDywmXutIWpbUCbUJSx3i5FznA001iRJl
+zSc4BQAOVao+sMjw18hHzO13lCYt5G1jy4gU6CJcAAw84Tt+cdBmQBfKFyurb6mT4HYmQCRv5Wc0
+3RKd+XteWbt44VySXPPzAplL8Wd9</xenc:CipherValue>
+</xenc:CipherData>
+</xenc:EncryptedData>
+</env:Body>
+</env:Envelope>

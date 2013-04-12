@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
+   <quickstart name="plain_ws">
+      <property name="test_property1" value="test_value1"/>
+      <property name="test_property2" value="test_value2"/>
+   </quickstart>
+   <execution>
+      <performance>
+         <generator class="ImmediateMessageGenerator" threads="200">
+            <property name="count" value="500000"/>
+         </generator>
+         <sender class="HTTPSender">
+            <property name="address" value="http://${server.host}:${server.port}//jaxws-benchmark-basic/EndpointImpl"/>
+         </sender>
+         <messages>
+            <message file="5kB_basic_reply.xml"/>
+         </messages>
+      </performance>
+   </execution>
+</scenario>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- TODO: create a scenario with GroovySender and with TextMessageValidator -->
+<scenario xmlns="urn:perfcake:scenario:0.2" enabled="false">
+   <quickstart/>
+   <execution>
+      <performance>
+         <generator/>
+         <sender/>
+         <!--reporting /-->
+         <!--messages /-->
+         <validation/>
+      </performance>
+   </execution>
+</scenario>

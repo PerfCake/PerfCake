@@ -1,0 +1,31 @@
+--uuid:5ea7161f-b6e1-4f69-81ae-1618d05a9350
+Content-Id: <rootpart*5ea7161f-b6e1-4f69-81ae-1618d05a9350@example.jaxws.sun.com>
+Content-Type: application/xop+xml;charset=utf-8;type="text/xml"
+Content-Transfer-Encoding: binary
+
+<?xml version="1.0"?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+  <S:Body>
+    <ns2:sayHello xmlns:ns2="http://plain_ws.helloworld">
+      <toWhom>
+        <xop:Include xmlns:xop="http://www.w3.org/2004/08/xop/include" href="cid:e0031844-f495-46f0-af76-2730879fdc45@example.jaxws.sun.com">
+      </xop:Include>
+      </toWhom>
+    </ns2:sayHello>
+  </S:Body>
+</S:Envelope>
+--uuid:5ea7161f-b6e1-4f69-81ae-1618d05a9350
+Content-Id: <e0031844-f495-46f0-af76-2730879fdc45@example.jaxws.sun.com>
+Content-Type: application/octet-stream
+Content-Transfer-Encoding: binary
+
+abcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahoda
+abcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahoda
+abcdefghijklmnopemail@domain.org789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahoda
+abcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahoda
+abcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahoda
+abcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahoda
+abcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahoda
+abcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahoda
+abcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni_pan_Lahodaabcdefghijklmnopqrstuvwxyz0123456789!@#$%^°*()_+-=[]{}:",.?/`~Pada,pada_jahoda,kterou_sni
+--uuid:5ea7161f-b6e1-4f69-81ae-1618d05a9350--

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
+   <quickstart name="bpel_plain"/>
+   <execution>
+      <performance>
+         <generator class="LongtermMessageGenerator" threads="50">
+            <property name="threadQueueSize" value="50000"/>
+            <property name="duration" value="300"/>
+            <property name="warmUpEnabled" value="true"/>
+         </generator>
+         <sender class="HTTPSender">
+            <property name="address" value="http://${server.host}:${server.port}/BPELPlain"/>
+         </sender>
+         <reporting>
+            <property name="tags" value=""/>
+            <property name="uniqueId" value="${scenario}"/>
+            <reporter class="ATReporter">
+               <property name="label_type" value="Time"/>
+               <destination class="CsvDestination">
+                  <property name="periodicity" value="10%"/>
+                  <property name="outputPath" value="logs"/>
+               </destination>
+               <!--destination class="ConsoleDestination">
+                  <property name="periodicity" value="10%"/>
+               </destination-->
+            </reporter>
+            <!--reporter class="KPIReporter">
+               <property name="label_type" value="Time" />
+               <destination class="CsvDestination">
+                  <property name="outputPath" value="logs"/>
+                  <property name="periodicity" value="10%"/>
+               </destination>
+            </reporter-->
+         </reporting>
+         <messages>
+            <message file="bpel_plain_request.xml">
+               <header name="Content-Type" value="text/xml"/>
+               <header name="SOAPAction" value="hello"/>
+            </message>
+         </messages>
+      </performance>
+   </execution>
+</scenario>

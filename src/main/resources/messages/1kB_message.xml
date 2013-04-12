@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Order orderId="1" orderDate="Wed Nov 15 13:45:28 EST 2006" statusCode="9" netAmount="59.97" totalAmount="64.92" tax="4.95">
+	<Customer userName="user1" firstName="Harry" lastName="Fletcher" state="SD"/>
+	<OrderLines>
+		<OrderLine position="1" quantity="1">
+			<Product productId="1" title="The 40-Year-Old Virgin " price="29.98"/>
+		</OrderLine>
+		<OrderLine position="2" quantity="1">
+			<Product productId="299" title="Pulp Fiction" price="29.99"/>
+		</OrderLine>
+		<OrderLine position="3" quantity="1">
+			<Product productId="364" title="Thin " price="29.98"/>
+		</OrderLine>
+		<OrderLine position="4" quantity="1">
+			<Product productId="291" title="Pu" price="29.99"/>
+		</OrderLine>
+		<OrderLine position="5" quantity="1">
+			<Product productId="369" title="Thn " price="29.98"/>
+		</OrderLine>
+		<OrderLine position="6" quantity="1">
+			<Product productId="214" title="Pulb Fiction" price="29.99"/>
+		</OrderLine>
+	</OrderLines>
+</Order>

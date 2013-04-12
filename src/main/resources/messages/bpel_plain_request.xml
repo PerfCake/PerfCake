@@ -1,0 +1,8 @@
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://www.jboss.org/bpel/examples/wsdl">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <wsdl:hello>
+         <TestPart>Hello</TestPart>
+      </wsdl:hello>
+   </soapenv:Body>
+</soapenv:Envelope>
