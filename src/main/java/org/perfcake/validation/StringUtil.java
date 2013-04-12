@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 
 /**
  * 
- * @author Martin Večeřa <marvec@gmail.com>, Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>, Pavel Macík <pavel.macik@gmail.com>
  */
 public class StringUtil {
    private static Logger log = Logger.getLogger(StringUtil.class);

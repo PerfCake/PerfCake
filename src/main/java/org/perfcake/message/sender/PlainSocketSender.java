@@ -20,7 +20,7 @@ import java.net.Socket;
 
 /**
  * 
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class PlainSocketSender extends AbstractSocketSender {

@@ -28,7 +28,7 @@ import org.perfcake.message.Message;
 /**
  * TODO: Provide implementation. Should invoke external command and pass the message payload as a parameter or stream it to input (configurable).
  * 
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class CommandSender extends AbstractSender {
 

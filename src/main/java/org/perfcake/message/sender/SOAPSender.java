@@ -24,7 +24,7 @@ import org.perfcake.message.Message;
 /**
  * TODO: Provide implementation. This is to cover jMeter functionality. Can be based on HTTP sender???
  * 
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class SOAPSender extends AbstractSender {

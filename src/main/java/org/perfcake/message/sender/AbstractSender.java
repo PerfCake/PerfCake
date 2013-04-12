@@ -29,7 +29,7 @@ import org.perfcake.validation.ValidationException;
 
 /**
  * 
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 abstract public class AbstractSender implements MessageSender {
    private static final Logger log = Logger.getLogger(AbstractSender.class);
