@@ -39,7 +39,8 @@ import org.perfcake.validation.ValidatorManager;
 
 /**
  * 
- * @author Martin Večeřa <marvec@gmail.com>, Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
+ * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class ImmediateMessageGenerator extends AbstractMessageGenerator {
 

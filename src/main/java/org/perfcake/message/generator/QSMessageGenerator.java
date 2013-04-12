@@ -22,7 +22,7 @@ package org.perfcake.message.generator;
 
 /**
  * 
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class QSMessageGenerator/* extends ImmediateMessageGenerator */{

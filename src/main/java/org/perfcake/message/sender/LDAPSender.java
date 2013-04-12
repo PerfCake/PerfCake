@@ -24,7 +24,7 @@ import org.perfcake.message.Message;
 /**
  * TODO: Write implementation
  * 
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class LDAPSender extends AbstractSender {

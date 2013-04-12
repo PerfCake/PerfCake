@@ -30,7 +30,7 @@ import org.testng.log4testng.Logger;
 
 /**
  * 
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 abstract public class AbstractSocketSender extends AbstractSender {

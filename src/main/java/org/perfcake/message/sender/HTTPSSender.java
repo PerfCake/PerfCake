@@ -41,7 +41,9 @@ import org.perfcake.message.Message;
 
 /**
  * 
- * @author Martin Večeřa <marvec@gmail.com>, Pavel Macík <pavel.macik@gmail.com>, Filip Eliáš <elfilip01@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
+ * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Filip Eliáš <elfilip01@gmail.com>
  */
 public class HTTPSSender extends AbstractSender {
 

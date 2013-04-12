@@ -25,7 +25,7 @@ import org.perfcake.message.Message;
  * TODO: Provide implementation. Should invoke external Groovy script and pass the message payload as a parameter or stream it to input (configurable).
  * TODO: This can extend CommandSender probably.
  * 
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class GroovySender extends CommandSender {

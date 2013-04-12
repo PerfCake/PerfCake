@@ -19,7 +19,7 @@ package org.perfcake;
 /**
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class PerfCakeException extends RuntimeException {

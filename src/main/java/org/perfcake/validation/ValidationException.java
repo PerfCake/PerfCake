@@ -18,7 +18,7 @@ package org.perfcake.validation;
 
 /**
  * 
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class ValidationException extends Exception {
