@@ -13,3 +13,12 @@ logs
 *.jar
 *.war
 *.ear
+
+target
+logs
+*.log
+src/main/native/*.so
+.settings
+.project
+.classpath
+
