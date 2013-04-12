@@ -24,7 +24,7 @@ import org.perfcake.message.Message;
 /**
  * TODO: Provide implementation. This should write to NIO channels.
  * 
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class ChannelSender extends AbstractSender {

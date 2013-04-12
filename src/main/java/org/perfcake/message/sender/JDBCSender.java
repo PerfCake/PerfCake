@@ -34,7 +34,7 @@ import org.perfcake.message.Message;
  * 
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
- * @author Martin Večeřa <marvec@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  * 
  */

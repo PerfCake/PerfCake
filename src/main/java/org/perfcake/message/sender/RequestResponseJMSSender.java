@@ -36,7 +36,9 @@ import org.perfcake.PerfCakeException;
 
 /**
  * 
- * @author Pavel Macík <pavel.macik@gmail.com>, Martin Večeřa <marvec@gmail.com>, Jiří Sedláček <jiri@sedlackovi.cz>
+ * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
+ * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
 public class RequestResponseJMSSender extends JMSSender {
    private static final Logger log = Logger.getLogger(RequestResponseJMSSender.class);
