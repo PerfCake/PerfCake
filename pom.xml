@@ -76,6 +76,9 @@
       <!-- jar versions -->
       <drools.version>5.4.0.Final</drools.version>
       <commons-configuration.version>1.8</commons-configuration.version>
+      <!-- Runtime properties -->
+      <server.host>localhost</server.host>
+      <server.port>8080</server.port>
    </properties>
    <dependencyManagement>
       <dependencies>
@@ -191,12 +194,12 @@
                      <!-- Server hostname -->
                      <systemProperty>
                         <key>server.host</key>
-                        <value>localhost</value>
+                        <value>${server.host}</value>
                      </systemProperty>
                      <!-- Server port -->
                      <systemProperty>
                         <key>server.port</key>
-                        <value>8080</value>
+                        <value>${server.port}</value>
                      </systemProperty>
                      <!-- Custon scenarios directory -->
                      <!--
