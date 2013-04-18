@@ -41,7 +41,7 @@ import org.perfcake.message.Message;
 public class HTTPSender extends AbstractSender {
    private URL url;
 
-   private String method = "POST";
+   private MethodEnum method = MethodEnum.POST;
 
    private static final Logger log = Logger.getLogger(HTTPSender.class);
 
@@ -55,10 +55,12 @@ public class HTTPSender extends AbstractSender {
 
    private int len;
 
+   private enum MethodEnum {GET, POST, HEAD, OPTIONS, PUT, DELETE, TRACE};
+
    @Override
    public void setProperty(String prop, String value) {
       if ("method".equals(prop)) {
-         method = value;
+         this.method = MethodEnum.valueOf(value);
       } else if ("address".equals(prop)) {
          this.address = value;
       } else if ("expectedResponseCode".equals(prop)) {
@@ -96,16 +98,20 @@ public class HTTPSender extends AbstractSender {
 
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
-      rc = (HttpURLConnection) url.openConnection();
-      rc.setRequestMethod(method);
-      rc.setDoOutput(true);
-      rc.setDoInput(true);
-      rc.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
-
       reqStr = message.getPayload().toString();
       len = reqStr.length();
+      if (MethodEnum.GET.equals(method) || MethodEnum.HEAD.equals(method) || MethodEnum.DELETE.equals(method)) {
+          String getAddress = address + reqStr;
+          url = new URL(getAddress);
+      }
+      rc = (HttpURLConnection) url.openConnection();
+      rc.setRequestMethod(method.name());
+      rc.setDoInput(true);
+      if (MethodEnum.POST.equals(method) || MethodEnum.PUT.equals(method)) {
+         rc.setDoOutput(true);
+      }
+      rc.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
       rc.setRequestProperty("Content-Length", Integer.toString(len));
-
       Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
       for (String property : propertyNameSet) {
          rc.setRequestProperty(property, message.getProperty(property));
@@ -146,14 +152,13 @@ public class HTTPSender extends AbstractSender {
    @Override
    public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
       int respCode = -1;
-
       rc.connect();
-
-      OutputStreamWriter out = new OutputStreamWriter(rc.getOutputStream());
-      out.write(reqStr, 0, len);
-      out.flush();
-
-      rc.getOutputStream().close();
+      if (MethodEnum.POST.equals(method) || MethodEnum.PUT.equals(method)) {
+         OutputStreamWriter out = new OutputStreamWriter(rc.getOutputStream());
+	 out.write(reqStr, 0, len);
+	 out.flush();
+	 rc.getOutputStream().close();
+      }
 
       respCode = rc.getResponseCode();
       if (!checkResponseCode(respCode)) {
