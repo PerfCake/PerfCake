@@ -90,13 +90,17 @@ public class ScenarioExecution {
     */
    public static String filterProperties(String text) throws IOException {
       String filteredString = new String(text);
-      String propertyPattern = "\\$\\{([^\\$\\{]+)\\}";
+      String propertyPattern = "\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?}";
       Matcher matcher = Pattern.compile(propertyPattern).matcher(filteredString);
 
       while (matcher.find()) {
          String pValue = null;
          String pName = matcher.group(1);
-         pValue = getProperty(pName);
+         String defaultValue = null;
+         if (matcher.groupCount() == 2 && matcher.group(2) != null) {
+            defaultValue = (matcher.group(2)).substring(1);
+         }
+         pValue = getProperty(pName, defaultValue);
          if (pValue != null) {
             filteredString = filteredString.replaceAll(Pattern.quote(matcher.group()), pValue);
          }
