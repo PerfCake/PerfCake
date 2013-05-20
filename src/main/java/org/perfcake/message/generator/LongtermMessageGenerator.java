@@ -209,7 +209,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
             Iterator<MessageToSend> iterator = messageStore.iterator();
             while (iterator.hasNext()) {
                MessageToSend messageToSend = iterator.next();
-               Message currentMessage = new Message(messageToSend.getMessage().getPayload());
+               Message currentMessage = messageToSend.getMessage();
                long multiplicity = messageToSend.getMultiplicity();
                sender = senderManager.acquireSender();
                for (int i = 0; i < multiplicity; i++) {
