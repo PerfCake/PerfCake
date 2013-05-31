@@ -357,9 +357,13 @@ public class ScenarioExecution {
       for (int i = 0; i < reporterNodesCount; i++) {
          currentReporterElement = (Element) reporterNodes.item(i);
          currentReporterProperties = getPropertiesFromSubNodes(currentReporterElement);
-         currentReporter = (Reporter) createInstance(REPORTER_PACKAGE + "." + currentReporterElement.getAttribute("class"), currentReporterProperties);
+         String reportClass = currentReporterElement.getAttribute("class");
+         if (reportClass.indexOf(".") < 0) {
+            reportClass = REPORTER_PACKAGE + "." + reportClass;
+         }
+         currentReporter = (Reporter) createInstance(reportClass, currentReporterProperties);
 
-         println("'- Reporter (" + currentReporterElement.getAttribute("class") + ")");
+         println("'- Reporter (" + reportClass + ")");
          currentReporterDestinations = xPathEvaluate("destination", currentReporterElement);
          int currentReporterDestinationsCount = currentReporterDestinations.getLength();
          Destination currentDestination = null;
@@ -367,10 +371,14 @@ public class ScenarioExecution {
          Properties currentDestinationProperties = null;
          for (int j = 0; j < currentReporterDestinationsCount; j++) {
             currentDestinationElement = (Element) currentReporterDestinations.item(j);
-            println(" '- Destination (" + currentDestinationElement.getAttribute("class") + ")");
+            String destClass = currentDestinationElement.getAttribute("class");
+            if (destClass.indexOf(".") < 0) {
+               destClass = DESTINATION_PACKAGE + "." + destClass;
+            }
+            println(" '- Destination (" + destClass + ")");
             currentDestinationProperties = getPropertiesFromSubNodes(currentDestinationElement);
             printProperties(currentDestinationProperties, "  '- ");
-            currentDestination = (Destination) createInstance(DESTINATION_PACKAGE + "." + currentDestinationElement.getAttribute("class"), currentDestinationProperties);
+            currentDestination = (Destination) createInstance(destClass, currentDestinationProperties);
             currentReporter.addDestination(currentDestination);
          }
          reportManager.addReporter(currentReporter);
@@ -394,13 +402,16 @@ public class ScenarioExecution {
       MessageSenderManager msm;
       Element senderElement = (Element) (xPathEvaluate("sender", performanceNode).item(0));
       String senderClass = senderElement.getAttribute("class");
+      if (senderClass.indexOf(".") < 0) {
+         senderClass = SENDER_PACKAGE + "." + senderClass;
+      }
       println("\n--- Sender (" + senderClass + ") ---");
 
       Properties senderProperties = getPropertiesFromSubNodes(senderElement);
       printProperties(senderProperties);
 
       msm = new MessageSenderManager();
-      msm.setProperty("sender-class", SENDER_PACKAGE + "." + senderClass);
+      msm.setProperty("sender-class", senderClass);
       msm.setProperty("sender-pool-size", senderPoolSize);
       for (Entry<Object, Object> sProperty : senderProperties.entrySet()) {
          msm.setProperty(sProperty.getKey(), sProperty.getValue());
@@ -424,13 +435,16 @@ public class ScenarioExecution {
       AbstractMessageGenerator generator;
       Element generatorElement = (Element) (xPathEvaluate("generator", performanceNode).item(0));
       String generatorClass = generatorElement.getAttribute("class");
+      if (generatorClass.indexOf(".") < 0) {
+         generatorClass = GENERATOR_PACKAGE + "." + generatorClass;
+      }
       println("\n--- Generator (" + generatorClass + ") ---");
 
       int threads = Integer.valueOf(generatorElement.getAttribute("threads"));
       println("threads=" + threads);
       Properties generatorProperties = getPropertiesFromSubNodes(generatorElement);
       printProperties(generatorProperties);
-      generator = (AbstractMessageGenerator) createInstance(GENERATOR_PACKAGE + "." + generatorClass, generatorProperties);
+      generator = (AbstractMessageGenerator) createInstance(generatorClass, generatorProperties);
       generator.setProperty("threads", String.valueOf(threads));
       return generator;
    }
@@ -546,8 +560,11 @@ public class ScenarioExecution {
             validatorElement = (Element) validatorNodes.item(i);
             validatorId = validatorElement.getAttribute("id");
             validatorClass = validatorElement.getAttribute("class");
+            if (validatorClass.indexOf(".") < 0) {
+               validatorClass = VALIDATION_PACKAGE + "." + validatorClass;
+            }
 
-            MessageValidator messageValidator = (MessageValidator) Class.forName(VALIDATION_PACKAGE + "." + validatorClass, false, ScenarioExecution.class.getClassLoader()).newInstance();
+            MessageValidator messageValidator = (MessageValidator) Class.forName(validatorClass, false, ScenarioExecution.class.getClassLoader()).newInstance();
             messageValidator.setAssertions(validatorNodes.item(i), "1");// add validator to validator mgr coll
 
             ValidatorManager.addValidator(validatorId, messageValidator);
