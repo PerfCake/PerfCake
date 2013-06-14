@@ -1,7 +1,7 @@
 PerfCake
 ========
 
-Lightweight and universal performance testing framework.
+Lightweight performance testing framework and a load generator.
 
 Performance test scenario execution
 -----------------------------------
