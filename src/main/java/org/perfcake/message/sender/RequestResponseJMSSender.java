@@ -97,7 +97,7 @@ public class RequestResponseJMSSender extends JMSSender {
    }
 
    @Override
-   public void close() {
+   public void close() throws PerfCakeException {
       super.close();
       try {
          if (responseReciever != null) {
