@@ -129,7 +129,7 @@ public class MessageSenderManager {
       return availableSenders.size();
    }
 
-   public void close() {
+   public void close() throws PerfCakeException {
       Iterator<MessageSender> iterator = messageSendersMap.keySet().iterator();
       while (iterator.hasNext()) {
          iterator.next().close();

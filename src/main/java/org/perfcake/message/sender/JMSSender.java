@@ -174,7 +174,7 @@ public abstract class JMSSender extends AbstractSender {
    }
 
    @Override
-   public void close() {
+   public void close() throws PerfCakeException {
       if (log.isDebugEnabled()) {
          log.debug("Closing...");
       }

@@ -53,7 +53,7 @@ abstract public class AbstractSender implements MessageSender {
    abstract public void init() throws Exception;
 
    @Override
-   abstract public void close();
+   abstract public void close() throws PerfCakeException;
 
    @Override
    public final Serializable send(Message message, Map<String, String> properties) throws Exception {
@@ -151,7 +151,7 @@ abstract public class AbstractSender implements MessageSender {
       if (after != -1 && before != -1 && after >= before) {
          return after - before;
       } else {
-         throw new PerfCakeException(toString() + ": Invalid response time: " + before + ">" + after);
+         throw new RuntimeException(toString() + ": Invalid response time: " + before + ">" + after);
       }
    }
 

@@ -19,6 +19,7 @@ package org.perfcake.message.generator;
 import java.util.List;
 
 import org.perfcake.ObjectWithProperties;
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageToSend;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
@@ -83,7 +84,7 @@ public abstract class AbstractMessageGenerator implements ObjectWithProperties {
       this.reportManager = reportManager;
    }
 
-   public void close() {
+   public void close() throws PerfCakeException {
       messageSenderManager.close();
    }
 

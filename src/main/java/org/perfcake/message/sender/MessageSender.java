@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.perfcake.ObjectWithProperties;
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.MessageValidator;
@@ -37,7 +38,7 @@ public interface MessageSender extends ObjectWithProperties {
    public void init() throws Exception;
 
    /** Closes the sender. */
-   public void close();
+   public void close() throws PerfCakeException;
 
    /** Sends a message. */
    public Serializable send(Message message) throws Exception;
