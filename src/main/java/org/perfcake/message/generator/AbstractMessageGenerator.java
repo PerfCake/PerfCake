@@ -29,24 +29,16 @@ import org.perfcake.reporting.ReportManager;
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public abstract class AbstractMessageGenerator implements ObjectWithProperties {
+
    protected MessageSenderManager messageSenderManager;
-
    protected ReportManager reportManager;
-
    protected List<MessageToSend> messageStore;
-
    protected int threads = 1;
-
    protected long start = -1;
-
    protected long stop = -1;
-
    protected boolean warmUpEnabled = false;
-
    protected long minimalWarmUpDuration = 15000; // default 15s
-
    protected long minimalWarmUpCount = 10000; // by JIT
-
    protected boolean isMeasuring = false;
 
    @Override

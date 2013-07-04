@@ -16,11 +16,9 @@
 
 package org.perfcake;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
-import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 import org.perfcake.message.MessageToSend;
@@ -46,8 +44,9 @@ public class Scenario {
    private URL scenarioUrl;
 
    /**
-    * Create the scenario object. Parse scenario location with replacing system properties placeholders,
-    * treating it first as a scenario name under the default location and the a complete URL.
+    * Create the scenario object. Parse scenario location with replacing system
+    * properties placeholders, treating it first as a scenario name under the
+    * default location and the a complete URL.
     * 
     * @param scenario
     *           scenario name or location URL
@@ -59,7 +58,7 @@ public class Scenario {
       }
 
       try {
-         scenarioUrl = parseScenarioLocation(scenario);
+         scenarioUrl = Utils.locationToUrl(scenario, "perfcake.scenarios.dir", Utils.determineDefaultLocation("scenarios"), ".xml");
       } catch (MalformedURLException e) {
          throw new PerfCakeException("Cannot parse scenario configuration location: ", e);
       }
@@ -70,22 +69,20 @@ public class Scenario {
    /**
     * Parse the scenario configuration
     * 
-    * @throws PerfCakeException in case of any error during parsing
+    * @throws PerfCakeException
+    *            in case of any error during parsing
     */
    public void parse() throws PerfCakeException {
       if (log.isTraceEnabled()) {
          log.trace("Parsing scenario " + scenarioUrl.toString());
       }
-      
-      try (ScenarioParser parser = new ScenarioParser(scenarioUrl)) {
-         generator = parser.parseGenerator();
-         messageSenderManager = parser.parseSender(Integer.valueOf(generator.getProperty("threads")));
-         reportManager = parser.parseReporting();
-         messageStore = parser.parseMessages();
-         parser.parseValidation();
-      } catch (IOException e) {
-         // we don't mind the open resource
-      }
+
+      ScenarioParser parser = new ScenarioParser(scenarioUrl);
+      generator = parser.parseGenerator();
+      messageSenderManager = parser.parseSender(Integer.valueOf(generator.getProperty("threads")));
+      reportManager = parser.parseReporting();
+      messageStore = parser.parseMessages();
+      parser.parseValidation();
    }
 
    /**
@@ -97,7 +94,7 @@ public class Scenario {
       if (log.isTraceEnabled()) {
          log.trace("Scenario initialization...");
       }
-      
+
       messageSenderManager.setReportManager(reportManager);
       generator.setReportManager(reportManager);
       try {
@@ -108,8 +105,7 @@ public class Scenario {
    }
 
    /**
-    * Execute the scenario.
-    * This mainly means to send the messages.
+    * Execute the scenario. This mainly means to send the messages.
     * 
     * @throws PerfCakeException
     */
@@ -117,7 +113,7 @@ public class Scenario {
       if (log.isTraceEnabled()) {
          log.trace("Running scenario...");
       }
-      
+
       ValidatorManager.startValidation();
       try {
          generator.generate();
@@ -132,39 +128,12 @@ public class Scenario {
     * @throws PerfCakeException
     */
    public void close() throws PerfCakeException {
-      generator.close();
+      if (generator != null)
+         generator.close();
       ValidatorManager.setFinished(true);
 
       if (log.isTraceEnabled()) {
          log.trace("Scenario finished successfully!");
       }
-   }
-
-   /**
-    * Parse the location of a scenario configuration. Replaces all property placeholders, tries it as a scenario
-    * name and then as a URL.
-    * 
-    * @param scenario
-    *           configuration location
-    * @return URL representing the scenario location
-    * @throws MalformedURLException
-    *            if it is not possible to represent the location as a URL
-    * @throws PerfCakeException
-    *            if it is not possible to replace placeholders
-    */
-   private URL parseScenarioLocation(String scenario) throws MalformedURLException, PerfCakeException {
-      String result = null;
-      try (Scanner scanner = new Scanner(scenario)) {
-         result = Utils.filterProperties(scanner.useDelimiter("\\Z").next());
-      } catch (IOException e) {
-         throw new PerfCakeException("Cannot parse scenario configuration location: ", e);
-      }
-
-      // is there a protocol specified? suppose just scenario name
-      if (result.indexOf("://") < 0) {
-         result = "file://" + Utils.getProperty("perfcake.scenarios.dir", Utils.resourcesDir.getAbsolutePath() + "/scenarios") + "/" + result + ".xml";
-      }
-
-      return new URL(result);
    }
 }

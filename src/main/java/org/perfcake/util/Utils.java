@@ -18,8 +18,12 @@ package org.perfcake.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -115,5 +119,46 @@ public class Utils {
          }
       }
    }
+   
+   /**
+    * Reads file content into a string. The file content is processed as an UTF-8 encoded text.
+    * @param url specifies the file location as a URL
+    * @return the file contents
+    * @throws IOException
+    */
+   public static String readFilteredContent(URL url) throws IOException {
+	   try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
+		   return filterProperties(scanner.useDelimiter("\\Z").next());
+	   }
+   }
 
+   /**
+    * Convert location to URL. If location specifies a protocol, it is immediatelly converted. Without a protocol specified, output is
+    * file://${&lt;defaultLocationProperty&gt;}/&lt;location&gt;&lt;defaultSuffix&gt; using defaultLocation as a default value for the defaultLocationProperty
+    * when the property is undefined.
+    * @param location location of the resource
+    * @param defaultLocationProperty property to read the default location prefix
+    * @param defaultLocation default value for defaultLocationProperty if this property is undefined 
+    * @param defaultSuffix default suffix of the location
+    * @return URL representing the location
+    * @throws MalformedURLException when the location cannot be converted to a URL
+    */
+   public static URL locationToUrl(String location, String defaultLocationProperty, String defaultLocation, String defaultSuffix) throws MalformedURLException {
+      // is there a protocol specified? suppose just scenario name
+      if (location.indexOf("://") < 0) {
+         location = "file://" + Utils.getProperty(defaultLocationProperty, defaultLocation) + "/" + location + defaultSuffix;
+      }
+
+      return new URL(location);
+   }
+   
+   /**
+    * Determines the default location of resources based on the resourcesDir constant.
+    * @param locationSuffix Optional suffix to be added to the path
+    * @return the location based on the resourcesDir constant
+    */
+   public static String determineDefaultLocation(String locationSuffix) {
+      return resourcesDir.getAbsolutePath() + "/" + (locationSuffix == null ? "" : locationSuffix);
+   }
+   
 }
