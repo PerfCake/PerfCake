@@ -28,30 +28,34 @@ public class ScenarioExecution {
 
    public static final Logger log = Logger.getLogger(ScenarioExecution.class);
 
-   public static void main(String[] args) throws PerfCakeException {
+   public static void main(String[] args) {
 
       log.info("=== Welcome to PerfCake ===");
-      /// TODO server host and port is not valid in all cases, this should be logged by respective senders
+      // / TODO server host and port is not valid in all cases, this should be logged by respective senders
       log.info("Server host: " + Utils.getProperty("server.host"));
       log.info("Server port: " + Utils.getProperty("server.port"));
-      
+
       Scenario scenario = null;
-      
+
       try {
          scenario = new Scenario(Utils.getProperty("scenario"));
          scenario.parse();
       } catch (PerfCakeException e) {
-         log.fatal("Cannot create scenario: ", e);
+         log.fatal("Cannot parse scenario: ", e);
          return;
       }
-      
-  
+
       try {
          scenario.init();
          scenario.run();
-         scenario.close();
-       } catch (PerfCakeException e) {
+      } catch (PerfCakeException e) {
          log.fatal("Error running scenario: ", e);
+      } finally {
+         try {
+            scenario.close();
+         } catch (PerfCakeException e) {
+            log.fatal("Scenario did not finish properly: ", e);            
+         }
       }
    }
 

@@ -16,18 +16,14 @@
 
 package org.perfcake.parser;
 
-import java.io.Closeable;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-import java.util.Scanner;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -59,37 +55,34 @@ import org.xml.sax.SAXException;
 
 /**
  * 
- * TODO review logging and refactor parsing, remove duplicated code
+ * TODO review logging and refactor parsing
+ * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class ScenarioParser implements Closeable {
+public class ScenarioParser {
 
-   private static final String GENERATOR_PACKAGE = "org.perfcake.message.generator";
-   private static final String SENDER_PACKAGE = "org.perfcake.message.sender";
-   private static final String REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
-   private static final String DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
-   private static final String VALIDATION_PACKAGE = "org.perfcake.validation";
+   private static final String DEFAULT_GENERATOR_PACKAGE = "org.perfcake.message.generator";
+   private static final String DEFAULT_SENDER_PACKAGE = "org.perfcake.message.sender";
+   private static final String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
+   private static final String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
+   private static final String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
 
    public static final Logger log = Logger.getLogger(ScenarioExecution.class);
 
    private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
-   private InputStream scenarioStream;
+   private String scenarioConfig;
    private Node performanceNode;
 
    public ScenarioParser(URL scenario) throws PerfCakeException {
       try {
-         this.scenarioStream = scenario.openStream();
+         this.scenarioConfig = Utils.readFilteredContent(scenario);
       } catch (IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
       }
 
-      this.performanceNode = parsePerformanceNode(scenario);
-   }
-
-   public void close() throws IOException {
-      scenarioStream.close();
+      this.performanceNode = parsePerformanceNode();
    }
 
    /**
@@ -105,12 +98,12 @@ public class ScenarioParser implements Closeable {
     * @throws ParserConfigurationException
     * @throws XPathExpressionException
     */
-   private Node parsePerformanceNode(URL scenario) throws PerfCakeException {
+   private Node parsePerformanceNode() throws PerfCakeException {
       Document scenarioDOM;
       Node node = null;
 
       try {
-         scenarioDOM = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(scenarioStream);
+         scenarioDOM = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(scenarioConfig);
          node = xPathEvaluate("/scenario/execution/performance", scenarioDOM).item(0);
       } catch (SAXException | IOException | ParserConfigurationException | XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse scenario configuration: ", e);
@@ -138,7 +131,7 @@ public class ScenarioParser implements Closeable {
          Element generatorElement = (Element) (xPathEvaluate("generator", performanceNode).item(0));
          String generatorClass = generatorElement.getAttribute("class");
          if (generatorClass.indexOf(".") < 0) {
-            generatorClass = GENERATOR_PACKAGE + "." + generatorClass;
+            generatorClass = DEFAULT_GENERATOR_PACKAGE + "." + generatorClass;
          }
          log.info("--- Generator (" + generatorClass + ") ---");
 
@@ -175,7 +168,7 @@ public class ScenarioParser implements Closeable {
          Element senderElement = (Element) (xPathEvaluate("sender", performanceNode).item(0));
          String senderClass = senderElement.getAttribute("class");
          if (senderClass.indexOf(".") < 0) {
-            senderClass = SENDER_PACKAGE + "." + senderClass;
+            senderClass = DEFAULT_SENDER_PACKAGE + "." + senderClass;
          }
          log.info("--- Sender (" + senderClass + ") ---");
 
@@ -228,61 +221,49 @@ public class ScenarioParser implements Closeable {
          long currentMessageMultiplicity = -1;
 
          log.info("--- Messages ---");
-         File messagesDir = new File(Utils.getProperty("perfcake.messages.dir", Utils.resourcesDir.getAbsolutePath() + "/messages"));
+         // File messagesDir = new File(Utils.getProperty("perfcake.messages.dir", Utils.resourcesDir.getAbsolutePath() + "/messages"));
          for (int i = 0; i < messageNodesCount; i++) {
             currentMessageElement = (Element) messageNodes.item(i);
-            File payloadFile = new File(messagesDir, currentMessageElement.getAttribute("file"));
-            Scanner scanner = null;
+            URL messageUrl = Utils.locationToUrl(currentMessageElement.getAttribute("file"), "perfcake.messages.dir", Utils.determineDefaultLocation("messages"), "");
+            currentMessagePayload = Utils.readFilteredContent(messageUrl);
+            currentMessageProperties = getPropertiesFromSubNodes(currentMessageElement);
+            currentMessageHeaders = getPropertiesFromSubNodes(currentMessageElement, "header", "name", "value");
 
-            /// TODO support for URL based message locations
-            if (payloadFile.exists()) {
-               try {
-                  scanner = new Scanner(payloadFile);
-                  currentMessagePayload = Utils.filterProperties(scanner.useDelimiter("\\Z").next());
-               } finally {
-                  if (scanner != null) {
-                     scanner.close();
-                  }
-               }
-               currentMessageProperties = getPropertiesFromSubNodes(currentMessageElement);
-               currentMessageHeaders = getPropertiesFromSubNodes(currentMessageElement, "header", "name", "value");
+            currentMessage = new Message(currentMessagePayload);
+            currentMessage.setProperties(currentMessageProperties);
+            currentMessage.setHeaders(currentMessageHeaders);
 
-               currentMessage = new Message(currentMessagePayload);
-               currentMessage.setProperties(currentMessageProperties);
-               currentMessage.setHeaders(currentMessageHeaders);
-
-               currentMessageMultiplicityAttributeValue = currentMessageElement.getAttribute("multiplicity");
-               if (currentMessageMultiplicityAttributeValue.equals("")) {
-                  currentMessageMultiplicity = 1l;
-               } else {
-                  currentMessageMultiplicity = Long.valueOf(currentMessageMultiplicityAttributeValue);
-               }
-
-               currentMessageValidatorIdAttributeValue = currentMessageElement.getAttribute("validatorId");
-               if (currentMessageValidatorIdAttributeValue.equals("")) {
-                  currentMessageValidatorId = null;
-               } else {
-                  currentMessageValidatorId = currentMessageValidatorIdAttributeValue;
-               }
-
-               // create message to be send
-               currentMessageToSend = new MessageToSend(currentMessage, currentMessageMultiplicity, currentMessageValidatorId);
-
-               log.info("'- Message (" + payloadFile.getCanonicalPath() + "), " + currentMessageMultiplicity + "x");
-               if (log.isDebugEnabled()) {
-                  log.debug("  '- Properties:");
-                  Utils.logProperties(log, Level.DEBUG, currentMessageProperties, "   '- ");
-                  log.debug("  '- Headers:");
-                  Utils.logProperties(log, Level.DEBUG, currentMessageHeaders, "   '- ");
-               }
-
-               messageStore.add(currentMessageToSend);
+            currentMessageMultiplicityAttributeValue = currentMessageElement.getAttribute("multiplicity");
+            if (currentMessageMultiplicityAttributeValue.equals("")) {
+               currentMessageMultiplicity = 1L;
             } else {
-               throw new IOException("Message could not be created because file " + payloadFile.getCanonicalPath() + " doesn't exist.");
+               currentMessageMultiplicity = Long.valueOf(currentMessageMultiplicityAttributeValue);
             }
+
+            currentMessageValidatorIdAttributeValue = currentMessageElement.getAttribute("validatorId");
+            if (currentMessageValidatorIdAttributeValue.equals("")) {
+               currentMessageValidatorId = null;
+            } else {
+               currentMessageValidatorId = currentMessageValidatorIdAttributeValue;
+            }
+
+            // create message to be send
+            currentMessageToSend = new MessageToSend(currentMessage, currentMessageMultiplicity, currentMessageValidatorId);
+
+            log.info("'- Message (" + messageUrl.toString() + "), " + currentMessageMultiplicity + "x");
+            if (log.isDebugEnabled()) {
+               log.debug("  '- Properties:");
+               Utils.logProperties(log, Level.DEBUG, currentMessageProperties, "   '- ");
+               log.debug("  '- Headers:");
+               Utils.logProperties(log, Level.DEBUG, currentMessageHeaders, "   '- ");
+            }
+
+            messageStore.add(currentMessageToSend);
          }
-      } catch (XPathExpressionException | IOException e) {
+      } catch (XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse messages configuration: ", e);
+      } catch (IOException e) {
+         throw new PerfCakeException("Cannot read messages content: ", e);
       }
       return messageStore;
    }
@@ -323,7 +304,7 @@ public class ScenarioParser implements Closeable {
             currentReporterProperties = getPropertiesFromSubNodes(currentReporterElement);
             String reportClass = currentReporterElement.getAttribute("class");
             if (reportClass.indexOf(".") < 0) {
-               reportClass = REPORTER_PACKAGE + "." + reportClass;
+               reportClass = DEFAULT_REPORTER_PACKAGE + "." + reportClass;
             }
             currentReporter = (Reporter) ObjectFactory.createInstance(reportClass, currentReporterProperties);
 
@@ -337,7 +318,7 @@ public class ScenarioParser implements Closeable {
                currentDestinationElement = (Element) currentReporterDestinations.item(j);
                String destClass = currentDestinationElement.getAttribute("class");
                if (destClass.indexOf(".") < 0) {
-                  destClass = DESTINATION_PACKAGE + "." + destClass;
+                  destClass = DEFAULT_DESTINATION_PACKAGE + "." + destClass;
                }
                log.info(" '- Destination (" + destClass + ")");
                currentDestinationProperties = getPropertiesFromSubNodes(currentDestinationElement);
@@ -373,7 +354,7 @@ public class ScenarioParser implements Closeable {
             validatorId = validatorElement.getAttribute("id");
             validatorClass = validatorElement.getAttribute("class");
             if (validatorClass.indexOf(".") < 0) {
-               validatorClass = VALIDATION_PACKAGE + "." + validatorClass;
+               validatorClass = DEFAULT_VALIDATION_PACKAGE + "." + validatorClass;
             }
 
             MessageValidator messageValidator = (MessageValidator) Class.forName(validatorClass, false, ScenarioExecution.class.getClassLoader()).newInstance();
@@ -385,8 +366,7 @@ public class ScenarioParser implements Closeable {
          throw new PerfCakeException("Cannot parse validation configuration: ", e);
       }
    }
-   
-   
+
    /**
     * @param xPathExpression
     * @param node
