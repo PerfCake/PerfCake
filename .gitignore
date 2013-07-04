@@ -3,6 +3,7 @@
 target
 logs
 *.log
+test-output
 
 # Eclipse stuff
 .settings

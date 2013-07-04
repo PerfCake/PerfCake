@@ -89,8 +89,9 @@ public class ReportingTestBase {
     * msg/s after 4.second - 2 msg/s after 5.second - 3.5 msg/s
     * 
     * @param rm
+    * @throws ReportsException 
     */
-   protected void simulateIterations(ReportManager rm) {
+   protected void simulateIterations(ReportManager rm) throws ReportsException {
       rm.reportTestStarted();
       sleep(1f);
       rm.reportIteration();
@@ -120,8 +121,9 @@ public class ReportingTestBase {
     * 
     * @param filename
     * @param string
+    * @throws ReportsException 
     */
-   protected void assertCsvContainsExactly(String filename, String string) {
+   protected void assertCsvContainsExactly(String filename, String string) throws ReportsException {
       CsvFile csvFile = new CsvFile(filename);
       String csvText = csvFile.getAllText();
       Assert.assertEquals(string, csvText);
@@ -132,8 +134,9 @@ public class ReportingTestBase {
     * 
     * @param filename
     * @param minVal
+    * @throws ReportsException 
     */
-   protected void assertCsvContainsNumber(String filename, double minVal) {
+   protected void assertCsvContainsNumber(String filename, double minVal) throws ReportsException {
       CsvFile csvFile = new CsvFile(filename);
       String csvText = csvFile.getAllText();
       Double d = null;
@@ -149,8 +152,9 @@ public class ReportingTestBase {
 
    /**
     * Asserts that file contains num lines that matches the regex
+    * @throws ReportsException 
     */
-   protected void assertCsvContainsLines(String filename, int num, String regex) {
+   protected void assertCsvContainsLines(String filename, int num, String regex) throws ReportsException {
       CsvFile csvFile = new CsvFile(filename);
       List<String> csvText = csvFile.getLines();
       int numMatch = 0;
@@ -223,7 +227,12 @@ public class ReportingTestBase {
             }
             theTime = System.currentTimeMillis() - theTime;
             rm.reportResponseTime(theTime);
-            rm.reportIteration();
+            try {
+               rm.reportIteration();
+            } catch (ReportsException e) {
+               // ignore
+               log.error("Error in stress test: ", e);
+            }
          }
 
       }

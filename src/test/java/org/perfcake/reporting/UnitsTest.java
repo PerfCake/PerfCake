@@ -33,9 +33,10 @@ public class UnitsTest extends ReportingTestBase {
    /**
     * Percentage periodicity can be set only to tests that have predefined
     * number of iterations or predefined time (which is always the case).
+    * @throws ReportsException 
     */
    @Test
-   public void percents() {
+   public void percents() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
       csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
@@ -61,9 +62,10 @@ public class UnitsTest extends ReportingTestBase {
    /**
     * Iterations periodicity just appends into destinations after specified
     * amount of iterations.
+    * @throws ReportsException 
     */
    @Test
-   public void iterations() {
+   public void iterations() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
       csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
@@ -87,9 +89,10 @@ public class UnitsTest extends ReportingTestBase {
 
    /**
     * Classical seconds/minutes/hours/days.
+    * @throws ReportsException 
     */
    @Test
-   public void time() {
+   public void time() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
       csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);

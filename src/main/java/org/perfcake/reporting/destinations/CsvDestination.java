@@ -57,7 +57,7 @@ public class CsvDestination extends Destination {
    private Object sendLock = new Object();
 
    @Override
-   public void loadSpecificConfigValues() {
+   public void loadSpecificConfigValues() throws ReportsException {
       outputPath = getStringProperty(PROP_OUTPUTPATH);
       if (!new File(outputPath).exists()) {
          log.warn("The output folder for CSV destination [" + outputPath + "] doesn't exist. Trying to create one.");
@@ -69,7 +69,7 @@ public class CsvDestination extends Destination {
    }
 
    @Override
-   public void send() {
+   public void send() throws ReportsException {
       synchronized (sendLock) {
          while (!messageQueue.isEmpty()) {
             Measurement m = messageQueue.peek();
@@ -83,9 +83,10 @@ public class CsvDestination extends Destination {
    /**
     * Outputs one file Measurement into CSV, this method expects that the csv
     * exists.
+    * @throws ReportsException 
     * 
     */
-   private void outputToCsv(Measurement m) {
+   private void outputToCsv(Measurement m) throws ReportsException {
       CsvFile csv = createdCsvs.get(m.getMeasurementType() + m.getLabelType());
       csv.appendLine(m.getLabel(), m.getValue());
    }
@@ -95,8 +96,9 @@ public class CsvDestination extends Destination {
     * combination of measurementType and labelType should be created.
     * 
     * @param m
+    * @throws ReportsException 
     */
-   private void ensureCsvExists(Measurement m) {
+   private void ensureCsvExists(Measurement m) throws ReportsException {
       if (createdCsvs.containsKey(m.getMeasurementType() + m.getLabelType())) {
          return;
       }

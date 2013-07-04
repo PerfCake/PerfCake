@@ -34,9 +34,10 @@ public class NonOverlayReportingTest extends ReportingTestBase {
    /**
     * When percentage output is set to 10% there should be (obviously) 10
     * records in csv no more no less.
+    * @throws ReportsException 
     */
    @Test
-   public void percentagic() {
+   public void percentagic() throws ReportsException {
 
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
@@ -63,9 +64,10 @@ public class NonOverlayReportingTest extends ReportingTestBase {
     * When percentage output is set to 10% there should be (obviously) 10
     * records in csv no more no less. This test (aditionaly to previous). uses
     * timely settings
+    * @throws ReportsException 
     */
    @Test
-   public void percentagicTimely() {
+   public void percentagicTimely() throws ReportsException {
 
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();

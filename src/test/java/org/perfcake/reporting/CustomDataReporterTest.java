@@ -24,7 +24,7 @@ import org.testng.annotations.Test;
 public class CustomDataReporterTest extends ReportingTestBase {
 
    @Test
-   public void basic() {
+   public void basic() throws ReportsException {
       Reporter customDataReporter = new CustomReporter();
       CsvDestination csvDestination = new CsvDestination();
       csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);

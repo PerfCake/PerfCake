@@ -32,7 +32,7 @@ import org.testng.annotations.Test;
 public class StressTest extends ReportingTestBase {
 
    @Test
-   public void atReporter() {
+   public void atReporter() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
       csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
@@ -54,7 +54,7 @@ public class StressTest extends ReportingTestBase {
    }
 
    @Test
-   public void atResponse() {
+   public void atResponse() throws ReportsException {
       Reporter reporter1 = new ResponseTimeReporter();
       CsvDestination csvDestination = new CsvDestination();
       csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
