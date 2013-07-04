@@ -52,18 +52,21 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
     * do as much logic as possible to validate that configuration is valid
     * before test will be invoked.
     */
-   public abstract void loadConfigValues();
+   public abstract void loadConfigValues() throws ReportsException;
 
    /**
     * All classes that are defined at config-time in scenarios can be configured
     * using property elements. This method is called with each such pair.
+    * @throws ReportsException 
     */
    @Override
    public void setProperty(String property, String value) {
       Set<String> set = null;
 
       if (properties.containsKey(property)) {
-         throw new ReportsException("Error configuring " + getClass().getSimpleName() + " (probably from scenario file). The key " + property + " is already set to value: " + getProperty(property));
+         return;
+         // TODO proper error handling
+         //throw new ReportsException("Error configuring " + getClass().getSimpleName() + " (probably from scenario file). The key " + property + " is already set to value: " + getProperty(property));
       }
       log.debug("Configuring " + this.getClass().getSimpleName() + ": [" + property + ":" + value + "]");
       properties.put(property, value);
@@ -75,8 +78,9 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
     * 
     * There at least one property that was set through xml but wasn't read by an
     * application.
+    * @throws ReportsException 
     */
-   public void assertUntouchedProperties() {
+   public void assertUntouchedProperties() throws ReportsException {
 
       TreeSet<String> untouched = new TreeSet<String>(properties.keySet());
       untouched.removeAll(touched);
@@ -100,8 +104,9 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
     * @param propertyName
     *           name attribute of property xml element
     * @return value attribute
+    * @throws ReportsException 
     */
-   protected String getStringProperty(String propertyName) {
+   protected String getStringProperty(String propertyName) throws ReportsException {
       if (!properties.containsKey(propertyName)) {
          throw new ReportsException("Cannot retrieve string property. The property " + propertyName + " is not set for: " + getClass().getSimpleName());
       }
@@ -118,7 +123,7 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
       return result;
    }
 
-   protected int getIntProperty(String propertyName) {
+   protected int getIntProperty(String propertyName) throws ReportsException {
       try {
          int result = Integer.parseInt(getStringProperty(propertyName));
          return result;
@@ -127,14 +132,14 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
       }
    }
 
-   protected int getIntProperty(String propertyName, int defaultValue) {
+   protected int getIntProperty(String propertyName, int defaultValue) throws ReportsException {
       if (!properties.containsKey(propertyName)) {
          return defaultValue;
       }
       return getIntProperty(propertyName);
    }
 
-   protected float getFloatProperty(String propertyName, float f) {
+   protected float getFloatProperty(String propertyName, float f) throws ReportsException {
       try {
          String textNum = getStringProperty(propertyName, String.valueOf(f));
          float result = Float.parseFloat(textNum);
@@ -151,8 +156,9 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
     * &lt;property name="tags" value="qa, performance,long running" &gt;
     * 
     * @param propertyName
+    * @throws ReportsException 
     */
-   protected Set<String> getCommaSeparatedProperty(String propertyName) {
+   protected Set<String> getCommaSeparatedProperty(String propertyName) throws ReportsException {
       Set<String> result = new TreeSet<String>();
       String[] commaSepProps = getStringProperty(propertyName).split(",");
 
@@ -163,14 +169,14 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
       return result;
    }
 
-   protected Set<String> getCommaSeparatedProperty(String propertyName, Set<String> defaultValue) {
+   protected Set<String> getCommaSeparatedProperty(String propertyName, Set<String> defaultValue) throws ReportsException {
       if (!properties.containsKey(propertyName)) {
          return defaultValue;
       }
       return getCommaSeparatedProperty(propertyName);
    }
 
-   protected boolean getBoolProperty(String propertyName, boolean defaultValue) {
+   protected boolean getBoolProperty(String propertyName, boolean defaultValue) throws ReportsException {
       if (!properties.containsKey(propertyName)) {
          return defaultValue;
       }

@@ -273,4 +273,36 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
          }
       }
    }
+
+   public int getTimeWindowSize() {
+      return timeWindowSize;
+   }
+
+   public void setTimeWindowSize(int timeWindowSize) {
+      this.timeWindowSize = timeWindowSize;
+   }
+
+   public boolean isMessageNumberingEnabled() {
+      return messageNumberingEnabled;
+   }
+
+   public void setMessageNumberingEnabled(boolean messageNumberingEnabled) {
+      this.messageNumberingEnabled = messageNumberingEnabled;
+   }
+
+   public boolean isMeasureResponseTime() {
+      return measureResponseTime;
+   }
+
+   public void setMeasureResponseTime(boolean measureResponseTime) {
+      this.measureResponseTime = measureResponseTime;
+   }
+
+   public long getCount() {
+      return count;
+   }
+
+   public void setCount(long count) {
+      this.count = count;
+   }
 }

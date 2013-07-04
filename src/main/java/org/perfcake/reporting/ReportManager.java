@@ -97,9 +97,11 @@ public class ReportManager extends ScenarioConfigurationElement {
     * Test case info should be provided to the ReportManager through property
     * elements in scenario XML, this method is called when parsing of these
     * elements is done and Report Manager thus can construct the TestRunInfo
+    * 
+    * @throws ReportsException
     */
    @Override
-   public void loadConfigValues() {
+   public void loadConfigValues() throws ReportsException {
       TestRunInfo tci = getTestRunInfo();
       tci.addTags(getCommaSeparatedProperty(PROP_TAGS));
 
@@ -111,7 +113,7 @@ public class ReportManager extends ScenarioConfigurationElement {
    }
 
    @Override
-   public void assertUntouchedProperties() {
+   public void assertUntouchedProperties() throws ReportsException {
       for (Reporter reporter : reporters) {
          reporter.assertUntouchedProperties();
       }
@@ -125,7 +127,11 @@ public class ReportManager extends ScenarioConfigurationElement {
 
       testRunInfo.setTestStartTime(System.currentTimeMillis());
       for (Reporter r : reporters) {
-         r.reportStart();
+         try {
+            r.reportStart();
+         } catch (ReportsException e) {
+            log.error("Unable to report test start: ", e);
+         }
       }
    }
 
@@ -133,6 +139,8 @@ public class ReportManager extends ScenarioConfigurationElement {
     * Reports that test finished. This method always has to be called after test
     * finishes. If this method isn't called then various problems will arise for
     * example test reports won't be commited to database or csv files!
+    * 
+    * @throws ReportsException
     */
    public void reportTestFinished() {
       if (!testRunInfo.testStarted()) {
@@ -142,7 +150,11 @@ public class ReportManager extends ScenarioConfigurationElement {
 
       testRunInfo.setTestEndTime(System.currentTimeMillis());
       for (Reporter r : reporters) {
-         r.reportEnd();
+         try {
+            r.reportEnd();
+         } catch (ReportsException e) {
+            log.error("Unable to report test end: ", e);
+         }
       }
 
       if (log.isInfoEnabled()) {
@@ -159,7 +171,11 @@ public class ReportManager extends ScenarioConfigurationElement {
     */
    public void report(Measurement measurement) {
       if (measurementReporter != null && testRunInfo.testStarted() && !testRunInfo.testFinished()) {
-         measurementReporter.report(measurement);
+         try {
+            measurementReporter.report(measurement);
+         } catch (ReportsException e) {
+            log.error("Unable to report measurement: ", e);
+         }
       }
    }
 
@@ -169,8 +185,10 @@ public class ReportManager extends ScenarioConfigurationElement {
     * Call this method to report that iteration has been processed. This method
     * handles situations when report of iteration is made but the test has not
     * been yet started.
+    * 
+    * @throws ReportsException
     */
-   public void reportIteration() {
+   public void reportIteration() throws ReportsException {
       synchronized (reportIterationLock) {
          if (testRunInfo.testStarted() && !testRunInfo.testFinished()) {
             long it = testRunInfo.incrementIteration();
@@ -202,7 +220,7 @@ public class ReportManager extends ScenarioConfigurationElement {
       }
    }
 
-   public void addReporter(Reporter reporter) {
+   public void addReporter(Reporter reporter) throws ReportsException {
       if (testRunInfo == null) {
          throw new ReportsException("Cannot add reporter to report manager before TestCaseInfo is set. To set TestCase info please call constructTestCaseInfo() after the property elements of Report Manager are set.");
       }

@@ -27,7 +27,7 @@ import org.testng.annotations.Test;
 public class ReportManagerTest extends ReportingTestBase {
 
    @Test
-   public void minimalConfigurationTest() {
+   public void minimalConfigurationTest() throws ReportsException {
       ReportManager rm = new ReportManager();
       rm.setProperty("tags", "");
       rm.setProperty("uniqueId", "http_gw");

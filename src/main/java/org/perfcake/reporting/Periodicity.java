@@ -53,13 +53,14 @@ public class Periodicity {
    /**
     * 
     * @return True if and only if periodicity is time based.
+    * @throws ReportsException 
     */
-   public boolean isTimely() {
+   public boolean isTimely() throws ReportsException {
       checkPercentage();
       return unit == PeriodicityUnit.Seconds || unit == PeriodicityUnit.Minutes || unit == PeriodicityUnit.Hours || unit == PeriodicityUnit.Days;
    }
 
-   public boolean isIterationary() {
+   public boolean isIterationary() throws ReportsException {
       checkPercentage();
       return unit == PeriodicityUnit.Iteration;
    }
@@ -69,8 +70,9 @@ public class Periodicity {
     * have to be converted into timely or iterationary so it has to have access
     * to either fixed amount of iteration this test consists of or to fixed
     * time.
+    * @throws ReportsException 
     */
-   private void checkPercentage() {
+   private void checkPercentage() throws ReportsException {
       if (unit == PeriodicityUnit.Percent) {
          if (testRunInfo.getTestDuration() != -1) {
             value = (testRunInfo.getTestDuration()) * (value / 100);
@@ -91,8 +93,9 @@ public class Periodicity {
     * the reporting happen.
     * 
     * @return
+    * @throws ReportsException 
     */
-   public int getIterationalPeriodicity() {
+   public int getIterationalPeriodicity() throws ReportsException {
       if (isIterationary()) {
          return Math.round(value);
       }
@@ -105,8 +108,9 @@ public class Periodicity {
     * seconds.
     * 
     * @return
+    * @throws ReportsException 
     */
-   public float getTimePeriodicity() {
+   public float getTimePeriodicity() throws ReportsException {
       if (isTimely()) {
          if (unit == PeriodicityUnit.Minutes) {
             value = value * 60;
@@ -130,8 +134,9 @@ public class Periodicity {
     * 
     * @param textValue
     * @return
+    * @throws ReportsException 
     */
-   public static Periodicity constructFromString(String textValue) {
+   public static Periodicity constructFromString(String textValue) throws ReportsException {
       /**
        * This pattern matches for example: -434.4 cm 11 m on the other hand this
        * pattern rejects: - 343 cm // the space after minus sign

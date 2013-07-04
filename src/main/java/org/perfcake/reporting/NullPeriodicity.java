@@ -42,12 +42,12 @@ public class NullPeriodicity extends Periodicity {
    }
 
    @Override
-   public int getIterationalPeriodicity() {
+   public int getIterationalPeriodicity() throws ReportsException {
       throw new ReportsException("Null periodicity doesn't have iterational periodicity");
    }
 
    @Override
-   public float getTimePeriodicity() {
+   public float getTimePeriodicity() throws ReportsException {
       throw new ReportsException("Null periodicity doesn't have time periodicity");
    }
 

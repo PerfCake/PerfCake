@@ -17,6 +17,7 @@
 package org.perfcake.reporting.reporters;
 
 import org.apache.log4j.Logger;
+import org.perfcake.reporting.ReportsException;
 import org.perfcake.reporting.destinations.Destination;
 
 /**
@@ -44,7 +45,7 @@ public class PeriodicalReportingThread extends Thread {
     */
    private boolean stop = false;
 
-   public PeriodicalReportingThread(String reporterName, Destination dest) {
+   public PeriodicalReportingThread(String reporterName, Destination dest) throws ReportsException {
       this.dest = dest;
       dest.setPeriodicalThread(this);
       setDaemon(true);
@@ -55,29 +56,34 @@ public class PeriodicalReportingThread extends Thread {
 
    @Override
    public void run() {
-      nextPeriod = System.currentTimeMillis() + (Math.round(dest.getPeriodicalInterval() * 1000));
-      while (true) {
-         try {
-            long sleepTime = nextPeriod - System.currentTimeMillis();
-            if (sleepTime < 100) {
-               log.warn("Sleeptime computed very low, setting to 500 : " + sleepTime);
-               sleepTime = 500;
-            }
-            Thread.sleep(sleepTime);
-         } catch (InterruptedException e) {
-            return;
-         }
-         if (stop) {
-            return;
-         }
-
+      try {
          nextPeriod = System.currentTimeMillis() + (Math.round(dest.getPeriodicalInterval() * 1000));
-         long timeBefore = System.currentTimeMillis();
-         dest.periodicalTick();
-         long tickLength = System.currentTimeMillis() - timeBefore;
-         if (tickLength > 2000) {
-            log.warn("The tick took very long! [thread name: " + getName() + "] : " + tickLength);
+         while (true) {
+            try {
+               long sleepTime = nextPeriod - System.currentTimeMillis();
+               if (sleepTime < 100) {
+                  log.warn("Sleeptime computed very low, setting to 500 : " + sleepTime);
+                  sleepTime = 500;
+               }
+               Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+               return;
+            }
+            if (stop) {
+               return;
+            }
+
+            nextPeriod = System.currentTimeMillis() + (Math.round(dest.getPeriodicalInterval() * 1000));
+            long timeBefore = System.currentTimeMillis();
+            dest.periodicalTick();
+            long tickLength = System.currentTimeMillis() - timeBefore;
+            if (tickLength > 2000) {
+               log.warn("The tick took very long! [thread name: " + getName() + "] : " + tickLength);
+            }
          }
+      } catch (ReportsException e1) {
+         // TODO Auto-generated catch block
+         e1.printStackTrace();
       }
    }
 

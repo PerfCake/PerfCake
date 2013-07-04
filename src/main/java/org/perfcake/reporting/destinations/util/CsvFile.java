@@ -54,8 +54,9 @@ public class CsvFile {
 
    /**
     * Creates/overwrites file so that there is clean, empty file.
+    * @throws ReportsException 
     */
-   public void createNewFile() {
+   public void createNewFile() throws ReportsException {
       try {
          if (file.exists()) {
             ;
@@ -72,8 +73,9 @@ public class CsvFile {
 
    /**
     * All lines that are presented in the file.
+    * @throws ReportsException 
     */
-   public List<String> getLines() {
+   public List<String> getLines() throws ReportsException {
       BufferedReader br = null;
       List<String> result = new ArrayList<String>();
       if (!file.exists()) {
@@ -102,7 +104,8 @@ public class CsvFile {
       }
    }
 
-   public String getAllText() {
+   // TODO replace with method from utils
+   public String getAllText() throws ReportsException {
       List<String> lines = getLines();
 
       StringBuilder sb = new StringBuilder();
@@ -123,8 +126,9 @@ public class CsvFile {
     * appends newLine character.
     * 
     * @param line
+    * @throws ReportsException 
     */
-   public void appendLine(String... line) {
+   public void appendLine(String... line) throws ReportsException {
       BufferedWriter bw = null;
       try {
          bw = new BufferedWriter(new FileWriter(file, true));

@@ -101,4 +101,36 @@ public abstract class AbstractMessageGenerator implements ObjectWithProperties {
    public abstract void generate() throws Exception;
 
    protected abstract void postWarmUp() throws Exception;
+
+   public int getThreads() {
+      return threads;
+   }
+
+   public void setThreads(int threads) {
+      this.threads = threads;
+   }
+
+   public boolean isWarmUpEnabled() {
+      return warmUpEnabled;
+   }
+
+   public void setWarmUpEnabled(boolean warmUpEnabled) {
+      this.warmUpEnabled = warmUpEnabled;
+   }
+
+   public long getMinimalWarmUpDuration() {
+      return minimalWarmUpDuration;
+   }
+
+   public void setMinimalWarmUpDuration(long minimalWarmUpDuration) {
+      this.minimalWarmUpDuration = minimalWarmUpDuration;
+   }
+
+   public long getMinimalWarmUpCount() {
+      return minimalWarmUpCount;
+   }
+
+   public void setMinimalWarmUpCount(long minimalWarmUpCount) {
+      this.minimalWarmUpCount = minimalWarmUpCount;
+   }
 }
