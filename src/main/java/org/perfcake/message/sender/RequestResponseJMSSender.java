@@ -18,7 +18,6 @@ package org.perfcake.message.sender;
 
 import java.io.Serializable;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -44,40 +43,19 @@ public class RequestResponseJMSSender extends JMSSender {
    private static final Logger log = Logger.getLogger(RequestResponseJMSSender.class);
 
    private QueueConnection responseConnection;
-
    private QueueSession responseSession;
-
    private Queue responseQueue;
-
    private QueueReceiver responseReciever;
 
    private String responseAddress = "";
-
    private long recievingTimeout = 1000; // default 1s
-
    private int receiveAttempts = 5;
-
-   @Override
-   public void setProperty(String prop, String value) {
-      if ("receivingTimeout".equals(prop)) {
-         recievingTimeout = Long.valueOf(value);
-      } else if ("responseAddress".equals(prop)) {
-         responseAddress = value;
-      } else if ("receiveAttempts".equals(prop)) {
-         receiveAttempts = Integer.valueOf(value);
-      } else {
-         super.setProperty(prop, value);
-      }
-   }
 
    @Override
    public void init() throws Exception {
       super.init();
       try {
          if (responseAddress == null || responseAddress.equals("")) {
-            // if (log.isEnabledFor(Level.ERROR)) {
-            // log.error("responseAddress property is not defined in the scenario or is empty");
-            // }
             throw new PerfCakeException("responseAddress property is not defined in the scenario or is empty");
          } else {
             responseQueue = (Queue) ctx.lookup(responseAddress);
@@ -98,19 +76,31 @@ public class RequestResponseJMSSender extends JMSSender {
 
    @Override
    public void close() throws PerfCakeException {
-      super.close();
       try {
-         if (responseReciever != null) {
-            responseReciever.close();
-         }
-         if (transacted) {
-            responseSession.commit();
-         }
-         if (responseSession != null) {
-            responseSession.close();
-         }
-         if (responseConnection != null) {
-            responseConnection.close();
+         try {
+            super.close();
+         } finally {
+            try {
+               if (responseReciever != null) {
+                  responseReciever.close();
+               }
+            } finally {
+               try {
+                  if (transacted) {
+                     responseSession.commit();
+                  }
+               } finally {
+                  try {
+                     if (responseSession != null) {
+                        responseSession.close();
+                     }
+                  } finally {
+                     if (responseConnection != null) {
+                        responseConnection.close();
+                     }
+                  }
+               }
+            }
          }
       } catch (JMSException e) {
          throw new PerfCakeException(e);
@@ -120,6 +110,7 @@ public class RequestResponseJMSSender extends JMSSender {
    @Override
    public Serializable doSend(org.perfcake.message.Message message, Map<String, String> properties) throws Exception {
       super.doSend(message, properties);
+      
       try {
          if (transacted) {
             session.commit();
@@ -134,11 +125,6 @@ public class RequestResponseJMSSender extends JMSSender {
                if (log.isDebugEnabled()) {
                   log.debug("No message in " + responseAddress + " received within the specified timeout (" + recievingTimeout + " ms). Retrying (" + attempts + "/" + receiveAttempts + ") ...");
                }
-               // throw new TimeoutException("No message in " +
-               // responseAddress
-               // + " received within the specified timeout (" +
-               // recievingTimeout + " ms).");
-
             } else {
 
                if (response instanceof ObjectMessage) {
@@ -150,10 +136,6 @@ public class RequestResponseJMSSender extends JMSSender {
                   ((BytesMessage) response).readBytes(bytes);
                   retVal = bytes;
                } else {
-                  // if (log.isEnabledFor(Level.ERROR)) {
-                  // log.error("Received message is neither ObjectMessage nor TextMessage but: "
-                  // + message.getClass().getName());
-                  // }
                   throw new PerfCakeException("Received message is not one of (ObjectMessage, TextMessage, BytesMessage) but: " + response.getClass().getName());
                }
                if (transacted) {
@@ -164,13 +146,37 @@ public class RequestResponseJMSSender extends JMSSender {
          } while (retVal == null && attempts < receiveAttempts);
 
          if (retVal == null) {
-            throw new TimeoutException("No message in " + responseAddress + " received within the specified timeout (" + recievingTimeout + " ms) in " + receiveAttempts + " attempt(s).");
+            throw new PerfCakeException("No message in " + responseAddress + " received within the specified timeout (" + recievingTimeout + " ms) in " + receiveAttempts + " attempt(s).");
          }
 
          return retVal;
       } catch (JMSException e) {
          throw new PerfCakeException(e);
       }
+   }
+
+   public long getRecievingTimeout() {
+      return recievingTimeout;
+   }
+
+   public void setRecievingTimeout(long recievingTimeout) {
+      this.recievingTimeout = recievingTimeout;
+   }
+
+   public int getReceiveAttempts() {
+      return receiveAttempts;
+   }
+
+   public void setReceiveAttempts(int receiveAttempts) {
+      this.receiveAttempts = receiveAttempts;
+   }
+
+   public String getResponseAddress() {
+      return responseAddress;
+   }
+
+   public void setResponseAddress(String responseAddress) {
+      this.responseAddress = responseAddress;
    }
 
 }

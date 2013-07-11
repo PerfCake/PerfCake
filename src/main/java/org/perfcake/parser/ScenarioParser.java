@@ -18,6 +18,7 @@ package org.perfcake.parser;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -141,9 +142,9 @@ public class ScenarioParser {
          Properties generatorProperties = getPropertiesFromSubNodes(generatorElement);
          Utils.logProperties(log, Level.DEBUG, generatorProperties, "   ");
 
-         generator = (AbstractMessageGenerator) ObjectFactory.createInstance(generatorClass, generatorProperties);
-         generator.setProperty("threads", String.valueOf(threads));
-      } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | XPathExpressionException e) {
+         generator = (AbstractMessageGenerator) ObjectFactory.summonInstance(generatorClass, generatorProperties);
+         generator.setThreads(threads);
+      } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException | XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse message generator configuration: ", e);
       }
 
@@ -306,7 +307,7 @@ public class ScenarioParser {
             if (reportClass.indexOf(".") < 0) {
                reportClass = DEFAULT_REPORTER_PACKAGE + "." + reportClass;
             }
-            currentReporter = (Reporter) ObjectFactory.createInstance(reportClass, currentReporterProperties);
+            currentReporter = (Reporter) ObjectFactory.summonInstance(reportClass, currentReporterProperties);
 
             log.info("'- Reporter (" + reportClass + ")");
             currentReporterDestinations = xPathEvaluate("destination", currentReporterElement);
@@ -323,13 +324,13 @@ public class ScenarioParser {
                log.info(" '- Destination (" + destClass + ")");
                currentDestinationProperties = getPropertiesFromSubNodes(currentDestinationElement);
                Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
-               currentDestination = (Destination) ObjectFactory.createInstance(destClass, currentDestinationProperties);
+               currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
                currentReporter.addDestination(currentDestination);
             }
             reportManager.addReporter(currentReporter);
          }
          reportManager.assertUntouchedProperties();
-      } catch (XPathExpressionException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+      } catch (XPathExpressionException | InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
          throw new PerfCakeException("Cannot parse reporting configuration: ", e);
       }
 

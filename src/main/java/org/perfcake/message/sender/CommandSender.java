@@ -34,13 +34,9 @@ public class CommandSender extends AbstractSender {
 
    // command to be executed
    private String command;
-
    private Process process;
-
    private PrintWriter writer;
-
    private String messagePayload;
-
    private InputStreamReader read;
 
    public void setCommand(String command) {
@@ -99,6 +95,10 @@ public class CommandSender extends AbstractSender {
    public void postSend(Message message) throws Exception {
       read.close();
       process.getInputStream().close();
+   }
+
+   public String getCommand() {
+      return command;
    }
 
 }

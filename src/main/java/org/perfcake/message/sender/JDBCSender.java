@@ -42,31 +42,12 @@ public class JDBCSender extends AbstractSender {
    private static final Logger log = Logger.getLogger(JDBCSender.class);
 
    private String jdbcURL = "";
-
    private String driverClass = "";
-
    private String username = "";
-
    private String password = "";
-
    private Connection connection = null;
-
    private Statement statement;
-
    private Serializable retval;
-
-   @Override
-   public void setProperty(String prop, String value) {
-      if ("driverClass".equals(prop)) {
-         driverClass = value;
-      } else if ("username".equals(prop)) {
-         username = value;
-      } else if ("password".equals(prop)) {
-         password = value;
-      } else {
-         super.setProperty(prop, value);
-      }
-   }
 
    @Override
    public void init() throws Exception {
@@ -140,6 +121,30 @@ public class JDBCSender extends AbstractSender {
    @Override
    public void postSend(Message message) throws Exception {
       statement.close();
+   }
+
+   public String getDriverClass() {
+      return driverClass;
+   }
+
+   public void setDriverClass(String driverClass) {
+      this.driverClass = driverClass;
+   }
+
+   public String getUsername() {
+      return username;
+   }
+
+   public void setUsername(String username) {
+      this.username = username;
+   }
+
+   public String getPassword() {
+      return password;
+   }
+
+   public void setPassword(String password) {
+      this.password = password;
    }
 
 }

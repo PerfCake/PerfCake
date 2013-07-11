@@ -16,13 +16,12 @@
 
 package org.perfcake.message;
 
-import org.perfcake.ObjectWithProperties;
 
 /**
  * 
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  */
-public class MessageToSend implements ObjectWithProperties {
+public class MessageToSend {
 
    private Message message;
 
@@ -62,11 +61,6 @@ public class MessageToSend implements ObjectWithProperties {
 
    public void setValidatorId(String validatorId) {
       this.validatorId = validatorId;
-   }
-
-   @Override
-   public void setProperty(String property, String value) {
-      throw new UnsupportedOperationException("Not supported yet.");
    }
 
 }

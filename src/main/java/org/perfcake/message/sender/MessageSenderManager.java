@@ -16,9 +16,9 @@
 
 package org.perfcake.message.sender;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,6 +26,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.ReportManager;
+import org.perfcake.util.ObjectFactory;
 import org.perfcake.validation.MessageValidator;
 
 /**
@@ -33,25 +34,19 @@ import org.perfcake.validation.MessageValidator;
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class MessageSenderManager {
+   
    private static final Object syncLock = new Object();
-
    private int senderPoolSize = 100;
-
    private String senderClass;
-
    private Map<MessageSender, Boolean> messageSendersMap;
-
-   private Map<String, String> messageSenderProperties;
-
+   private Properties messageSenderProperties;
    private Queue<MessageSender> availableSenders;
-
    protected ReportManager reportManager;
-
    protected MessageValidator messageValidator;
 
    public MessageSenderManager() {
       super();
-      messageSenderProperties = new HashMap<String, String>();
+      messageSenderProperties = new Properties();
       availableSenders = new LinkedBlockingQueue<MessageSender>(senderPoolSize);
       messageSendersMap = new ConcurrentHashMap<MessageSender, Boolean>();
    }
@@ -81,16 +76,9 @@ public class MessageSenderManager {
 
    public void init() throws Exception {
       for (int i = 0; i < senderPoolSize; i++) {
-         MessageSender sender = (MessageSender) (Class.forName(senderClass, false, this.getClass().getClassLoader()).newInstance());
+         MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
          sender.setReportManager(reportManager);
          sender.setMessageValidator(messageValidator);
-         Iterator<String> iterator = messageSenderProperties.keySet().iterator();
-         String pName, pValue;
-         while (iterator.hasNext()) {
-            pName = iterator.next();
-            pValue = messageSenderProperties.get(pName);
-            sender.setProperty(pName, pValue);
-         }
          sender.init();
          messageSendersMap.put(sender, false);
          availableSenders.add(sender);

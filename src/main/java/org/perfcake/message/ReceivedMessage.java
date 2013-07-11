@@ -18,13 +18,11 @@ package org.perfcake.message;
 
 import java.io.Serializable;
 
-import org.perfcake.ObjectWithProperties;
-
 /**
  * 
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  */
-public class ReceivedMessage implements ObjectWithProperties, Serializable {
+public class ReceivedMessage implements Serializable {
 
    private static final long serialVersionUID = 8426248937516343968L;
 
@@ -52,11 +50,6 @@ public class ReceivedMessage implements ObjectWithProperties, Serializable {
 
    public void setValidatorId(String validatorId) {
       this.validatorId = validatorId;
-   }
-
-   @Override
-   public void setProperty(String property, String value) {
-      throw new UnsupportedOperationException("Not supported yet.");
    }
 
 }
