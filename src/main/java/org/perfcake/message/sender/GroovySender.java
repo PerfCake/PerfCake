@@ -65,13 +65,4 @@ public class GroovySender extends CommandSender {
       super.postSend(message);
    }
 
-   @Override
-   public void setProperty(String prop, String value) {
-      if ("address".equals(prop)) {
-         this.address = value;
-      } else {
-         super.setProperty(prop, value);
-      }
-   }
-
 }

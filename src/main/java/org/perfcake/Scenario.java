@@ -30,6 +30,8 @@ import org.perfcake.util.Utils;
 import org.perfcake.validation.ValidatorManager;
 
 /**
+ * 
+ * TODO Add public API for use without a scenario in XML
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */

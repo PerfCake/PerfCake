@@ -48,79 +48,34 @@ public abstract class JMSSender extends AbstractSender {
 
    private static final Logger log = Logger.getLogger(JMSSender.class);
 
+   protected InitialContext ctx = null;
+   protected QueueConnectionFactory qcf = null;
    protected QueueConnection connection;
-
    protected QueueSession session;
-
    protected Queue queue;
-
    protected QueueSender sender;
 
    protected String username = null;
-
    protected String password = null;
 
-   protected Destination replyTo = null;
+   protected String replyTo = "";
+   protected Destination replyToDestination = null;
 
    protected boolean transacted = false;
-
    protected boolean persistent = true;
-
    protected boolean autoAck = true;
-
-   protected String replyToAddress = "";
-
    protected boolean sendAsObject = false;
 
-   protected InitialContext ctx = null;
-
-   protected QueueConnectionFactory qcf = null;
-
    protected String connectionFactory = "ConnectionFactory";
-
    protected String jndiContextFactory = null;
-
    protected String jndiUrl = null;
-
    protected String jndiSecurityPrincipal = null;
-
    protected String jndiSecurityCredentials = null;
 
    protected Message mess = null;
 
    public JMSSender() {
       super();
-   }
-
-   @Override
-   public void setProperty(String prop, String value) {
-      if ("persistent".equals(prop)) {
-         persistent = Boolean.valueOf(value);
-      } else if ("autoAck".equals(prop)) {
-         autoAck = Boolean.valueOf(value);
-      } else if ("replyTo".equals(prop)) {
-         replyToAddress = value;
-      } else if ("transacted".equals(prop)) {
-         transacted = Boolean.valueOf(value);
-      } else if ("sendAsObject".equals(prop)) {
-         sendAsObject = Boolean.valueOf(value);
-      } else if ("username".equals(prop)) {
-         username = value;
-      } else if ("password".equals(prop)) {
-         password = value;
-      } else if ("connectionFactory".equals(prop)) {
-         connectionFactory = value;
-      } else if ("jndiContextFactory".equals(prop)) {
-         jndiContextFactory = value;
-      } else if ("jndiUrl".equals(prop)) {
-         jndiUrl = value;
-      } else if ("jndiSecurityPrincipal".equals(prop)) {
-         jndiSecurityPrincipal = value;
-      } else if ("jndiSecurityCredentials".equals(prop)) {
-         jndiSecurityCredentials = value;
-      } else {
-         super.setProperty(prop, value);
-      }
    }
 
    @Override
@@ -157,8 +112,8 @@ public abstract class JMSSender extends AbstractSender {
             connection = qcf.createQueueConnection();
          }
          queue = (Queue) ctx.lookup(address);
-         if (replyToAddress != null && !"".equals(replyToAddress)) {
-            replyTo = (Destination) ctx.lookup(replyToAddress);
+         if (replyTo != null && !"".equals(replyTo)) {
+            replyToDestination = (Destination) ctx.lookup(replyTo);
          }
          if (autoAck) {
             session = connection.createQueueSession(transacted, Session.AUTO_ACKNOWLEDGE);
@@ -179,18 +134,27 @@ public abstract class JMSSender extends AbstractSender {
          log.debug("Closing...");
       }
       try {
-         if (sender != null) {
-            sender.close();
-         }
-         // conn.stop();
-         if (transacted) {
-            session.commit();
-         }
-         if (session != null) {
-            session.close();
-         }
-         if (connection != null) {
-            connection.close();
+         try {
+            if (sender != null) {
+               sender.close();
+            }
+         } finally {
+            // conn.stop();
+            try {
+               if (transacted) {
+                  session.commit();
+               }
+            } finally {
+               try {
+                  if (session != null) {
+                     session.close();
+                  }
+               } finally {
+                  if (connection != null) {
+                     connection.close();
+                  }
+               }
+            }
          }
 
       } catch (JMSException e) {
@@ -200,7 +164,6 @@ public abstract class JMSSender extends AbstractSender {
 
    @Override
    public void preSend(org.perfcake.message.Message message, Map<String, String> properties) throws Exception {
-
       if (!sendAsObject) {
          mess = session.createTextMessage((String) message.getPayload());
       } else {
@@ -217,8 +180,8 @@ public abstract class JMSSender extends AbstractSender {
             mess.setStringProperty(property, message.getProperty(property));
          }
       }
-      if (replyTo != null) {
-         mess.setJMSReplyTo(replyTo);
+      if (replyToDestination != null) {
+         mess.setJMSReplyTo(replyToDestination);
       }
    }
 
@@ -254,6 +217,94 @@ public abstract class JMSSender extends AbstractSender {
    @Override
    public void postSend(org.perfcake.message.Message message) throws Exception {
 
+   }
+
+   public String getUsername() {
+      return username;
+   }
+
+   public void setUsername(String username) {
+      this.username = username;
+   }
+
+   public String getPassword() {
+      return password;
+   }
+
+   public void setPassword(String password) {
+      this.password = password;
+   }
+
+   public boolean isTransacted() {
+      return transacted;
+   }
+
+   public void setTransacted(boolean transacted) {
+      this.transacted = transacted;
+   }
+
+   public boolean isAutoAck() {
+      return autoAck;
+   }
+
+   public void setAutoAck(boolean autoAck) {
+      this.autoAck = autoAck;
+   }
+
+   public boolean isSendAsObject() {
+      return sendAsObject;
+   }
+
+   public void setSendAsObject(boolean sendAsObject) {
+      this.sendAsObject = sendAsObject;
+   }
+
+   public String getConnectionFactory() {
+      return connectionFactory;
+   }
+
+   public void setConnectionFactory(String connectionFactory) {
+      this.connectionFactory = connectionFactory;
+   }
+
+   public String getJndiContextFactory() {
+      return jndiContextFactory;
+   }
+
+   public void setJndiContextFactory(String jndiContextFactory) {
+      this.jndiContextFactory = jndiContextFactory;
+   }
+
+   public String getJndiUrl() {
+      return jndiUrl;
+   }
+
+   public void setJndiUrl(String jndiUrl) {
+      this.jndiUrl = jndiUrl;
+   }
+
+   public String getJndiSecurityPrincipal() {
+      return jndiSecurityPrincipal;
+   }
+
+   public void setJndiSecurityPrincipal(String jndiSecurityPrincipal) {
+      this.jndiSecurityPrincipal = jndiSecurityPrincipal;
+   }
+
+   public String getJndiSecurityCredentials() {
+      return jndiSecurityCredentials;
+   }
+
+   public void setJndiSecurityCredentials(String jndiSecurityCredentials) {
+      this.jndiSecurityCredentials = jndiSecurityCredentials;
+   }
+
+   public String getReplyTo() {
+      return replyTo;
+   }
+
+   public void setReplyTo(String replyTo) {
+      this.replyTo = replyTo;
    }
 
 }

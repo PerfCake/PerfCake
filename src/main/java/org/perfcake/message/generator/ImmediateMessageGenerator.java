@@ -65,21 +65,6 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
    protected long count = 1; // default
 
    @Override
-   public void setProperty(String property, String value) {
-      if ("timeWindowSize".equals(property)) {
-         timeWindowSize = Integer.valueOf(value);
-      } else if ("messageNumberingEnabled".equals(property)) {
-         messageNumberingEnabled = Boolean.valueOf(value);
-      } else if ("measureResponseTime".equals(property)) {
-         measureResponseTime = Boolean.valueOf(value);
-      } else if ("count".equals(property)) {
-         count = Long.valueOf(value);
-      } else {
-         super.setProperty(property, value);
-      }
-   }
-
-   @Override
    public void setReportManager(ReportManager reportManager) {
       this.reportManager = reportManager;
       reportManager.getTestRunInfo().setTestIterations(count);

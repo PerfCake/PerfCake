@@ -16,56 +16,32 @@
 
 package org.perfcake.util;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.lang.reflect.Method;
-import java.util.Map.Entry;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.perfcake.ObjectWithProperties;
-import org.perfcake.ScenarioExecution;
 
 /**
  * 
- * TODO this will use real POJOs and reflection to assign properties!!!
- * 
- * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class ObjectFactory {
 
    /**
-    * @param className
-    * @param properties
-    * @return
-    * @throws InstantiationException
-    * @throws IllegalAccessException
-    * @throws ClassNotFoundException
-    */
-   public static ObjectWithProperties createInstance(String className, Properties properties) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-      ObjectWithProperties instance = (ObjectWithProperties) Class.forName(className, false, ScenarioExecution.class.getClassLoader()).newInstance();
-      setPropertiesOnObject(instance, properties);
-      return instance;
-   }
-
-   /**
     * @param object
     * @param properties
+    * @throws InvocationTargetException 
+    * @throws IllegalAccessException 
     */
-   public static void setPropertiesOnObject(ObjectWithProperties object, Properties properties) {
-      for (Entry<Object, Object> property : properties.entrySet()) {
-         object.setProperty(property.getKey().toString(), property.getValue().toString());
-      }
-   }
-
-   public static Object summonInstance(String className, Properties properties) throws Throwable {
-      Object object = Class.forName(className, false, ObjectFactory.class.getClassLoader()).newInstance();
-
+   public static void setPropertiesOnObject(Object object, Properties properties) throws IllegalAccessException, InvocationTargetException {
       for (String key : properties.stringPropertyNames()) {
          BeanUtils.setProperty(object, key, properties.getProperty(key));
       }
+   }
+
+   public static Object summonInstance(String className, Properties properties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+      Object object = Class.forName(className, false, ObjectFactory.class.getClassLoader()).newInstance();
+      setPropertiesOnObject(object, properties);
 
       return object;
    }

@@ -133,7 +133,7 @@ public class Utils {
    }
 
    /**
-    * Convert location to URL. If location specifies a protocol, it is immediatelly converted. Without a protocol specified, output is
+    * Convert location to URL. If location specifies a protocol, it is immediately converted. Without a protocol specified, output is
     * file://${&lt;defaultLocationProperty&gt;}/&lt;location&gt;&lt;defaultSuffix&gt; using defaultLocation as a default value for the defaultLocationProperty
     * when the property is undefined.
     * @param location location of the resource

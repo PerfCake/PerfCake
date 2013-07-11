@@ -19,7 +19,6 @@ package org.perfcake.message.sender;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.perfcake.ObjectWithProperties;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.ReportManager;
@@ -29,7 +28,7 @@ import org.perfcake.validation.MessageValidator;
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
-public interface MessageSender extends ObjectWithProperties {
+public interface MessageSender {
 
    /**
     * Initializes the sender with properties. It should be executed after all

@@ -18,7 +18,6 @@ package org.perfcake.message.generator;
 
 import java.util.List;
 
-import org.perfcake.ObjectWithProperties;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageToSend;
 import org.perfcake.message.sender.MessageSenderManager;
@@ -28,7 +27,7 @@ import org.perfcake.reporting.ReportManager;
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
-public abstract class AbstractMessageGenerator implements ObjectWithProperties {
+public abstract class AbstractMessageGenerator {
 
    protected MessageSenderManager messageSenderManager;
    protected ReportManager reportManager;
@@ -40,19 +39,6 @@ public abstract class AbstractMessageGenerator implements ObjectWithProperties {
    protected long minimalWarmUpDuration = 15000; // default 15s
    protected long minimalWarmUpCount = 10000; // by JIT
    protected boolean isMeasuring = false;
-
-   @Override
-   public void setProperty(String property, String value) {
-      if ("threads".equals(property)) {
-         threads = Integer.valueOf(value);
-      } else if ("minimalWarmUpDuration".equals(property)) {
-         minimalWarmUpDuration = Long.valueOf(value);
-      } else if ("minimalWarmUpCount".equals(property)) {
-         minimalWarmUpCount = Long.valueOf(value);
-      } else if ("warmUpEnabled".equals(property)) {
-         warmUpEnabled = Boolean.valueOf(value);
-      }
-   }
 
    public String getProperty(String property) {
       if ("threads".equals(property)) {

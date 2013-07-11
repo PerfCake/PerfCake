@@ -41,23 +41,14 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
    private static final Logger log = Logger.getLogger(LongtermMessageGenerator.class);
 
    protected AtomicLong counter = new AtomicLong(0);
-
    private ExecutorService es;
 
-   // private SecurityManager sm;
-   // propetries
-   protected boolean showCurrentSpeed = true;
-
-   protected boolean showAverageSpeed = true;
-
-   protected boolean showMessageSentCount = true;
-
+//   protected boolean showCurrentSpeed = true;
+//   protected boolean showAverageSpeed = true;
+//   protected boolean showMessageSentCount = true;
    protected long monitoringPeriod = 1000; // default
-
-   protected long duration = 60; // default
-
+   protected long duration = 60; // default, 60 seconds
    protected boolean measureResponseTime = false;
-
    protected int threadQueueSize = 1000; // default
 
    @Override
@@ -66,25 +57,9 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
    }
 
    @Override
-   public void setProperty(String property, String value) {
-      if ("duration".equals(property)) {
-         duration = Long.valueOf(value) * 1000; // property set in seconds
-         // but used in miliseconds
-      } else if ("monitoringPeriod".equals(property)) {
-         monitoringPeriod = Long.valueOf(value);
-      } else if (property.equals("measureResponseTime")) {
-         measureResponseTime = Boolean.valueOf(value);
-      } else if ("threadQueueSize".equals(property)) {
-         threadQueueSize = Integer.valueOf(value);
-      } else {
-         super.setProperty(property, value);
-      }
-   }
-
-   @Override
    public void setReportManager(ReportManager reportManager) {
       this.reportManager = reportManager;
-      reportManager.getTestRunInfo().setTestDuration(duration / 1000);
+      reportManager.getTestRunInfo().setTestDuration(duration);
    }
 
    protected float getSpeed(long count) {
@@ -124,9 +99,9 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
          runTime = 0;
       }
 
-      while (!(expired = (runTime > duration)) || !terminated) {
+      while (!(expired = (runTime > duration * 1000)) || !terminated) {
          if (log.isDebugEnabled()) {
-            log.debug("Run time: " + runTime + "/" + duration);
+            log.debug("Run time: " + runTime + "/" + (duration * 1000));
          }
          try {
             terminated = es.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
@@ -228,5 +203,37 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
             }
          }
       }
+   }
+
+   public long getMonitoringPeriod() {
+      return monitoringPeriod;
+   }
+
+   public void setMonitoringPeriod(long monitoringPeriod) {
+      this.monitoringPeriod = monitoringPeriod;
+   }
+
+   public long getDuration() {
+      return duration;
+   }
+
+   public void setDuration(long duration) {
+      this.duration = duration;
+   }
+
+   public boolean isMeasureResponseTime() {
+      return measureResponseTime;
+   }
+
+   public void setMeasureResponseTime(boolean measureResponseTime) {
+      this.measureResponseTime = measureResponseTime;
+   }
+
+   public int getThreadQueueSize() {
+      return threadQueueSize;
+   }
+
+   public void setThreadQueueSize(int threadQueueSize) {
+      this.threadQueueSize = threadQueueSize;
    }
 }

@@ -37,17 +37,8 @@ abstract public class AbstractSender implements MessageSender {
    private long before = -1, after = -1;
 
    protected String address = "";
-
    private ReportManager reportManager;
-
    private MessageValidator messageValidator;
-
-   @Override
-   public void setProperty(String prop, String value) {
-      if ("address".equals(prop)) {
-         this.address = value;
-      }
-   }
 
    @Override
    abstract public void init() throws Exception;
@@ -171,6 +162,14 @@ abstract public class AbstractSender implements MessageSender {
       }
 
       this.messageValidator = messageValidator;
+   }
+
+   public String getAddress() {
+      return address;
+   }
+
+   public void setAddress(String address) {
+      this.address = address;
    }
 
 }
