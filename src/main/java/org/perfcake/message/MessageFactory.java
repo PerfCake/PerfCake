@@ -38,13 +38,13 @@ public class MessageFactory {
    }
 
    public static Message getMessage(javax.jms.Message jmsMessage) throws JMSException {
-      Message tearGasMessage = getMessage();
+      Message perfCakeMessage = getMessage();
       if (jmsMessage instanceof TextMessage) {
          TextMessage message = (TextMessage) jmsMessage;
-         tearGasMessage.setPayload(message.getText());
+         perfCakeMessage.setPayload(message.getText());
       } else if (jmsMessage instanceof ObjectMessage) {
          ObjectMessage message = (ObjectMessage) jmsMessage;
-         tearGasMessage.setPayload(message.getObject());
+         perfCakeMessage.setPayload(message.getObject());
       } else {
          throw new UnsupportedOperationException("Unrecognized JMS Message type: " + jmsMessage.getClass().getCanonicalName());
       }
@@ -55,12 +55,12 @@ public class MessageFactory {
          // All JMS property types can be read as String
          String propName = propNames.nextElement().toString();
          String propVal = jmsMessage.getStringProperty(propName);
-         tearGasMessage.setProperty(propName, propVal);
+         perfCakeMessage.setProperty(propName, propVal);
       }
 
-      tearGasMessage.setHeader("JMSCorrelationID", jmsMessage.getJMSCorrelationID());
-      tearGasMessage.setHeader("JMSMessageID", jmsMessage.getJMSMessageID());
-      return tearGasMessage;
+      perfCakeMessage.setHeader("JMSCorrelationID", jmsMessage.getJMSCorrelationID());
+      perfCakeMessage.setHeader("JMSMessageID", jmsMessage.getJMSMessageID());
+      return perfCakeMessage;
    }
 
 }

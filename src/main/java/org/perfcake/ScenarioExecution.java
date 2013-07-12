@@ -31,9 +31,6 @@ public class ScenarioExecution {
    public static void main(String[] args) {
 
       log.info("=== Welcome to PerfCake ===");
-      // / TODO server host and port is not valid in all cases, this should be logged by respective senders
-      log.info("Server host: " + Utils.getProperty("server.host"));
-      log.info("Server port: " + Utils.getProperty("server.port"));
 
       Scenario scenario = null;
 

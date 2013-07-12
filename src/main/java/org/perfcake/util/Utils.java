@@ -29,6 +29,8 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.perfcake.util.properties.PropertyGetter;
+import org.perfcake.util.properties.SystemPropertyGetter;
 
 /**
  * @author Pavel Macík <pavel.macik@gmail.com>
@@ -40,7 +42,7 @@ public class Utils {
 
    /**
     * It takes a string and replaces all ${&lt;property.name&gt;} placeholders
-    * by respective value of the property named &lt;property.name&gt; using {@link #getProperty(String)} method.
+    * by respective value of the property named &lt;property.name&gt; using {@link SystemPropertyGetter}.
     * 
     * @param text
     *           Original string.
@@ -48,10 +50,16 @@ public class Utils {
     * @throws IOException
     */
    public static String filterProperties(String text) throws IOException {
-      String filteredString = new String(text);
-      String propertyPattern = "\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?}";
-      Matcher matcher = Pattern.compile(propertyPattern).matcher(filteredString);
+      String propertyPattern = "[^\\\\]\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?}";
+      Matcher matcher = Pattern.compile(propertyPattern).matcher(text);
 
+      return filterProperties(text, matcher, SystemPropertyGetter.INSTANCE);
+   }
+
+   public static String filterProperties(String text, Matcher matcher, PropertyGetter pg) {
+      String filteredString = text;
+
+      matcher.reset();
       while (matcher.find()) {
          String pValue = null;
          String pName = matcher.group(1);
@@ -59,14 +67,15 @@ public class Utils {
          if (matcher.groupCount() == 2 && matcher.group(2) != null) {
             defaultValue = (matcher.group(2)).substring(1);
          }
-         pValue = Utils.getProperty(pName, defaultValue);
+         pValue = pg.getProperty(pName, defaultValue);
          if (pValue != null) {
             filteredString = filteredString.replaceAll(Pattern.quote(matcher.group()), pValue);
          }
       }
+      
       return filteredString;
    }
-
+   
    /**
     * Returns a property value. First it looks at system properties using {@link System#getProperty(String)} if the system property does not exist
     * it looks at environment variables using {@link System#getenv(String)}. If
@@ -92,13 +101,7 @@ public class Utils {
     * @return Property value or <code>defaultValue</code>.
     */
    public static String getProperty(String name, String defaultValue) {
-      if (System.getProperty(name) != null) {
-         return System.getProperty(name);
-      } else if (System.getenv(name) != null) {
-         return System.getenv(name);
-      } else {
-         return defaultValue;
-      }
+      return SystemPropertyGetter.INSTANCE.getProperty(name, defaultValue);
    }
 
    /**

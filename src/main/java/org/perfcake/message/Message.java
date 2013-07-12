@@ -26,11 +26,8 @@ import java.util.Properties;
 public class Message implements Serializable {
 
    private static final long serialVersionUID = -6537640529774091119L;
-
    private Properties headers;
-
    private Properties properties;
-
    private Serializable payload = null;
 
    public Message() {
