@@ -1,27 +1,22 @@
 package org.perfcake.parsing;
- 
+
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
- 
+
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageToSend;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.LongtermMessageGenerator;
-import org.perfcake.message.sender.AbstractSender;
-import org.perfcake.message.sender.HTTPSender;
-import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.parser.ScenarioParser;
 import org.perfcake.reporting.ReportManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
- 
+
 public class ScenarioParserTest {
    private ScenarioParser scenarioParser;
    private static final int THREADS = 10;
@@ -29,13 +24,16 @@ public class ScenarioParserTest {
    private static final String MESSAGE1_CONTENT = "Stupid is as supid does! :)";
    private static final String MESSAGE2_CONTENT = "I'm the fish!";
    private static final String SENDER_CLASS = "org.perfcake.message.sender.HTTPSender";
- 
+   private static final String FISH_VALIDATOR_ID = "fishValidator";
+   private static final String SMILE_VALIDATOR_ID = "smileValidator";
+   private static final String STUPID_VALIDATOR_ID = "stupidValidator";
+
    @BeforeClass
    public void prepareScenarioParser() throws PerfCakeException, URISyntaxException, IOException {
       scenarioParser = new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml"));
       System.getProperties().setProperty("perfcake.messages.dir", getClass().getResource("/messages").getPath());
    }
- 
+
    @Test
    public void parseSenderTest() {
       try {
@@ -48,7 +46,7 @@ public class ScenarioParserTest {
          Assert.fail(e.getMessage());
       }
    }
- 
+
    @Test
    public void parseGeneratorTest() {
       try {
@@ -67,14 +65,14 @@ public class ScenarioParserTest {
          Assert.fail(e.getMessage());
       }
    }
- 
+
    @Test
    public void parseMessagesTest() {
       try {
          // Message store
          List<MessageToSend> messageStore = scenarioParser.parseMessages();
          Assert.assertEquals(messageStore.size(), 2);
- 
+
          // Message 1
          MessageToSend mts1 = messageStore.get(0);
          Assert.assertEquals(mts1.getMultiplicity(), new Long(10), "message1 multiplicity");
@@ -93,7 +91,12 @@ public class ScenarioParserTest {
          Assert.assertEquals(properties1.get("m_property1"), "m_p_value1", "message1 property1");
          Assert.assertEquals(properties1.get("m_property2"), "m_p_value2", "message1 property2");
          Assert.assertEquals(properties1.get("m_property3"), "m_p_value3", "message1 property3");
- 
+         // Message 1 validatorIds
+         List<String> validatorIdList1 = mts1.getValidatorIdList();
+         Assert.assertEquals(validatorIdList1.size(), 2, "message1 validatorIdList size");
+         Assert.assertEquals(validatorIdList1.get(0), STUPID_VALIDATOR_ID, "message1 stupidValidatorId");
+         Assert.assertEquals(validatorIdList1.get(1), SMILE_VALIDATOR_ID, "message1 smileValidatorId");
+
          // Message 2
          MessageToSend mts2 = messageStore.get(1);
          Assert.assertEquals(mts2.getMultiplicity(), new Long(1), "message2 multiplicity");
@@ -106,13 +109,17 @@ public class ScenarioParserTest {
          // Message 2 properties
          Properties properties2 = m2.getProperties();
          Assert.assertEquals(properties2.size(), 0, "message2 properties count");
- 
+         // Message 2 validatorIds
+         List<String> validatorIdList2 = mts2.getValidatorIdList();
+         Assert.assertEquals(validatorIdList2.size(), 1, "message2 validatorIdList size");
+         Assert.assertEquals(validatorIdList2.get(0), FISH_VALIDATOR_ID, "message2 fishValidatorId");
+
       } catch (PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
    }
- 
+
    @Test(enabled = false)
    public void parseReportingTest() {
       try {
@@ -123,10 +130,10 @@ public class ScenarioParserTest {
          Assert.fail(e.getMessage());
       }
    }
- 
+
    @Test(enabled = false)
    public void scenarioPropertiesTest() {
       // TODO: add scenario properties test ones it is implemented
    }
- 
+
 }

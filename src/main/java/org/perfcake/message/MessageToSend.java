@@ -16,6 +16,7 @@
 
 package org.perfcake.message;
 
+import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,7 +34,7 @@ public class MessageToSend {
 
    private Message message;
    private long multiplicity;
-   private String validatorId;// may be null
+   private List<String> validatorIdList;// may be empty
    private Matcher matcher;
 
    public Matcher getMatcher() {
@@ -44,16 +45,16 @@ public class MessageToSend {
 
    }
 
-   public MessageToSend(Message message, long multiplicity, String validatorId) {
+   public MessageToSend(Message message, long multiplicity, List<String> validatorIdList) {
       setMessage(message);
       this.multiplicity = multiplicity;
-      this.validatorId = validatorId;
+      this.validatorIdList = validatorIdList;
    }
 
    public Message getMessage() {
       return message;
    }
-   
+
    public Message getFilteredMessage(Properties props) {
       if (getMatcher() != null) {
          Message m = MessageFactory.getMessage();
@@ -61,7 +62,7 @@ public class MessageToSend {
          text = Utils.filterProperties(text, getMatcher(), new DefaultPropertyGetter(props));
 
          m.setPayload(text);
-         
+
          return m;
       } else {
          return message;
@@ -70,9 +71,9 @@ public class MessageToSend {
 
    public void setMessage(Message message) {
       this.message = message;
-      
+
       this.matcher = null;
-      
+
       // find out if there are any attributes in the text message to be replaced
       if (message.getPayload() instanceof String) {
          String filteredString = (String) message.getPayload();
@@ -92,12 +93,12 @@ public class MessageToSend {
       this.multiplicity = multiplicity;
    }
 
-   public String getValidatorId() {
-      return validatorId;
+   public List<String> getValidatorIdList() {
+      return validatorIdList;
    }
 
-   public void setValidatorId(String validatorId) {
-      this.validatorId = validatorId;
+   public void setValidatorId(List<String> validatorId) {
+      this.validatorIdList = validatorId;
    }
 
 }

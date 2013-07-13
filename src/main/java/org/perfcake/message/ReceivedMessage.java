@@ -29,11 +29,11 @@ public class ReceivedMessage implements Serializable {
    // payload, id
    private Serializable payload;
 
-   private String validatorId;
+   private MessageToSend sentMessage;
 
-   public ReceivedMessage(Serializable payload, String validatorId) {
+   public ReceivedMessage(Serializable payload, MessageToSend sentMessage) {
       this.payload = payload;
-      this.validatorId = validatorId;
+      this.sentMessage = sentMessage;
    }
 
    public Serializable getPayload() {
@@ -44,12 +44,12 @@ public class ReceivedMessage implements Serializable {
       this.payload = payload;
    }
 
-   public String getValidatorId() {
-      return validatorId;
+   public MessageToSend getSentMessage() {
+      return sentMessage;
    }
 
-   public void setValidatorId(String validatorId) {
-      this.validatorId = validatorId;
+   public void setSentMessage(MessageToSend sentMessage) {
+      this.sentMessage = sentMessage;
    }
 
 }
