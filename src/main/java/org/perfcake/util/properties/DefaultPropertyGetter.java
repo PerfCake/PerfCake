@@ -14,41 +14,29 @@
  * limitations under the License.
  */
 
-package org.perfcake.message.generator.types;
+package org.perfcake.util.properties;
+
+import java.util.Properties;
 
 /**
- * 
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class RegressionLine {
+public class DefaultPropertyGetter implements PropertyGetter {
 
-   private float a, b;
-
-   public RegressionLine(float a, float b) {
-      this.a = a;
-      this.b = b;
+   private final Properties p;
+   
+   public DefaultPropertyGetter(Properties props) {
+      this.p = props;
    }
-
-   public float getA() {
-      return a;
-   }
-
-   public void setA(long a) {
-      this.a = a;
-   }
-
-   public float getB() {
-      return b;
-   }
-
-   public void setB(long b) {
-      this.b = b;
+   
+   @Override
+   public String getProperty(String propName, String defaultValue) {
+      return p.getProperty(propName, defaultValue);
    }
 
    @Override
-   public String toString() {
-      return a + " * x +" + b;
+   public String getProperty(String propName) {
+      return getProperty(propName, null);
    }
 
-   public static final RegressionLine NULL = new RegressionLine(0, 0);
 }

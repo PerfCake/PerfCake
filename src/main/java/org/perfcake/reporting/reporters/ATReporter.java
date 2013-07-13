@@ -20,10 +20,11 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.perfcake.message.generator.types.SpeedRecord;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementTypes;
+import org.perfcake.reporting.ReportsException;
 import org.perfcake.reporting.destinations.Destination;
+import org.perfcake.reporting.util.SpeedRecord;
 
 /**
  * AT stands for Average Throughoutput reporter
@@ -103,7 +104,7 @@ public class ATReporter extends Reporter {
    private long lastComputeTime = -1;
 
    @Override
-   public void loadConfigVals() {
+   public void loadConfigVals() throws ReportsException {
       timeWindowSize = getIntProperty(PROP_TIME_WINDOW_SIZE, 16);
       if (labelingDefault) {
          labelingDefault = false;
@@ -116,7 +117,7 @@ public class ATReporter extends Reporter {
    }
 
    @Override
-   public void testEnded() {
+   public void testEnded() throws ReportsException {
       synchronized (computeLock) {
          compute();
          for (Destination dest : destinations) {
@@ -129,7 +130,7 @@ public class ATReporter extends Reporter {
    }
 
    @Override
-   public void periodicalTick(Destination dest) {
+   public void periodicalTick(Destination dest) throws ReportsException {
       synchronized (computeLock) {
          compute();
          dest.addMessageToSendQueue(total);
@@ -144,8 +145,9 @@ public class ATReporter extends Reporter {
     * 
     * This method is here to separate logic of computation from presentation
     * (sending).
+    * @throws ReportsException 
     */
-   private synchronized void compute() {
+   private synchronized void compute() throws ReportsException {
       long currentTime = System.currentTimeMillis();
 
       if (testRunInfo.testFinished()) {

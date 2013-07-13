@@ -106,7 +106,7 @@ public abstract class Destination extends ScenarioConfigurationElement {
    protected ConcurrentLinkedQueue<Measurement> messageQueue = new ConcurrentLinkedQueue<Measurement>();
 
    @Override
-   public void loadConfigValues() {
+   public void loadConfigValues() throws ReportsException {
       String pstring = getStringProperty(PROP_PERIODICAL_INTERVAL, "");
 
       if (pstring.equals("")) {
@@ -118,7 +118,7 @@ public abstract class Destination extends ScenarioConfigurationElement {
       loadSpecificConfigValues();
    }
 
-   public abstract void send();
+   public abstract void send() throws ReportsException;
 
    /**
     * Measurement is pending to get outputed. This method shoudn't allow
@@ -157,18 +157,18 @@ public abstract class Destination extends ScenarioConfigurationElement {
       }
    }
 
-   public void setPeriodicalThread(PeriodicalReportingThread periodicalReportingThread) {
+   public void setPeriodicalThread(PeriodicalReportingThread periodicalReportingThread) throws ReportsException {
       if (reporter == null) {
          throw new ReportsException("The destination " + this.getClass().getSimpleName() + " doesn't have reporter attached but is trying to be started as periodical! Nobody to report to!");
       }
       periodicalThread = periodicalReportingThread;
    }
 
-   public void periodicalTick() {
+   public void periodicalTick() throws ReportsException {
       reporter.periodicalTick(this);
    }
 
-   public abstract void loadSpecificConfigValues();
+   public abstract void loadSpecificConfigValues() throws ReportsException;
 
    public Reporter getReporter() {
       return reporter;
@@ -187,19 +187,19 @@ public abstract class Destination extends ScenarioConfigurationElement {
       return testRunInfo;
    }
 
-   public boolean isTimelyPeriodic() {
+   public boolean isTimelyPeriodic() throws ReportsException {
       return periodicity.isTimely();
    }
 
-   public float getPeriodicalInterval() {
+   public float getPeriodicalInterval() throws ReportsException {
       return periodicity.getTimePeriodicity();
    }
 
-   public boolean isIterationaryPeriodic() {
+   public boolean isIterationaryPeriodic() throws ReportsException {
       return periodicity.isIterationary();
    }
 
-   public int getItTreshold() {
+   public int getItTreshold() throws ReportsException {
       return periodicity.getIterationalPeriodicity();
    }
 }

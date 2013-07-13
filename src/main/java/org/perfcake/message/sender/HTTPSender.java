@@ -39,56 +39,43 @@ import org.perfcake.message.Message;
  * 
  */
 public class HTTPSender extends AbstractSender {
-   private URL url;
 
-   private MethodEnum method = MethodEnum.POST;
+   protected static final int DEFAULT_EXPECTED_CODE = 200;
 
    private static final Logger log = Logger.getLogger(HTTPSender.class);
 
-   private static final int DEFAULT_EXPECTED_CODE = 200;
-
-   private List<Integer> expectedCodes = Arrays.asList(DEFAULT_EXPECTED_CODE);
-
-   private HttpURLConnection rc;
-
+   private URL url;
+   private MethodEnum method = MethodEnum.POST;
+   private List<Integer> expectedResponseCodes = Arrays.asList(DEFAULT_EXPECTED_CODE);
+   protected HttpURLConnection rc;
    private String reqStr;
-
    private int len;
 
    private enum MethodEnum {GET, POST, HEAD, OPTIONS, PUT, DELETE, TRACE};
 
    @Override
-   public void setProperty(String prop, String value) {
-      if ("method".equals(prop)) {
-         this.method = MethodEnum.valueOf(value);
-      } else if ("address".equals(prop)) {
-         this.address = value;
-      } else if ("expectedResponseCode".equals(prop)) {
-         this.expectedCodes = setExpectedCodes(value.split(","));
-      } else {
-         super.setProperty(prop, value);
-      }
-   }
-
-   @Override
    public void init() throws Exception {
-      url = new URL(address);
+      url = new URL(target);
    }
 
    @Override
    public void close() {
    }
 
-   private LinkedList<Integer> setExpectedCodes(String[] codes) {
+   public void setExpectedResponseCodes(String codes) {
+      setExpectedResponseCodes(codes.split(","));
+   }
+   
+   public void setExpectedResponseCodes(String[] codes) {
       LinkedList<Integer> numCodes = new LinkedList<Integer>();
       for (int i = 0; i < codes.length; i++) {
          numCodes.add(Integer.parseInt(codes[i].trim()));
       }
-      return numCodes;
+      expectedResponseCodes = numCodes;
    }
 
    private boolean checkResponseCode(int code) {
-      for (int i : expectedCodes) {
+      for (int i : expectedResponseCodes) {
          if (i == code) {
             return true;
          }
@@ -101,8 +88,8 @@ public class HTTPSender extends AbstractSender {
       reqStr = message.getPayload().toString();
       len = reqStr.length();
       if (MethodEnum.GET.equals(method) || MethodEnum.HEAD.equals(method) || MethodEnum.DELETE.equals(method)) {
-          String getAddress = address + reqStr;
-          url = new URL(getAddress);
+          String targetGET = target + reqStr;
+          url = new URL(targetGET);
       }
       rc = (HttpURLConnection) url.openConnection();
       rc.setRequestMethod(method.name());
@@ -163,7 +150,7 @@ public class HTTPSender extends AbstractSender {
       respCode = rc.getResponseCode();
       if (!checkResponseCode(respCode)) {
          String errorMess = "The server returned an unexpected HTTP response code: " + respCode + " " + "\"" + rc.getResponseMessage() + "\". Expected HTTP codes are ";
-         for (int code : expectedCodes) {
+         for (int code : expectedResponseCodes) {
             errorMess += Integer.toString(code) + ", ";
          }
          throw new PerfCakeException(errorMess.substring(0, errorMess.length() - 2) + ".");
@@ -193,5 +180,17 @@ public class HTTPSender extends AbstractSender {
    @Override
    public void postSend(Message message) throws Exception {
       rc.disconnect();
+   }
+
+   public MethodEnum getMethod() {
+      return method;
+   }
+
+   public void setMethod(String method) {
+      setMethod(MethodEnum.valueOf(method));
+   }
+   
+   public void setMethod(MethodEnum method) {
+      this.method = method;
    }
 }

@@ -65,21 +65,6 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
    protected long count = 1; // default
 
    @Override
-   public void setProperty(String property, String value) {
-      if ("timeWindowSize".equals(property)) {
-         timeWindowSize = Integer.valueOf(value);
-      } else if ("messageNumberingEnabled".equals(property)) {
-         messageNumberingEnabled = Boolean.valueOf(value);
-      } else if ("measureResponseTime".equals(property)) {
-         measureResponseTime = Boolean.valueOf(value);
-      } else if ("count".equals(property)) {
-         count = Long.valueOf(value);
-      } else {
-         super.setProperty(property, value);
-      }
-   }
-
-   @Override
    public void setReportManager(ReportManager reportManager) {
       this.reportManager = reportManager;
       reportManager.getTestRunInfo().setTestIterations(count);
@@ -254,7 +239,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
                long multiplicity = messageToSend.getMultiplicity();
 
                for (int i = 0; i < multiplicity; i++) {
-                  receivedMessage = new ReceivedMessage(sender.send(currentMessage, messageProperties), messageToSend.getValidatorId());
+                  receivedMessage = new ReceivedMessage(sender.send(currentMessage, messageProperties), messageToSend);
                   ValidatorManager.addToResultMessages(receivedMessage);
                }
                senderManager.releaseSender(sender); // !!! important !!!
@@ -272,5 +257,37 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
             }
          }
       }
+   }
+
+   public int getTimeWindowSize() {
+      return timeWindowSize;
+   }
+
+   public void setTimeWindowSize(int timeWindowSize) {
+      this.timeWindowSize = timeWindowSize;
+   }
+
+   public boolean isMessageNumberingEnabled() {
+      return messageNumberingEnabled;
+   }
+
+   public void setMessageNumberingEnabled(boolean messageNumberingEnabled) {
+      this.messageNumberingEnabled = messageNumberingEnabled;
+   }
+
+   public boolean isMeasureResponseTime() {
+      return measureResponseTime;
+   }
+
+   public void setMeasureResponseTime(boolean measureResponseTime) {
+      this.measureResponseTime = measureResponseTime;
+   }
+
+   public long getCount() {
+      return count;
+   }
+
+   public void setCount(long count) {
+      this.count = count;
    }
 }

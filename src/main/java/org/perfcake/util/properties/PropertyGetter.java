@@ -14,27 +14,14 @@
  * limitations under the License.
  */
 
-package org.perfcake.message.generator;
-
-// import java.io.Serializable;
-// import java.util.List;
-// import org.apache.log4j.Logger;
+package org.perfcake.util.properties;
 
 /**
- * 
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
-public class QSMessageGenerator/* extends ImmediateMessageGenerator */{
-   // private static final Logger log =
-   // Logger.getLogger(QSMessageGenerator.class);
-   //
-   // @Override
-   // public void generate(List<Serializable> messages, int count) throws
-   // Exception {
-   // super.generate(messages, count);
-   //
-   // System.out.println("Messages sent: " + count + " (" + getSpeed(count) +
-   // " msgs/s)");
-   // }
+public interface PropertyGetter {
+
+   public String getProperty(String propName, String defaultValue);
+   public String getProperty(String propName);
+   
 }

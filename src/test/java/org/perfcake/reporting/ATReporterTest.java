@@ -31,7 +31,7 @@ public class ATReporterTest extends ReportingTestBase {
    protected static final DecimalFormat decimalFormat = new DecimalFormat(DECIMAL_FORMAT_STRING);
 
    @Test
-   public void averageReporter() {
+   public void averageReporter() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
       csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);

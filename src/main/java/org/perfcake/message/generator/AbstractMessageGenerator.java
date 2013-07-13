@@ -18,7 +18,7 @@ package org.perfcake.message.generator;
 
 import java.util.List;
 
-import org.perfcake.ObjectWithProperties;
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageToSend;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
@@ -27,39 +27,18 @@ import org.perfcake.reporting.ReportManager;
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
-public abstract class AbstractMessageGenerator implements ObjectWithProperties {
+public abstract class AbstractMessageGenerator {
+
    protected MessageSenderManager messageSenderManager;
-
    protected ReportManager reportManager;
-
    protected List<MessageToSend> messageStore;
-
    protected int threads = 1;
-
    protected long start = -1;
-
    protected long stop = -1;
-
    protected boolean warmUpEnabled = false;
-
    protected long minimalWarmUpDuration = 15000; // default 15s
-
    protected long minimalWarmUpCount = 10000; // by JIT
-
    protected boolean isMeasuring = false;
-
-   @Override
-   public void setProperty(String property, String value) {
-      if ("threads".equals(property)) {
-         threads = Integer.valueOf(value);
-      } else if ("minimalWarmUpDuration".equals(property)) {
-         minimalWarmUpDuration = Long.valueOf(value);
-      } else if ("minimalWarmUpCount".equals(property)) {
-         minimalWarmUpCount = Long.valueOf(value);
-      } else if ("warmUpEnabled".equals(property)) {
-         warmUpEnabled = Boolean.valueOf(value);
-      }
-   }
 
    public String getProperty(String property) {
       if ("threads".equals(property)) {
@@ -83,7 +62,7 @@ public abstract class AbstractMessageGenerator implements ObjectWithProperties {
       this.reportManager = reportManager;
    }
 
-   public void close() {
+   public void close() throws PerfCakeException {
       messageSenderManager.close();
    }
 
@@ -108,4 +87,36 @@ public abstract class AbstractMessageGenerator implements ObjectWithProperties {
    public abstract void generate() throws Exception;
 
    protected abstract void postWarmUp() throws Exception;
+
+   public int getThreads() {
+      return threads;
+   }
+
+   public void setThreads(int threads) {
+      this.threads = threads;
+   }
+
+   public boolean isWarmUpEnabled() {
+      return warmUpEnabled;
+   }
+
+   public void setWarmUpEnabled(boolean warmUpEnabled) {
+      this.warmUpEnabled = warmUpEnabled;
+   }
+
+   public long getMinimalWarmUpDuration() {
+      return minimalWarmUpDuration;
+   }
+
+   public void setMinimalWarmUpDuration(long minimalWarmUpDuration) {
+      this.minimalWarmUpDuration = minimalWarmUpDuration;
+   }
+
+   public long getMinimalWarmUpCount() {
+      return minimalWarmUpCount;
+   }
+
+   public void setMinimalWarmUpCount(long minimalWarmUpCount) {
+      this.minimalWarmUpCount = minimalWarmUpCount;
+   }
 }

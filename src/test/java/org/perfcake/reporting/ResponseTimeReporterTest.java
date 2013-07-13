@@ -31,7 +31,7 @@ public class ResponseTimeReporterTest extends ReportingTestBase {
    protected static final DecimalFormat decimalFormat = new DecimalFormat(DECIMAL_FORMAT_STRING);
 
    @Test
-   public void basicResponseTime() {
+   public void basicResponseTime() throws ReportsException {
       Reporter reporter1 = new ResponseTimeReporter();
       CsvDestination csvDestination = new CsvDestination();
       csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);

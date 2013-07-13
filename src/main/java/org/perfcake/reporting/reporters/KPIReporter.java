@@ -30,12 +30,13 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.perfcake.message.generator.types.MemoryRecord;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementTypes;
+import org.perfcake.reporting.ReportsException;
 import org.perfcake.reporting.destinations.ConsoleDestination;
 import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.util.LinearRegression;
+import org.perfcake.reporting.util.LinearRegression;
+import org.perfcake.reporting.util.MemoryRecord;
 
 /**
  * <p>
@@ -112,7 +113,7 @@ public class KPIReporter extends Reporter {
    private MemoryRecord currentMemoryRecord = null;
 
    @Override
-   public void loadConfigVals() {
+   public void loadConfigVals() throws ReportsException {
       try {
          host = InetAddress.getByName(getStringProperty("agent-host", System.getProperty("jbossas.server.host")));
          port = getIntProperty("agent-port", 8849);
@@ -140,7 +141,7 @@ public class KPIReporter extends Reporter {
    }
 
    @Override
-   public void testEnded() {
+   public void testEnded() throws ReportsException {
       List<Measurement> measurements = new ArrayList<Measurement>();
       synchronized (computeLock) {
          compute();
@@ -160,7 +161,7 @@ public class KPIReporter extends Reporter {
    }
 
    @Override
-   public void periodicalTick(Destination dest) {
+   public void periodicalTick(Destination dest) throws ReportsException {
       compute();
       List<Measurement> measurements = new ArrayList<Measurement>();
       measurements.add(totalMemory);
@@ -175,7 +176,7 @@ public class KPIReporter extends Reporter {
       }
    }
 
-   private void compute() {
+   private void compute() throws ReportsException {
       /** Don't measure too often! **/
       synchronized (computeLock) {
          if (System.currentTimeMillis() - timeMemoryMeasurement < 100) {

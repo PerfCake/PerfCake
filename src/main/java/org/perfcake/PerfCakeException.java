@@ -22,7 +22,7 @@ package org.perfcake;
  * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
-public class PerfCakeException extends RuntimeException {
+public class PerfCakeException extends Exception {
 
    private static final long serialVersionUID = 7819381443289919857L;
 

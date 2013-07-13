@@ -88,7 +88,7 @@ public abstract class Reporter extends ScenarioConfigurationElement {
    private static final String PROP_LABEL_TYPE = "label_type";
 
    @Override
-   public void loadConfigValues() {
+   public void loadConfigValues() throws ReportsException {
       decimalFormat = new DecimalFormat(getStringProperty(PROP_DECIMAL_FORMAT, "0.0000"));
 
       String labelType = getStringProperty(PROP_LABEL_TYPE, "default");
@@ -105,11 +105,11 @@ public abstract class Reporter extends ScenarioConfigurationElement {
       loadConfigVals();
    }
 
-   public abstract void loadConfigVals();
+   public abstract void loadConfigVals() throws ReportsException;
 
-   public abstract void periodicalTick(Destination dest);
+   public abstract void periodicalTick(Destination dest) throws ReportsException;
 
-   public void reportStart() {
+   public void reportStart() throws ReportsException {
       for (Destination dest : destinations) {
          if (dest.isTimelyPeriodic()) {
             PeriodicalReportingThread periodicalThread = new PeriodicalReportingThread(this.getClass().getSimpleName(), dest);
@@ -120,7 +120,7 @@ public abstract class Reporter extends ScenarioConfigurationElement {
       testStarted();
    }
 
-   public void reportEnd() {
+   public void reportEnd() throws ReportsException {
       for (Destination dest : destinations) {
          dest.stopThread();
       }
@@ -129,9 +129,9 @@ public abstract class Reporter extends ScenarioConfigurationElement {
 
    public abstract void testStarted();
 
-   public abstract void testEnded();
+   public abstract void testEnded() throws ReportsException;
 
-   public void setTestRunInfo(TestRunInfo trInfo) {
+   public void setTestRunInfo(TestRunInfo trInfo) throws ReportsException {
       if (trInfo == null) {
          throw new ReportsException("Trying to set null for testRunInfo for reporter: " + this.getClass().getSimpleName());
       }
@@ -143,7 +143,7 @@ public abstract class Reporter extends ScenarioConfigurationElement {
       }
    }
 
-   public void addDestination(Destination dest) {
+   public void addDestination(Destination dest) throws ReportsException {
       dest.loadConfigValues();
       dest.assertUntouchedProperties();
       dest.setReporter(this);
@@ -157,11 +157,11 @@ public abstract class Reporter extends ScenarioConfigurationElement {
       return destinations;
    }
 
-   public String getLabelType() {
+   public String getLabelType() throws ReportsException {
       return getLabelType("Label type choose error");
    }
 
-   public String getLabel() {
+   public String getLabel() throws ReportsException {
       return getLabel("Label type choose error");
    }
 
@@ -172,8 +172,9 @@ public abstract class Reporter extends ScenarioConfigurationElement {
     * 
     * @param defaultVal
     * @return
+    * @throws ReportsException 
     */
-   public String getLabelType(String defaultVal) {
+   public String getLabelType(String defaultVal) throws ReportsException {
       if (!labelingTimely && !labelingIteration) {
          return defaultVal;
       }
@@ -196,8 +197,9 @@ public abstract class Reporter extends ScenarioConfigurationElement {
    /**
     * Gets label that should be placed on value. If the reporter has set fixed
     * number of iterations or time the label will be chosen acordingly.
+    * @throws ReportsException 
     */
-   public String getLabel(String defaultVal) {
+   public String getLabel(String defaultVal) throws ReportsException {
       if (!labelingTimely && !labelingIteration) {
          return defaultVal;
       }

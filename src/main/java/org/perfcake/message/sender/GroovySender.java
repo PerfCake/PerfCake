@@ -32,7 +32,7 @@ public class GroovySender extends CommandSender {
 
    @Override
    public void init() throws Exception {
-      super.setCommand("groovy " + this.address);// groovy groovy-file
+      super.setCommand("groovy " + this.target);// groovy groovy-file
 
    }
 
@@ -63,15 +63,6 @@ public class GroovySender extends CommandSender {
    @Override
    public void postSend(Message message) throws Exception {
       super.postSend(message);
-   }
-
-   @Override
-   public void setProperty(String prop, String value) {
-      if ("address".equals(prop)) {
-         this.address = value;
-      } else {
-         super.setProperty(prop, value);
-      }
    }
 
 }

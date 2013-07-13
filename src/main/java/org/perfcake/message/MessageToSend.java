@@ -16,36 +16,73 @@
 
 package org.perfcake.message;
 
-import org.perfcake.ObjectWithProperties;
+import java.util.List;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.perfcake.util.Utils;
+import org.perfcake.util.properties.DefaultPropertyGetter;
 
 /**
  * 
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class MessageToSend implements ObjectWithProperties {
+public class MessageToSend {
+   private static final String propertyPattern = "[^\\\\]#\\{([^#\\{:]+)(:[^#\\{:]*)?}";
 
    private Message message;
-
    private long multiplicity;
+   private List<String> validatorIdList;// may be empty
+   private Matcher matcher;
 
-   private String validatorId;// may be null
+   public Matcher getMatcher() {
+      return matcher;
+   }
 
    public MessageToSend() {
 
    }
 
-   public MessageToSend(Message message, long multiplicity, String validatorId) {
-      this.message = message;
+   public MessageToSend(Message message, long multiplicity, List<String> validatorIdList) {
+      setMessage(message);
       this.multiplicity = multiplicity;
-      this.validatorId = validatorId;
+      this.validatorIdList = validatorIdList;
    }
 
    public Message getMessage() {
       return message;
    }
 
+   public Message getFilteredMessage(Properties props) {
+      if (getMatcher() != null) {
+         Message m = MessageFactory.getMessage();
+         String text = this.getMessage().getPayload().toString();
+         text = Utils.filterProperties(text, getMatcher(), new DefaultPropertyGetter(props));
+
+         m.setPayload(text);
+
+         return m;
+      } else {
+         return message;
+      }
+   }
+
    public void setMessage(Message message) {
       this.message = message;
+
+      this.matcher = null;
+
+      // find out if there are any attributes in the text message to be replaced
+      if (message.getPayload() instanceof String) {
+         String filteredString = (String) message.getPayload();
+         Matcher matcher = Pattern.compile(propertyPattern).matcher(filteredString);
+         if (matcher.find()) {
+            this.matcher = matcher;
+         }
+      }
+
    }
 
    public Long getMultiplicity() {
@@ -56,17 +93,12 @@ public class MessageToSend implements ObjectWithProperties {
       this.multiplicity = multiplicity;
    }
 
-   public String getValidatorId() {
-      return validatorId;
+   public List<String> getValidatorIdList() {
+      return validatorIdList;
    }
 
-   public void setValidatorId(String validatorId) {
-      this.validatorId = validatorId;
-   }
-
-   @Override
-   public void setProperty(String property, String value) {
-      throw new UnsupportedOperationException("Not supported yet.");
+   public void setValidatorId(List<String> validatorId) {
+      this.validatorIdList = validatorId;
    }
 
 }

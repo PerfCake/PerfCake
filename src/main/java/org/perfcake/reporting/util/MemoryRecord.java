@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.perfcake.message.generator.types;
+package org.perfcake.reporting.util;
 
 /**
  * 

@@ -1,45 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
-   <quickstart name="jms_router_perf"/>
-   <execution>
-      <performance>
-         <generator class="LongtermMessageGenerator" threads="25">
-            <property name="threadQueueSize" value="1000"/>
-            <property name="duration" value="300"/>
-            <property name="warmUpEnabled" value="true"/>
-         </generator>
-         <sender class="RequestResponseJMSSender">
-            <property name="address" value="queue/jms_router_perf_request_gw"/>
-            <property name="sendAsObject" value="true"/>
-            <property name="responseAddress" value="queue/jms_router_perf_response"/>
-            <property name="receivingTimeout" value="10000"/>
-            <property name="receiveAttempts" value="1"/>
-            <property name="connectionFactory" value="XAConnectionFactory"/>
-         </sender>
-         <reporting>
-            <property name="tags" value=""/>
-            <property name="uniqueId" value="${scenario}"/>
-            <reporter class="ATReporter">
-               <property name="label_type" value="Time"/>
-               <destination class="CsvDestination">
-                  <property name="periodicity" value="10%"/>
-                  <property name="outputPath" value="logs"/>
-               </destination>
-               <!--destination class="ConsoleDestination">
-                  <property name="periodicity" value="1s"/>
-               </destination-->
-            </reporter>
-            <!--reporter class="KPIReporter">
-               <property name="label_type" value="Time" />
-               <destination class="CsvDestination">
-                  <property name="outputPath" value="logs/${scenario}"/>
-                  <property name="periodicity" value="1m"/>
-               </destination>
-            </reporter-->
-         </reporting>
-         <messages>
-            <message file="1kB_message.xml"/>
-         </messages>
-      </performance>
-   </execution>
+   <properties>
+      <property name="quickstartName" value="jms_router_perf"/>
+   </properties>
+   <generator class="LongtermMessageGenerator" threads="25">
+      <property name="threadQueueSize" value="1000"/>
+      <property name="duration" value="300"/>
+      <property name="warmUpEnabled" value="true"/>
+   </generator>
+   <sender class="RequestResponseJMSSender">
+      <property name="target" value="queue/jms_router_perf_request_gw"/>
+      <property name="sendAsObject" value="true"/>
+      <property name="responseTarget" value="queue/jms_router_perf_response"/>
+      <property name="receivingTimeout" value="10000"/>
+      <property name="receiveAttempts" value="1"/>
+      <property name="connectionFactory" value="XAConnectionFactory"/>
+   </sender>
+   <reporting>
+      <property name="tags" value=""/>
+      <property name="uniqueId" value="${scenario}"/>
+      <reporter class="ATReporter">
+         <property name="label_type" value="Time"/>
+         <destination class="CsvDestination">
+            <property name="periodicity" value="10%"/>
+            <property name="outputPath" value="logs"/>
+         </destination>
+         <!--destination class="ConsoleDestination">
+            <property name="periodicity" value="1s"/>
+         </destination-->
+      </reporter>
+      <!--reporter class="KPIReporter">
+         <property name="label_type" value="Time" />
+         <destination class="CsvDestination">
+            <property name="outputPath" value="logs/${scenario}"/>
+            <property name="periodicity" value="1m"/>
+         </destination>
+      </reporter-->
+   </reporting>
+   <messages>
+      <message file="1kB_message.xml"/>
+   </messages>
 </scenario>

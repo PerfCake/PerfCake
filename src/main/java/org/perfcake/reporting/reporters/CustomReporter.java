@@ -18,6 +18,7 @@ package org.perfcake.reporting.reporters;
 
 import org.apache.log4j.Logger;
 import org.perfcake.reporting.Measurement;
+import org.perfcake.reporting.ReportsException;
 import org.perfcake.reporting.destinations.Destination;
 
 /**
@@ -35,7 +36,7 @@ public class CustomReporter extends Reporter {
    public void loadConfigVals() {
    }
 
-   public void report(Measurement measurement) {
+   public void report(Measurement measurement) throws ReportsException {
       measurement.setLabelType(getLabelType(measurement.getLabelType()));
       measurement.setLabel(getLabel(measurement.getLabel()));
 
@@ -49,14 +50,14 @@ public class CustomReporter extends Reporter {
    }
 
    @Override
-   public void testEnded() {
+   public void testEnded() throws ReportsException {
       for (Destination dest : destinations) {
          dest.send();
       }
    }
 
    @Override
-   public void periodicalTick(Destination dest) {
+   public void periodicalTick(Destination dest) throws ReportsException {
       dest.send();
    }
 }

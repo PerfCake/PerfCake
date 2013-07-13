@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementTypes;
+import org.perfcake.reporting.ReportsException;
 import org.perfcake.reporting.destinations.Destination;
 
 /**
@@ -61,7 +62,7 @@ public class ResponseTimeReporter extends Reporter {
    }
 
    @Override
-   public void testEnded() {
+   public void testEnded() throws ReportsException {
       compute();
       if (averageResponseTime == null) {
          log.warn("No response time was measured");
@@ -74,7 +75,7 @@ public class ResponseTimeReporter extends Reporter {
    }
 
    @Override
-   public void periodicalTick(Destination dest) {
+   public void periodicalTick(Destination dest) throws ReportsException {
       compute();
       if (averageResponseTime == null) {
          log.warn("Periodical tick but no response time was measured yet.");
@@ -84,7 +85,7 @@ public class ResponseTimeReporter extends Reporter {
       dest.send();
    }
 
-   private void compute() {
+   private void compute() throws ReportsException {
       synchronized (computeLock) {
          if (totalResponses.get() == 0) // no division by zero
          {

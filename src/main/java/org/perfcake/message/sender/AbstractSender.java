@@ -36,24 +36,15 @@ abstract public class AbstractSender implements MessageSender {
 
    private long before = -1, after = -1;
 
-   protected String address = "";
-
+   protected String target = "";
    private ReportManager reportManager;
-
    private MessageValidator messageValidator;
-
-   @Override
-   public void setProperty(String prop, String value) {
-      if ("address".equals(prop)) {
-         this.address = value;
-      }
-   }
 
    @Override
    abstract public void init() throws Exception;
 
    @Override
-   abstract public void close();
+   abstract public void close() throws PerfCakeException;
 
    @Override
    public final Serializable send(Message message, Map<String, String> properties) throws Exception {
@@ -151,7 +142,7 @@ abstract public class AbstractSender implements MessageSender {
       if (after != -1 && before != -1 && after >= before) {
          return after - before;
       } else {
-         throw new PerfCakeException(toString() + ": Invalid response time: " + before + ">" + after);
+         throw new RuntimeException(toString() + ": Invalid response time: " + before + ">" + after);
       }
    }
 
@@ -171,6 +162,14 @@ abstract public class AbstractSender implements MessageSender {
       }
 
       this.messageValidator = messageValidator;
+   }
+
+   public String getTarget() {
+      return target;
+   }
+
+   public void setTarget(String target) {
+      this.target = target;
    }
 
 }

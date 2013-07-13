@@ -1,12 +1,12 @@
 /*
  * Copyright 2010-2013 the original author or authors.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,9 +16,9 @@
 
 package org.perfcake.message.sender;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,32 +26,27 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.ReportManager;
+import org.perfcake.util.ObjectFactory;
 import org.perfcake.validation.MessageValidator;
 
 /**
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class MessageSenderManager {
+
    private static final Object syncLock = new Object();
-
    private int senderPoolSize = 100;
-
    private String senderClass;
-
    private Map<MessageSender, Boolean> messageSendersMap;
-
-   private Map<String, String> messageSenderProperties;
-
+   private Properties messageSenderProperties;
    private Queue<MessageSender> availableSenders;
-
    protected ReportManager reportManager;
-
    protected MessageValidator messageValidator;
 
    public MessageSenderManager() {
       super();
-      messageSenderProperties = new HashMap<String, String>();
+      messageSenderProperties = new Properties();
       availableSenders = new LinkedBlockingQueue<MessageSender>(senderPoolSize);
       messageSendersMap = new ConcurrentHashMap<MessageSender, Boolean>();
    }
@@ -64,33 +59,19 @@ public class MessageSenderManager {
       this.reportManager = reportManager;
    }
 
-   public void setProperty(String property, String value) {
-      if ("sender-class".equals(property)) {
-         senderClass = value;
-      } else if ("sender-pool-size".equals(property)) {
-         senderPoolSize = Integer.valueOf(value);
-         availableSenders = new LinkedBlockingQueue<MessageSender>(senderPoolSize);
-      } else {
-         messageSenderProperties.put(property, value);
-      }
+   public void setMessageSenderProperty(String property, String value) {
+      messageSenderProperties.put(property, value);
    }
 
-   public void setProperty(Object property, Object value) {
-      setProperty(property.toString(), value.toString());
+   public void setMessageSenderProperty(Object property, Object value) {
+      messageSenderProperties.put((String) property, (String) value);
    }
 
    public void init() throws Exception {
       for (int i = 0; i < senderPoolSize; i++) {
-         MessageSender sender = (MessageSender) (Class.forName(senderClass, false, this.getClass().getClassLoader()).newInstance());
+         MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
          sender.setReportManager(reportManager);
          sender.setMessageValidator(messageValidator);
-         Iterator<String> iterator = messageSenderProperties.keySet().iterator();
-         String pName, pValue;
-         while (iterator.hasNext()) {
-            pName = iterator.next();
-            pValue = messageSenderProperties.get(pName);
-            sender.setProperty(pName, pValue);
-         }
          sender.init();
          messageSendersMap.put(sender, false);
          availableSenders.add(sender);
@@ -129,10 +110,31 @@ public class MessageSenderManager {
       return availableSenders.size();
    }
 
-   public void close() {
+   public void close() throws PerfCakeException {
       Iterator<MessageSender> iterator = messageSendersMap.keySet().iterator();
       while (iterator.hasNext()) {
          iterator.next().close();
       }
+   }
+
+   public int getSenderPoolSize() {
+      return senderPoolSize;
+   }
+
+   public void setSenderPoolSize(int senderPoolSize) {
+      this.senderPoolSize = senderPoolSize;
+      availableSenders = new LinkedBlockingQueue<MessageSender>(senderPoolSize);
+   }
+
+   public String getSenderClass() {
+      return senderClass;
+   }
+
+   public void setSenderClass(String senderClass) {
+      this.senderClass = senderClass;
+   }
+
+   public Map<MessageSender, Boolean> getMessageSendersMap() {
+      return messageSendersMap;
    }
 }

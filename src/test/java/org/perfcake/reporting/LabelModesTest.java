@@ -36,7 +36,7 @@ public class LabelModesTest extends ReportingTestBase {
    protected static final DecimalFormat decimalFormat = new DecimalFormat(DECIMAL_FORMAT_STRING);
 
    @Test
-   public void iterations() {
+   public void iterations() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
       csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
@@ -60,7 +60,7 @@ public class LabelModesTest extends ReportingTestBase {
    }
 
    @Test
-   public void time() {
+   public void time() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
       csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
