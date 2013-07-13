@@ -7,7 +7,7 @@
       <property name="warmUpEnabled" value="false"/>
    </generator>
    <sender class="DummySender">
-      <property name="address" value=""/>
+      <property name="target" value=""/>
    </sender>
    <reporting>
       <property name="tags" value=""/>

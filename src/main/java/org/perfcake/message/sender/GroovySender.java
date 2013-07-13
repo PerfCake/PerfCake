@@ -32,7 +32,7 @@ public class GroovySender extends CommandSender {
 
    @Override
    public void init() throws Exception {
-      super.setCommand("groovy " + this.address);// groovy groovy-file
+      super.setCommand("groovy " + this.target);// groovy groovy-file
 
    }
 

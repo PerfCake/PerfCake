@@ -9,7 +9,7 @@
       <property name="warmUpEnabled" value="false"/>
    </generator>
    <sender class="GroovySender">
-      <property name="address" value="./src/main/resources/messages/readline.groovy"/>
+      <property name="target" value="./src/main/resources/messages/readline.groovy"/>
    </sender>
    <reporting>
       <property name="tags" value=""/>

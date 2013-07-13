@@ -9,9 +9,9 @@
       <property name="warmUpEnabled" value="true"/>
    </generator>
    <sender class="RequestResponseJMSSender">
-      <property name="address" value="queue/jms_secured_perf_request_gw"/>
+      <property name="target" value="queue/jms_secured_perf_request_gw"/>
       <property name="sendAsObject" value="true"/>
-      <property name="responseAddress" value="queue/jms_secured_perf_response"/>
+      <property name="responseTarget" value="queue/jms_secured_perf_response"/>
       <property name="receivingTimeout" value="10000"/>
       <property name="receiveAttempts" value="1"/>
       <property name="username" value="gatewayuser"/>

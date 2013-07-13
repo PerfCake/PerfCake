@@ -49,7 +49,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
 
    @Override
    public void init() throws Exception {
-      String[] parts = address.split(":", 2);
+      String[] parts = target.split(":", 2);
       host = parts[0];
       port = Integer.valueOf(parts[1]);
    }

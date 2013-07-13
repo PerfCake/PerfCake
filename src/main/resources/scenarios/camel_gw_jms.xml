@@ -9,9 +9,9 @@
       <property name="warmUpEnabled" value="true"/>
    </generator>
    <sender class="RequestResponseJMSSender">
-      <property name="address" value="queue/camel_gw_jms_request"/>
+      <property name="target" value="queue/camel_gw_jms_request"/>
       <property name="sendAsObject" value="true"/>
-      <property name="responseAddress" value="queue/camel_gw_jms_response"/>
+      <property name="responseTarget" value="queue/camel_gw_jms_response"/>
       <property name="receivingTimeout" value="10000"/>
       <property name="receiveAttempts" value="1"/>
       <property name="connectionFactory" value="XAConnectionFactory"/>

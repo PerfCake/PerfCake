@@ -111,7 +111,7 @@ public abstract class JMSSender extends AbstractSender {
          } else {
             connection = qcf.createQueueConnection();
          }
-         queue = (Queue) ctx.lookup(address);
+         queue = (Queue) ctx.lookup(target);
          if (replyTo != null && !"".equals(replyTo)) {
             replyToDestination = (Destination) ctx.lookup(replyTo);
          }
