@@ -163,15 +163,14 @@
          <version>${commons-configuration.version}</version>
       </dependency>
       <dependency>
-      	<groupId>commons-beanutils</groupId>
-      	<artifactId>commons-beanutils</artifactId>
-      	<scope>runtime</scope>
+         <groupId>commons-beanutils</groupId>
+         <artifactId>commons-beanutils</artifactId>
       </dependency>
       <dependency>
-      	<groupId>commons-logging</groupId>
-      	<artifactId>commons-logging</artifactId>
-      	<scope>runtime</scope>
-      	<version>${commons-logging.version}</version>
+         <groupId>commons-logging</groupId>
+         <artifactId>commons-logging</artifactId>
+         <scope>runtime</scope>
+         <version>${commons-logging.version}</version>
       </dependency>
    </dependencies>
    <build>

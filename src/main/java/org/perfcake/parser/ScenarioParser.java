@@ -16,6 +16,7 @@
 
 package org.perfcake.parser;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -74,7 +75,7 @@ public class ScenarioParser {
    private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
    private String scenarioConfig;
-   private Node performanceNode;
+   private Node scenarioNode;
 
    public ScenarioParser(URL scenario) throws PerfCakeException {
       try {
@@ -83,7 +84,7 @@ public class ScenarioParser {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
       }
 
-      this.performanceNode = parsePerformanceNode();
+      this.scenarioNode = parseScenarioNode();
    }
 
    /**
@@ -99,24 +100,18 @@ public class ScenarioParser {
     * @throws ParserConfigurationException
     * @throws XPathExpressionException
     */
-   private Node parsePerformanceNode() throws PerfCakeException {
-      Document scenarioDOM;
-      Node node = null;
-
+   private Node parseScenarioNode() throws PerfCakeException {
       try {
-         scenarioDOM = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(scenarioConfig);
-         node = xPathEvaluate("/scenario/execution/performance", scenarioDOM).item(0);
-      } catch (SAXException | IOException | ParserConfigurationException | XPathExpressionException e) {
+         return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(scenarioConfig.getBytes())).getDocumentElement();
+      } catch (SAXException | IOException | ParserConfigurationException e) {
          throw new PerfCakeException("Cannot parse scenario configuration: ", e);
       }
-
-      return node;
    }
 
    /**
     * Parse the <code>sender</code> element into a {@link AbstractMessageGenerator} instance.
     * 
-    * @param performanceNode
+    * @param scenarioNode
     *           DOM representation of the <code>performance</code> element of
     *           the scenario's definition.
     * @return A message generator.
@@ -129,7 +124,7 @@ public class ScenarioParser {
       AbstractMessageGenerator generator = null;
 
       try {
-         Element generatorElement = (Element) (xPathEvaluate("generator", performanceNode).item(0));
+         Element generatorElement = (Element) (xPathEvaluate("generator", scenarioNode).item(0));
          String generatorClass = generatorElement.getAttribute("class");
          if (generatorClass.indexOf(".") < 0) {
             generatorClass = DEFAULT_GENERATOR_PACKAGE + "." + generatorClass;
@@ -156,7 +151,7 @@ public class ScenarioParser {
     * 
     * @param senderPoolSize
     *           Size of the message sender pool.
-    * @param performanceNode
+    * @param scenarioNode
     *           DOM representation of the <code>performance</code> element of
     *           the scenario's definition.
     * @return A message sender manager.
@@ -166,7 +161,7 @@ public class ScenarioParser {
       MessageSenderManager msm;
 
       try {
-         Element senderElement = (Element) (xPathEvaluate("sender", performanceNode).item(0));
+         Element senderElement = (Element) (xPathEvaluate("sender", scenarioNode).item(0));
          String senderClass = senderElement.getAttribute("class");
          if (senderClass.indexOf(".") < 0) {
             senderClass = DEFAULT_SENDER_PACKAGE + "." + senderClass;
@@ -177,10 +172,10 @@ public class ScenarioParser {
          Utils.logProperties(log, Level.DEBUG, senderProperties, "   ");
 
          msm = new MessageSenderManager();
-         msm.setProperty("sender-class", senderClass);
-         msm.setProperty("sender-pool-size", senderPoolSize);
+         msm.setSenderClass( senderClass);
+         msm.setSenderPoolSize(senderPoolSize);
          for (Entry<Object, Object> sProperty : senderProperties.entrySet()) {
-            msm.setProperty(sProperty.getKey(), sProperty.getValue());
+            msm.setMessageSenderProperty(sProperty.getKey(), sProperty.getValue());
          }
       } catch (XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse message sender manager configuration: ", e);
@@ -192,7 +187,7 @@ public class ScenarioParser {
    /**
     * Parse the <code>messages</code> element into a message store.
     * 
-    * @param performanceNode
+    * @param scenarioNode
     *           DOM representation of the <code>performance</code> element of
     *           the scenario's definition.
     * @return Message store in a form of {@link Map}&lt;{@link Message}, {@link Long}&gt; where the keys are stored messages and the values
@@ -206,7 +201,7 @@ public class ScenarioParser {
       List<MessageToSend> messageStore = new ArrayList<>();
 
       try {
-         Element messagesElement = (Element) (xPathEvaluate("messages", performanceNode)).item(0);
+         Element messagesElement = (Element) (xPathEvaluate("messages", scenarioNode)).item(0);
 
          NodeList messageNodes = xPathEvaluate("message", messagesElement);
          int messageNodesCount = messageNodes.getLength();
@@ -272,7 +267,7 @@ public class ScenarioParser {
    /**
     * Parse the <code>reporting</code> element into a {@link ReportManager} instance.
     * 
-    * @param performanceNode
+    * @param scenarioNode
     *           DOM representation of the <code>performance</code> element of
     *           the scenario's definition.
     * @return Report manager.
@@ -286,7 +281,7 @@ public class ScenarioParser {
 
       try {
          log.info("--- Reporting ---");
-         Element reportingElement = (Element) (xPathEvaluate("reporting", performanceNode).item(0));
+         Element reportingElement = (Element) (xPathEvaluate("reporting", scenarioNode).item(0));
          Properties reportingProperties = getPropertiesFromSubNodes(reportingElement);
          Utils.logProperties(log, Level.DEBUG, reportingProperties, "   ");
 
@@ -341,7 +336,7 @@ public class ScenarioParser {
       log.info("\n--- Validation ---");
       try {
 
-         Element validationElement = (Element) (xPathEvaluate("validation", performanceNode)).item(0);
+         Element validationElement = (Element) (xPathEvaluate("validation", scenarioNode)).item(0);
          NodeList validatorNodes = xPathEvaluate("validator", validationElement);
          Element validatorElement = null;
 
