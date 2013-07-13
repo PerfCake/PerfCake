@@ -34,7 +34,7 @@ public class DummySender extends AbstractSender {
    @Override
    public void init() throws Exception {
       if (log.isDebugEnabled()) {
-         log.debug("Initializing... " + address);
+         log.debug("Initializing... " + target);
       }
       // nop
    }
@@ -55,7 +55,7 @@ public class DummySender extends AbstractSender {
    @Override
    public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
       if (log.isDebugEnabled()) {
-         log.debug("Sending to " + address + "...");
+         log.debug("Sending to " + target + "...");
       }
       // nop
       return message.getPayload();

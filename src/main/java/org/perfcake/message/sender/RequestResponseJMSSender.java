@@ -47,7 +47,7 @@ public class RequestResponseJMSSender extends JMSSender {
    private Queue responseQueue;
    private QueueReceiver responseReciever;
 
-   private String responseAddress = "";
+   private String responseTarget = "";
    private long recievingTimeout = 1000; // default 1s
    private int receiveAttempts = 5;
 
@@ -55,10 +55,10 @@ public class RequestResponseJMSSender extends JMSSender {
    public void init() throws Exception {
       super.init();
       try {
-         if (responseAddress == null || responseAddress.equals("")) {
-            throw new PerfCakeException("responseAddress property is not defined in the scenario or is empty");
+         if (responseTarget == null || responseTarget.equals("")) {
+            throw new PerfCakeException("responseTarget property is not defined in the scenario or is empty");
          } else {
-            responseQueue = (Queue) ctx.lookup(responseAddress);
+            responseQueue = (Queue) ctx.lookup(responseTarget);
             if (checkCredentials()) {
                responseConnection = qcf.createQueueConnection(username, password);
             } else {
@@ -123,7 +123,7 @@ public class RequestResponseJMSSender extends JMSSender {
             Message response = responseReciever.receive(recievingTimeout);
             if (response == null) {
                if (log.isDebugEnabled()) {
-                  log.debug("No message in " + responseAddress + " received within the specified timeout (" + recievingTimeout + " ms). Retrying (" + attempts + "/" + receiveAttempts + ") ...");
+                  log.debug("No message in " + responseTarget + " received within the specified timeout (" + recievingTimeout + " ms). Retrying (" + attempts + "/" + receiveAttempts + ") ...");
                }
             } else {
 
@@ -146,7 +146,7 @@ public class RequestResponseJMSSender extends JMSSender {
          } while (retVal == null && attempts < receiveAttempts);
 
          if (retVal == null) {
-            throw new PerfCakeException("No message in " + responseAddress + " received within the specified timeout (" + recievingTimeout + " ms) in " + receiveAttempts + " attempt(s).");
+            throw new PerfCakeException("No message in " + responseTarget + " received within the specified timeout (" + recievingTimeout + " ms) in " + receiveAttempts + " attempt(s).");
          }
 
          return retVal;
@@ -171,12 +171,12 @@ public class RequestResponseJMSSender extends JMSSender {
       this.receiveAttempts = receiveAttempts;
    }
 
-   public String getResponseAddress() {
-      return responseAddress;
+   public String getresponseTarget() {
+      return responseTarget;
    }
 
-   public void setResponseAddress(String responseAddress) {
-      this.responseAddress = responseAddress;
+   public void setresponseTarget(String responseTarget) {
+      this.responseTarget = responseTarget;
    }
 
 }

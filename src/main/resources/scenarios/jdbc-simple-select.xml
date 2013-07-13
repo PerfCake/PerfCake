@@ -8,7 +8,7 @@
       <property name="warmUpEnabled" value="true"/>
    </generator>
    <sender class="JDBCSender">
-      <property name="address" value="jdbc:postgres:/localhost:5432/postgres"/>
+      <property name="target" value="jdbc:postgres:/localhost:5432/postgres"/>
       <property name="driverClass" value="org.postgresql.Driver"/>
       <property name="username" value="postgres"/>
       <property name="password" value="password"/>

@@ -36,7 +36,7 @@ abstract public class AbstractSender implements MessageSender {
 
    private long before = -1, after = -1;
 
-   protected String address = "";
+   protected String target = "";
    private ReportManager reportManager;
    private MessageValidator messageValidator;
 
@@ -164,12 +164,12 @@ abstract public class AbstractSender implements MessageSender {
       this.messageValidator = messageValidator;
    }
 
-   public String getAddress() {
-      return address;
+   public String getTarget() {
+      return target;
    }
 
-   public void setAddress(String address) {
-      this.address = address;
+   public void setTarget(String target) {
+      this.target = target;
    }
 
 }

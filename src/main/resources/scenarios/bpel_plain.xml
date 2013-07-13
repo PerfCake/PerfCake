@@ -9,7 +9,7 @@
       <property name="warmUpEnabled" value="true"/>
    </generator>
    <sender class="HTTPSender">
-      <property name="address" value="http://${server.host}:${server.port}/BPELPlain"/>
+      <property name="target" value="http://${server.host}:${server.port}/BPELPlain"/>
    </sender>
    <reporting>
       <property name="tags" value=""/>

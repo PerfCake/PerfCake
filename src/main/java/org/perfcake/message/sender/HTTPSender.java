@@ -55,7 +55,7 @@ public class HTTPSender extends AbstractSender {
 
    @Override
    public void init() throws Exception {
-      url = new URL(address);
+      url = new URL(target);
    }
 
    @Override
@@ -88,8 +88,8 @@ public class HTTPSender extends AbstractSender {
       reqStr = message.getPayload().toString();
       len = reqStr.length();
       if (MethodEnum.GET.equals(method) || MethodEnum.HEAD.equals(method) || MethodEnum.DELETE.equals(method)) {
-          String getAddress = address + reqStr;
-          url = new URL(getAddress);
+          String targetGET = target + reqStr;
+          url = new URL(targetGET);
       }
       rc = (HttpURLConnection) url.openConnection();
       rc.setRequestMethod(method.name());

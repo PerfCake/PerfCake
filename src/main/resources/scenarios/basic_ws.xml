@@ -9,7 +9,7 @@
       <property name="count" value="500000"/>
    </generator>
    <sender class="HTTPSender">
-      <property name="address" value="http://${server.host}:${server.port}//jaxws-benchmark-basic/EndpointImpl"/>
+      <property name="target" value="http://${server.host}:${server.port}//jaxws-benchmark-basic/EndpointImpl"/>
    </sender>
    <messages>
       <message file="5kB_basic_reply.xml"/>

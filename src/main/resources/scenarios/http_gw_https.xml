@@ -9,7 +9,7 @@
       <property name="warmUpEnabled" value="true"/>
    </generator>
    <sender class="HTTPSSender">
-      <property name="address" value="https://${server.host}:8443/HTTPGatewayHTTPS/http/PerformanceTest/HTTPGatewayHTTPS"/>
+      <property name="target" value="https://${server.host}:8443/HTTPGatewayHTTPS/http/PerformanceTest/HTTPGatewayHTTPS"/>
       <property name="trustStore" value="cacerts.jks"/>
       <property name="trustStorePassword" value="armadillo"/>
    </sender>

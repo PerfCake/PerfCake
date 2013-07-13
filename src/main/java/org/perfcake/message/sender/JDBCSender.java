@@ -51,7 +51,7 @@ public class JDBCSender extends AbstractSender {
 
    @Override
    public void init() throws Exception {
-      this.jdbcURL = address;
+      this.jdbcURL = target;
       Class.forName(driverClass);
       connection = DriverManager.getConnection(jdbcURL, username, password);
    }
