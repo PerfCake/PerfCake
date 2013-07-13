@@ -79,18 +79,20 @@ public class ValidatorManager {
          receivedMessage = resultMessages.poll();
          while (!finished || receivedMessage != null) {
             while (receivedMessage != null) {
-               validator = ValidatorManager.getValidator(receivedMessage.getValidatorId());
-               // verify
-               if (validator != null) {
-                  isMessageValid = validator.isValid(new Message(receivedMessage.getPayload()));
-                  System.out.println(isMessageValid);
-                  allMessagesValid &= isMessageValid;
-               } else {
-                  System.out.println("----Validator with id " + receivedMessage.getValidatorId() + " not found.");
-                  // message can't be validated
-                  allMessagesValid = false;
+               for (String validatorId : receivedMessage.getSentMessage().getValidatorIdList()) {
+                  validator = ValidatorManager.getValidator(validatorId);
+                  // verify
+                  if (validator != null) {
+                     isMessageValid = validator.isValid(new Message(receivedMessage.getPayload()));
+                     System.out.println(isMessageValid);
+                     allMessagesValid &= isMessageValid;
+                  } else {
+                     System.out.println("----Validator with id " + receivedMessage.getSentMessage() + " not found.");
+                     // message can't be validated
+                     allMessagesValid = false;
+                  }
+                  receivedMessage = resultMessages.poll();
                }
-               receivedMessage = resultMessages.poll();
             }
             try {
                Thread.sleep(500);

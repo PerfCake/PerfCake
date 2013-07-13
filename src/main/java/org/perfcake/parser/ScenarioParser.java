@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -49,7 +50,6 @@ import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidatorManager;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -172,7 +172,7 @@ public class ScenarioParser {
          Utils.logProperties(log, Level.DEBUG, senderProperties, "   ");
 
          msm = new MessageSenderManager();
-         msm.setSenderClass( senderClass);
+         msm.setSenderClass(senderClass);
          msm.setSenderPoolSize(senderPoolSize);
          for (Entry<Object, Object> sProperty : senderProperties.entrySet()) {
             msm.setMessageSenderProperty(sProperty.getKey(), sProperty.getValue());
@@ -210,16 +210,14 @@ public class ScenarioParser {
          Element currentMessageElement = null;
          String currentMessagePayload = null;
          String currentMessageMultiplicityAttributeValue = null;
-         String currentMessageValidatorIdAttributeValue = null;
-         String currentMessageValidatorId = null;
          Properties currentMessageProperties = null;
          Properties currentMessageHeaders = null;
          long currentMessageMultiplicity = -1;
 
          log.info("--- Messages ---");
          // File messagesDir = new File(Utils.getProperty("perfcake.messages.dir", Utils.resourcesDir.getAbsolutePath() + "/messages"));
-         for (int i = 0; i < messageNodesCount; i++) {
-            currentMessageElement = (Element) messageNodes.item(i);
+         for (int messageNodeIndex = 0; messageNodeIndex < messageNodesCount; messageNodeIndex++) {
+            currentMessageElement = (Element) messageNodes.item(messageNodeIndex);
             URL messageUrl = Utils.locationToUrl(currentMessageElement.getAttribute("file"), "perfcake.messages.dir", Utils.determineDefaultLocation("messages"), "");
             currentMessagePayload = Utils.readFilteredContent(messageUrl);
             currentMessageProperties = getPropertiesFromSubNodes(currentMessageElement);
@@ -236,15 +234,17 @@ public class ScenarioParser {
                currentMessageMultiplicity = Long.valueOf(currentMessageMultiplicityAttributeValue);
             }
 
-            currentMessageValidatorIdAttributeValue = currentMessageElement.getAttribute("validatorId");
-            if (currentMessageValidatorIdAttributeValue.equals("")) {
-               currentMessageValidatorId = null;
-            } else {
-               currentMessageValidatorId = currentMessageValidatorIdAttributeValue;
+            NodeList currentMessageValidatorRefNodeList = xPathEvaluate("validatorRef", currentMessageElement);
+            List<String> currentMessageValidatorRefList = new LinkedList<>();
+            Element currentMessageValidatorRefElement = null;
+            int validatorRefCount = currentMessageValidatorRefNodeList.getLength();
+            for (int validatorRefIndex = 0; validatorRefIndex < validatorRefCount; validatorRefIndex++) {
+               currentMessageValidatorRefElement = (Element) currentMessageValidatorRefNodeList.item(validatorRefIndex);
+               currentMessageValidatorRefList.add(currentMessageValidatorRefElement.getAttribute("id"));
             }
 
             // create message to be send
-            currentMessageToSend = new MessageToSend(currentMessage, currentMessageMultiplicity, currentMessageValidatorId);
+            currentMessageToSend = new MessageToSend(currentMessage, currentMessageMultiplicity, currentMessageValidatorRefList);
 
             log.info("'- Message (" + messageUrl.toString() + "), " + currentMessageMultiplicity + "x");
             if (log.isDebugEnabled()) {

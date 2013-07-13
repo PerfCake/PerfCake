@@ -239,7 +239,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
                long multiplicity = messageToSend.getMultiplicity();
 
                for (int i = 0; i < multiplicity; i++) {
-                  receivedMessage = new ReceivedMessage(sender.send(currentMessage, messageProperties), messageToSend.getValidatorId());
+                  receivedMessage = new ReceivedMessage(sender.send(currentMessage, messageProperties), messageToSend);
                   ValidatorManager.addToResultMessages(receivedMessage);
                }
                senderManager.releaseSender(sender); // !!! important !!!

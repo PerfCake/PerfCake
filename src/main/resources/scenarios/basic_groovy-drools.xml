@@ -26,13 +26,17 @@
       </reporter>
    </reporting>
    <messages>
-      <message file="plain_text.txt" validatorId="1">
+      <message file="plain_text.txt">
+         <validatorRef id="1"/>
       </message>
-      <message file="plain_text.txt" validatorId="2">
+      <message file="plain_text.txt">
+         <validatorRef id="2"/>
       </message>
-      <message file="plain_text.txt" validatorId="3">
+      <message file="plain_text.txt">
+         <validatorRef id="3"/>
       </message>
-      <message file="plain_text.txt" validatorId="4">
+      <message file="plain_text.txt">
+         <validatorRef id="4"/>
       </message>
    </messages>
    <validation>
@@ -40,22 +44,18 @@
         ^you entered: Hello groovy world 1
         you entered: Hello groovy world 2
         you entered: Hello groovy world 3$
-        
-        
         ]]></validator>
       <validator id="2" class="TextMessageValidator"><![CDATA[
         ^you entered: Hello groovy world 16
         you entered: Hello groovy world 2
         you entered: Hello groovy world 3$
-        
-        
         ]]></validator>
       <validator id="3" class="RulesMessageValidator"><![CDATA[
         Message body contains "Hello".
         #Message body contains "HelloXY".
-	]]></validator>
+        ]]></validator>
       <validator id="4" class="RulesMessageValidator"><![CDATA[
         Message body contains "HelloXY".
-	]]></validator>
+        ]]></validator>
    </validation>
 </scenario>

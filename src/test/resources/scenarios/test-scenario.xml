@@ -35,7 +35,16 @@
          <property name="m_property3" value="m_p_value3"/>
          <header name="m_header2" value="m_h_value2"/>
          <header name="m_header3" value="m_h_value3"/>
+         <validatorRef id="stupidValidator"/>
+         <validatorRef id="smileValidator"/>
       </message>
-      <message file="message2.txt"/>
+      <message file="message2.txt">
+         <validatorRef id="fishValidator"/>
+      </message>
    </messages>
+   <validation>
+      <validator id="fishValidator" class="TextMessageValidator"><![CDATA[.*Fish.*]]></validator>
+      <validator id="stupidValidator" class="TextMessageValidator"><![CDATA[.*[Ss]tupid.*]]></validator>
+      <validator id="smileValidator" class="TextMessageValidator"><![CDATA[.*:\\).*]]></validator>
+   </validation>
 </scenario>
