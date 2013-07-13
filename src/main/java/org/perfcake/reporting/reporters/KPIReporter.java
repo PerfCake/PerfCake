@@ -30,13 +30,13 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.perfcake.message.generator.types.MemoryRecord;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementTypes;
 import org.perfcake.reporting.ReportsException;
 import org.perfcake.reporting.destinations.ConsoleDestination;
 import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.util.LinearRegression;
+import org.perfcake.reporting.util.LinearRegression;
+import org.perfcake.reporting.util.MemoryRecord;
 
 /**
  * <p>
