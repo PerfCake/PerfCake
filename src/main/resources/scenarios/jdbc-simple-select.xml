@@ -1,21 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
-   <quickstart name="eds"/>
-   <execution>
-      <performance>
-         <generator class="ImmediateMessageGenerator" threads="500">
-            <property name="count" value="500000"/>
-            <property name="warmUpEnabled" value="true"/>
-         </generator>
-         <sender class="JDBCSender">
-            <property name="address" value="jdbc:postgres:/localhost:5432/postgres"/>
-            <property name="driverClass" value="org.postgresql.Driver"/>
-            <property name="username" value="postgres"/>
-            <property name="password" value="password"/>
-         </sender>
-         <messages>
-            <message file="jdbc-simple-select.sql"/>
-         </messages>
-      </performance>
-   </execution>
+   <properties>
+      <property name="quickstartName" value="eds"/>
+   </properties>
+   <generator class="ImmediateMessageGenerator" threads="500">
+      <property name="count" value="500000"/>
+      <property name="warmUpEnabled" value="true"/>
+   </generator>
+   <sender class="JDBCSender">
+      <property name="address" value="jdbc:postgres:/localhost:5432/postgres"/>
+      <property name="driverClass" value="org.postgresql.Driver"/>
+      <property name="username" value="postgres"/>
+      <property name="password" value="password"/>
+   </sender>
+   <messages>
+      <message file="jdbc-simple-select.sql"/>
+   </messages>
 </scenario>

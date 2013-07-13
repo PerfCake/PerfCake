@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
    <properties>
-      <property name="quickstartName" value="http_gw"/>
+      <property name="quickstartName" value="testQS"/>
+      <property name="property1" value="value1"/>
    </properties>
-   <generator class="LongtermMessageGenerator" threads="100">
-      <property name="threadQueueSize" value="50000"/>
+   <generator class="LongtermMessageGenerator" threads="10">
+      <property name="threadQueueSize" value="5000"/>
       <property name="duration" value="30"/>
       <property name="warmUpEnabled" value="true"/>
+      <property name="minimalWarmUpCount" value="12345"/>
    </generator>
    <sender class="HTTPSender">
       <property name="address" value="http://${server.host}:${server.port}/HTTPGateway/http/PerformanceTest/HTTPGateway"/>
@@ -24,15 +26,16 @@
             <property name="periodicity" value="1s"/>
          </destination>
       </reporter>
-      <!--reporter class="KPIReporter">
-         <property name="label_type" value="Time" />
-         <destination class="CsvDestination">
-            <property name="outputPath" value="logs"/>
-            <property name="periodicity" value="10%"/>
-         </destination>
-      </reporter-->
    </reporting>
    <messages>
-      <message file="5kB_soap_reply.xml"/>
+      <message file="message1.xml" multiplicity="10">
+         <property name="m_property1" value="m_p_value1"/>
+         <property name="m_property2" value="m_p_value2"/>
+         <header name="m_header1" value="m_h_value1"/>
+         <property name="m_property3" value="m_p_value3"/>
+         <header name="m_header2" value="m_h_value2"/>
+         <header name="m_header3" value="m_h_value3"/>
+      </message>
+      <message file="message2.txt"/>
    </messages>
 </scenario>
