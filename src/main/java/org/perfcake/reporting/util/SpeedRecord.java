@@ -14,23 +14,36 @@
  * limitations under the License.
  */
 
-package org.perfcake.util;
-
-import java.util.Collection;
-
-import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.perfcake.message.generator.types.MemoryRecord;
+package org.perfcake.reporting.util;
 
 /**
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
-public class LinearRegression {
-   public static float computeMemoryUsedRegressionTrend(Collection<MemoryRecord> data) {
-      SimpleRegression reg = new SimpleRegression();
-      for (MemoryRecord record : data) {
-         reg.addData(record.getTimestamp(), record.getTotal() - record.getFree());
-      }
-      return (float) reg.getSlope();
+public class SpeedRecord {
+
+   private long time;
+
+   private long count;
+
+   public SpeedRecord(long time, long count) {
+      this.time = time;
+      this.count = count;
+   }
+
+   public long getTime() {
+      return time;
+   }
+
+   public void setTime(long time) {
+      this.time = time;
+   }
+
+   public long getCount() {
+      return count;
+   }
+
+   public void setCount(long count) {
+      this.count = count;
    }
 }

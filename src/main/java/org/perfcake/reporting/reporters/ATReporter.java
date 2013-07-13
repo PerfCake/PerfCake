@@ -20,11 +20,11 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
-import org.perfcake.message.generator.types.SpeedRecord;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementTypes;
 import org.perfcake.reporting.ReportsException;
 import org.perfcake.reporting.destinations.Destination;
+import org.perfcake.reporting.util.SpeedRecord;
 
 /**
  * AT stands for Average Throughoutput reporter
