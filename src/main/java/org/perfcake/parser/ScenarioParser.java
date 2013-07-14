@@ -40,7 +40,7 @@ import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.ScenarioExecution;
 import org.perfcake.message.Message;
-import org.perfcake.message.MessageToSend;
+import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
@@ -197,8 +197,8 @@ public class ScenarioParser {
     * @throws IOException
     * @throws FileNotFoundException
     */
-   public List<MessageToSend> parseMessages() throws PerfCakeException {
-      List<MessageToSend> messageStore = new ArrayList<>();
+   public List<MessageTemplate> parseMessages() throws PerfCakeException {
+      List<MessageTemplate> messageStore = new ArrayList<>();
 
       try {
          Element messagesElement = (Element) (xPathEvaluate("messages", scenarioNode)).item(0);
@@ -206,7 +206,7 @@ public class ScenarioParser {
          NodeList messageNodes = xPathEvaluate("message", messagesElement);
          int messageNodesCount = messageNodes.getLength();
          Message currentMessage = null;
-         MessageToSend currentMessageToSend = null;
+         MessageTemplate currentMessageToSend = null;
          Element currentMessageElement = null;
          String currentMessagePayload = null;
          String currentMessageMultiplicityAttributeValue = null;
@@ -244,7 +244,7 @@ public class ScenarioParser {
             }
 
             // create message to be send
-            currentMessageToSend = new MessageToSend(currentMessage, currentMessageMultiplicity, currentMessageValidatorRefList);
+            currentMessageToSend = new MessageTemplate(currentMessage, currentMessageMultiplicity, currentMessageValidatorRefList);
 
             log.info("'- Message (" + messageUrl.toString() + "), " + currentMessageMultiplicity + "x");
             if (log.isDebugEnabled()) {
