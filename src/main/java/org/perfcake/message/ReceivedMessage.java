@@ -29,9 +29,9 @@ public class ReceivedMessage implements Serializable {
    // payload, id
    private Serializable payload;
 
-   private MessageToSend sentMessage;
+   private MessageTemplate sentMessage;
 
-   public ReceivedMessage(Serializable payload, MessageToSend sentMessage) {
+   public ReceivedMessage(Serializable payload, MessageTemplate sentMessage) {
       this.payload = payload;
       this.sentMessage = sentMessage;
    }
@@ -44,11 +44,11 @@ public class ReceivedMessage implements Serializable {
       this.payload = payload;
    }
 
-   public MessageToSend getSentMessage() {
+   public MessageTemplate getSentMessage() {
       return sentMessage;
    }
 
-   public void setSentMessage(MessageToSend sentMessage) {
+   public void setSentMessage(MessageTemplate sentMessage) {
       this.sentMessage = sentMessage;
    }
 

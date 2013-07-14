@@ -29,24 +29,22 @@ import org.perfcake.util.properties.DefaultPropertyGetter;
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class MessageToSend {
+public class MessageTemplate {
    private static final String propertyPattern = "[^\\\\]#\\{([^#\\{:]+)(:[^#\\{:]*)?}";
 
-   private Message message;
-   private long multiplicity;
-   private List<String> validatorIdList;// may be empty
+   private final Message message;
+   private final long multiplicity;
+   private final List<String> validatorIdList;// may be empty
    private Matcher matcher;
 
    public Matcher getMatcher() {
       return matcher;
    }
 
-   public MessageToSend() {
 
-   }
-
-   public MessageToSend(Message message, long multiplicity, List<String> validatorIdList) {
-      setMessage(message);
+   public MessageTemplate(Message message, long multiplicity, List<String> validatorIdList) {
+      this.message = message;
+      prepareMatcher();
       this.multiplicity = multiplicity;
       this.validatorIdList = validatorIdList;
    }
@@ -69,9 +67,7 @@ public class MessageToSend {
       }
    }
 
-   public void setMessage(Message message) {
-      this.message = message;
-
+   private void prepareMatcher() {
       this.matcher = null;
 
       // find out if there are any attributes in the text message to be replaced
@@ -89,16 +85,7 @@ public class MessageToSend {
       return multiplicity;
    }
 
-   public void setMultiplicity(Long multiplicity) {
-      this.multiplicity = multiplicity;
-   }
-
    public List<String> getValidatorIdList() {
       return validatorIdList;
    }
-
-   public void setValidatorId(List<String> validatorId) {
-      this.validatorIdList = validatorId;
-   }
-
 }

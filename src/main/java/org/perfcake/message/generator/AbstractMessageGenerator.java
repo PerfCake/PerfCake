@@ -19,7 +19,7 @@ package org.perfcake.message.generator;
 import java.util.List;
 
 import org.perfcake.PerfCakeException;
-import org.perfcake.message.MessageToSend;
+import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 
@@ -31,7 +31,7 @@ public abstract class AbstractMessageGenerator {
 
    protected MessageSenderManager messageSenderManager;
    protected ReportManager reportManager;
-   protected List<MessageToSend> messageStore;
+   protected List<MessageTemplate> messageStore;
    protected int threads = 1;
    protected long start = -1;
    protected long stop = -1;
@@ -39,20 +39,10 @@ public abstract class AbstractMessageGenerator {
    protected long minimalWarmUpDuration = 15000; // default 15s
    protected long minimalWarmUpCount = 10000; // by JIT
    protected boolean isMeasuring = false;
+   protected boolean messageNumberingEnabled = false;
+   protected long count = 1;
 
-   public String getProperty(String property) {
-      if ("threads".equals(property)) {
-         return String.valueOf(threads);
-      } else if ("minimalWarmUpDuration".equals(property)) {
-         return String.valueOf(minimalWarmUpDuration);
-      } else if ("minimalWarmUpCount".equals(property)) {
-         return String.valueOf(minimalWarmUpCount);
-      } else {
-         return null;
-      }
-   }
-
-   public void init(MessageSenderManager messageSenderManager, List<MessageToSend> messageStore) throws Exception {
+   public void init(MessageSenderManager messageSenderManager, List<MessageTemplate> messageStore) throws Exception {
       this.messageStore = messageStore;
       this.messageSenderManager = messageSenderManager;
       this.messageSenderManager.init();
@@ -118,5 +108,21 @@ public abstract class AbstractMessageGenerator {
 
    public void setMinimalWarmUpCount(long minimalWarmUpCount) {
       this.minimalWarmUpCount = minimalWarmUpCount;
+   }
+
+   public boolean isMessageNumberingEnabled() {
+      return messageNumberingEnabled;
+   }
+
+   public void setMessageNumberingEnabled(boolean messageNumberingEnabled) {
+      this.messageNumberingEnabled = messageNumberingEnabled;
+   }
+
+   public long getCount() {
+      return count;
+   }
+
+   public void setCount(long count) {
+      this.count = count;
    }
 }

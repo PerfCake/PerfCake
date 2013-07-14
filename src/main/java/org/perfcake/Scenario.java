@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.perfcake.message.MessageToSend;
+import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.parser.ScenarioParser;
@@ -41,7 +41,7 @@ public class Scenario {
    private AbstractMessageGenerator generator;
    private MessageSenderManager messageSenderManager;
    private ReportManager reportManager;
-   private List<MessageToSend> messageStore;
+   private List<MessageTemplate> messageStore;
 
    private URL scenarioUrl;
 
