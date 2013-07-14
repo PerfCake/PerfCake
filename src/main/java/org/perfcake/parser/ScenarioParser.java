@@ -333,7 +333,7 @@ public class ScenarioParser {
    }
 
    public void parseValidation() throws PerfCakeException {
-      log.info("\n--- Validation ---");
+      log.info("--- Validation ---");
       try {
 
          Element validationElement = (Element) (xPathEvaluate("validation", scenarioNode)).item(0);
@@ -360,6 +360,15 @@ public class ScenarioParser {
          }
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse validation configuration: ", e);
+      }
+   }
+
+   public Properties parseScenarioProperties() throws PerfCakeException {
+      log.info("--- Scenario properties ---");
+      try {
+         return getPropertiesFromSubNodes(xPathEvaluate("properties", scenarioNode).item(0));
+      } catch (XPathExpressionException e) {
+         throw new PerfCakeException("Cannot parse scenario properties configuration: ", e);
       }
    }
 
