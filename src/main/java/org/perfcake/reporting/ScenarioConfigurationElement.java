@@ -57,7 +57,8 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
    /**
     * All classes that are defined at config-time in scenarios can be configured
     * using property elements. This method is called with each such pair.
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    @Override
    public void setProperty(String property, String value) {
@@ -66,7 +67,7 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
       if (properties.containsKey(property)) {
          return;
          // TODO proper error handling
-         //throw new ReportsException("Error configuring " + getClass().getSimpleName() + " (probably from scenario file). The key " + property + " is already set to value: " + getProperty(property));
+         // throw new ReportsException("Error configuring " + getClass().getSimpleName() + " (probably from scenario file). The key " + property + " is already set to value: " + getProperty(property));
       }
       log.debug("Configuring " + this.getClass().getSimpleName() + ": [" + property + ":" + value + "]");
       properties.put(property, value);
@@ -78,7 +79,8 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
     * 
     * There at least one property that was set through xml but wasn't read by an
     * application.
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    public void assertUntouchedProperties() throws ReportsException {
 
@@ -104,7 +106,7 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
     * @param propertyName
     *           name attribute of property xml element
     * @return value attribute
-    * @throws ReportsException 
+    * @throws ReportsException
     */
    protected String getStringProperty(String propertyName) throws ReportsException {
       if (!properties.containsKey(propertyName)) {
@@ -156,16 +158,17 @@ public abstract class ScenarioConfigurationElement implements ObjectWithProperti
     * &lt;property name="tags" value="qa, performance,long running" &gt;
     * 
     * @param propertyName
-    * @throws ReportsException 
+    * @throws ReportsException
     */
    protected Set<String> getCommaSeparatedProperty(String propertyName) throws ReportsException {
-      Set<String> result = new TreeSet<String>();
-      String[] commaSepProps = getStringProperty(propertyName).split(",");
+      return splitCommaSeparatedProperty(getStringProperty(propertyName));
+   }
 
-      for (String item : commaSepProps) {
+   protected Set<String> splitCommaSeparatedProperty(String property) {
+      Set<String> result = new TreeSet<String>();
+      for (String item : property.split(",")) {
          result.add(item.trim());
       }
-
       return result;
    }
 

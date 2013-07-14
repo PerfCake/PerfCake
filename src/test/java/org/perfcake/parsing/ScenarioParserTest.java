@@ -136,7 +136,7 @@ public class ScenarioParserTest {
       }
    }
 
-   @Test(enabled = false)
+   @Test
    public void parseReportingTest() {
       try {
          ReportManager reportManager = scenarioParser.parseReporting();

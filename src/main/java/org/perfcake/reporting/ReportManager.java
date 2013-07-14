@@ -77,6 +77,9 @@ public class ReportManager extends ScenarioConfigurationElement {
 
    private static final String PROP_TAGS = "tags";
 
+   private String tags = "";
+   private String uniqueId = null;
+
    /**
     * Information about running test case
     */
@@ -103,9 +106,8 @@ public class ReportManager extends ScenarioConfigurationElement {
    @Override
    public void loadConfigValues() throws ReportsException {
       TestRunInfo tci = getTestRunInfo();
-      tci.addTags(getCommaSeparatedProperty(PROP_TAGS));
+      tci.addTags(splitCommaSeparatedProperty(tags));
 
-      String uniqueId = getStringProperty(PROP_UNIQ_ID);
       tci.setUniqueId(uniqueId);
       if (uniqueId == null || uniqueId.equals("")) {
          throw new ReportsException(PROP_UNIQ_ID + " property in scenario file has to be " + "nonempty string for ReportManager.");
@@ -247,4 +249,21 @@ public class ReportManager extends ScenarioConfigurationElement {
 
       return testRunInfo;
    }
+
+   public String getTags() {
+      return tags;
+   }
+
+   public void setTags(String tags) {
+      this.tags = tags;
+   }
+
+   public String getUniqueId() {
+      return uniqueId;
+   }
+
+   public void setUniqueId(String uniqueId) {
+      this.uniqueId = uniqueId;
+   }
+
 }
