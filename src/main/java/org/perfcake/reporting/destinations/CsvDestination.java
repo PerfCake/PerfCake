@@ -46,7 +46,6 @@ import org.perfcake.reporting.destinations.util.CsvFile;
  * </table>
  */
 public class CsvDestination extends Destination {
-   protected static final String PROP_OUTPUTPATH = "outputPath";
 
    private String outputPath = null;
 
@@ -58,7 +57,6 @@ public class CsvDestination extends Destination {
 
    @Override
    public void loadSpecificConfigValues() throws ReportsException {
-      outputPath = getStringProperty(PROP_OUTPUTPATH);
       if (!new File(outputPath).exists()) {
          log.warn("The output folder for CSV destination [" + outputPath + "] doesn't exist. Trying to create one.");
          boolean success = new File(outputPath).mkdirs();
@@ -83,7 +81,8 @@ public class CsvDestination extends Destination {
    /**
     * Outputs one file Measurement into CSV, this method expects that the csv
     * exists.
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     * 
     */
    private void outputToCsv(Measurement m) throws ReportsException {
@@ -96,7 +95,7 @@ public class CsvDestination extends Destination {
     * combination of measurementType and labelType should be created.
     * 
     * @param m
-    * @throws ReportsException 
+    * @throws ReportsException
     */
    private void ensureCsvExists(Measurement m) throws ReportsException {
       if (createdCsvs.containsKey(m.getMeasurementType() + m.getLabelType())) {
@@ -109,4 +108,13 @@ public class CsvDestination extends Destination {
       createdCsvs.put(m.getMeasurementType() + m.getLabelType(), csv);
 
    }
+
+   public String getOutputPath() {
+      return outputPath;
+   }
+
+   public void setOutputPath(String outputPath) {
+      this.outputPath = outputPath;
+   }
+
 }

@@ -93,9 +93,9 @@ import org.perfcake.reporting.reporters.Reporter;
 public abstract class Destination extends ScenarioConfigurationElement {
    private static final Logger log = Logger.getLogger(Destination.class);
 
-   private static final String PROP_PERIODICAL_INTERVAL = "periodicity";
+   private Periodicity periodicityObject = null;
 
-   private Periodicity periodicity = null;
+   private String periodicity = null;
 
    protected TestRunInfo testRunInfo;
 
@@ -107,14 +107,11 @@ public abstract class Destination extends ScenarioConfigurationElement {
 
    @Override
    public void loadConfigValues() throws ReportsException {
-      String pstring = getStringProperty(PROP_PERIODICAL_INTERVAL, "");
-
-      if (pstring.equals("")) {
-         periodicity = new NullPeriodicity();
+      if (periodicity == null) {
+         periodicityObject = new NullPeriodicity();
       } else {
-         periodicity = Periodicity.constructFromString(pstring);
+         periodicityObject = Periodicity.constructFromString(periodicity);
       }
-
       loadSpecificConfigValues();
    }
 
@@ -180,7 +177,7 @@ public abstract class Destination extends ScenarioConfigurationElement {
 
    public void setTestRunInfo(TestRunInfo testRunInfo) {
       this.testRunInfo = testRunInfo;
-      periodicity.setTestRunInfo(testRunInfo);
+      periodicityObject.setTestRunInfo(testRunInfo);
    }
 
    public TestRunInfo getTestCaseInfo() {
@@ -188,18 +185,26 @@ public abstract class Destination extends ScenarioConfigurationElement {
    }
 
    public boolean isTimelyPeriodic() throws ReportsException {
-      return periodicity.isTimely();
+      return periodicityObject.isTimely();
    }
 
    public float getPeriodicalInterval() throws ReportsException {
-      return periodicity.getTimePeriodicity();
+      return periodicityObject.getTimePeriodicity();
    }
 
    public boolean isIterationaryPeriodic() throws ReportsException {
-      return periodicity.isIterationary();
+      return periodicityObject.isIterationary();
    }
 
    public int getItTreshold() throws ReportsException {
-      return periodicity.getIterationalPeriodicity();
+      return periodicityObject.getIterationalPeriodicity();
+   }
+
+   public String getPeriodicity() {
+      return periodicity;
+   }
+
+   public void setPeriodicity(String periodicity) {
+      this.periodicity = periodicity;
    }
 }
