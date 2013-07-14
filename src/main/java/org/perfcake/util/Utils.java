@@ -50,7 +50,7 @@ public class Utils {
     * @throws IOException
     */
    public static String filterProperties(String text) throws IOException {
-      String propertyPattern = "[^\\\\]\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?}";
+      String propertyPattern = "[^\\\\](\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?})";
       Matcher matcher = Pattern.compile(propertyPattern).matcher(text);
 
       return filterProperties(text, matcher, SystemPropertyGetter.INSTANCE);
@@ -62,20 +62,20 @@ public class Utils {
       matcher.reset();
       while (matcher.find()) {
          String pValue = null;
-         String pName = matcher.group(1);
+         String pName = matcher.group(2);
          String defaultValue = null;
-         if (matcher.groupCount() == 2 && matcher.group(2) != null) {
-            defaultValue = (matcher.group(2)).substring(1);
+         if (matcher.groupCount() == 3 && matcher.group(3) != null) {
+            defaultValue = (matcher.group(3)).substring(1);
          }
          pValue = pg.getProperty(pName, defaultValue);
          if (pValue != null) {
-            filteredString = filteredString.replaceAll(Pattern.quote(matcher.group()), pValue);
+            filteredString = filteredString.replaceAll(Pattern.quote(matcher.group(1)), pValue);
          }
       }
-      
+
       return filteredString;
    }
-   
+
    /**
     * Returns a property value. First it looks at system properties using {@link System#getProperty(String)} if the system property does not exist
     * it looks at environment variables using {@link System#getenv(String)}. If
@@ -122,29 +122,37 @@ public class Utils {
          }
       }
    }
-   
+
    /**
     * Reads file content into a string. The file content is processed as an UTF-8 encoded text.
-    * @param url specifies the file location as a URL
+    * 
+    * @param url
+    *           specifies the file location as a URL
     * @return the file contents
     * @throws IOException
     */
    public static String readFilteredContent(URL url) throws IOException {
-	   try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
-		   return filterProperties(scanner.useDelimiter("\\Z").next());
-	   }
+      try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
+         return filterProperties(scanner.useDelimiter("\\Z").next());
+      }
    }
 
    /**
     * Convert location to URL. If location specifies a protocol, it is immediately converted. Without a protocol specified, output is
     * file://${&lt;defaultLocationProperty&gt;}/&lt;location&gt;&lt;defaultSuffix&gt; using defaultLocation as a default value for the defaultLocationProperty
     * when the property is undefined.
-    * @param location location of the resource
-    * @param defaultLocationProperty property to read the default location prefix
-    * @param defaultLocation default value for defaultLocationProperty if this property is undefined 
-    * @param defaultSuffix default suffix of the location
+    * 
+    * @param location
+    *           location of the resource
+    * @param defaultLocationProperty
+    *           property to read the default location prefix
+    * @param defaultLocation
+    *           default value for defaultLocationProperty if this property is undefined
+    * @param defaultSuffix
+    *           default suffix of the location
     * @return URL representing the location
-    * @throws MalformedURLException when the location cannot be converted to a URL
+    * @throws MalformedURLException
+    *            when the location cannot be converted to a URL
     */
    public static URL locationToUrl(String location, String defaultLocationProperty, String defaultLocation, String defaultSuffix) throws MalformedURLException {
       // is there a protocol specified? suppose just scenario name
@@ -154,14 +162,16 @@ public class Utils {
 
       return new URL(location);
    }
-   
+
    /**
     * Determines the default location of resources based on the resourcesDir constant.
-    * @param locationSuffix Optional suffix to be added to the path
+    * 
+    * @param locationSuffix
+    *           Optional suffix to be added to the path
     * @return the location based on the resourcesDir constant
     */
    public static String determineDefaultLocation(String locationSuffix) {
       return resourcesDir.getAbsolutePath() + "/" + (locationSuffix == null ? "" : locationSuffix);
    }
-   
+
 }

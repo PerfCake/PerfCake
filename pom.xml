@@ -243,7 +243,7 @@
                      <!-- <key>jprofiler.agent.port</key> -->
                      <!-- <value>8839</value> -->
                      <!-- </systemProperty> -->
-                  </systemProperties>4
+                  </systemProperties>
                </configuration>
             </plugin>
             <plugin>

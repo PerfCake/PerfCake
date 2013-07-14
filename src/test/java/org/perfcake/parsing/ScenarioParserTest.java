@@ -27,11 +27,27 @@ public class ScenarioParserTest {
    private static final String FISH_VALIDATOR_ID = "fishValidator";
    private static final String SMILE_VALIDATOR_ID = "smileValidator";
    private static final String STUPID_VALIDATOR_ID = "stupidValidator";
+   private static final String FILTERED_PROPERTY_VALUE = "filtered-property-value";
+   private static final String DEFAULT_PROPERTY_VALUE = "default-property-value";
 
    @BeforeClass
    public void prepareScenarioParser() throws PerfCakeException, URISyntaxException, IOException {
+      System.setProperty("perfcake.messages.dir", getClass().getResource("/messages").getPath());
+      System.setProperty("test.filtered.property", FILTERED_PROPERTY_VALUE);
       scenarioParser = new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml"));
-      System.getProperties().setProperty("perfcake.messages.dir", getClass().getResource("/messages").getPath());
+   }
+
+   @Test
+   public void parseScenarioPropertiesTest() {
+      try {
+         Properties scenarioProperties = scenarioParser.parseScenarioProperties();
+         Assert.assertEquals(scenarioProperties.get("quickstartName"), "testQS", "quickstartName property");
+         Assert.assertEquals(scenarioProperties.get("filteredProperty"), FILTERED_PROPERTY_VALUE, "filteredProperty property");
+         Assert.assertEquals(scenarioProperties.get("defaultProperty"), DEFAULT_PROPERTY_VALUE, "defaultProperty property");
+      } catch (PerfCakeException e) {
+         e.printStackTrace();
+         Assert.fail(e.getMessage());
+      }
    }
 
    @Test

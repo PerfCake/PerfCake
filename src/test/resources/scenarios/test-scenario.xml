@@ -2,7 +2,8 @@
 <scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
    <properties>
       <property name="quickstartName" value="testQS"/>
-      <property name="property1" value="value1"/>
+      <property name="filteredProperty" value="${test.filtered.property:default1}"/>
+      <property name="defaultProperty" value="${test.missing.property:default-property-value}"/>
    </properties>
    <generator class="LongtermMessageGenerator" threads="10">
       <property name="threadQueueSize" value="5000"/>
