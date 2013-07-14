@@ -146,10 +146,4 @@ public class ScenarioParserTest {
          Assert.fail(e.getMessage());
       }
    }
-
-   @Test(enabled = false)
-   public void scenarioPropertiesTest() {
-      // TODO: add scenario properties test ones it is implemented
-   }
-
 }
