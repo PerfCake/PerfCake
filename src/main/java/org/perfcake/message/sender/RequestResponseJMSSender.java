@@ -45,10 +45,10 @@ public class RequestResponseJMSSender extends JMSSender {
    private QueueConnection responseConnection;
    private QueueSession responseSession;
    private Queue responseQueue;
-   private QueueReceiver responseReciever;
+   private QueueReceiver responseReceiver;
 
    private String responseTarget = "";
-   private long recievingTimeout = 1000; // default 1s
+   private long receivingTimeout = 1000; // default 1s
    private int receiveAttempts = 5;
 
    @Override
@@ -66,7 +66,7 @@ public class RequestResponseJMSSender extends JMSSender {
             }
             responseConnection.start();
             responseSession = responseConnection.createQueueSession(transacted, Session.AUTO_ACKNOWLEDGE);
-            responseReciever = responseSession.createReceiver(responseQueue);
+            responseReceiver = responseSession.createReceiver(responseQueue);
          }
 
       } catch (Exception e) {
@@ -81,8 +81,8 @@ public class RequestResponseJMSSender extends JMSSender {
             super.close();
          } finally {
             try {
-               if (responseReciever != null) {
-                  responseReciever.close();
+               if (responseReceiver != null) {
+                  responseReceiver.close();
                }
             } finally {
                try {
@@ -120,10 +120,10 @@ public class RequestResponseJMSSender extends JMSSender {
          int attempts = 0;
          do {
             attempts++;
-            Message response = responseReciever.receive(recievingTimeout);
+            Message response = responseReceiver.receive(receivingTimeout);
             if (response == null) {
                if (log.isDebugEnabled()) {
-                  log.debug("No message in " + responseTarget + " received within the specified timeout (" + recievingTimeout + " ms). Retrying (" + attempts + "/" + receiveAttempts + ") ...");
+                  log.debug("No message in " + responseTarget + " received within the specified timeout (" + receivingTimeout + " ms). Retrying (" + attempts + "/" + receiveAttempts + ") ...");
                }
             } else {
 
@@ -146,7 +146,7 @@ public class RequestResponseJMSSender extends JMSSender {
          } while (retVal == null && attempts < receiveAttempts);
 
          if (retVal == null) {
-            throw new PerfCakeException("No message in " + responseTarget + " received within the specified timeout (" + recievingTimeout + " ms) in " + receiveAttempts + " attempt(s).");
+            throw new PerfCakeException("No message in " + responseTarget + " received within the specified timeout (" + receivingTimeout + " ms) in " + receiveAttempts + " attempt(s).");
          }
 
          return retVal;
@@ -155,12 +155,12 @@ public class RequestResponseJMSSender extends JMSSender {
       }
    }
 
-   public long getRecievingTimeout() {
-      return recievingTimeout;
+   public long getReceivingTimeout() {
+      return receivingTimeout;
    }
 
-   public void setRecievingTimeout(long recievingTimeout) {
-      this.recievingTimeout = recievingTimeout;
+   public void setReceivingTimeout(long receivingTimeout) {
+      this.receivingTimeout = receivingTimeout;
    }
 
    public int getReceiveAttempts() {
