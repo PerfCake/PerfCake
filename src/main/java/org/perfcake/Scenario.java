@@ -117,7 +117,9 @@ public class Scenario {
          log.trace("Running scenario...");
       }
 
-      ValidatorManager.startValidation();
+      if (ValidatorManager.isEnabled()) {
+         ValidatorManager.startValidation();
+      }
       try {
          generator.generate();
       } catch (Exception e) {
