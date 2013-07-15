@@ -19,6 +19,7 @@ import org.testng.annotations.Test;
 
 public class ScenarioParserTest {
    private ScenarioParser scenarioParser;
+   private ScenarioParser noValidationScenarioParser;
    private static final int THREADS = 10;
    private static final int MIN_WARMUP_COUNT = 12345;
    private static final String MESSAGE1_CONTENT = "Stupid is as supid does! :)";
@@ -35,6 +36,7 @@ public class ScenarioParserTest {
       System.setProperty("perfcake.messages.dir", getClass().getResource("/messages").getPath());
       System.setProperty("test.filtered.property", FILTERED_PROPERTY_VALUE);
       scenarioParser = new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml"));
+      noValidationScenarioParser = new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-validation.xml"));
    }
 
    @Test
@@ -141,6 +143,20 @@ public class ScenarioParserTest {
       try {
          ReportManager reportManager = scenarioParser.parseReporting();
          // TODO: add assertions on reportManager
+      } catch (PerfCakeException e) {
+         e.printStackTrace();
+         Assert.fail(e.getMessage());
+      }
+   }
+
+   @Test
+   public void parseValidationTest() {
+      try {
+         scenarioParser.parseValidation();
+         // TODO: add assertions on validation
+
+         // validation is optional
+         noValidationScenarioParser.parseValidation();
       } catch (PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
