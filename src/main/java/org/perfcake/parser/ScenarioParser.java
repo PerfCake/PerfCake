@@ -358,6 +358,7 @@ public class ScenarioParser {
                messageValidator.setAssertions(validatorNodes.item(i), "1");// add validator to validator mgr coll
 
                ValidatorManager.addValidator(validatorId, messageValidator);
+               ValidatorManager.setEnabled(true);
             }
          }
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | XPathExpressionException e) {

@@ -30,7 +30,7 @@ import org.perfcake.util.properties.DefaultPropertyGetter;
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class MessageTemplate {
-   private static final String propertyPattern = "[^\\\\]#\\{([^#\\{:]+)(:[^#\\{:]*)?}";
+   private static final String propertyPattern = "[^\\\\](#\\{([^#\\{:]+)(:[^#\\{:]*)?})";
 
    private final Message message;
    private final long multiplicity;

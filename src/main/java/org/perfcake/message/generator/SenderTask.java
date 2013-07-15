@@ -46,7 +46,7 @@ class SenderTask implements Runnable {
       ReceivedMessage receivedMessage = null;
       try {
          Iterator<MessageTemplate> iterator = messageStore.iterator();
-         
+
          // only set numbering to headers if it is enabled, later there is no change to
          // filter out the headers before sending
          String msgNumberStr = String.valueOf(counter.get());
@@ -55,12 +55,12 @@ class SenderTask implements Runnable {
             messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, msgNumberStr);
             messageHeaders.put(PerfCakeConst.COUNT_MESSAGE_PROPERTY, msgCountStr);
          }
-         
+
          // always set the attributes, it depends on the message content whether the values
          // will be used
          messageAttributes.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, msgNumberStr);
          messageAttributes.put(PerfCakeConst.COUNT_MESSAGE_PROPERTY, msgCountStr);
-         
+
          firstSent.set(false);
          while (iterator.hasNext()) {
             if (counter.get() == 0 && isMeasuring && !firstSent.get()) {
@@ -80,13 +80,15 @@ class SenderTask implements Runnable {
 
             for (int i = 0; i < multiplicity; i++) {
                receivedMessage = new ReceivedMessage(sender.send(currentMessage, messageHeaders), messageToSend);
-               ValidatorManager.addToResultMessages(receivedMessage);
+               if (ValidatorManager.isEnabled()) {
+                  ValidatorManager.addToResultMessages(receivedMessage);
+               }
             }
-            
+
             senderManager.releaseSender(sender); // !!! important !!!
             sender = null;
          }
-         
+
          // responseTime.addAndGet(sender.getResponseTime());
          counter.incrementAndGet();
          reportManager.reportIteration();
