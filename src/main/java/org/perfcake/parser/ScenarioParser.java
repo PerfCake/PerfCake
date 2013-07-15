@@ -337,26 +337,28 @@ public class ScenarioParser {
       try {
 
          Element validationElement = (Element) (xPathEvaluate("validation", scenarioNode)).item(0);
-         NodeList validatorNodes = xPathEvaluate("validator", validationElement);
-         Element validatorElement = null;
+         if (validationElement != null) {
+            NodeList validatorNodes = xPathEvaluate("validator", validationElement);
+            Element validatorElement = null;
 
-         String validatorId = null;
-         String validatorClass = null;
+            String validatorId = null;
+            String validatorClass = null;
 
-         int validatorNodesCount = validatorNodes.getLength();
+            int validatorNodesCount = validatorNodes.getLength();
 
-         for (int i = 0; i < validatorNodesCount; i++) {
-            validatorElement = (Element) validatorNodes.item(i);
-            validatorId = validatorElement.getAttribute("id");
-            validatorClass = validatorElement.getAttribute("class");
-            if (validatorClass.indexOf(".") < 0) {
-               validatorClass = DEFAULT_VALIDATION_PACKAGE + "." + validatorClass;
+            for (int i = 0; i < validatorNodesCount; i++) {
+               validatorElement = (Element) validatorNodes.item(i);
+               validatorId = validatorElement.getAttribute("id");
+               validatorClass = validatorElement.getAttribute("class");
+               if (validatorClass.indexOf(".") < 0) {
+                  validatorClass = DEFAULT_VALIDATION_PACKAGE + "." + validatorClass;
+               }
+
+               MessageValidator messageValidator = (MessageValidator) Class.forName(validatorClass, false, ScenarioExecution.class.getClassLoader()).newInstance();
+               messageValidator.setAssertions(validatorNodes.item(i), "1");// add validator to validator mgr coll
+
+               ValidatorManager.addValidator(validatorId, messageValidator);
             }
-
-            MessageValidator messageValidator = (MessageValidator) Class.forName(validatorClass, false, ScenarioExecution.class.getClassLoader()).newInstance();
-            messageValidator.setAssertions(validatorNodes.item(i), "1");// add validator to validator mgr coll
-
-            ValidatorManager.addValidator(validatorId, messageValidator);
          }
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse validation configuration: ", e);
