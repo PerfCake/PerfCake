@@ -38,6 +38,8 @@ public class ValidatorManager {
 
    private static boolean allMessagesValid = true;
 
+   private static boolean enabled = false;
+
    private static final Logger log = Logger.getLogger(ScenarioExecution.class);
 
    private static Queue<ReceivedMessage> resultMessages = new FileQueue<ReceivedMessage>("target/messagesQueue");
@@ -117,6 +119,14 @@ public class ValidatorManager {
 
    public static void setAssertionsToValidator(String classname, Node validation, String msgId) {
 
+   }
+
+   public static boolean isEnabled() {
+      return enabled;
+   }
+
+   public static void setEnabled(boolean enabled) {
+      ValidatorManager.enabled = enabled;
    }
 
 }
