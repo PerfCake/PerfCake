@@ -20,6 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.log4j.Logger;
 
 /**
  * 
@@ -27,14 +28,19 @@ import org.apache.commons.beanutils.BeanUtils;
  */
 public class ObjectFactory {
 
+   private static final Logger log = Logger.getLogger(ObjectFactory.class);
+
    /**
     * @param object
     * @param properties
-    * @throws InvocationTargetException 
-    * @throws IllegalAccessException 
+    * @throws InvocationTargetException
+    * @throws IllegalAccessException
     */
    public static void setPropertiesOnObject(Object object, Properties properties) throws IllegalAccessException, InvocationTargetException {
       for (String key : properties.stringPropertyNames()) {
+         if (log.isTraceEnabled()) {
+            log.trace("Setting property: '" + key + "'='" + properties.getProperty(key) + "'");
+         }
          BeanUtils.setProperty(object, key, properties.getProperty(key));
       }
    }
