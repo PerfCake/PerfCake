@@ -32,6 +32,7 @@ import org.perfcake.validation.ValidatorManager;
 /**
  * 
  * TODO Add public API for use without a scenario in XML
+ * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
@@ -81,7 +82,7 @@ public class Scenario {
 
       ScenarioParser parser = new ScenarioParser(scenarioUrl);
       generator = parser.parseGenerator();
-      messageSenderManager = parser.parseSender(Integer.valueOf(generator.getProperty("threads")));
+      messageSenderManager = parser.parseSender(generator.getThreads());
       reportManager = parser.parseReporting();
       messageStore = parser.parseMessages();
       parser.parseValidation();

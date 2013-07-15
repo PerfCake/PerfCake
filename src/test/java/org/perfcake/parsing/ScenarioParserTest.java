@@ -7,7 +7,7 @@ import java.util.Properties;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
-import org.perfcake.message.MessageToSend;
+import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.LongtermMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
@@ -86,11 +86,11 @@ public class ScenarioParserTest {
    public void parseMessagesTest() {
       try {
          // Message store
-         List<MessageToSend> messageStore = scenarioParser.parseMessages();
+         List<MessageTemplate> messageStore = scenarioParser.parseMessages();
          Assert.assertEquals(messageStore.size(), 2);
 
          // Message 1
-         MessageToSend mts1 = messageStore.get(0);
+         MessageTemplate mts1 = messageStore.get(0);
          Assert.assertEquals(mts1.getMultiplicity(), new Long(10), "message1 multiplicity");
          Message m1 = mts1.getMessage();
          // Message 1 content
@@ -114,7 +114,7 @@ public class ScenarioParserTest {
          Assert.assertEquals(validatorIdList1.get(1), SMILE_VALIDATOR_ID, "message1 smileValidatorId");
 
          // Message 2
-         MessageToSend mts2 = messageStore.get(1);
+         MessageTemplate mts2 = messageStore.get(1);
          Assert.assertEquals(mts2.getMultiplicity(), new Long(1), "message2 multiplicity");
          Message m2 = mts2.getMessage();
          // Message 2 content
