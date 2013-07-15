@@ -5,6 +5,7 @@ import java.util.Properties;
 import junit.framework.Assert;
 
 import org.perfcake.message.generator.ImmediateMessageGenerator;
+import org.perfcake.message.sender.HTTPSender;
 import org.perfcake.util.ObjectFactory;
 import org.testng.annotations.Test;
 
@@ -22,5 +23,15 @@ public class ObjectFactoryTest {
       Assert.assertEquals(123, g.getTimeWindowSize());
       Assert.assertEquals(10001L, g.getCount());
 
+   }
+
+   @Test
+   public void testHTTPSenderSummoning() throws Throwable {
+      Properties p = new Properties();
+      p.setProperty("method", "GET");
+      p.setProperty("target", "http://localhost/get");
+      HTTPSender sender = (HTTPSender) ObjectFactory.summonInstance("org.perfcake.message.sender.HTTPSender", p);
+      Assert.assertEquals("GET", sender.getMethod());
+      Assert.assertEquals("http://localhost/get", sender.getTarget());
    }
 }

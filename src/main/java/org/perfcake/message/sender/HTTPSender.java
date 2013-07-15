@@ -23,6 +23,7 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -45,13 +46,12 @@ public class HTTPSender extends AbstractSender {
    private static final Logger log = Logger.getLogger(HTTPSender.class);
 
    private URL url;
-   private MethodEnum method = MethodEnum.POST;
+   private static final List<String> supportedMethodList = Collections.synchronizedList(Arrays.asList("GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"));
+   private String method = "POST";
    private List<Integer> expectedResponseCodes = Arrays.asList(DEFAULT_EXPECTED_CODE);
    protected HttpURLConnection rc;
    private String reqStr;
    private int len;
-
-   private enum MethodEnum {GET, POST, HEAD, OPTIONS, PUT, DELETE, TRACE};
 
    @Override
    public void init() throws Exception {
@@ -65,7 +65,7 @@ public class HTTPSender extends AbstractSender {
    public void setExpectedResponseCodes(String codes) {
       setExpectedResponseCodes(codes.split(","));
    }
-   
+
    public void setExpectedResponseCodes(String[] codes) {
       LinkedList<Integer> numCodes = new LinkedList<Integer>();
       for (int i = 0; i < codes.length; i++) {
@@ -87,14 +87,14 @@ public class HTTPSender extends AbstractSender {
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       reqStr = message.getPayload().toString();
       len = reqStr.length();
-      if (MethodEnum.GET.equals(method) || MethodEnum.HEAD.equals(method) || MethodEnum.DELETE.equals(method)) {
-          String targetGET = target + reqStr;
-          url = new URL(targetGET);
+      if ("GET".equals(method) || "HEAD".equals(method) || "DELETE".equals(method)) {
+         String targetGET = target + reqStr;
+         url = new URL(targetGET);
       }
       rc = (HttpURLConnection) url.openConnection();
-      rc.setRequestMethod(method.name());
+      rc.setRequestMethod(method);
       rc.setDoInput(true);
-      if (MethodEnum.POST.equals(method) || MethodEnum.PUT.equals(method)) {
+      if ("POST".equals(method) || "PUT".equals(method)) {
          rc.setDoOutput(true);
       }
       rc.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
@@ -140,11 +140,11 @@ public class HTTPSender extends AbstractSender {
    public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
       int respCode = -1;
       rc.connect();
-      if (MethodEnum.POST.equals(method) || MethodEnum.PUT.equals(method)) {
+      if ("POST".equals(method) || "PUT".equals(method)) {
          OutputStreamWriter out = new OutputStreamWriter(rc.getOutputStream());
-	 out.write(reqStr, 0, len);
-	 out.flush();
-	 rc.getOutputStream().close();
+         out.write(reqStr, 0, len);
+         out.flush();
+         rc.getOutputStream().close();
       }
 
       respCode = rc.getResponseCode();
@@ -182,15 +182,15 @@ public class HTTPSender extends AbstractSender {
       rc.disconnect();
    }
 
-   public MethodEnum getMethod() {
+   public String getMethod() {
       return method;
    }
 
    public void setMethod(String method) {
-      setMethod(MethodEnum.valueOf(method));
-   }
-   
-   public void setMethod(MethodEnum method) {
-      this.method = method;
+      if (supportedMethodList.contains(method)) {
+         this.method = method;
+      } else {
+         throw new IllegalArgumentException("The requested method (\"" + method + "\") is not supported.");
+      }
    }
 }
