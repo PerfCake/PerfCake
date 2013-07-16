@@ -65,12 +65,8 @@ class SenderTask implements Runnable {
          if (iterator.hasNext()) {
             while (iterator.hasNext()) {
                if (counter.get() == 0 && isMeasuring && !firstSent.get()) {
-                  messageAttributes.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.START_VALUE);
-                  messageHeaders.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.START_VALUE);
                   firstSent.set(true);
                } else if (counter.get() == count - 1 && !firstSent.get()) {
-                  messageAttributes.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.STOP_VALUE);
-                  messageHeaders.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.STOP_VALUE);
                   firstSent.set(true);
                }
 
