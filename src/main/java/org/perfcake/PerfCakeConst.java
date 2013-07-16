@@ -28,8 +28,4 @@ public final class PerfCakeConst {
    public static final String TIME_MESSAGE_PROPERTY = "PerfCake_Performance_Time";
 
    public static final String COUNT_MESSAGE_PROPERTY = "PerfCake_Performance_Count";
-
-   public static final String START_VALUE = "**START**";
-
-   public static final String STOP_VALUE = "**STOP**";
 }
