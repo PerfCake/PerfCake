@@ -62,29 +62,39 @@ class SenderTask implements Runnable {
          messageAttributes.put(PerfCakeConst.COUNT_MESSAGE_PROPERTY, msgCountStr);
 
          firstSent.set(false);
-         while (iterator.hasNext()) {
-            if (counter.get() == 0 && isMeasuring && !firstSent.get()) {
-               messageAttributes.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.START_VALUE);
-               messageHeaders.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.START_VALUE);
-               firstSent.set(true);
-            } else if (counter.get() == count - 1 && !firstSent.get()) {
-               messageAttributes.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.STOP_VALUE);
-               messageHeaders.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.STOP_VALUE);
-               firstSent.set(true);
-            }
-
-            sender = senderManager.acquireSender();
-            MessageTemplate messageToSend = iterator.next();
-            Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
-            long multiplicity = messageToSend.getMultiplicity();
-
-            for (int i = 0; i < multiplicity; i++) {
-               receivedMessage = new ReceivedMessage(sender.send(currentMessage, messageHeaders), messageToSend);
-               if (ValidatorManager.isEnabled()) {
-                  ValidatorManager.addToResultMessages(receivedMessage);
+         if (iterator.hasNext()) {
+            while (iterator.hasNext()) {
+               if (counter.get() == 0 && isMeasuring && !firstSent.get()) {
+                  messageAttributes.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.START_VALUE);
+                  messageHeaders.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.START_VALUE);
+                  firstSent.set(true);
+               } else if (counter.get() == count - 1 && !firstSent.get()) {
+                  messageAttributes.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.STOP_VALUE);
+                  messageHeaders.put(PerfCakeConst.PERFORMANCE_MESSAGE_PROPERTY, PerfCakeConst.STOP_VALUE);
+                  firstSent.set(true);
                }
-            }
 
+               sender = senderManager.acquireSender();
+               MessageTemplate messageToSend = iterator.next();
+               Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
+               long multiplicity = messageToSend.getMultiplicity();
+
+               for (int i = 0; i < multiplicity; i++) {
+                  receivedMessage = new ReceivedMessage(sender.send(currentMessage, messageHeaders), messageToSend);
+                  if (ValidatorManager.isEnabled()) {
+                     ValidatorManager.addToResultMessages(receivedMessage);
+                  }
+               }
+
+               senderManager.releaseSender(sender); // !!! important !!!
+               sender = null;
+            }
+         } else {
+            sender = senderManager.acquireSender();
+            receivedMessage = new ReceivedMessage(sender.send(null, messageHeaders), null);
+            if (ValidatorManager.isEnabled()) {
+               ValidatorManager.addToResultMessages(receivedMessage);
+            }
             senderManager.releaseSender(sender); // !!! important !!!
             sender = null;
          }

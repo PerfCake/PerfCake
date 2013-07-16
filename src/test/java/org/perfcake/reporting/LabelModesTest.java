@@ -39,8 +39,8 @@ public class LabelModesTest extends ReportingTestBase {
    public void iterations() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "1.001 s");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("1.001 s");
 
       reporter1.addDestination(csvDestination);
       reporter1.setProperty("time_window_size", "2");
@@ -48,8 +48,8 @@ public class LabelModesTest extends ReportingTestBase {
       reporter1.setProperty("decimal_format", DECIMAL_FORMAT_STRING);
 
       ReportManager rm = new ReportManager();
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "test");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("test");
       rm.loadConfigValues();
       rm.addReporter(reporter1);
       rm.assertUntouchedProperties();
@@ -63,8 +63,8 @@ public class LabelModesTest extends ReportingTestBase {
    public void time() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "1.001 s");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("1.001 s");
 
       reporter1.addDestination(csvDestination);
       reporter1.setProperty("time_window_size", "2");
@@ -72,8 +72,8 @@ public class LabelModesTest extends ReportingTestBase {
       reporter1.setProperty("label_type", "time");
 
       ReportManager rm = new ReportManager();
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "test");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("test");
       rm.loadConfigValues();
       rm.addReporter(reporter1);
       rm.assertUntouchedProperties();

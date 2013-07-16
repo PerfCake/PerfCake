@@ -38,6 +38,6 @@
       </reporter-->
    </reporting>
    <messages>
-      <message file="1kB_message.xml"/>
+      <message uri="1kB_message.xml"/>
    </messages>
 </scenario>

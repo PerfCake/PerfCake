@@ -44,6 +44,8 @@ public class Scenario {
    private ReportManager reportManager;
    private List<MessageTemplate> messageStore;
 
+   public static final String VERSION = "0.2";
+
    private URL scenarioUrl;
 
    /**

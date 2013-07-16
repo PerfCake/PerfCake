@@ -33,7 +33,7 @@
       </reporter-->
    </reporting>
    <messages>
-      <message file="bpel_plain_request.xml">
+      <message uri="bpel_plain_request.xml">
          <header name="Content-Type" value="text/xml"/>
          <header name="SOAPAction" value="hello"/>
       </message>

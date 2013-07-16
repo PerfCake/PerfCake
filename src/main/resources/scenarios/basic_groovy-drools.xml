@@ -26,16 +26,16 @@
       </reporter>
    </reporting>
    <messages>
-      <message file="plain_text.txt">
+      <message uri="plain_text.txt">
          <validatorRef id="1"/>
       </message>
-      <message file="plain_text.txt">
+      <message uri="plain_text.txt">
          <validatorRef id="2"/>
       </message>
-      <message file="plain_text.txt">
+      <message uri="plain_text.txt">
          <validatorRef id="3"/>
       </message>
-      <message file="plain_text.txt">
+      <message uri="plain_text.txt">
          <validatorRef id="4"/>
       </message>
    </messages>

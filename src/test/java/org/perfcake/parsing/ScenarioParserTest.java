@@ -18,8 +18,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class ScenarioParserTest {
-   private ScenarioParser scenarioParser;
-   private ScenarioParser noValidationScenarioParser;
+   private ScenarioParser scenarioParser, noValidationScenarioParser, noMessagesScenarioParser;
    private static final int THREADS = 10;
    private static final int MIN_WARMUP_COUNT = 12345;
    private static final String MESSAGE1_CONTENT = "Stupid is as supid does! :)";
@@ -37,6 +36,7 @@ public class ScenarioParserTest {
       System.setProperty("test.filtered.property", FILTERED_PROPERTY_VALUE);
       scenarioParser = new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml"));
       noValidationScenarioParser = new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-validation.xml"));
+      noMessagesScenarioParser = new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-messages.xml"));
    }
 
    @Test
@@ -132,6 +132,10 @@ public class ScenarioParserTest {
          Assert.assertEquals(validatorIdList2.size(), 1, "message2 validatorIdList size");
          Assert.assertEquals(validatorIdList2.get(0), FISH_VALIDATOR_ID, "message2 fishValidatorId");
 
+         // Messages section is optional
+         List<MessageTemplate> emptyMessageStore = noMessagesScenarioParser.parseMessages();
+         Assert.assertTrue(emptyMessageStore.isEmpty(), "empty message store with no messages in scenario");
+
       } catch (PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
@@ -142,6 +146,7 @@ public class ScenarioParserTest {
    public void parseReportingTest() {
       try {
          ReportManager reportManager = scenarioParser.parseReporting();
+         Assert.assertNotNull(reportManager);
          // TODO: add assertions on reportManager
       } catch (PerfCakeException e) {
          e.printStackTrace();

@@ -34,13 +34,13 @@ public class ResponseTimeReporterTest extends ReportingTestBase {
    public void basicResponseTime() throws ReportsException {
       Reporter reporter1 = new ResponseTimeReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "1.0s");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("1.0s");
       reporter1.addDestination(csvDestination);
 
       ReportManager rm = new ReportManager();
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "response");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("response");
       rm.loadConfigValues();
       rm.addReporter(reporter1);
       rm.assertUntouchedProperties();

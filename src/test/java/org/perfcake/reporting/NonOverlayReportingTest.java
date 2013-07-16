@@ -34,22 +34,23 @@ public class NonOverlayReportingTest extends ReportingTestBase {
    /**
     * When percentage output is set to 10% there should be (obviously) 10
     * records in csv no more no less.
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    @Test
    public void percentagic() throws ReportsException {
 
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "10%");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("10%");
       reporter1.addDestination(csvDestination);
       reporter1.setProperty("decimal_format", "0.0");
 
       ReportManager rm = new ReportManager();
       rm.getTestRunInfo().setTestIterations(10);
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "test");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("test");
       rm.loadConfigValues();
       rm.addReporter(reporter1);
       rm.assertUntouchedProperties();
@@ -64,22 +65,23 @@ public class NonOverlayReportingTest extends ReportingTestBase {
     * When percentage output is set to 10% there should be (obviously) 10
     * records in csv no more no less. This test (aditionaly to previous). uses
     * timely settings
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    @Test
    public void percentagicTimely() throws ReportsException {
 
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "21%");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("21%");
       reporter1.addDestination(csvDestination);
       reporter1.setProperty("decimal_format", "0.0");
 
       ReportManager rm = new ReportManager();
       rm.getTestRunInfo().setTestDuration(5);
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "test");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("test");
       rm.loadConfigValues();
       rm.addReporter(reporter1);
       rm.assertUntouchedProperties();

@@ -35,16 +35,16 @@ public class StressTest extends ReportingTestBase {
    public void atReporter() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "1.000s");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("1.000s");
 
       reporter1.addDestination(csvDestination);
       reporter1.setProperty("time_window_size", "2");
       reporter1.setProperty("decimal_format", "0.0");
 
       ReportManager rm = new ReportManager();
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "stress");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("stress");
       rm.loadConfigValues();
       rm.addReporter(reporter1);
       rm.assertUntouchedProperties();
@@ -57,15 +57,15 @@ public class StressTest extends ReportingTestBase {
    public void atResponse() throws ReportsException {
       Reporter reporter1 = new ResponseTimeReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "1.000s");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("1.000s");
 
       reporter1.addDestination(csvDestination);
       reporter1.setProperty("decimal_format", "0.000");
 
       ReportManager rm = new ReportManager();
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "stress");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("stress");
       rm.loadConfigValues();
       rm.addReporter(reporter1);
       rm.assertUntouchedProperties();

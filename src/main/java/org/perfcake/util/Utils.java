@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -29,6 +30,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeException;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
@@ -39,6 +41,7 @@ import org.perfcake.util.properties.SystemPropertyGetter;
 public class Utils {
 
    public static final File resourcesDir = new File("src/main/resources");
+   public static final Logger log = Logger.getLogger(Utils.class);
 
    /**
     * It takes a string and replaces all ${&lt;property.name&gt;} placeholders
@@ -134,6 +137,11 @@ public class Utils {
    public static String readFilteredContent(URL url) throws IOException {
       try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
          return filterProperties(scanner.useDelimiter("\\Z").next());
+      } catch (NoSuchElementException nsee) {
+         if (log.isEnabledFor(Level.WARN)) {
+            log.warn("The content of " + url + " is empty.");
+         }
+         return "";
       }
    }
 
