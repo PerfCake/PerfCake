@@ -12,6 +12,6 @@
       <property name="target" value="http://${server.host}:${server.port}//jaxws-benchmark-basic/EndpointImpl"/>
    </sender>
    <messages>
-      <message file="5kB_basic_reply.xml"/>
+      <message uri="5kB_basic_reply.xml"/>
    </messages>
 </scenario>

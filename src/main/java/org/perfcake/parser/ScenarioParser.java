@@ -28,8 +28,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import javax.xml.validation.Validator;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
@@ -38,6 +44,7 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
+import org.perfcake.Scenario;
 import org.perfcake.ScenarioExecution;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
@@ -80,8 +87,22 @@ public class ScenarioParser {
    public ScenarioParser(URL scenario) throws PerfCakeException {
       try {
          this.scenarioConfig = Utils.readFilteredContent(scenario);
+
+         Source schemaFile = new StreamSource(getClass().getResourceAsStream("/schemas/perfcake-scenario-" + Scenario.VERSION + ".xsd"));
+         Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes()));
+
+         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+         Schema schema = schemaFactory.newSchema(schemaFile);
+         Validator validator = schema.newValidator();
+
+         if (log.isDebugEnabled()) {
+            log.debug("Validating scenario configuration");
+         }
+         validator.validate(scenarioXML);
       } catch (IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
+      } catch (SAXException e) {
+         throw new PerfCakeException("Cannot validate scenario configuration: ", e);
       }
 
       this.scenarioNode = parseScenarioNode();
@@ -202,59 +223,60 @@ public class ScenarioParser {
 
       try {
          Element messagesElement = (Element) (xPathEvaluate("messages", scenarioNode)).item(0);
+         if (messagesElement != null) {
+            NodeList messageNodes = xPathEvaluate("message", messagesElement);
+            int messageNodesCount = messageNodes.getLength();
+            Message currentMessage = null;
+            MessageTemplate currentMessageToSend = null;
+            Element currentMessageElement = null;
+            String currentMessagePayload = null;
+            String currentMessageMultiplicityAttributeValue = null;
+            Properties currentMessageProperties = null;
+            Properties currentMessageHeaders = null;
+            long currentMessageMultiplicity = -1;
 
-         NodeList messageNodes = xPathEvaluate("message", messagesElement);
-         int messageNodesCount = messageNodes.getLength();
-         Message currentMessage = null;
-         MessageTemplate currentMessageToSend = null;
-         Element currentMessageElement = null;
-         String currentMessagePayload = null;
-         String currentMessageMultiplicityAttributeValue = null;
-         Properties currentMessageProperties = null;
-         Properties currentMessageHeaders = null;
-         long currentMessageMultiplicity = -1;
+            log.info("--- Messages ---");
+            // File messagesDir = new File(Utils.getProperty("perfcake.messages.dir", Utils.resourcesDir.getAbsolutePath() + "/messages"));
+            for (int messageNodeIndex = 0; messageNodeIndex < messageNodesCount; messageNodeIndex++) {
+               currentMessageElement = (Element) messageNodes.item(messageNodeIndex);
+               URL messageUrl = Utils.locationToUrl(currentMessageElement.getAttribute("uri"), "perfcake.messages.dir", Utils.determineDefaultLocation("messages"), "");
+               currentMessagePayload = Utils.readFilteredContent(messageUrl);
+               currentMessageProperties = getPropertiesFromSubNodes(currentMessageElement);
+               currentMessageHeaders = getPropertiesFromSubNodes(currentMessageElement, "header", "name", "value");
 
-         log.info("--- Messages ---");
-         // File messagesDir = new File(Utils.getProperty("perfcake.messages.dir", Utils.resourcesDir.getAbsolutePath() + "/messages"));
-         for (int messageNodeIndex = 0; messageNodeIndex < messageNodesCount; messageNodeIndex++) {
-            currentMessageElement = (Element) messageNodes.item(messageNodeIndex);
-            URL messageUrl = Utils.locationToUrl(currentMessageElement.getAttribute("file"), "perfcake.messages.dir", Utils.determineDefaultLocation("messages"), "");
-            currentMessagePayload = Utils.readFilteredContent(messageUrl);
-            currentMessageProperties = getPropertiesFromSubNodes(currentMessageElement);
-            currentMessageHeaders = getPropertiesFromSubNodes(currentMessageElement, "header", "name", "value");
+               currentMessage = new Message(currentMessagePayload);
+               currentMessage.setProperties(currentMessageProperties);
+               currentMessage.setHeaders(currentMessageHeaders);
 
-            currentMessage = new Message(currentMessagePayload);
-            currentMessage.setProperties(currentMessageProperties);
-            currentMessage.setHeaders(currentMessageHeaders);
+               currentMessageMultiplicityAttributeValue = currentMessageElement.getAttribute("multiplicity");
+               if (currentMessageMultiplicityAttributeValue.equals("")) {
+                  currentMessageMultiplicity = 1L;
+               } else {
+                  currentMessageMultiplicity = Long.valueOf(currentMessageMultiplicityAttributeValue);
+               }
 
-            currentMessageMultiplicityAttributeValue = currentMessageElement.getAttribute("multiplicity");
-            if (currentMessageMultiplicityAttributeValue.equals("")) {
-               currentMessageMultiplicity = 1L;
-            } else {
-               currentMessageMultiplicity = Long.valueOf(currentMessageMultiplicityAttributeValue);
+               NodeList currentMessageValidatorRefNodeList = xPathEvaluate("validatorRef", currentMessageElement);
+               List<String> currentMessageValidatorRefList = new LinkedList<>();
+               Element currentMessageValidatorRefElement = null;
+               int validatorRefCount = currentMessageValidatorRefNodeList.getLength();
+               for (int validatorRefIndex = 0; validatorRefIndex < validatorRefCount; validatorRefIndex++) {
+                  currentMessageValidatorRefElement = (Element) currentMessageValidatorRefNodeList.item(validatorRefIndex);
+                  currentMessageValidatorRefList.add(currentMessageValidatorRefElement.getAttribute("id"));
+               }
+
+               // create message to be send
+               currentMessageToSend = new MessageTemplate(currentMessage, currentMessageMultiplicity, currentMessageValidatorRefList);
+
+               log.info("'- Message (" + messageUrl.toString() + "), " + currentMessageMultiplicity + "x");
+               if (log.isDebugEnabled()) {
+                  log.debug("  '- Properties:");
+                  Utils.logProperties(log, Level.DEBUG, currentMessageProperties, "   '- ");
+                  log.debug("  '- Headers:");
+                  Utils.logProperties(log, Level.DEBUG, currentMessageHeaders, "   '- ");
+               }
+
+               messageStore.add(currentMessageToSend);
             }
-
-            NodeList currentMessageValidatorRefNodeList = xPathEvaluate("validatorRef", currentMessageElement);
-            List<String> currentMessageValidatorRefList = new LinkedList<>();
-            Element currentMessageValidatorRefElement = null;
-            int validatorRefCount = currentMessageValidatorRefNodeList.getLength();
-            for (int validatorRefIndex = 0; validatorRefIndex < validatorRefCount; validatorRefIndex++) {
-               currentMessageValidatorRefElement = (Element) currentMessageValidatorRefNodeList.item(validatorRefIndex);
-               currentMessageValidatorRefList.add(currentMessageValidatorRefElement.getAttribute("id"));
-            }
-
-            // create message to be send
-            currentMessageToSend = new MessageTemplate(currentMessage, currentMessageMultiplicity, currentMessageValidatorRefList);
-
-            log.info("'- Message (" + messageUrl.toString() + "), " + currentMessageMultiplicity + "x");
-            if (log.isDebugEnabled()) {
-               log.debug("  '- Properties:");
-               Utils.logProperties(log, Level.DEBUG, currentMessageProperties, "   '- ");
-               log.debug("  '- Headers:");
-               Utils.logProperties(log, Level.DEBUG, currentMessageHeaders, "   '- ");
-            }
-
-            messageStore.add(currentMessageToSend);
          }
       } catch (XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse messages configuration: ", e);

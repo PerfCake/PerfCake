@@ -33,6 +33,6 @@
       </reporter-->
    </reporting>
    <messages>
-      <message file="5kB_ebws_reply.xml"/>
+      <message uri="5kB_ebws_reply.xml"/>
    </messages>
 </scenario>

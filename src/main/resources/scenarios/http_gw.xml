@@ -33,6 +33,6 @@
       </reporter-->
    </reporting>
    <messages>
-      <message file="5kB_soap_reply.xml"/>
+      <message uri="5kB_soap_reply.xml"/>
    </messages>
 </scenario>

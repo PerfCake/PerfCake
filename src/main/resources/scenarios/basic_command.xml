@@ -25,6 +25,6 @@
       </reporter>
    </reporting>
    <messages>
-      <message file="plain_text.txt"/>
+      <message uri="plain_text.txt"/>
    </messages>
 </scenario>

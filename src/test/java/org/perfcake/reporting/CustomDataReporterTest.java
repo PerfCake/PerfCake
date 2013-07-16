@@ -27,14 +27,14 @@ public class CustomDataReporterTest extends ReportingTestBase {
    public void basic() throws ReportsException {
       Reporter customDataReporter = new CustomReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "1s");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("1s");
 
       customDataReporter.addDestination(csvDestination);
 
       ReportManager rm = new ReportManager();
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "custom");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("custom");
       rm.loadConfigValues();
       rm.addReporter(customDataReporter);
       rm.assertUntouchedProperties();

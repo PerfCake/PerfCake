@@ -58,7 +58,7 @@ public class DummySender extends AbstractSender {
          log.debug("Sending to " + target + "...");
       }
       // nop
-      return message.getPayload();
+      return (message == null) ? message : message.getPayload();
    }
 
    @Override

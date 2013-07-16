@@ -33,14 +33,15 @@ public class UnitsTest extends ReportingTestBase {
    /**
     * Percentage periodicity can be set only to tests that have predefined
     * number of iterations or predefined time (which is always the case).
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    @Test
    public void percents() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "10%");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("10%");
 
       reporter1.addDestination(csvDestination);
       reporter1.setProperty("time_window_size", "2");
@@ -48,8 +49,8 @@ public class UnitsTest extends ReportingTestBase {
 
       ReportManager rm = new ReportManager();
       rm.getTestRunInfo().setTestIterations(10);
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "test");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("test");
       rm.loadConfigValues();
       rm.addReporter(reporter1);
       rm.assertUntouchedProperties();
@@ -62,22 +63,23 @@ public class UnitsTest extends ReportingTestBase {
    /**
     * Iterations periodicity just appends into destinations after specified
     * amount of iterations.
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    @Test
    public void iterations() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "1 it");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("1 it");
 
       reporter1.addDestination(csvDestination);
       reporter1.setProperty("time_window_size", "2");
       reporter1.setProperty("decimal_format", "0.0");
 
       ReportManager rm = new ReportManager();
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "test");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("test");
       rm.loadConfigValues();
       rm.addReporter(reporter1);
       rm.assertUntouchedProperties();
@@ -89,22 +91,23 @@ public class UnitsTest extends ReportingTestBase {
 
    /**
     * Classical seconds/minutes/hours/days.
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    @Test
    public void time() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "2s");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("2s");
 
       reporter1.addDestination(csvDestination);
       reporter1.setProperty("time_window_size", "2");
       reporter1.setProperty("decimal_format", "0.0");
 
       ReportManager rm = new ReportManager();
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "test");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("test");
       rm.loadConfigValues();
       rm.addReporter(reporter1);
       rm.assertUntouchedProperties();

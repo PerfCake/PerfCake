@@ -78,7 +78,7 @@
                               <xsd:element maxOccurs="unbounded" ref="pc:header"/>
                               <xsd:element maxOccurs="unbounded" ref="pc:property"/>
                            </xsd:choice>
-                           <xsd:attribute name="file" type="xsd:string"/>
+                           <xsd:attribute name="uri" type="xsd:string"/>
                            <xsd:attribute name="multiplicity" type="xsd:string"/>
                         </xsd:complexType>
                      </xsd:element>

@@ -85,12 +85,15 @@ public class HTTPSender extends AbstractSender {
 
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
-      reqStr = message.getPayload().toString();
-      len = reqStr.length();
-      if ("GET".equals(method) || "HEAD".equals(method) || "DELETE".equals(method)) {
-         String targetGET = target + reqStr;
-         url = new URL(targetGET);
+      if (message != null) {
+         reqStr = message.getPayload().toString();
+         len = reqStr.length();
+      } else {
+         message = new Message();
+         reqStr = null;
+         len = 0;
       }
+
       rc = (HttpURLConnection) url.openConnection();
       rc.setRequestMethod(method);
       rc.setDoInput(true);
@@ -98,7 +101,9 @@ public class HTTPSender extends AbstractSender {
          rc.setDoOutput(true);
       }
       rc.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
-      rc.setRequestProperty("Content-Length", Integer.toString(len));
+      if (len > 0) {
+         rc.setRequestProperty("Content-Length", Integer.toString(len));
+      }
       Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
       for (String property : propertyNameSet) {
          rc.setRequestProperty(property, message.getProperty(property));
@@ -140,7 +145,7 @@ public class HTTPSender extends AbstractSender {
    public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
       int respCode = -1;
       rc.connect();
-      if ("POST".equals(method) || "PUT".equals(method)) {
+      if (reqStr != null && ("POST".equals(method) || "PUT".equals(method))) {
          OutputStreamWriter out = new OutputStreamWriter(rc.getOutputStream());
          out.write(reqStr, 0, len);
          out.flush();

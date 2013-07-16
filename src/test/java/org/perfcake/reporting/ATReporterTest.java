@@ -34,8 +34,8 @@ public class ATReporterTest extends ReportingTestBase {
    public void averageReporter() throws ReportsException {
       Reporter reporter1 = new ATReporter();
       CsvDestination csvDestination = new CsvDestination();
-      csvDestination.setProperty("outputPath", TEST_OUTPUT_DIR);
-      csvDestination.setProperty("periodicity", "1.001s");
+      csvDestination.setOutputPath(TEST_OUTPUT_DIR);
+      csvDestination.setPeriodicity("1.001s");
 
       reporter1.addDestination(csvDestination);
       reporter1.setProperty("time_window_size", "2");
@@ -44,8 +44,8 @@ public class ATReporterTest extends ReportingTestBase {
 
       ReportManager rm = new ReportManager();
 
-      rm.setProperty("tags", "http, gateway");
-      rm.setProperty("uniqueId", "test");
+      rm.setTags("http, gateway");
+      rm.setUniqueId("test");
       rm.loadConfigValues();
       rm.addReporter(reporter1);
       rm.assertUntouchedProperties();
