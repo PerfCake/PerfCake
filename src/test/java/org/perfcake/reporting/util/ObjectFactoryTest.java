@@ -1,12 +1,12 @@
 package org.perfcake.reporting.util;
 
+import java.util.List;
 import java.util.Properties;
-
-import junit.framework.Assert;
 
 import org.perfcake.message.generator.ImmediateMessageGenerator;
 import org.perfcake.message.sender.HTTPSender;
 import org.perfcake.util.ObjectFactory;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class ObjectFactoryTest {
@@ -15,14 +15,11 @@ public class ObjectFactoryTest {
    public void testObjectSummoning() throws Throwable {
       Properties p = new Properties();
       p.setProperty("threads", "42");
-      p.setProperty("timeWindowSize", "123");
       p.setProperty("count", "10001");
       ImmediateMessageGenerator g = (ImmediateMessageGenerator) ObjectFactory.summonInstance("org.perfcake.message.generator.ImmediateMessageGenerator", p);
 
-      Assert.assertEquals(42, g.getThreads());
-      Assert.assertEquals(123, g.getTimeWindowSize());
-      Assert.assertEquals(10001L, g.getCount());
-
+      Assert.assertEquals(g.getThreads(), 42, "generator's threads");
+      Assert.assertEquals(g.getCount(), 10001L, "generator's iteration count");
    }
 
    @Test
@@ -30,8 +27,14 @@ public class ObjectFactoryTest {
       Properties p = new Properties();
       p.setProperty("method", "GET");
       p.setProperty("target", "http://localhost/get");
+      p.setProperty("expectedResponseCodes", "200,203,500");
       HTTPSender sender = (HTTPSender) ObjectFactory.summonInstance("org.perfcake.message.sender.HTTPSender", p);
-      Assert.assertEquals("GET", sender.getMethod());
-      Assert.assertEquals("http://localhost/get", sender.getTarget());
+      Assert.assertEquals(sender.getMethod(), "GET", "HTTP method");
+      Assert.assertEquals(sender.getTarget(), "http://localhost/get", "target URL");
+      List<Integer> senderExpectedResponseCodeList = sender.getExpectedResponseCodeList();
+      Assert.assertEquals(senderExpectedResponseCodeList.size(), 3, "sender's expected response code list size");
+      Assert.assertEquals(senderExpectedResponseCodeList.get(0), Integer.valueOf(200), "sender's expected response code");
+      Assert.assertEquals(senderExpectedResponseCodeList.get(1), Integer.valueOf(203), "sender's expected response code");
+      Assert.assertEquals(senderExpectedResponseCodeList.get(2), Integer.valueOf(500), "sender's expected response code");
    }
 }

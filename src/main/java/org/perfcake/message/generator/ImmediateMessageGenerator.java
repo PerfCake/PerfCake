@@ -18,41 +18,65 @@ package org.perfcake.message.generator;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
 import org.perfcake.reporting.ReportManager;
 
 /**
+ * <p>
+ * Iteration count driven generator - generates a specified number of iterations. The actual number is specified by the value of {@link #count} with the default value of 1.
+ * </p>
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class ImmediateMessageGenerator extends AbstractMessageGenerator {
 
+   /**
+    * The generator's logger.
+    */
    private static final Logger log = Logger.getLogger(ImmediateMessageGenerator.class);
-   private AtomicLong counter = new AtomicLong(0);
-   private ExecutorService es;
-   protected int timeWindowSize = 16; // default
+
+   /**
+    * The properties that will be set on messages that are send.
+    */
    protected Map<String, String> messageProperties = null;
+
+   /**
+    * The number of iterations to generate.
+    */
+   protected long count = 1;
+
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.generator.AbstractMessageGenerator#setReportManager(org.perfcake.reporting.ReportManager)
+    */
    @Override
    public void setReportManager(ReportManager reportManager) {
-      this.reportManager = reportManager;
+      super.setReportManager(reportManager);
       reportManager.getTestRunInfo().setTestIterations(count);
    }
 
-   protected void updateStopTime() {
-      stop = System.currentTimeMillis();
-   }
-
+   /**
+    * Computes the current average speed the iterations are executed.
+    * 
+    * @param The
+    *           iteration count.
+    * @return The current average iteration execution speed.
+    */
    protected float getSpeed(long cnt) {
       long now = (stop == -1) ? System.currentTimeMillis() : stop;
       return 1000f * cnt / (now - start);
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.generator.AbstractMessageGenerator#generate()
+    */
    @Override
    public void generate() throws Exception {
       isMeasuring = !warmUpEnabled;
@@ -61,11 +85,11 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
       if (log.isInfoEnabled()) {
          log.info("Preparing senders");
       }
-      es = Executors.newFixedThreadPool(threads);
+      executorService = Executors.newFixedThreadPool(threads);
       for (int i = 0; i < count; i++) {
-         es.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring, count));
+         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
       }
-      es.shutdown();
+      executorService.shutdown();
 
       boolean terminated = false;
       long lastValue = 0;
@@ -77,7 +101,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
       }
       while (!terminated) {
          try {
-            terminated = es.awaitTermination(1, TimeUnit.SECONDS);
+            terminated = executorService.awaitTermination(1, TimeUnit.SECONDS);
 
             // should we log a change?
             long cnt = counter.get();
@@ -99,42 +123,58 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
             // "Shit happens!", Forrest Gump
          } catch (Exception e) {
             e.printStackTrace();
-            es.shutdownNow();
+            executorService.shutdownNow();
          }
 
       }
       setStopTime();
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.generator.AbstractMessageGenerator#postWarmUp()
+    */
    @Override
    protected void postWarmUp() throws Exception {
       if (log.isInfoEnabled()) {
          log.info("Server is warmed up - starting to measure...");
       }
       setStartTime();
-      es.shutdown();
-      List<Runnable> waiting = es.shutdownNow();
+      executorService.shutdown();
+      List<Runnable> waiting = executorService.shutdownNow();
       messageSenderManager.releaseAllSenders();
-      es.awaitTermination(30, TimeUnit.SECONDS);
-      es = Executors.newFixedThreadPool(threads);
+      executorService.awaitTermination(30, TimeUnit.SECONDS);
+      executorService = Executors.newFixedThreadPool(threads);
       counter.set(0);
       // responseTime.set(0);
       int cnt = waiting.size();
       int i = 0;
       for (; i < cnt; i++) {
-         es.submit(waiting.get(i));
+         executorService.submit(waiting.get(i));
       }
       for (; i < count; i++) {
-         es.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring, count));
+         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
       }
-      es.shutdown();
+      executorService.shutdown();
    }
 
-   public int getTimeWindowSize() {
-      return timeWindowSize;
+   /**
+    * Used to read the number of iterations to send.
+    * 
+    * @return The number of iterations to send.
+    */
+   public long getCount() {
+      return count;
    }
 
-   public void setTimeWindowSize(int timeWindowSize) {
-      this.timeWindowSize = timeWindowSize;
+   /**
+    * Sets the number of iterations to send.
+    * 
+    * @param count
+    *           The number of iterations to send.
+    */
+   public void setCount(long count) {
+      this.count = count;
    }
 }

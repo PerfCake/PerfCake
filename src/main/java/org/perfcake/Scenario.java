@@ -135,8 +135,9 @@ public class Scenario {
     * @throws PerfCakeException
     */
    public void close() throws PerfCakeException {
-      if (generator != null)
+      if (generator != null) {
          generator.close();
+      }
       ValidatorManager.setFinished(true);
 
       if (log.isTraceEnabled()) {

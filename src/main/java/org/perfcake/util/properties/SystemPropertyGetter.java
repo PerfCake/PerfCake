@@ -23,11 +23,11 @@ package org.perfcake.util.properties;
 public enum SystemPropertyGetter implements PropertyGetter {
 
    INSTANCE;
-   
+
    private SystemPropertyGetter() {
-      
+
    }
-   
+
    /**
     * Returns a property value. First it looks at system properties using {@link System#getProperty(String)} if the system property does not exist
     * it looks at environment variables using {@link System#getenv(String)}. If
