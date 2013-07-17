@@ -23,14 +23,30 @@ import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
 
 /**
+ * This sender is intended to work as a dummy sender and to be used for
+ * scenario testing and developing purposes. It does not actually send any message.
+ * It can simulate a synchronous waiting for a reply by setting the {@link #delay} property in milliseconds (with default values 0).
+ * property.
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
 public class DummySender extends AbstractSender {
+   /**
+    * The sender's logger.
+    */
    private static final Logger log = Logger.getLogger(DummySender.class);
 
+   /**
+    * The delay duration to simulate a asonchronous waiting.
+    */
+   private long delay = 0;
+
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#init()
+    */
    @Override
    public void init() throws Exception {
       if (log.isDebugEnabled()) {
@@ -39,6 +55,11 @@ public class DummySender extends AbstractSender {
       // nop
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#close()
+    */
    @Override
    public void close() {
       if (log.isDebugEnabled()) {
@@ -47,28 +68,70 @@ public class DummySender extends AbstractSender {
       // nop
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
+    */
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       // nop
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
+    */
    @Override
    public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
       if (log.isDebugEnabled()) {
          log.debug("Sending to " + target + "...");
       }
+      if (delay > 0) {
+         Thread.sleep(delay);
+      }
       // nop
       return (message == null) ? message : message.getPayload();
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
+    */
    @Override
    public Serializable doSend(Message message) throws Exception {
       return send(message, null);
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
+    */
    @Override
    public void postSend(Message message) throws Exception {
       // nop
+   }
+
+   /**
+    * Used to read the value of delay.
+    * 
+    * @return The delay.
+    */
+   public long getDelay() {
+      return delay;
+   }
+
+   /**
+    * Sets the value of delay.
+    * 
+    * @param delay
+    *           The delay to set.
+    */
+   public void setDelay(long delay) {
+      this.delay = delay;
    }
 
 }

@@ -53,7 +53,7 @@ public class HTTPSSender extends HTTPSender {
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
-      ((HttpsURLConnection) rc).setSSLSocketFactory(sslFactory);
+      ((HttpsURLConnection) requestConnection).setSSLSocketFactory(sslFactory);
    }
 
    private KeyStore initKeyStore(String keyStoreLocation, String keyStorePassword) throws Exception {
@@ -61,10 +61,10 @@ public class HTTPSSender extends HTTPSender {
       try (InputStream is = Utils.locationToUrl(keyStoreLocation, "perfcake.scenarios.dir", Utils.determineDefaultLocation("keystores"), "").openStream()) {
          keyStore.load(is, keyStorePassword.toCharArray());
       }
-   
+
       return keyStore;
    }
-   
+
    private SSLSocketFactory initKeyStores() throws Exception {
       KeyStore keyStore_ = null;
       KeyStore trustStore_ = null;
@@ -90,7 +90,7 @@ public class HTTPSSender extends HTTPSender {
             trustManager.init(trustStore_);
          }
       }
-      
+
       SSLContext ctx = SSLContext.getInstance("TLS");
       ctx.init(keyManager == null ? null : keyManager.getKeyManagers(), trustManager == null ? null : trustManager.getTrustManagers(), null);
 

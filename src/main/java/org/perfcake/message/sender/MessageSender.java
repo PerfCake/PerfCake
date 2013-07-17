@@ -25,6 +25,7 @@ import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.MessageValidator;
 
 /**
+ * Interface for a message sender.
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
@@ -36,23 +37,33 @@ public interface MessageSender {
     */
    public void init() throws Exception;
 
-   /** Closes the sender. */
+   /**
+    * Closes the sender.
+    */
    public void close() throws PerfCakeException;
 
-   /** Sends a message. */
+   /**
+    * Sends a message.
+    */
    public Serializable send(Message message) throws Exception;
 
-   /** Sends a message with additional properties. */
+   /**
+    * Sends a message with additional properties.
+    */
    public Serializable send(Message message, Map<String, String> properties) throws Exception;
 
-   /** Returns response time in nanoseconds. */
+   /**
+    * Returns response time in nanoseconds.
+    */
    public long getResponseTime();
 
-   /** Report manager that any sender can use to report anything **/
+   /**
+    * Report manager that any sender can use to report anything.
+    **/
    public void setReportManager(ReportManager reportManager);
 
    /**
-    * Message validator usable for I/O (most probably just O) message validation
+    * Message validator usable for I/O (most probably just O) message validation.
     */
    public void setMessageValidator(MessageValidator messageValidator);
 

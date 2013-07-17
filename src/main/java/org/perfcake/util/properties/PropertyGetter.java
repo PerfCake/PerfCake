@@ -22,6 +22,7 @@ package org.perfcake.util.properties;
 public interface PropertyGetter {
 
    public String getProperty(String propName, String defaultValue);
+
    public String getProperty(String propName);
-   
+
 }

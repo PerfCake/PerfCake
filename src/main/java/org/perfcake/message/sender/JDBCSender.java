@@ -30,25 +30,54 @@ import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
 
 /**
- * TODO: Report individual result lines to result validator
+ * The sender that is able to send SQL queries via JDBC.
  * 
+ * TODO: Report individual result lines to result validator
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
- * 
  */
 public class JDBCSender extends AbstractSender {
+   /**
+    * The sender's logger.
+    */
    private static final Logger log = Logger.getLogger(JDBCSender.class);
 
+   /**
+    * JDBC URL string.
+    */
    private String jdbcURL = "";
-   private String driverClass = "";
-   private String username = "";
-   private String password = "";
-   private Connection connection = null;
-   private Statement statement;
-   private Serializable retval;
 
+   /**
+    * JDBC driver class.
+    */
+   private String driverClass = "";
+
+   /**
+    * JDBC username.
+    */
+   private String username = "";
+
+   /**
+    * JDBC password.
+    */
+   private String password = "";
+
+   /**
+    * JDBC connection.
+    */
+   private Connection connection = null;
+
+   /**
+    * SQL statement.
+    */
+   private Statement statement;
+
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#init()
+    */
    @Override
    public void init() throws Exception {
       this.jdbcURL = target;
@@ -56,6 +85,11 @@ public class JDBCSender extends AbstractSender {
       connection = DriverManager.getConnection(jdbcURL, username, password);
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#close()
+    */
    @Override
    public void close() {
       try {
@@ -67,15 +101,25 @@ public class JDBCSender extends AbstractSender {
       }
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
+    */
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       statement = connection.createStatement();
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
+    */
    @Override
    public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
       boolean result = statement.execute((String) message.getPayload());
-      // log.info(message.getPayload());
+      Serializable retVal;
       if (result) {
          ResultSet resultSet = statement.getResultSet();
 
@@ -105,12 +149,12 @@ public class JDBCSender extends AbstractSender {
             log.debug("Result set's row count: " + rowCount);
          }
 
-         retval = resultSet.toString();
+         retVal = resultSet.toString();
       } else {
-         retval = statement.getUpdateCount();
+         retVal = statement.getUpdateCount();
       }
 
-      return retval;
+      return retVal;
    }
 
    @Override
@@ -123,26 +167,78 @@ public class JDBCSender extends AbstractSender {
       statement.close();
    }
 
+   /**
+    * Used to read the value of jdbcURL.
+    * 
+    * @return The jdbcURL.
+    */
+   public String getJdbcURL() {
+      return jdbcURL;
+   }
+
+   /**
+    * Sets the value of jdbcURL.
+    * 
+    * @param jdbcURL
+    *           The jdbcURL to set.
+    */
+   public void setJdbcURL(String jdbcURL) {
+      this.jdbcURL = jdbcURL;
+   }
+
+   /**
+    * Used to read the value of driverClass.
+    * 
+    * @return The driverClass.
+    */
    public String getDriverClass() {
       return driverClass;
    }
 
+   /**
+    * Sets the value of driverClass.
+    * 
+    * @param driverClass
+    *           The driverClass to set.
+    */
    public void setDriverClass(String driverClass) {
       this.driverClass = driverClass;
    }
 
+   /**
+    * Used to read the value of username.
+    * 
+    * @return The username.
+    */
    public String getUsername() {
       return username;
    }
 
+   /**
+    * Sets the value of username.
+    * 
+    * @param username
+    *           The username to set.
+    */
    public void setUsername(String username) {
       this.username = username;
    }
 
+   /**
+    * Used to read the value of password.
+    * 
+    * @return The password.
+    */
    public String getPassword() {
       return password;
    }
 
+   /**
+    * Sets the value of password.
+    * 
+    * @param password
+    *           The password to set.
+    */
    public void setPassword(String password) {
       this.password = password;
    }
