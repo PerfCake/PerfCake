@@ -16,53 +16,23 @@
 
 package org.perfcake.message.sender;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import org.perfcake.message.Message;
-
 /**
- * TODO: Provide implementation. Should invoke external Groovy script and pass the message payload as a parameter or stream it to input (configurable).
- * TODO: This can extend CommandSender probably.
+ * 
+ * The sender that is able to execute an external Groovy script and pass the message
+ * payload via a stream it to input. It extends the {@link CommandSender} and
+ * executes the groovy script via groovy command with <code>groovy {@link #target}</code> passed as an argument.
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
 public class GroovySender extends CommandSender {
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.CommandSender#init()
+    */
    @Override
    public void init() throws Exception {
       super.setCommand("groovy " + this.target);// groovy groovy-file
-
    }
-
-   @Override
-   public void close() {
-      // TODO Auto-generated method stub
-
-   }
-
-   @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
-
-   }
-
-   @Override
-   public Serializable doSend(Message message) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
-   @Override
-   public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
-      Serializable result = super.doSend(message, properties);
-      return result;
-   }
-
-   @Override
-   public void postSend(Message message) throws Exception {
-      super.postSend(message);
-   }
-
 }

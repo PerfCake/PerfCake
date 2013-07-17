@@ -34,6 +34,7 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 
 /**
+ * The sender that is able to send the messages via HTTP protocol.
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
@@ -41,41 +42,126 @@ import org.perfcake.message.Message;
  */
 public class HTTPSender extends AbstractSender {
 
+   /**
+    * Default expected response code.
+    */
    protected static final int DEFAULT_EXPECTED_CODE = 200;
 
+   /**
+    * The sender's logger.
+    */
    private static final Logger log = Logger.getLogger(HTTPSender.class);
 
+   /**
+    * The URL where the HTTP request is send.
+    */
    private URL url;
-   private static final List<String> supportedMethodList = Collections.synchronizedList(Arrays.asList("GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"));
-   private String method = "POST";
-   private List<Integer> expectedResponseCodes = Arrays.asList(DEFAULT_EXPECTED_CODE);
-   protected HttpURLConnection rc;
-   private String reqStr;
-   private int len;
 
+   /**
+    * The list of supported HTTP methods.
+    */
+   private static final List<String> supportedMethodList = Collections.synchronizedList(Arrays.asList("GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"));
+
+   /**
+    * The HTTP method that will be used.
+    */
+   private String method = "POST";
+
+   /**
+    * The list of response codes that are expected to be returned by HTTP response.
+    */
+   private List<Integer> expectedResponseCodeList = Arrays.asList(DEFAULT_EXPECTED_CODE);
+
+   private String expectedResponseCodes = String.valueOf(DEFAULT_EXPECTED_CODE);
+
+   /**
+    * The HTTP request connection.
+    */
+   protected HttpURLConnection requestConnection;
+
+   /**
+    * The request payload.
+    */
+   private String payload;
+
+   /**
+    * The request payload lenght.
+    */
+   private int payloadLenght;
+
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#init()
+    */
    @Override
    public void init() throws Exception {
       url = new URL(target);
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#close()
+    */
    @Override
    public void close() {
+      // nop
    }
 
-   public void setExpectedResponseCodes(String codes) {
-      setExpectedResponseCodes(codes.split(","));
+   /**
+    * Sets the value of expectedResponseCodes property.
+    * 
+    * @param expectedResponseCodes
+    *           The expectedResponseCodes property to set.
+    */
+   public void setExpectedResponseCodes(String expectedResponseCodes) {
+      this.expectedResponseCodes = expectedResponseCodes;
+      setExpectedResponseCodesList(expectedResponseCodes.split(","));
    }
 
-   public void setExpectedResponseCodes(String[] codes) {
+   /**
+    * Used to read the list of expected response codes.
+    * 
+    * @return The list of expected response codes.
+    */
+   public List<Integer> getExpectedResponseCodeList() {
+      return expectedResponseCodeList;
+   }
+
+   /**
+    * Used to read the value of expectedResponseCodes property.
+    * 
+    * @return The expectedResponseCodes.
+    */
+   public String getExpectedResponseCodes() {
+      return expectedResponseCodes;
+   }
+
+   /**
+    * Sets a list of expected response codes.
+    * 
+    * @param codes
+    *           The array of codes.
+    */
+   protected void setExpectedResponseCodesList(String[] codes) {
       LinkedList<Integer> numCodes = new LinkedList<Integer>();
-      for (int i = 0; i < codes.length; i++) {
-         numCodes.add(Integer.parseInt(codes[i].trim()));
+      for (String code : codes) {
+         numCodes.add(Integer.parseInt(code.trim()));
       }
-      expectedResponseCodes = numCodes;
+      expectedResponseCodeList = numCodes;
    }
 
+   /**
+    * Checks if the code is expected.
+    * 
+    * @param code
+    *           Checked response code.
+    * @return
+    *         true/false according to if the code is expected or not.
+    */
    private boolean checkResponseCode(int code) {
-      for (int i : expectedResponseCodes) {
+      for (int i : expectedResponseCodeList) {
          if (i == code) {
             return true;
          }
@@ -83,30 +169,35 @@ public class HTTPSender extends AbstractSender {
       return false;
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
+    */
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       if (message != null) {
-         reqStr = message.getPayload().toString();
-         len = reqStr.length();
+         payload = message.getPayload().toString();
+         payloadLenght = payload.length();
       } else {
          message = new Message();
-         reqStr = null;
-         len = 0;
+         payload = null;
+         payloadLenght = 0;
       }
 
-      rc = (HttpURLConnection) url.openConnection();
-      rc.setRequestMethod(method);
-      rc.setDoInput(true);
+      requestConnection = (HttpURLConnection) url.openConnection();
+      requestConnection.setRequestMethod(method);
+      requestConnection.setDoInput(true);
       if ("POST".equals(method) || "PUT".equals(method)) {
-         rc.setDoOutput(true);
+         requestConnection.setDoOutput(true);
       }
-      rc.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
-      if (len > 0) {
-         rc.setRequestProperty("Content-Length", Integer.toString(len));
+      requestConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+      if (payloadLenght > 0) {
+         requestConnection.setRequestProperty("Content-Length", Integer.toString(payloadLenght));
       }
       Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
       for (String property : propertyNameSet) {
-         rc.setRequestProperty(property, message.getProperty(property));
+         requestConnection.setRequestProperty(property, message.getProperty(property));
       }
       // set additional properties
       if (log.isDebugEnabled()) {
@@ -116,7 +207,7 @@ public class HTTPSender extends AbstractSender {
          propertyNameSet = properties.keySet();
          for (String property : propertyNameSet) {
             String pValue = (properties.get(property));
-            rc.setRequestProperty(property, pValue);
+            requestConnection.setRequestProperty(property, pValue);
             if (log.isDebugEnabled()) {
                log.debug(property + ": " + pValue);
             }
@@ -130,41 +221,51 @@ public class HTTPSender extends AbstractSender {
             if (log.isDebugEnabled()) {
                log.debug(header + ": " + hValue);
             }
-            rc.setRequestProperty(header, hValue);
+            requestConnection.setRequestProperty(header, hValue);
          }
       }
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
+    */
    @Override
    public Serializable doSend(Message message) throws Exception {
-      // TODO Auto-generated method stub
+      // nop
       return null;
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
+    */
    @Override
    public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
       int respCode = -1;
-      rc.connect();
-      if (reqStr != null && ("POST".equals(method) || "PUT".equals(method))) {
-         OutputStreamWriter out = new OutputStreamWriter(rc.getOutputStream());
-         out.write(reqStr, 0, len);
+      requestConnection.connect();
+      if (payload != null && ("POST".equals(method) || "PUT".equals(method))) {
+         OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream());
+         out.write(payload, 0, payloadLenght);
          out.flush();
-         rc.getOutputStream().close();
+         requestConnection.getOutputStream().close();
       }
 
-      respCode = rc.getResponseCode();
+      respCode = requestConnection.getResponseCode();
       if (!checkResponseCode(respCode)) {
-         String errorMess = "The server returned an unexpected HTTP response code: " + respCode + " " + "\"" + rc.getResponseMessage() + "\". Expected HTTP codes are ";
-         for (int code : expectedResponseCodes) {
+         String errorMess = "The server returned an unexpected HTTP response code: " + respCode + " " + "\"" + requestConnection.getResponseMessage() + "\". Expected HTTP codes are ";
+         for (int code : expectedResponseCodeList) {
             errorMess += Integer.toString(code) + ", ";
          }
          throw new PerfCakeException(errorMess.substring(0, errorMess.length() - 2) + ".");
       }
       InputStream rcis = null;
       if (respCode < 400) {
-         rcis = rc.getInputStream();
+         rcis = requestConnection.getInputStream();
       } else {
-         rcis = rc.getErrorStream();
+         rcis = requestConnection.getErrorStream();
       }
       char[] cbuf = new char[10 * 1024];
       InputStreamReader read = new InputStreamReader(rcis);
@@ -182,15 +283,31 @@ public class HTTPSender extends AbstractSender {
       return payload;
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
+    */
    @Override
    public void postSend(Message message) throws Exception {
-      rc.disconnect();
+      requestConnection.disconnect();
    }
 
+   /**
+    * Used to read the value of HTTP method.
+    * 
+    * @return The HTTP method.
+    */
    public String getMethod() {
       return method;
    }
 
+   /**
+    * Sets the value of HTTP method.
+    * 
+    * @param method
+    *           The HTTP method to set.
+    */
    public void setMethod(String method) {
       if (supportedMethodList.contains(method)) {
          this.method = method;
@@ -198,4 +315,5 @@ public class HTTPSender extends AbstractSender {
          throw new IllegalArgumentException("The requested method (\"" + method + "\") is not supported.");
       }
    }
+
 }

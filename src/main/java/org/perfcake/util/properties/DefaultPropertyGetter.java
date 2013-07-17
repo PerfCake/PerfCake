@@ -24,11 +24,11 @@ import java.util.Properties;
 public class DefaultPropertyGetter implements PropertyGetter {
 
    private final Properties p;
-   
+
    public DefaultPropertyGetter(Properties props) {
       this.p = props;
    }
-   
+
    @Override
    public String getProperty(String propName, String defaultValue) {
       return p.getProperty(propName, defaultValue);

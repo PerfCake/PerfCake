@@ -6,7 +6,10 @@
    <version>0.2-SNAPSHOT</version>
    <packaging>jar</packaging>
    <name>PerfCake</name>
-   <url>http://perfcake.org</url>
+   <organization>
+      <name>PerfCake Community</name>
+      <url>http://www.perfcake.org</url>
+   </organization>
    <repositories>
       <repository>
          <id>maven-central-repository</id>
@@ -261,6 +264,14 @@
                         <followSymlinks>false</followSymlinks>
                      </fileset>
                   </filesets>
+               </configuration>
+            </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-javadoc-plugin</artifactId>
+               <configuration>
+                  <windowtitle>${project.name} API Documentation (version ${project.version})</windowtitle>
+                  <doctitle>${project.name} API Documentation (version ${project.version})</doctitle>
                </configuration>
             </plugin>
          </plugins>

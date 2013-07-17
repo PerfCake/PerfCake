@@ -51,7 +51,7 @@ public class ScenarioExecution {
          try {
             scenario.close();
          } catch (PerfCakeException e) {
-            log.fatal("Scenario did not finish properly: ", e);            
+            log.fatal("Scenario did not finish properly: ", e);
          }
       }
    }
