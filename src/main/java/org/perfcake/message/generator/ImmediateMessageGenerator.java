@@ -18,10 +18,8 @@ package org.perfcake.message.generator;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
 import org.perfcake.reporting.ReportManager;
@@ -40,16 +38,6 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
     * The generator's logger.
     */
    private static final Logger log = Logger.getLogger(ImmediateMessageGenerator.class);
-
-   /**
-    * The counter that contains the number of iterations successfully executed.
-    */
-   private AtomicLong counter = new AtomicLong(0);
-
-   /**
-    * The executor service used to run the threads.
-    */
-   private ExecutorService executorService;
 
    /**
     * The properties that will be set on messages that are send.
@@ -75,8 +63,9 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
    /**
     * Computes the current average speed the iterations are executed.
     * 
-    * @param cnt
-    * @return
+    * @param The
+    *           iteration count.
+    * @return The current average iteration execution speed.
     */
    protected float getSpeed(long cnt) {
       long now = (stop == -1) ? System.currentTimeMillis() : stop;
