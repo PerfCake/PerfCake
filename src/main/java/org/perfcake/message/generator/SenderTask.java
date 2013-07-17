@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.perfcake.PerfCakeConst;
@@ -16,28 +15,78 @@ import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidatorManager;
 
+/**
+ * <p>
+ * The sender task is a runnable class that is executing a single task of sending the message(s) from the message store using instances of {@link MessageSender} provided by message sender manager (see {@link MessageSenderManager}), receiving the message sender's response and handling the reporting and response message validation.
+ * </p>
+ * <p>
+ * It is used by the generators.
+ * </p>
+ * 
+ * @author Pavel Macík <pavel.macik@gmail.com>
+ */
 class SenderTask implements Runnable {
 
+   /**
+    * Reference to a message sender manager that is providing the message senders.
+    */
    private final MessageSenderManager senderManager;
+
+   /**
+    * Reference to a message store where the messages are taken from.
+    */
    private final List<MessageTemplate> messageStore;
+
+   /**
+    * Reference to a counter of successfully executed iterations.
+    */
    private final AtomicLong counter;
+
+   /**
+    * Indicates whether the message numbering is enabled or disabled.
+    */
    private final boolean messageNumberingEnabled;
+
+   /**
+    * Indicates whether the system is in a state when it measures the performance.
+    */
    private final boolean isMeasuring;
-   private long count;
-   private static AtomicBoolean firstSent = new AtomicBoolean(false);
+
+   /**
+    * Reference to a report manager.
+    */
    private final ReportManager reportManager;
 
-   public SenderTask(ReportManager rm, AtomicLong counter2, MessageSenderManager senderManager, List<MessageTemplate> messageStore, boolean messageNumberingEnabled, boolean isMeasuring, long count) {
-      this.reportManager = rm;
+   /**
+    * Creates a new instance of SenderTask.
+    * 
+    * @param reportManager
+    *           Reference to a report manager.
+    * @param counter
+    *           Reference to a counter of successfully executed iterations.
+    * @param senderManager
+    *           Reference to a message sender manager that is providing the message senders.
+    * @param messageStore
+    *           Reference to a message store where the messages are taken from.
+    * @param messageNumberingEnabled
+    *           Indicates whether the message numbering is enabled or disabled.
+    * @param isMeasuring
+    *           Indicates whether the system is in a state when it measures the performance.
+    */
+   public SenderTask(ReportManager reportManager, AtomicLong counter, MessageSenderManager senderManager, List<MessageTemplate> messageStore, boolean messageNumberingEnabled, boolean isMeasuring) {
+      this.reportManager = reportManager;
       this.senderManager = senderManager;
       this.messageStore = messageStore;
-      this.counter = counter2;
-      // this.responseTime = resounseTime;
-      this.count = count;
+      this.counter = counter;
       this.messageNumberingEnabled = messageNumberingEnabled;
       this.isMeasuring = isMeasuring;
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see java.lang.Runnable#run()
+    */
    @Override
    public void run() {
       Properties messageAttributes = new Properties();
@@ -50,26 +99,12 @@ class SenderTask implements Runnable {
          // only set numbering to headers if it is enabled, later there is no change to
          // filter out the headers before sending
          String msgNumberStr = String.valueOf(counter.get());
-         String msgCountStr = String.valueOf(count);
-         if (messageNumberingEnabled) {
+         if (messageNumberingEnabled && isMeasuring) {
             messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, msgNumberStr);
-            messageHeaders.put(PerfCakeConst.COUNT_MESSAGE_PROPERTY, msgCountStr);
          }
 
-         // always set the attributes, it depends on the message content whether the values
-         // will be used
-         messageAttributes.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, msgNumberStr);
-         messageAttributes.put(PerfCakeConst.COUNT_MESSAGE_PROPERTY, msgCountStr);
-
-         firstSent.set(false);
          if (iterator.hasNext()) {
             while (iterator.hasNext()) {
-               if (counter.get() == 0 && isMeasuring && !firstSent.get()) {
-                  firstSent.set(true);
-               } else if (counter.get() == count - 1 && !firstSent.get()) {
-                  firstSent.set(true);
-               }
-
                sender = senderManager.acquireSender();
                MessageTemplate messageToSend = iterator.next();
                Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
@@ -95,10 +130,8 @@ class SenderTask implements Runnable {
             sender = null;
          }
 
-         // responseTime.addAndGet(sender.getResponseTime());
          counter.incrementAndGet();
          reportManager.reportIteration();
-         // sender.close();
       } catch (Exception e) {
          e.printStackTrace();
       } finally {

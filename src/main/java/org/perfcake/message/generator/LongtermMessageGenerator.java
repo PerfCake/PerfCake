@@ -83,7 +83,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     */
    private void sendPack(long count) {
       for (long i = 0; i < count; i++) {
-         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, isMessageNumberingEnabled(), isMeasuring, count));
+         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, isMessageNumberingEnabled(), isMeasuring));
       }
    }
 
