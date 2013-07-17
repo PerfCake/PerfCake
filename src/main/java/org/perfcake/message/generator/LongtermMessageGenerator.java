@@ -16,18 +16,16 @@
 
 package org.perfcake.message.generator;
 
-import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
-import org.perfcake.message.MessageTemplate;
-import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 
 /**
+ * <p>
+ * Time driven generator - generates the load for a specified amount of time. The actual duration is specified by the value of {@link #duration} with the default value of 60s.
+ * </p>
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
@@ -35,41 +33,65 @@ import org.perfcake.reporting.ReportManager;
  */
 public class LongtermMessageGenerator extends AbstractMessageGenerator {
 
+   /**
+    * The generator's logger.
+    */
    private static final Logger log = Logger.getLogger(LongtermMessageGenerator.class);
 
-   protected AtomicLong counter = new AtomicLong(0);
-   private ExecutorService es;
+   /**
+    * TODO: add javadoc comment (internal field)
+    */
+   protected long monitoringPeriod = 1000; // default 1s
 
-//   protected boolean showCurrentSpeed = true;
-//   protected boolean showAverageSpeed = true;
-//   protected boolean showMessageSentCount = true;
-   protected long monitoringPeriod = 1000; // default
+   /**
+    * The amount of time (in seconds) for which the generator will generate the measured load.
+    */
    protected long duration = 60; // default, 60 seconds
-   protected boolean measureResponseTime = false;
+
+   /**
+    * The size of internal thread queue.
+    */
    protected int threadQueueSize = 1000; // default
 
-   @Override
-   public void init(MessageSenderManager messageSenderManager, List<MessageTemplate> messageStore) throws Exception {
-      super.init(messageSenderManager, messageStore);
-   }
-
-   @Override
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.generator.AbstractMessageGenerator#setReportManager(org.perfcake.reporting.ReportManager)
+    */
    public void setReportManager(ReportManager reportManager) {
-      this.reportManager = reportManager;
+      super.setReportManager(reportManager);
       reportManager.getTestRunInfo().setTestDuration(duration);
    }
 
+   /**
+    * Computes the current average speed the iterations are executed.
+    * 
+    * @param The
+    *           iteration count.
+    * @return The current average iteration execution speed.
+    */
    protected float getSpeed(long count) {
       long now = (stop == -1) ? System.currentTimeMillis() : stop;
       return 1000f * count / (now - start);
    }
 
+   /**
+    * Place a specified number of {@link SenderTask} implementing the message sending task to internal thread queue.
+    * 
+    * @param count
+    *           The number of {@link SenderTask};
+    */
    private void sendPack(long count) {
       for (long i = 0; i < count; i++) {
-         es.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, isMessageNumberingEnabled(), isMeasuring, count));
+         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, isMessageNumberingEnabled(), isMeasuring, count));
       }
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.generator.AbstractMessageGenerator#generate()
+    */
    @Override
    public void generate() throws Exception {
 
@@ -79,7 +101,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
       if (log.isInfoEnabled()) {
          log.info("Preparing senders");
       }
-      es = Executors.newFixedThreadPool(threads);
+      executorService = Executors.newFixedThreadPool(threads);
       sendPack(threadQueueSize);
 
       if (warmUpEnabled && log.isInfoEnabled()) {
@@ -101,12 +123,12 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
             log.debug("Run time: " + runTime + "/" + (duration * 1000));
          }
          try {
-            terminated = es.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
-            if (expired && !es.isShutdown()) {
+            terminated = executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
+            if (expired && !executorService.isShutdown()) {
                if (log.isInfoEnabled()) {
                   log.info("Shutting down the executor service.");
                }
-               es.shutdownNow();
+               executorService.shutdownNow();
                terminated = true;
             }
 
@@ -148,6 +170,11 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
       setStopTime();
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.generator.AbstractMessageGenerator#postWarmUp()
+    */
    @Override
    protected void postWarmUp() throws Exception {
       if (log.isInfoEnabled()) {
@@ -157,34 +184,59 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
       counter.set(0);
    }
 
+   /**
+    * Used to read the value of monitoringPeriod.
+    * 
+    * @return The monitoringPeriod.
+    */
    public long getMonitoringPeriod() {
       return monitoringPeriod;
    }
 
+   /**
+    * Sets the value of monitoringPeriod.
+    * 
+    * @param monitoringPeriod
+    *           The monitoringPeriod to set.
+    */
    public void setMonitoringPeriod(long monitoringPeriod) {
       this.monitoringPeriod = monitoringPeriod;
    }
 
+   /**
+    * Used to read the amount of time (in seconds) for which the generator will generate the measured load.
+    * 
+    * @return The duration.
+    */
    public long getDuration() {
       return duration;
    }
 
+   /**
+    * Sets the amount of time (in seconds) for which the generator will generate the measured load.
+    * 
+    * @param duration
+    *           The duration to set.
+    */
    public void setDuration(long duration) {
       this.duration = duration;
    }
 
-   public boolean isMeasureResponseTime() {
-      return measureResponseTime;
-   }
-
-   public void setMeasureResponseTime(boolean measureResponseTime) {
-      this.measureResponseTime = measureResponseTime;
-   }
-
+   /**
+    * Used to read the size of the internal thread queue.
+    * 
+    * @return The thread queue size.
+    */
    public int getThreadQueueSize() {
       return threadQueueSize;
    }
 
+   /**
+    * Sets the the size of the internal thread queue.
+    * 
+    * @param threadQueueSize
+    *           The thread queue size.
+    */
    public void setThreadQueueSize(int threadQueueSize) {
       this.threadQueueSize = threadQueueSize;
    }

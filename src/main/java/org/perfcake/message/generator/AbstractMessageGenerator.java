@@ -17,6 +17,8 @@
 package org.perfcake.message.generator;
 
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageTemplate;
@@ -62,6 +64,16 @@ public abstract class AbstractMessageGenerator {
     * Number of concurrent threads the generator will use to send the messages.
     */
    protected int threads = 1;
+
+   /**
+    * The counter that contains the number of iterations successfully executed.
+    */
+   protected AtomicLong counter = new AtomicLong(0);
+
+   /**
+    * The executor service used to run the threads.
+    */
+   protected ExecutorService executorService;
 
    /**
     * Timestamp of the moment the performance metric measure started.
