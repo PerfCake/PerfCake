@@ -87,7 +87,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
       }
       executorService = Executors.newFixedThreadPool(threads);
       for (int i = 0; i < count; i++) {
-         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring, count));
+         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
       }
       executorService.shutdown();
 
@@ -154,7 +154,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
          executorService.submit(waiting.get(i));
       }
       for (; i < count; i++) {
-         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring, count));
+         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
       }
       executorService.shutdown();
    }
