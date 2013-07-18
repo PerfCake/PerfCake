@@ -16,6 +16,8 @@
 
 package org.perfcake.message.sender;
 
+import java.io.File;
+
 /**
  * 
  * The sender that is able to execute an external Groovy script and pass the message
@@ -30,7 +32,7 @@ public class GroovySender extends CommandSender {
    /**
     * The groovy executable prefix.
     */
-   private String groovyExecutable = "groovy";
+   private String groovyExecutable = null;
 
    /*
     * (non-Javadoc)
@@ -39,7 +41,7 @@ public class GroovySender extends CommandSender {
     */
    @Override
    public void init() throws Exception {
-      setCommandPrefix(groovyExecutable);
+      setCommandPrefix(getGroovyExecutable());
    }
 
    /**
@@ -48,6 +50,9 @@ public class GroovySender extends CommandSender {
     * @return The groovyExecutable.
     */
    public String getGroovyExecutable() {
+      if (groovyExecutable == null) {
+         groovyExecutable = System.getenv("GROOVY_HOME") + File.separator + "groovy";
+      }
       return groovyExecutable;
    }
 

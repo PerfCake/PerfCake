@@ -126,12 +126,7 @@ public class CommandSender extends AbstractSender {
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       this.messagePayload = message.getPayload().toString();
-      StringBuffer commandSB = new StringBuffer();
-      commandSB.append(commandPrefix + " " + target);
-      if (messageTakenFrom.equals(MESSAGE_FROM_ARGS)) {
-         commandSB.append(" " + message.getPayload());
-      }
-      command = commandSB.toString();
+      command = (commandPrefix + " " + target + (messageTakenFrom.equals(MESSAGE_FROM_ARGS) ? " " + message.getPayload() : "")).trim();
 
       Set<Entry<String, String>> propertiesEntrySet = properties.entrySet();
       String[] environmentVariables = new String[propertiesEntrySet.size()];
