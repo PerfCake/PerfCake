@@ -72,6 +72,9 @@ public class HTTPSender extends AbstractSender {
     */
    private List<Integer> expectedResponseCodeList = Arrays.asList(DEFAULT_EXPECTED_CODE);
 
+   /**
+    * The property for expected response codes.
+    */
    private String expectedResponseCodes = String.valueOf(DEFAULT_EXPECTED_CODE);
 
    /**
