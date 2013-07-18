@@ -157,11 +157,21 @@ public class JDBCSender extends AbstractSender {
       return retVal;
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
+    */
    @Override
    public Serializable doSend(Message message) throws Exception {
       return send(message, null);
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
+    */
    @Override
    public void postSend(Message message) throws Exception {
       statement.close();
