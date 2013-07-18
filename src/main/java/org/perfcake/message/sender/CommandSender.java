@@ -21,21 +21,27 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import org.perfcake.message.Message;
 
 /**
- * The sender that can invoke external command and pass the message payload as a parameter or stream it to input (configurable).
+ * The sender that can invoke external command (specified by {@link #target} property)
+ * in a separate process to send the message payload passed to the standard input of
+ * the process or as the command argument.
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
+ * @author Pavel Macík <pavel.macik@gmail.com>
+ */
+/**
+ * @author pmacik
+ * 
  */
 public class CommandSender extends AbstractSender {
-
-   /**
-    * Command to be executed.
-    */
-   private String command = null;
 
    /**
     * Reference to a process where the command is executed.
@@ -57,6 +63,41 @@ public class CommandSender extends AbstractSender {
     */
    private InputStreamReader reader;
 
+   /**
+    * Message taken from standard input.
+    */
+   protected static final String MESSAGE_FROM_STDIN = "stdin";
+
+   /**
+    * Message taken from argument of the command.
+    */
+   protected static final String MESSAGE_FROM_ARGS = "arguments";
+
+   /**
+    * List of valid values for messageTakenFrom property
+    */
+   private List<String> validMessageTakenFromValues = Arrays.asList(MESSAGE_FROM_STDIN, MESSAGE_FROM_ARGS);
+
+   /**
+    * Specifies from where the message to send is taken.
+    */
+   private String messageTakenFrom = MESSAGE_FROM_STDIN;
+
+   /**
+    * The prefix for the command.
+    */
+   private String commandPrefix = "";
+
+   /**
+    * The actual command that is executed;
+    */
+   private String command = "";
+
+   /**
+    * The array of environment variables passed to the command.
+    */
+   private String[] environmentVariables;
+
    /*
     * (non-Javadoc)
     * 
@@ -64,9 +105,7 @@ public class CommandSender extends AbstractSender {
     */
    @Override
    public void init() throws Exception {
-      if (command == null) {
-         throw new IllegalArgumentException("The 'command' property is not set");
-      }
+      // nop
    }
 
    /*
@@ -87,6 +126,19 @@ public class CommandSender extends AbstractSender {
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       this.messagePayload = message.getPayload().toString();
+      StringBuffer commandSB = new StringBuffer();
+      commandSB.append(commandPrefix + " " + target);
+      if (messageTakenFrom.equals(MESSAGE_FROM_ARGS)) {
+         commandSB.append(" " + message.getPayload());
+      }
+      command = commandSB.toString();
+
+      Set<Entry<String, String>> propertiesEntrySet = properties.entrySet();
+      String[] environmentVariables = new String[propertiesEntrySet.size()];
+      int i = 0;
+      for (Entry<String, String> entry : propertiesEntrySet) {
+         environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
+      }
    }
 
    /*
@@ -96,15 +148,15 @@ public class CommandSender extends AbstractSender {
     */
    @Override
    public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
-      process = Runtime.getRuntime().exec(this.command);
-
-      writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(process.getOutputStream())), true);
-      writer.write(this.messagePayload);
-      writer.flush();
-      writer.close();
+      process = Runtime.getRuntime().exec(command, environmentVariables);
+      if (messageTakenFrom.equals(MESSAGE_FROM_STDIN)) {
+         writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(process.getOutputStream())), true);
+         writer.write(messagePayload);
+         writer.flush();
+         writer.close();
+      }
 
       process.waitFor();
-
       char[] cbuf = new char[10 * 1024];
       this.reader = new InputStreamReader(process.getInputStream());
       // note that Content-Length is available at this point
@@ -142,22 +194,44 @@ public class CommandSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of command.
+    * Used to read the value of messageTakenFrom property.
     * 
-    * @return The command.
+    * @return The messageTakenFrom.
     */
-   public String getCommand() {
-      return command;
+   public String getMessageTakenFrom() {
+      return messageTakenFrom;
    }
 
    /**
-    * Sets the value of command.
+    * Sets the value of messageTakenFrom property.
     * 
-    * @param command
-    *           The command to set.
+    * @param messageTakenFrom
+    *           The messageTakenFrom to set.
     */
-   public void setCommand(String command) {
-      this.command = command;
+   public void setMessageTakenFrom(String messageTakenFrom) {
+      if (validMessageTakenFromValues.contains(messageTakenFrom)) {
+         this.messageTakenFrom = messageTakenFrom;
+      } else {
+         throw new IllegalArgumentException("The specified 'messageTakenFrom' property value (\"" + messageTakenFrom + "\") is not supported.");
+      }
    }
 
+   /**
+    * Used to read the value of commandPrefix.
+    * 
+    * @return The commandPrefix.
+    */
+   protected String getCommandPrefix() {
+      return commandPrefix;
+   }
+
+   /**
+    * Sets the value of commandPrefix.
+    * 
+    * @param commandPrefix
+    *           The commandPrefix to set.
+    */
+   protected void setCommandPrefix(String commandPrefix) {
+      this.commandPrefix = commandPrefix;
+   }
 }
