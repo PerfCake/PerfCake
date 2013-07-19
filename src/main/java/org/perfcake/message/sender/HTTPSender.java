@@ -58,14 +58,13 @@ public class HTTPSender extends AbstractSender {
    private URL url;
 
    /**
-    * The list of supported HTTP methods.
-    */
-   private static final List<String> supportedMethodList = Collections.synchronizedList(Arrays.asList("GET", "POST", "HEAD", "OPTIONS", "PUT", "DELETE", "TRACE"));
-
-   /**
     * The HTTP method that will be used.
     */
-   private String method = "POST";
+   private Method method = Method.POST;
+
+   public static enum Method {
+      GET, POST, HEAD, OPTIONS, PUT, DELETE, TRACE
+   }
 
    /**
     * The list of response codes that are expected to be returned by HTTP response.
@@ -189,9 +188,9 @@ public class HTTPSender extends AbstractSender {
       }
 
       requestConnection = (HttpURLConnection) url.openConnection();
-      requestConnection.setRequestMethod(method);
+      requestConnection.setRequestMethod(method.name());
       requestConnection.setDoInput(true);
-      if ("POST".equals(method) || "PUT".equals(method)) {
+      if (method == Method.POST || method == Method.PUT) {
          requestConnection.setDoOutput(true);
       }
       requestConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
@@ -301,7 +300,7 @@ public class HTTPSender extends AbstractSender {
     * 
     * @return The HTTP method.
     */
-   public String getMethod() {
+   public Method getMethod() {
       return method;
    }
 
@@ -311,12 +310,8 @@ public class HTTPSender extends AbstractSender {
     * @param method
     *           The HTTP method to set.
     */
-   public void setMethod(String method) {
-      if (supportedMethodList.contains(method)) {
-         this.method = method;
-      } else {
-         throw new IllegalArgumentException("The requested method (\"" + method + "\") is not supported.");
-      }
+   public void setMethod(Method method) {
+      this.method = method;
    }
 
 }
