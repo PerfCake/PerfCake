@@ -63,7 +63,7 @@ abstract public class AbstractSender implements MessageSender {
     */
    @Override
    public final Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
-      return doSend(message, properties, mu); 
+      return doSend(message, properties, mu);
    }
 
    /**
@@ -71,6 +71,7 @@ abstract public class AbstractSender implements MessageSender {
     * @param properties
     * @throws Exception
     */
+   @Override
    public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       if (log.isDebugEnabled()) {
          log.debug("Initializing sending of a message.");
@@ -88,7 +89,9 @@ abstract public class AbstractSender implements MessageSender {
     * @return
     * @throws Exception
     */
-   abstract public Serializable doSend(final Message message, final MeasurementUnit mu) throws Exception;
+   final public Serializable doSend(final Message message, final MeasurementUnit mu) throws Exception {
+      return this.doSend(message, null, mu);
+   }
 
    /**
     * Do not use any logger or anything not directly related to sending the
@@ -105,6 +108,7 @@ abstract public class AbstractSender implements MessageSender {
     * @param message
     * @throws Exception
     */
+   @Override
    public void postSend(Message message) throws Exception {
       if (log.isDebugEnabled()) {
          log.debug("Cleaning up after the message has been sent.");

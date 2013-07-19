@@ -145,7 +145,8 @@ public class ATReporter extends Reporter {
     * 
     * This method is here to separate logic of computation from presentation
     * (sending).
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    private synchronized void compute() throws ReportsException {
       long currentTime = System.currentTimeMillis();

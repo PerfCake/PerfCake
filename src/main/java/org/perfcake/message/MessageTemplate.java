@@ -41,7 +41,6 @@ public class MessageTemplate {
       return matcher;
    }
 
-
    public MessageTemplate(Message message, long multiplicity, List<String> validatorIdList) {
       this.message = message;
       prepareMatcher();

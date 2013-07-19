@@ -26,6 +26,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.perfcake.message.Message;
+import org.perfcake.nreporting.MeasurementUnit;
 
 /**
  * The sender that can invoke external command (specified by {@link #target} property)
@@ -84,7 +85,7 @@ public class CommandSender extends AbstractSender {
    public static enum MessageFrom {
       STDIN, ARGUMENTS;
    }
-   
+
    /*
     * (non-Javadoc)
     * 
@@ -111,7 +112,8 @@ public class CommandSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
       this.messagePayload = message.getPayload().toString();
       command = (commandPrefix + " " + target + (messageFrom == MessageFrom.ARGUMENTS ? " " + message.getPayload() : "")).trim();
 
@@ -129,7 +131,7 @@ public class CommandSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       process = Runtime.getRuntime().exec(command, environmentVariables);
       if (messageFrom == MessageFrom.STDIN) {
          writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(process.getOutputStream())), true);
@@ -156,21 +158,11 @@ public class CommandSender extends AbstractSender {
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
-    */
-   @Override
-   public Serializable doSend(Message message) throws Exception {
-      // nop
-      return null;
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
     * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
     */
    @Override
    public void postSend(Message message) throws Exception {
+      super.postSend(message);
       reader.close();
       process.getInputStream().close();
    }
@@ -191,7 +183,7 @@ public class CommandSender extends AbstractSender {
     *           The messageFrom to set.
     */
    public void setMessageFrom(MessageFrom messageFrom) {
-       this.messageFrom = messageFrom; 
+      this.messageFrom = messageFrom;
    }
 
    /**

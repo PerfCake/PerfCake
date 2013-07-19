@@ -32,6 +32,7 @@ import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
+import org.perfcake.nreporting.MeasurementUnit;
 
 /**
  * 
@@ -108,9 +109,10 @@ public class RequestResponseJMSSender extends JMSSender {
    }
 
    @Override
-   public Serializable doSend(org.perfcake.message.Message message, Map<String, String> properties) throws Exception {
-      super.doSend(message, properties);
-      
+   public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
+      // send the request message
+      super.doSend(message, properties, mu);
+
       try {
          if (transacted) {
             session.commit();

@@ -51,7 +51,7 @@ public class HTTPSSender extends HTTPSender {
    }
 
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
       ((HttpsURLConnection) requestConnection).setSSLSocketFactory(sslFactory);
    }

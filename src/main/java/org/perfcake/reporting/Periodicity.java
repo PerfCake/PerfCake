@@ -53,7 +53,7 @@ public class Periodicity {
    /**
     * 
     * @return True if and only if periodicity is time based.
-    * @throws ReportsException 
+    * @throws ReportsException
     */
    public boolean isTimely() throws ReportsException {
       checkPercentage();
@@ -70,7 +70,8 @@ public class Periodicity {
     * have to be converted into timely or iterationary so it has to have access
     * to either fixed amount of iteration this test consists of or to fixed
     * time.
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    private void checkPercentage() throws ReportsException {
       if (unit == PeriodicityUnit.Percent) {
@@ -93,7 +94,7 @@ public class Periodicity {
     * the reporting happen.
     * 
     * @return
-    * @throws ReportsException 
+    * @throws ReportsException
     */
    public int getIterationalPeriodicity() throws ReportsException {
       if (isIterationary()) {
@@ -108,7 +109,7 @@ public class Periodicity {
     * seconds.
     * 
     * @return
-    * @throws ReportsException 
+    * @throws ReportsException
     */
    public float getTimePeriodicity() throws ReportsException {
       if (isTimely()) {
@@ -134,7 +135,7 @@ public class Periodicity {
     * 
     * @param textValue
     * @return
-    * @throws ReportsException 
+    * @throws ReportsException
     */
    public static Periodicity constructFromString(String textValue) throws ReportsException {
       /**

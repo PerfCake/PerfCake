@@ -36,6 +36,7 @@ import javax.naming.InitialContext;
 
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
+import org.perfcake.nreporting.MeasurementUnit;
 
 /**
  * The sender that is able to send messages via JMS.
@@ -260,7 +261,8 @@ public abstract class JMSSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public void preSend(org.perfcake.message.Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
       if (!sendAsObject) {
          mess = session.createTextMessage((String) message.getPayload());
       } else {
@@ -288,7 +290,7 @@ public abstract class JMSSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public Serializable doSend(org.perfcake.message.Message message, Map<String, String> properties) throws Exception {
+   public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       if (log.isDebugEnabled()) {
          log.debug("Sending a message: " + message.getPayload().toString());
       }
@@ -317,26 +319,6 @@ public abstract class JMSSender extends AbstractSender {
       } else {
          return true;
       }
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
-    */
-   @Override
-   public Serializable doSend(org.perfcake.message.Message message) throws Exception {
-      return null;
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
-    */
-   @Override
-   public void postSend(org.perfcake.message.Message message) throws Exception {
-
    }
 
    /**

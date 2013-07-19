@@ -41,7 +41,7 @@ public class ObjectFactory {
             return super.convert(value, clazz);
          }
       }
-      
+
    }
 
    /**
@@ -57,7 +57,7 @@ public class ObjectFactory {
             log.trace("Setting property: '" + key + "'='" + properties.getProperty(key) + "'");
          }
          beanUtilsBean.setProperty(object, key, properties.getProperty(key));
-         //BeanUtils.setProperty(object, key, properties.getProperty(key));
+         // BeanUtils.setProperty(object, key, properties.getProperty(key));
       }
    }
 

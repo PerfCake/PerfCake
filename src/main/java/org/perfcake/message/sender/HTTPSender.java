@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
+import org.perfcake.nreporting.MeasurementUnit;
 
 /**
  * The sender that is able to send the messages via HTTP protocol.
@@ -62,6 +62,9 @@ public class HTTPSender extends AbstractSender {
     */
    private Method method = Method.POST;
 
+   /**
+    * Enumeration on available HTTP methods.
+    */
    public static enum Method {
       GET, POST, HEAD, OPTIONS, PUT, DELETE, TRACE
    }
@@ -177,13 +180,12 @@ public class HTTPSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
-      if (message != null) {
-         payload = message.getPayload().toString();
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
+      payload = message.getPayload().toString();
+      if (payload != null) {
          payloadLenght = payload.length();
       } else {
-         message = new Message();
-         payload = null;
          payloadLenght = 0;
       }
 
@@ -231,24 +233,13 @@ public class HTTPSender extends AbstractSender {
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.nreporting.MeasurementUnit)
     */
    @Override
-   public Serializable doSend(Message message) throws Exception {
-      // nop
-      return null;
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
-    */
-   @Override
-   public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       int respCode = -1;
       requestConnection.connect();
-      if (payload != null && ("POST".equals(method) || "PUT".equals(method))) {
+      if (payload != null && (method == Method.POST || method == Method.PUT)) {
          OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream());
          out.write(payload, 0, payloadLenght);
          out.flush();
@@ -291,7 +282,8 @@ public class HTTPSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
     */
    @Override
-   public void postSend(Message message) throws Exception {
+   public void postSend(final Message message) throws Exception {
+      super.postSend(message);
       requestConnection.disconnect();
    }
 

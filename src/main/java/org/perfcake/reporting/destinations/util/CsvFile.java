@@ -54,7 +54,8 @@ public class CsvFile {
 
    /**
     * Creates/overwrites file so that there is clean, empty file.
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    public void createNewFile() throws ReportsException {
       try {
@@ -73,7 +74,8 @@ public class CsvFile {
 
    /**
     * All lines that are presented in the file.
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    public List<String> getLines() throws ReportsException {
       BufferedReader br = null;
@@ -126,7 +128,7 @@ public class CsvFile {
     * appends newLine character.
     * 
     * @param line
-    * @throws ReportsException 
+    * @throws ReportsException
     */
    public void appendLine(String... line) throws ReportsException {
       BufferedWriter bw = null;
