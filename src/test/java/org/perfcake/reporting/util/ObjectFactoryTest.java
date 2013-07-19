@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.perfcake.message.generator.ImmediateMessageGenerator;
+import org.perfcake.message.sender.CommandSender;
 import org.perfcake.message.sender.HTTPSender;
 import org.perfcake.util.ObjectFactory;
 import org.testng.Assert;
@@ -36,5 +37,19 @@ public class ObjectFactoryTest {
       Assert.assertEquals(senderExpectedResponseCodeList.get(0), Integer.valueOf(200), "sender's expected response code");
       Assert.assertEquals(senderExpectedResponseCodeList.get(1), Integer.valueOf(203), "sender's expected response code");
       Assert.assertEquals(senderExpectedResponseCodeList.get(2), Integer.valueOf(500), "sender's expected response code");
+   }
+   
+   @Test
+   public void testEnumConverter() throws Throwable {
+      Properties p = new Properties();
+      p.setProperty("messageFrom", "arguments"); // even lowercase should be accepted
+      
+      CommandSender sender = (CommandSender) ObjectFactory.summonInstance(CommandSender.class.getName(), p);
+      Assert.assertEquals(sender.getMessageFrom(), CommandSender.MessageFrom.ARGUMENTS);
+
+      p.setProperty("messageFrom", "STDIN"); // make sure arguments was not the default value
+      
+      sender = (CommandSender) ObjectFactory.summonInstance(CommandSender.class.getName(), p);
+      Assert.assertEquals(sender.getMessageFrom(), CommandSender.MessageFrom.STDIN);
    }
 }
