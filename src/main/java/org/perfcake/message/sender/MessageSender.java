@@ -21,8 +21,7 @@ import java.util.Map;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
-import org.perfcake.reporting.ReportManager;
-import org.perfcake.validation.MessageValidator;
+import org.perfcake.nreporting.MeasurementUnit;
 
 /**
  * Interface for a message sender.
@@ -42,29 +41,18 @@ public interface MessageSender {
     */
    public void close() throws PerfCakeException;
 
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception;
+
    /**
     * Sends a message.
     */
-   public Serializable send(Message message) throws Exception;
+   public Serializable send(final Message message, final MeasurementUnit mu) throws Exception;
 
    /**
     * Sends a message with additional properties.
     */
-   public Serializable send(Message message, Map<String, String> properties) throws Exception;
+   public Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception;
 
-   /**
-    * Returns response time in nanoseconds.
-    */
-   public long getResponseTime();
-
-   /**
-    * Report manager that any sender can use to report anything.
-    **/
-   public void setReportManager(ReportManager reportManager);
-
-   /**
-    * Message validator usable for I/O (most probably just O) message validation.
-    */
-   public void setMessageValidator(MessageValidator messageValidator);
-
+   public void postSend(final Message message) throws Exception;
+   
 }

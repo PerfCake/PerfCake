@@ -1,5 +1,6 @@
 package org.perfcake.message.generator;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +13,7 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.ReceivedMessage;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.nreporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidatorManager;
 
@@ -82,6 +84,18 @@ class SenderTask implements Runnable {
       this.isMeasuring = isMeasuring;
    }
 
+   public Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) throws Exception {
+      sender.preSend(message, messageHeaders);
+      
+      mu.startMeasure();
+      Serializable result = sender.send(message, messageHeaders, mu);
+      mu.stopMeasure();
+      
+      sender.postSend(message);
+      
+      return result;
+   }
+   
    /*
     * (non-Javadoc)
     * 
@@ -94,7 +108,7 @@ class SenderTask implements Runnable {
       MessageSender sender = null;
       ReceivedMessage receivedMessage = null;
       try {
-         Iterator<MessageTemplate> iterator = messageStore.iterator();
+         MeasurementUnit mu = new MeasurementUnit(counter.get());
 
          // only set numbering to headers if it is enabled, later there is no change to
          // filter out the headers before sending
@@ -103,15 +117,17 @@ class SenderTask implements Runnable {
             messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, msgNumberStr);
          }
 
+         Iterator<MessageTemplate> iterator = messageStore.iterator();
          if (iterator.hasNext()) {
             while (iterator.hasNext()) {
+               
                sender = senderManager.acquireSender();
                MessageTemplate messageToSend = iterator.next();
                Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
                long multiplicity = messageToSend.getMultiplicity();
 
                for (int i = 0; i < multiplicity; i++) {
-                  receivedMessage = new ReceivedMessage(sender.send(currentMessage, messageHeaders), messageToSend);
+                  receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend);
                   if (ValidatorManager.isEnabled()) {
                      ValidatorManager.addToResultMessages(receivedMessage);
                   }
@@ -122,16 +138,16 @@ class SenderTask implements Runnable {
             }
          } else {
             sender = senderManager.acquireSender();
-            receivedMessage = new ReceivedMessage(sender.send(null, messageHeaders), null);
+            receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null);
             if (ValidatorManager.isEnabled()) {
                ValidatorManager.addToResultMessages(receivedMessage);
             }
             senderManager.releaseSender(sender); // !!! important !!!
             sender = null;
          }
-
+         
          counter.incrementAndGet();
-         reportManager.reportIteration();
+         reportManager.reportIteration(mu);
       } catch (Exception e) {
          e.printStackTrace();
       } finally {

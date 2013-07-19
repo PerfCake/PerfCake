@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.perfcake.nreporting.MeasurementUnit;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.ATReporter;
 import org.perfcake.reporting.reporters.CustomReporter;
@@ -264,6 +265,11 @@ public class ReportManager extends ScenarioConfigurationElement {
 
    public void setUniqueId(String uniqueId) {
       this.uniqueId = uniqueId;
+   }
+
+   public void reportIteration(MeasurementUnit mu) {
+      // TODO Auto-generated method stub
+      
    }
 
 }
