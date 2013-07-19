@@ -19,7 +19,8 @@ package org.perfcake.util;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
-import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.log4j.Logger;
 
 /**
@@ -30,6 +31,19 @@ public class ObjectFactory {
 
    private static final Logger log = Logger.getLogger(ObjectFactory.class);
 
+   private static class EnumConvertUtilsBean extends ConvertUtilsBean {
+      @SuppressWarnings({ "rawtypes", "unchecked" })
+      @Override
+      public Object convert(String value, Class clazz) {
+         if (clazz.isEnum()) {
+            return Enum.valueOf(clazz, Utils.camelCaseToEnum(value));
+         } else {
+            return super.convert(value, clazz);
+         }
+      }
+      
+   }
+
    /**
     * @param object
     * @param properties
@@ -37,11 +51,13 @@ public class ObjectFactory {
     * @throws IllegalAccessException
     */
    public static void setPropertiesOnObject(Object object, Properties properties) throws IllegalAccessException, InvocationTargetException {
+      BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumConvertUtilsBean());
       for (String key : properties.stringPropertyNames()) {
          if (log.isTraceEnabled()) {
             log.trace("Setting property: '" + key + "'='" + properties.getProperty(key) + "'");
          }
-         BeanUtils.setProperty(object, key, properties.getProperty(key));
+         beanUtilsBean.setProperty(object, key, properties.getProperty(key));
+         //BeanUtils.setProperty(object, key, properties.getProperty(key));
       }
    }
 

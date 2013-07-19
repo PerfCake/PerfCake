@@ -21,8 +21,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -64,24 +62,9 @@ public class CommandSender extends AbstractSender {
    private InputStreamReader reader;
 
    /**
-    * Message taken from standard input.
-    */
-   protected static final String MESSAGE_FROM_STDIN = "stdin";
-
-   /**
-    * Message taken from argument of the command.
-    */
-   protected static final String MESSAGE_FROM_ARGS = "arguments";
-
-   /**
-    * List of valid values for messageTakenFrom property
-    */
-   private List<String> validMessageTakenFromValues = Arrays.asList(MESSAGE_FROM_STDIN, MESSAGE_FROM_ARGS);
-
-   /**
     * Specifies from where the message to send is taken.
     */
-   private String messageTakenFrom = MESSAGE_FROM_STDIN;
+   private MessageFrom messageFrom = MessageFrom.STDIN;
 
    /**
     * The prefix for the command.
@@ -98,6 +81,10 @@ public class CommandSender extends AbstractSender {
     */
    private String[] environmentVariables;
 
+   public static enum MessageFrom {
+      STDIN, ARGUMENTS;
+   }
+   
    /*
     * (non-Javadoc)
     * 
@@ -126,7 +113,7 @@ public class CommandSender extends AbstractSender {
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       this.messagePayload = message.getPayload().toString();
-      command = (commandPrefix + " " + target + (messageTakenFrom.equals(MESSAGE_FROM_ARGS) ? " " + message.getPayload() : "")).trim();
+      command = (commandPrefix + " " + target + (messageFrom == MessageFrom.ARGUMENTS ? " " + message.getPayload() : "")).trim();
 
       Set<Entry<String, String>> propertiesEntrySet = properties.entrySet();
       String[] environmentVariables = new String[propertiesEntrySet.size()];
@@ -144,7 +131,7 @@ public class CommandSender extends AbstractSender {
    @Override
    public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
       process = Runtime.getRuntime().exec(command, environmentVariables);
-      if (messageTakenFrom.equals(MESSAGE_FROM_STDIN)) {
+      if (messageFrom == MessageFrom.STDIN) {
          writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(process.getOutputStream())), true);
          writer.write(messagePayload);
          writer.flush();
@@ -189,26 +176,22 @@ public class CommandSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of messageTakenFrom property.
+    * Used to read the value of messageFrom property.
     * 
-    * @return The messageTakenFrom.
+    * @return The messageFrom.
     */
-   public String getMessageTakenFrom() {
-      return messageTakenFrom;
+   public MessageFrom getMessageFrom() {
+      return messageFrom;
    }
 
    /**
-    * Sets the value of messageTakenFrom property.
+    * Sets the value of messageFrom property.
     * 
-    * @param messageTakenFrom
-    *           The messageTakenFrom to set.
+    * @param messageFrom
+    *           The messageFrom to set.
     */
-   public void setMessageTakenFrom(String messageTakenFrom) {
-      if (validMessageTakenFromValues.contains(messageTakenFrom)) {
-         this.messageTakenFrom = messageTakenFrom;
-      } else {
-         throw new IllegalArgumentException("The specified 'messageTakenFrom' property value (\"" + messageTakenFrom + "\") is not supported.");
-      }
+   public void setMessageFrom(MessageFrom messageFrom) {
+       this.messageFrom = messageFrom; 
    }
 
    /**
