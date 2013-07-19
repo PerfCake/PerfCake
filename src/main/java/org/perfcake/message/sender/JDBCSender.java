@@ -28,6 +28,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
+import org.perfcake.nreporting.MeasurementUnit;
 
 /**
  * The sender that is able to send SQL queries via JDBC.
@@ -107,7 +108,8 @@ public class JDBCSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
       statement = connection.createStatement();
    }
 
@@ -117,7 +119,7 @@ public class JDBCSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       boolean result = statement.execute((String) message.getPayload());
       Serializable retVal;
       if (result) {
@@ -160,20 +162,11 @@ public class JDBCSender extends AbstractSender {
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
-    */
-   @Override
-   public Serializable doSend(Message message) throws Exception {
-      return send(message, null);
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
     * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
     */
    @Override
-   public void postSend(Message message) throws Exception {
+   public void postSend(final Message message) throws Exception {
+      super.postSend(message);
       statement.close();
    }
 

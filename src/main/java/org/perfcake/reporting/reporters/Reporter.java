@@ -172,7 +172,7 @@ public abstract class Reporter extends ScenarioConfigurationElement {
     * 
     * @param defaultVal
     * @return
-    * @throws ReportsException 
+    * @throws ReportsException
     */
    public String getLabelType(String defaultVal) throws ReportsException {
       if (!labelingTimely && !labelingIteration) {
@@ -197,7 +197,8 @@ public abstract class Reporter extends ScenarioConfigurationElement {
    /**
     * Gets label that should be placed on value. If the reporter has set fixed
     * number of iterations or time the label will be chosen acordingly.
-    * @throws ReportsException 
+    * 
+    * @throws ReportsException
     */
    public String getLabel(String defaultVal) throws ReportsException {
       if (!labelingTimely && !labelingIteration) {

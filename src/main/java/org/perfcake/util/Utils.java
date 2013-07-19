@@ -184,14 +184,15 @@ public class Utils {
    /**
     * Converts camelCaseStringsWithACRONYMS to CAMEL_CASE_STRINGS_WITH_ACRONYMS
     * 
-    * @param camelCase a camelCase string
+    * @param camelCase
+    *           a camelCase string
     * @return the same string in equivalent format for Java enum values
     */
    public static String camelCaseToEnum(String camelCase) {
       final String regex = "([a-z])([A-Z])";
       final String replacement = "$1_$2";
 
-      return camelCase.replaceAll(regex, replacement).toUpperCase(); 
+      return camelCase.replaceAll(regex, replacement).toUpperCase();
    }
-   
+
 }

@@ -54,5 +54,5 @@ public interface MessageSender {
    public Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception;
 
    public void postSend(final Message message) throws Exception;
-   
+
 }

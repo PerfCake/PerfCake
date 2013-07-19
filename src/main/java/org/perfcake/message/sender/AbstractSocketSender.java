@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
+import org.perfcake.nreporting.MeasurementUnit;
 import org.testng.log4testng.Logger;
 
 /**
@@ -127,7 +128,8 @@ abstract public class AbstractSocketSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
       openSocket();
       openStreams();
    }
@@ -135,10 +137,10 @@ abstract public class AbstractSocketSender extends AbstractSender {
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public Serializable doSend(Message message) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       out.print(message.getPayload().toString());
 
       if (out.checkError()) { // flush and check for error
@@ -156,20 +158,11 @@ abstract public class AbstractSocketSender extends AbstractSender {
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
-    */
-   @Override
-   public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
-      throw new UnsupportedOperationException("This sender does not support message properties.");
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
     * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
     */
    @Override
-   public void postSend(Message message) throws Exception {
+   public void postSend(final Message message) throws Exception {
+      super.postSend(message);
       closeSocket();
    }
 

@@ -58,6 +58,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     * 
     * @see org.perfcake.message.generator.AbstractMessageGenerator#setReportManager(org.perfcake.reporting.ReportManager)
     */
+   @Override
    public void setReportManager(ReportManager reportManager) {
       super.setReportManager(reportManager);
       reportManager.getTestRunInfo().setTestDuration(duration);

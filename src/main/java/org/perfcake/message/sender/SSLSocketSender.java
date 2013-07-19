@@ -26,6 +26,11 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public class SSLSocketSender extends AbstractSocketSender {
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSocketSender#openSocket()
+    */
    @Override
    protected void openSocket() throws Exception {
       SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();

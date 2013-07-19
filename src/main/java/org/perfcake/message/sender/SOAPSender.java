@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 import org.perfcake.message.Message;
+import org.perfcake.nreporting.MeasurementUnit;
 
 /**
  * TODO: Provide implementation. This is to cover jMeter functionality. Can be based on HTTP sender???
@@ -29,40 +30,37 @@ import org.perfcake.message.Message;
  */
 public class SOAPSender extends AbstractSender {
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#init()
+    */
    @Override
    public void init() throws Exception {
       // TODO Auto-generated method stub
 
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#close()
+    */
    @Override
    public void close() {
       // TODO Auto-generated method stub
 
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.nreporting.MeasurementUnit)
+    */
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
-      // TODO Auto-generated method stub
-
-   }
-
-   @Override
-   public Serializable doSend(Message message) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
-   @Override
-   public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       // TODO Auto-generated method stub
       return null;
-   }
-
-   @Override
-   public void postSend(Message message) throws Exception {
-      // TODO Auto-generated method stub
-
    }
 
 }

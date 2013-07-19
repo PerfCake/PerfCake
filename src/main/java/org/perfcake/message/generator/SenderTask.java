@@ -86,16 +86,16 @@ class SenderTask implements Runnable {
 
    public Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) throws Exception {
       sender.preSend(message, messageHeaders);
-      
+
       mu.startMeasure();
       Serializable result = sender.send(message, messageHeaders, mu);
       mu.stopMeasure();
-      
+
       sender.postSend(message);
-      
+
       return result;
    }
-   
+
    /*
     * (non-Javadoc)
     * 
@@ -120,7 +120,7 @@ class SenderTask implements Runnable {
          Iterator<MessageTemplate> iterator = messageStore.iterator();
          if (iterator.hasNext()) {
             while (iterator.hasNext()) {
-               
+
                sender = senderManager.acquireSender();
                MessageTemplate messageToSend = iterator.next();
                Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
@@ -145,7 +145,7 @@ class SenderTask implements Runnable {
             senderManager.releaseSender(sender); // !!! important !!!
             sender = null;
          }
-         
+
          counter.incrementAndGet();
          reportManager.reportIteration(mu);
       } catch (Exception e) {
