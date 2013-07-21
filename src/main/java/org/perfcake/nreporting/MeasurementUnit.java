@@ -13,7 +13,7 @@ public class MeasurementUnit {
    private Map<String, Object> measurementProperties = new HashMap<>();
    private Map<String, Object> measurementResults = new HashMap<>();
 
-   public MeasurementUnit(long iteration) {
+   protected MeasurementUnit(long iteration) {
       this.iteration = iteration;
    }
 

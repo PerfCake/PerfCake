@@ -50,9 +50,9 @@ import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.reporting.ReportManager;
-import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.nreporting.ReportManager;
+import org.perfcake.nreporting.destinations.Destination;
+import org.perfcake.nreporting.reporters.Reporter;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
@@ -308,7 +308,6 @@ public class ScenarioParser {
          Utils.logProperties(log, Level.DEBUG, reportingProperties, "   ");
 
          ObjectFactory.setPropertiesOnObject(reportManager, reportingProperties);
-         reportManager.loadConfigValues();
 
          NodeList reporterNodes = xPathEvaluate("reporter", reportingElement);
          int reporterNodesCount = reporterNodes.getLength();
@@ -342,11 +341,10 @@ public class ScenarioParser {
                currentDestinationProperties = getPropertiesFromSubNodes(currentDestinationElement);
                Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
                currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
-               currentReporter.addDestination(currentDestination);
+               currentReporter.registerDestination(currentDestination);
             }
-            reportManager.addReporter(currentReporter);
+            reportManager.registerReporter(currentReporter);
          }
-         reportManager.assertUntouchedProperties();
       } catch (XPathExpressionException | InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
          throw new PerfCakeException("Cannot parse reporting configuration: ", e);
       }

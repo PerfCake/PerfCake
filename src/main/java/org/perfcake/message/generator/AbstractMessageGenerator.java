@@ -18,13 +18,12 @@ package org.perfcake.message.generator;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.reporting.ReportManager;
+import org.perfcake.nreporting.ReportManager;
 
 /**
  * <p>
@@ -66,24 +65,9 @@ public abstract class AbstractMessageGenerator {
    protected int threads = 1;
 
    /**
-    * The counter that contains the number of iterations successfully executed.
-    */
-   protected AtomicLong counter = new AtomicLong(0);
-
-   /**
     * The executor service used to run the threads.
     */
    protected ExecutorService executorService;
-
-   /**
-    * Timestamp of the moment the performance metric measure started.
-    */
-   protected long start = -1;
-
-   /**
-    * Timestamp of the moment the performance metric measure stopped.
-    */
-   protected long stop = -1;
 
    /**
     * The property of the generator indicating whether the warming feature is enabled or disabled.
@@ -158,9 +142,8 @@ public abstract class AbstractMessageGenerator {
     * Sets the timestamp of the moment when generator execution started.
     */
    protected void setStartTime() {
-      start = System.currentTimeMillis();
       if (isMeasuring) {
-         reportManager.reportTestStarted();
+         reportManager.start();
       }
    }
 
@@ -170,19 +153,29 @@ public abstract class AbstractMessageGenerator {
     * @return
     */
    protected long getDurationInMillis() {
-      return System.currentTimeMillis() - start;
+      return reportManager.getRunInfo().getRunTime();
    }
 
    /**
     * Sets the timestamp of the moment when generator execution stopped.
     */
    protected void setStopTime() {
-      if (stop == -1) {
-         stop = System.currentTimeMillis();
-         reportManager.reportTestFinished();
+      if (reportManager.getRunInfo().isRunning()) {
+         reportManager.stop();
       }
    }
 
+   /**
+    * Computes the current average speed the iterations are executed.
+    * 
+    * @param The
+    *           iteration count.
+    * @return The current average iteration execution speed.
+    */
+   protected float getSpeed(long cnt) {
+      return 1000f * cnt / reportManager.getRunInfo().getRunTime();
+   }
+   
    /**
     * Executes the actual implementation of a generator.
     * 

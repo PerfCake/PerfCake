@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.lang.instrument.Instrumentation;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -31,20 +30,17 @@ import java.util.concurrent.Executors;
 
 public class PerfCakeAgent {
 
-   public static void premain(String agentArgs, Instrumentation inst) {
+   public static void premain(String agentArgs) {
       ExecutorService es = Executors.newSingleThreadExecutor();
-      es.submit(new AgentThread(agentArgs, inst));
+      es.submit(new AgentThread(agentArgs));
    }
 
    public static class AgentThread implements Runnable {
       private String agentArgs;
 
-      private Instrumentation inst;
-
-      public AgentThread(String agentArgs, Instrumentation inst) {
+      public AgentThread(String agentArgs) {
          super();
          this.agentArgs = agentArgs;
-         this.inst = inst;
       }
 
       @Override
