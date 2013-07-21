@@ -22,7 +22,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.perfcake.reporting.ReportManager;
+import org.perfcake.nreporting.ReportManager;
+import org.perfcake.util.Period;
+import org.perfcake.util.PeriodType;
+import org.perfcake.util.RunInfo;
 
 /**
  * <p>
@@ -57,19 +60,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
    @Override
    public void setReportManager(ReportManager reportManager) {
       super.setReportManager(reportManager);
-      reportManager.getTestRunInfo().setTestIterations(count);
-   }
-
-   /**
-    * Computes the current average speed the iterations are executed.
-    * 
-    * @param The
-    *           iteration count.
-    * @return The current average iteration execution speed.
-    */
-   protected float getSpeed(long cnt) {
-      long now = (stop == -1) ? System.currentTimeMillis() : stop;
-      return 1000f * cnt / (now - start);
+      reportManager.setRunInfo(new RunInfo(null, new Period(PeriodType.ITEARATION, count)));
    }
 
    /*
@@ -87,7 +78,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
       }
       executorService = Executors.newFixedThreadPool(threads);
       for (int i = 0; i < count; i++) {
-         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
+         executorService.submit(new SenderTask(reportManager, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
       }
       executorService.shutdown();
 
@@ -104,7 +95,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
             terminated = executorService.awaitTermination(1, TimeUnit.SECONDS);
 
             // should we log a change?
-            long cnt = counter.get();
+            long cnt = reportManager.getRunInfo().getIteration();
             if (cnt != lastValue) {
                lastValue = cnt;
 
@@ -146,7 +137,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
       messageSenderManager.releaseAllSenders();
       executorService.awaitTermination(30, TimeUnit.SECONDS);
       executorService = Executors.newFixedThreadPool(threads);
-      counter.set(0);
+      reportManager.getRunInfo().reset();
       // responseTime.set(0);
       int cnt = waiting.size();
       int i = 0;
@@ -154,7 +145,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
          executorService.submit(waiting.get(i));
       }
       for (; i < count; i++) {
-         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
+         executorService.submit(new SenderTask(reportManager, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
       }
       executorService.shutdown();
    }

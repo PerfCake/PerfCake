@@ -20,7 +20,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.perfcake.reporting.ReportManager;
+import org.perfcake.nreporting.ReportManager;
+import org.perfcake.util.Period;
+import org.perfcake.util.PeriodType;
+import org.perfcake.util.RunInfo;
 
 /**
  * <p>
@@ -61,19 +64,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
    @Override
    public void setReportManager(ReportManager reportManager) {
       super.setReportManager(reportManager);
-      reportManager.getTestRunInfo().setTestDuration(duration);
-   }
-
-   /**
-    * Computes the current average speed the iterations are executed.
-    * 
-    * @param The
-    *           iteration count.
-    * @return The current average iteration execution speed.
-    */
-   protected float getSpeed(long count) {
-      long now = (stop == -1) ? System.currentTimeMillis() : stop;
-      return 1000f * count / (now - start);
+      reportManager.setRunInfo(new RunInfo(null, new Period(PeriodType.TIME, duration)));
    }
 
    /**
@@ -84,7 +75,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     */
    private void sendPack(long count) {
       for (long i = 0; i < count; i++) {
-         executorService.submit(new SenderTask(reportManager, counter, messageSenderManager, messageStore, isMessageNumberingEnabled(), isMeasuring));
+         executorService.submit(new SenderTask(reportManager, messageSenderManager, messageStore, isMessageNumberingEnabled(), isMeasuring));
       }
    }
 
@@ -133,7 +124,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
                terminated = true;
             }
 
-            final long cnt = counter.get();
+            final long cnt = reportManager.getRunInfo().getIteration();
 
             if (!expired) {
                sendPack(cnt - lastValue);
@@ -182,7 +173,6 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
          log.info("Server is warmed up - starting to measure...");
       }
       setStartTime();
-      counter.set(0);
    }
 
    /**

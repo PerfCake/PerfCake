@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicLong;
 
 import org.perfcake.PerfCakeConst;
 import org.perfcake.message.Message;
@@ -14,7 +13,7 @@ import org.perfcake.message.ReceivedMessage;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.nreporting.MeasurementUnit;
-import org.perfcake.reporting.ReportManager;
+import org.perfcake.nreporting.ReportManager;
 import org.perfcake.validation.ValidatorManager;
 
 /**
@@ -38,11 +37,6 @@ class SenderTask implements Runnable {
     * Reference to a message store where the messages are taken from.
     */
    private final List<MessageTemplate> messageStore;
-
-   /**
-    * Reference to a counter of successfully executed iterations.
-    */
-   private final AtomicLong counter;
 
    /**
     * Indicates whether the message numbering is enabled or disabled.
@@ -75,11 +69,10 @@ class SenderTask implements Runnable {
     * @param isMeasuring
     *           Indicates whether the system is in a state when it measures the performance.
     */
-   public SenderTask(ReportManager reportManager, AtomicLong counter, MessageSenderManager senderManager, List<MessageTemplate> messageStore, boolean messageNumberingEnabled, boolean isMeasuring) {
+   public SenderTask(ReportManager reportManager, MessageSenderManager senderManager, List<MessageTemplate> messageStore, boolean messageNumberingEnabled, boolean isMeasuring) {
       this.reportManager = reportManager;
       this.senderManager = senderManager;
       this.messageStore = messageStore;
-      this.counter = counter;
       this.messageNumberingEnabled = messageNumberingEnabled;
       this.isMeasuring = isMeasuring;
    }
@@ -108,11 +101,11 @@ class SenderTask implements Runnable {
       MessageSender sender = null;
       ReceivedMessage receivedMessage = null;
       try {
-         MeasurementUnit mu = new MeasurementUnit(counter.get());
+         MeasurementUnit mu = reportManager.newMeasurementUnit();
 
          // only set numbering to headers if it is enabled, later there is no change to
          // filter out the headers before sending
-         String msgNumberStr = String.valueOf(counter.get());
+         String msgNumberStr = String.valueOf(mu.getIteration());
          if (messageNumberingEnabled && isMeasuring) {
             messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, msgNumberStr);
          }
@@ -146,8 +139,7 @@ class SenderTask implements Runnable {
             sender = null;
          }
 
-         counter.incrementAndGet();
-         reportManager.reportIteration(mu);
+         reportManager.report(mu);
       } catch (Exception e) {
          e.printStackTrace();
       } finally {
