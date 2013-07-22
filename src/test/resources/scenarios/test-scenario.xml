@@ -17,14 +17,12 @@
    <reporting>
       <property name="tags" value=""/>
       <property name="uniqueId" value="${scenario}"/>
-      <reporter class="ATReporter">
+      <reporter class="DummyReporter">
          <property name="labelType" value="Time"/>
-         <destination class="CsvDestination">
-            <property name="periodicity" value="10%"/>
-            <property name="outputPath" value="logs"/>
-         </destination>
-         <destination class="ConsoleDestination">
-            <property name="periodicity" value="1s"/>
+         <destination class="DummyDestination">
+            <period type="percentage" value="50"/>
+            <period type="iteration" value="100"/>
+            <period type="time" value="2000"/>
          </destination>
       </reporter>
    </reporting>

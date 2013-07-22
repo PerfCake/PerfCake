@@ -60,7 +60,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
    @Override
    public void setReportManager(ReportManager reportManager) {
       super.setReportManager(reportManager);
-      reportManager.setRunInfo(new RunInfo(null, new Period(PeriodType.ITEARATION, count)));
+      reportManager.setRunInfo(new RunInfo(null, new Period(PeriodType.ITERATION, count)));
    }
 
    /*

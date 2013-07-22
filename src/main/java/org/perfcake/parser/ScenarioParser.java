@@ -22,11 +22,13 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,6 +56,8 @@ import org.perfcake.nreporting.ReportManager;
 import org.perfcake.nreporting.destinations.Destination;
 import org.perfcake.nreporting.reporters.Reporter;
 import org.perfcake.util.ObjectFactory;
+import org.perfcake.util.Period;
+import org.perfcake.util.PeriodType;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidatorManager;
@@ -73,8 +77,8 @@ public class ScenarioParser {
 
    private static final String DEFAULT_GENERATOR_PACKAGE = "org.perfcake.message.generator";
    private static final String DEFAULT_SENDER_PACKAGE = "org.perfcake.message.sender";
-   private static final String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
-   private static final String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
+   private static final String DEFAULT_REPORTER_PACKAGE = "org.perfcake.nreporting.reporters";
+   private static final String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.nreporting.destinations";
    private static final String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
 
    public static final Logger log = Logger.getLogger(ScenarioExecution.class);
@@ -331,6 +335,8 @@ public class ScenarioParser {
             Destination currentDestination = null;
             Element currentDestinationElement = null;
             Properties currentDestinationProperties = null;
+            Properties currentDestinationPeriodsAsProperties = null;
+            Set<Period> currentDestinationPeriodSet = null;
             for (int j = 0; j < currentReporterDestinationsCount; j++) {
                currentDestinationElement = (Element) currentReporterDestinations.item(j);
                String destClass = currentDestinationElement.getAttribute("class");
@@ -341,7 +347,12 @@ public class ScenarioParser {
                currentDestinationProperties = getPropertiesFromSubNodes(currentDestinationElement);
                Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
                currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
-               currentReporter.registerDestination(currentDestination);
+               currentDestinationPeriodsAsProperties = getPropertiesFromSubNodes(currentDestinationElement, "period", "type", "value");
+               currentDestinationPeriodSet = new HashSet<>();
+               for (Entry<Object, Object> entry : currentDestinationPeriodsAsProperties.entrySet()) {
+                  currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(((String) entry.getKey()).toUpperCase()), Long.valueOf(entry.getValue().toString())));
+               }
+               currentReporter.registerDestination(currentDestination, currentDestinationPeriodSet);
             }
             reportManager.registerReporter(currentReporter);
          }

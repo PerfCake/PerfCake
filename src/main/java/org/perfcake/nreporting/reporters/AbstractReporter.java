@@ -41,8 +41,8 @@ public abstract class AbstractReporter implements Reporter {
 
    private void reportIterations(final long iteration) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
-         if (bp.getPeriodType() == PeriodType.ITEARATION && iteration % bp.getPeriod() == 0) {
-            doPublishResult(PeriodType.ITEARATION, bp.getBinding());
+         if (bp.getPeriodType() == PeriodType.ITERATION && iteration % bp.getPeriod() == 0) {
+            doPublishResult(PeriodType.ITERATION, bp.getBinding());
          }
       }
    }

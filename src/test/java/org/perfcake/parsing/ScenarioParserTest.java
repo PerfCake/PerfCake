@@ -11,8 +11,12 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.LongtermMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.nreporting.ReportManager;
+import org.perfcake.nreporting.destinations.Destination;
+import org.perfcake.nreporting.destinations.DummyDestination;
+import org.perfcake.nreporting.reporters.Reporter;
 import org.perfcake.parser.ScenarioParser;
-import org.perfcake.reporting.ReportManager;
+import org.perfcake.util.BoundPeriod;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -147,7 +151,30 @@ public class ScenarioParserTest {
       try {
          ReportManager reportManager = scenarioParser.parseReporting();
          Assert.assertNotNull(reportManager);
-         // TODO: add assertions on reportManager
+         Assert.assertEquals(reportManager.getReporters().size(), 1, "reportManager's number of reporters");
+         Reporter reporter = reportManager.getReporters().get(0);
+         Assert.assertEquals(reporter.getDestinations().size(), 1, "reporter's number of destinations");
+         Destination destination = reporter.getDestinations().iterator().next();
+         Assert.assertTrue(destination instanceof DummyDestination, "destination's class");
+         int assertedPeriodCount = 0;
+         Assert.assertEquals(reporter.getReportingPeriods().size(), 3);
+         for (BoundPeriod<Destination> period : reporter.getReportingPeriods()) {
+            switch (period.getPeriodType()) {
+               case TIME:
+                  Assert.assertEquals(period.getPeriod(), 2000, "time period's value");
+                  assertedPeriodCount++;
+                  break;
+               case ITERATION:
+                  Assert.assertEquals(period.getPeriod(), 100, "iteration period's value");
+                  assertedPeriodCount++;
+                  break;
+               case PERCENTAGE:
+                  Assert.assertEquals(period.getPeriod(), 50, "percentage period's value");
+                  assertedPeriodCount++;
+                  break;
+            }
+         }
+         Assert.assertEquals(assertedPeriodCount, 3, "number of period asserted");
       } catch (PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());

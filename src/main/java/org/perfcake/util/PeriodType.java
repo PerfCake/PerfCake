@@ -24,7 +24,7 @@ public enum PeriodType {
    /**
     * Period based on number of occurrences
     */
-   ITEARATION,
+   ITERATION,
    /**
     * Period base on time units, typically milliseconds
     */
