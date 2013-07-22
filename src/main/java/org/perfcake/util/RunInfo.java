@@ -79,7 +79,7 @@ public class RunInfo {
       this.id = id;
       this.duration = duration;
 
-      assert duration.getPeriodType() == PeriodType.ITEARATION || duration.getPeriodType() == PeriodType.TIME : "Unsupported RunInfo duration set.";
+      assert duration.getPeriodType() == PeriodType.ITERATION || duration.getPeriodType() == PeriodType.TIME : "Unsupported RunInfo duration set.";
    }
 
    /**
@@ -159,7 +159,7 @@ public class RunInfo {
       double progress;
 
       switch (duration.getPeriodType()) {
-         case ITEARATION:
+         case ITERATION:
             progress = getIteration();
             break;
          case TIME:
