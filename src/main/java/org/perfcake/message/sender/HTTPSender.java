@@ -248,7 +248,7 @@ public class HTTPSender extends AbstractSender {
    public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
       int respCode = -1;
       requestConnection.connect();
-      if (payload != null && ("POST".equals(method) || "PUT".equals(method))) {
+      if (payload != null && (method == Method.POST || method == Method.PUT)) {
          OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream());
          out.write(payload, 0, payloadLenght);
          out.flush();
