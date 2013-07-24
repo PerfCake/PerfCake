@@ -9,6 +9,7 @@ test-output
 .settings
 .project
 .classpath
+bin
 
 # Package Files #
 *.jar
