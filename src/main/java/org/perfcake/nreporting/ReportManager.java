@@ -21,15 +21,15 @@ public class ReportManager {
    public MeasurementUnit newMeasurementUnit() {
       return new MeasurementUnit(runInfo.getNextIteration());
    }
-   
+
    public RunInfo getRunInfo() {
       return runInfo;
    }
-   
+
    public void setRunInfo(RunInfo runInfo) {
       this.runInfo = runInfo;
    }
-   
+
    public void report(final MeasurementUnit mu) throws ReportingException {
       if (started) {
          rwLock.readLock().lock();
@@ -64,7 +64,7 @@ public class ReportManager {
          r.start();
          rwLock.writeLock().unlock();
       }
-      
+
       started = true;
       runInfo.start();
    }

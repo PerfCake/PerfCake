@@ -44,7 +44,7 @@ public class MeasurementUnit {
          return -1;
       }
 
-      return (stopTime - startTime) / 1000;
+      return (stopTime - startTime) / 1_000_000;
    }
 
    public long getIteration() {

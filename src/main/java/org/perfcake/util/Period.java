@@ -83,17 +83,22 @@ public class Period implements Serializable {
 
    @Override
    public boolean equals(final Object obj) {
-      if (this == obj)
+      if (this == obj) {
          return true;
-      if (obj == null)
+      }
+      if (obj == null) {
          return false;
-      if (getClass() != obj.getClass())
+      }
+      if (getClass() != obj.getClass()) {
          return false;
+      }
       final Period other = (Period) obj;
-      if (period != other.period)
+      if (period != other.period) {
          return false;
-      if (periodType != other.periodType)
+      }
+      if (periodType != other.periodType) {
          return false;
+      }
       return true;
    }
 
