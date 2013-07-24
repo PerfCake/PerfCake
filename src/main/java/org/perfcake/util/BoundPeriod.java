@@ -80,18 +80,23 @@ public class BoundPeriod<T> extends Period {
    @SuppressWarnings("rawtypes")
    @Override
    public boolean equals(final Object obj) {
-      if (this == obj)
+      if (this == obj) {
          return true;
-      if (!super.equals(obj))
+      }
+      if (!super.equals(obj)) {
          return false;
-      if (getClass() != obj.getClass())
+      }
+      if (getClass() != obj.getClass()) {
          return false;
+      }
       final BoundPeriod other = (BoundPeriod) obj;
       if (binding == null) {
-         if (other.binding != null)
+         if (other.binding != null) {
             return false;
-      } else if (!binding.equals(other.binding))
+         }
+      } else if (!binding.equals(other.binding)) {
          return false;
+      }
       return true;
    }
 

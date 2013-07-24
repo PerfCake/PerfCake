@@ -175,7 +175,7 @@ public abstract class AbstractMessageGenerator {
    protected float getSpeed(long cnt) {
       return 1000f * cnt / reportManager.getRunInfo().getRunTime();
    }
-   
+
    /**
     * Executes the actual implementation of a generator.
     * 

@@ -24,8 +24,9 @@ public abstract class AbstractReporter implements Reporter {
 
    @Override
    public final void report(final MeasurementUnit mu) throws ReportingException {
-      if (runInfo == null)
+      if (runInfo == null) {
          throw new ReportingException("RunInfo has not been set for this reporter.");
+      }
 
       doReport(mu);
 
@@ -147,8 +148,9 @@ public abstract class AbstractReporter implements Reporter {
             } catch (final InterruptedException e) {
                // this means our job is done
             }
-            if (log.isDebugEnabled())
+            if (log.isDebugEnabled()) {
                log.debug("Gratefully terminating the periodic reporting thread.");
+            }
          }
       });
       periodicThread.setDaemon(true); // allow the thread to die with JVM termination and do not block it
@@ -157,8 +159,9 @@ public abstract class AbstractReporter implements Reporter {
 
    @Override
    public void stop() {
-      if (periodicThread != null)
+      if (periodicThread != null) {
          periodicThread.interrupt();
+      }
       periodicThread = null;
 
       for (final Destination d : getDestinations()) {
