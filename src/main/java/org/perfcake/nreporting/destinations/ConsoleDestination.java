@@ -3,14 +3,21 @@
  */
 package org.perfcake.nreporting.destinations;
 
+import org.apache.log4j.Logger;
 import org.perfcake.nreporting.Measurement;
 import org.perfcake.nreporting.ReportingException;
 
 /**
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * The destination that appends the measurements into the console
+ * via Log4j's INFO channel.
  * 
+ * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class ConsoleDestination implements Destination {
+   /**
+    * The destination's logger.
+    */
+   private static final Logger log = Logger.getLogger(ConsoleDestination.class);
 
    /*
     * (non-Javadoc)
@@ -39,8 +46,9 @@ public class ConsoleDestination implements Destination {
     */
    @Override
    public void report(Measurement m) throws ReportingException {
-      StringBuffer sb = new StringBuffer();
-      // sb.append
+      if (log.isInfoEnabled()) {
+         log.info(m.toString());
+      }
    }
 
 }
