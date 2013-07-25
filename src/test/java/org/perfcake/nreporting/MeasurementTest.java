@@ -22,4 +22,5 @@ public class MeasurementTest {
 
       Assert.assertEquals(m.toString(), "[" + HOURS + ":" + MINUTES + ":0" + SECONDS + "][" + ITERATIONS + " iterations][" + PERCENTAGE + "%] [18523.269 it/s] [current => 257.58 it/s] [average => 300.25 it/s]");
    }
+   
 }
