@@ -9,6 +9,7 @@ import org.perfcake.nreporting.util.HMSNumberFormat;
 
 /**
  * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class Measurement {
@@ -49,7 +50,7 @@ public class Measurement {
     * @param time
     * @param iteration
     */
-   public Measurement(long percentage, long time, long iteration) {
+   public Measurement(final long percentage, final long time, final long iteration) {
       super();
       this.percentage = percentage;
       this.time = time;
@@ -105,7 +106,7 @@ public class Measurement {
     * @param name
     * @return
     */
-   public Object get(String name) {
+   public Object get(final String name) {
       return results.get(name);
    }
 
@@ -118,7 +119,7 @@ public class Measurement {
     * @param result
     *           The result value.
     */
-   public void set(String name, Object result) {
+   public void set(final String name, final Object result) {
       results.put(name, result);
    }
 
@@ -128,7 +129,7 @@ public class Measurement {
     * @param result
     *           The default result value.
     */
-   public void set(Object result) {
+   public void set(final Object result) {
       results.put(DEFAULT_RESULT, result);
    }
 

@@ -95,6 +95,8 @@ public abstract class AbstractReporter implements Reporter {
       }
    }
 
+   abstract protected void doReset();
+
    abstract protected void doReport(MeasurementUnit mu) throws ReportingException;
 
    abstract protected void doPublishResult(PeriodType periodType, Destination d) throws ReportingException;
@@ -117,6 +119,8 @@ public abstract class AbstractReporter implements Reporter {
          log.warn("No reporting periods are configured for this reporter. The reporter is disabled. Call start() again after the periods are registered.");
          return;
       }
+
+      doReset();
 
       for (final Destination d : getDestinations()) {
          d.open();
