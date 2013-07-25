@@ -20,6 +20,7 @@
       <reporter class="DummyReporter">
          <property name="labelType" value="Time"/>
          <destination class="DummyDestination">
+            <property name="property" value="dummy_p_value"/>
             <period type="percentage" value="50"/>
             <period type="iteration" value="100"/>
             <period type="time" value="2000"/>

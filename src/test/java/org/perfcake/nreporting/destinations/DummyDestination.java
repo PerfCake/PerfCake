@@ -9,6 +9,8 @@ import org.perfcake.nreporting.ReportingException;
  */
 public class DummyDestination implements Destination {
 
+   private String property = null;
+
    /*
     * (non-Javadoc)
     * 
@@ -38,4 +40,24 @@ public class DummyDestination implements Destination {
    public void report(Measurement m) throws ReportingException {
       System.out.println(m.toString());
    }
+
+   /**
+    * Used to read the value of property.
+    * 
+    * @return The property value.
+    */
+   public String getProperty() {
+      return property;
+   }
+
+   /**
+    * Used to set the value of property.
+    * 
+    * @param property
+    *           The property value to set.
+    */
+   public void setProperty(String property) {
+      this.property = property;
+   }
+
 }

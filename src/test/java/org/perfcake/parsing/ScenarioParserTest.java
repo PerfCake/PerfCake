@@ -156,6 +156,7 @@ public class ScenarioParserTest {
          Assert.assertEquals(reporter.getDestinations().size(), 1, "reporter's number of destinations");
          Destination destination = reporter.getDestinations().iterator().next();
          Assert.assertTrue(destination instanceof DummyDestination, "destination's class");
+         Assert.assertEquals(((DummyDestination) destination).getProperty(), "dummy_p_value", "destination's property value");
          int assertedPeriodCount = 0;
          Assert.assertEquals(reporter.getReportingPeriods().size(), 3);
          for (BoundPeriod<Destination> period : reporter.getReportingPeriods()) {
