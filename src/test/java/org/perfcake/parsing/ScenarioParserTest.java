@@ -23,6 +23,7 @@ import org.testng.annotations.Test;
 
 public class ScenarioParserTest {
    private ScenarioParser scenarioParser, noValidationScenarioParser, noMessagesScenarioParser;
+
    private static final int THREADS = 10;
    private static final int MIN_WARMUP_COUNT = 12345;
    private static final String MESSAGE1_CONTENT = "Stupid is as supid does! :)";
@@ -157,6 +158,7 @@ public class ScenarioParserTest {
          Destination destination = reporter.getDestinations().iterator().next();
          Assert.assertTrue(destination instanceof DummyDestination, "destination's class");
          Assert.assertEquals(((DummyDestination) destination).getProperty(), "dummy_p_value", "destination's property value");
+         Assert.assertEquals(((DummyDestination) destination).getProperty2(), "dummy_p2_value", "destination's property2 value");
          int assertedPeriodCount = 0;
          Assert.assertEquals(reporter.getReportingPeriods().size(), 3);
          for (BoundPeriod<Destination> period : reporter.getReportingPeriods()) {

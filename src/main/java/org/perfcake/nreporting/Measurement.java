@@ -16,7 +16,7 @@ public class Measurement {
    /**
     * The default result name.
     */
-   public static final String DEFAULT_RESULT = "result";
+   public static final String DEFAULT_RESULT = "Result";
 
    /**
     * Hours/Minutes/Second number format.
