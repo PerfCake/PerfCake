@@ -17,12 +17,15 @@ package org.perfcake.nreporting.reporters;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.perfcake.common.PeriodType;
 import org.perfcake.nreporting.Measurement;
 import org.perfcake.nreporting.MeasurementUnit;
 import org.perfcake.nreporting.Quantity;
 import org.perfcake.nreporting.ReportingException;
 import org.perfcake.nreporting.destinations.Destination;
-import org.perfcake.util.PeriodType;
+import org.perfcake.nreporting.reporters.accumulators.Accumulator;
+import org.perfcake.nreporting.reporters.accumulators.AvgAccumulator;
+import org.perfcake.nreporting.reporters.accumulators.LastValueAccumulator;
 
 /**
  * Reports average response time of all measure units
@@ -31,6 +34,8 @@ import org.perfcake.util.PeriodType;
  * 
  */
 public class ResponseTimeReporter extends AbstractReporter {
+
+   // TODO replace manual counting with AvgAccumulator
 
    /**
     * Iterations observed by this reporter
@@ -56,6 +61,9 @@ public class ResponseTimeReporter extends AbstractReporter {
       } else {
          m.set(new Quantity<Double>((double) responseTime.get() / iterations.get(), "ms"));
       }
+
+      // TODO publish accumulated results
+
       d.report(m);
    }
 
@@ -63,6 +71,16 @@ public class ResponseTimeReporter extends AbstractReporter {
    protected void doReset() {
       iterations.set(0);
       responseTime.set(0);
+   }
+
+   @SuppressWarnings("rawtypes")
+   @Override
+   protected Accumulator getAccumulator(final String key, final Class clazz) {
+      if (clazz.getName().equals(Double.class)) {
+         return new AvgAccumulator();
+      } else {
+         return new LastValueAccumulator();
+      }
    }
 
 }

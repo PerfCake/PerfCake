@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.perfcake.PerfCakeException;
+import org.perfcake.common.BoundPeriod;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
@@ -16,7 +17,6 @@ import org.perfcake.nreporting.destinations.Destination;
 import org.perfcake.nreporting.destinations.DummyDestination;
 import org.perfcake.nreporting.reporters.Reporter;
 import org.perfcake.parser.ScenarioParser;
-import org.perfcake.util.BoundPeriod;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;

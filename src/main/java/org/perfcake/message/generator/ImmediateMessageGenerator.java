@@ -22,10 +22,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.perfcake.common.PeriodType;
 import org.perfcake.nreporting.ReportManager;
-import org.perfcake.util.Period;
-import org.perfcake.util.PeriodType;
-import org.perfcake.util.RunInfo;
 
 /**
  * <p>
@@ -58,9 +56,8 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
     * @see org.perfcake.message.generator.AbstractMessageGenerator#setReportManager(org.perfcake.reporting.ReportManager)
     */
    @Override
-   public void setReportManager(ReportManager reportManager) {
+   public void setReportManager(final ReportManager reportManager) {
       super.setReportManager(reportManager);
-      reportManager.setRunInfo(new RunInfo(null, new Period(PeriodType.ITERATION, count)));
    }
 
    /*
@@ -95,7 +92,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
             terminated = executorService.awaitTermination(1, TimeUnit.SECONDS);
 
             // should we log a change?
-            long cnt = reportManager.getRunInfo().getIteration();
+            long cnt = runInfo.getIteration();
             if (cnt != lastValue) {
                lastValue = cnt;
 
@@ -137,8 +134,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
       messageSenderManager.releaseAllSenders();
       executorService.awaitTermination(30, TimeUnit.SECONDS);
       executorService = Executors.newFixedThreadPool(threads);
-      reportManager.getRunInfo().reset();
-      // responseTime.set(0);
+      reportManager.reset(); // TODO this resets runInfo as well, this should be probably done differently once the warm-up handling is updated
       int cnt = waiting.size();
       int i = 0;
       for (; i < cnt; i++) {
@@ -165,7 +161,12 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
     * @param count
     *           The number of iterations to send.
     */
-   public void setCount(long count) {
+   public void setCount(final long count) {
       this.count = count;
+   }
+
+   @Override
+   protected void validateRunInfo() {
+      assert runInfo.getDuration().getPeriodType() == PeriodType.ITERATION : this.getClass().getName() + " can only be used with an iteration based run configuration.";
    }
 }

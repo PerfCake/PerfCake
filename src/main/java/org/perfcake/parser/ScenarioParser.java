@@ -46,8 +46,11 @@ import javax.xml.xpath.XPathFactory;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
+import org.perfcake.RunInfo;
 import org.perfcake.Scenario;
 import org.perfcake.ScenarioExecution;
+import org.perfcake.common.Period;
+import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
@@ -56,8 +59,6 @@ import org.perfcake.nreporting.ReportManager;
 import org.perfcake.nreporting.destinations.Destination;
 import org.perfcake.nreporting.reporters.Reporter;
 import org.perfcake.util.ObjectFactory;
-import org.perfcake.util.Period;
-import org.perfcake.util.PeriodType;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidatorManager;
@@ -86,9 +87,9 @@ public class ScenarioParser {
    private static final XPath xpath = XPathFactory.newInstance().newXPath();
 
    private String scenarioConfig;
-   private Node scenarioNode;
+   private final Node scenarioNode;
 
-   public ScenarioParser(URL scenario) throws PerfCakeException {
+   public ScenarioParser(final URL scenario) throws PerfCakeException {
       try {
          this.scenarioConfig = Utils.readFilteredContent(scenario);
 
@@ -120,10 +121,7 @@ public class ScenarioParser {
     *           String containing the scenario's XML definition.
     * @return DOM representation of the <code>performance</code> element of the
     *         scenario's definition.
-    * @throws SAXException
-    * @throws IOException
-    * @throws ParserConfigurationException
-    * @throws XPathExpressionException
+    * @throws PerfCakeException
     */
    private Node parseScenarioNode() throws PerfCakeException {
       try {
@@ -131,6 +129,27 @@ public class ScenarioParser {
       } catch (SAXException | IOException | ParserConfigurationException e) {
          throw new PerfCakeException("Cannot parse scenario configuration: ", e);
       }
+   }
+
+   /**
+    * Parses RunInfo from generator configuration.
+    * 
+    * @return RunInfo object representing the configuration
+    * @throws PerfCakeException
+    *            when there is a parse exception
+    */
+   public RunInfo parseRunInfo() throws PerfCakeException {
+      RunInfo runInfo = null;
+
+      try {
+         Element generatorElement = (Element) (xPathEvaluate("generator", scenarioNode).item(0));
+         Element runInfoElement = (Element) (xPathEvaluate("run", generatorElement).item(0));
+         runInfo = new RunInfo(new Period(PeriodType.valueOf(runInfoElement.getAttribute("type").toUpperCase()), Long.valueOf(runInfoElement.getAttribute("value"))));
+      } catch (XPathExpressionException e) {
+         throw new PerfCakeException("Cannot parse generator run information configuration: ", e);
+      }
+
+      return runInfo;
    }
 
    /**
@@ -182,7 +201,7 @@ public class ScenarioParser {
     * @return A message sender manager.
     * @throws XPathExpressionException
     */
-   public MessageSenderManager parseSender(int senderPoolSize) throws PerfCakeException {
+   public MessageSenderManager parseSender(final int senderPoolSize) throws PerfCakeException {
       MessageSenderManager msm;
 
       try {
@@ -412,7 +431,7 @@ public class ScenarioParser {
     * @return
     * @throws XPathExpressionException
     */
-   private static NodeList xPathEvaluate(String xPathExpression, Node node) throws XPathExpressionException {
+   private static NodeList xPathEvaluate(final String xPathExpression, final Node node) throws XPathExpressionException {
       return ((NodeList) xpath.evaluate(xPathExpression, node, XPathConstants.NODESET));
    }
 
@@ -421,7 +440,7 @@ public class ScenarioParser {
     * @return
     * @throws XPathExpressionException
     */
-   private static Properties getPropertiesFromSubNodes(Node node) throws XPathExpressionException {
+   private static Properties getPropertiesFromSubNodes(final Node node) throws XPathExpressionException {
       return getPropertiesFromSubNodes(node, "property", "name", "value");
    }
 
@@ -433,7 +452,7 @@ public class ScenarioParser {
     * @return
     * @throws XPathExpressionException
     */
-   private static Properties getPropertiesFromSubNodes(Node node, String propertyTagNameAttribute, String propertyNameAttribute, String propertyValueAttribute) throws XPathExpressionException {
+   private static Properties getPropertiesFromSubNodes(final Node node, final String propertyTagNameAttribute, final String propertyNameAttribute, final String propertyValueAttribute) throws XPathExpressionException {
       Properties properties = new Properties();
       NodeList propertyNodes = xPathEvaluate(propertyTagNameAttribute, node);
       int propertyNodesCount = propertyNodes.getLength();
