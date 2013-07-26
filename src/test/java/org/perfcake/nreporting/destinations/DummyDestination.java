@@ -10,6 +10,7 @@ import org.perfcake.nreporting.ReportingException;
 public class DummyDestination implements Destination {
 
    private String property = null;
+   private String property2 = null;
 
    /*
     * (non-Javadoc)
@@ -58,6 +59,25 @@ public class DummyDestination implements Destination {
     */
    public void setProperty(String property) {
       this.property = property;
+   }
+
+   /**
+    * Used to read the value of property2.
+    * 
+    * @return The property2 value.
+    */
+   public String getProperty2() {
+      return property2;
+   }
+
+   /**
+    * Used to set the value of property2.
+    * 
+    * @param property2
+    *           The property2 value to set.
+    */
+   public void setProperty2(String property2) {
+      this.property2 = property2;
    }
 
 }

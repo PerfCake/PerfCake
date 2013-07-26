@@ -15,13 +15,12 @@
       <property name="target" value="http://${server.host}:${server.port}/HTTPGateway/http/PerformanceTest/HTTPGateway"/>
    </sender>
    <reporting>
-      <property name="tags" value=""/>
-      <property name="uniqueId" value="${scenario}"/>
       <reporter class="DummyReporter">
          <property name="labelType" value="Time"/>
          <destination class="DummyDestination">
             <property name="property" value="dummy_p_value"/>
             <period type="percentage" value="50"/>
+            <property name="property2" value="dummy_p2_value"/>
             <period type="iteration" value="100"/>
             <period type="time" value="2000"/>
          </destination>
