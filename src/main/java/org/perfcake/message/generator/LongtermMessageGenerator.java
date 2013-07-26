@@ -20,10 +20,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.perfcake.common.PeriodType;
 import org.perfcake.nreporting.ReportManager;
-import org.perfcake.util.Period;
-import org.perfcake.util.PeriodType;
-import org.perfcake.util.RunInfo;
 
 /**
  * <p>
@@ -62,9 +60,8 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     * @see org.perfcake.message.generator.AbstractMessageGenerator#setReportManager(org.perfcake.reporting.ReportManager)
     */
    @Override
-   public void setReportManager(ReportManager reportManager) {
+   public void setReportManager(final ReportManager reportManager) {
       super.setReportManager(reportManager);
-      reportManager.setRunInfo(new RunInfo(null, new Period(PeriodType.TIME, duration)));
    }
 
    /**
@@ -73,7 +70,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     * @param count
     *           The number of {@link SenderTask};
     */
-   private void sendPack(long count) {
+   private void sendPack(final long count) {
       for (long i = 0; i < count; i++) {
          executorService.submit(new SenderTask(reportManager, messageSenderManager, messageStore, isMessageNumberingEnabled(), isMeasuring));
       }
@@ -124,7 +121,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
                terminated = true;
             }
 
-            final long cnt = reportManager.getRunInfo().getIteration();
+            final long cnt = runInfo.getIteration();
 
             if (!expired) {
                sendPack(cnt - lastValue);
@@ -190,7 +187,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     * @param monitoringPeriod
     *           The monitoringPeriod to set.
     */
-   public void setMonitoringPeriod(long monitoringPeriod) {
+   public void setMonitoringPeriod(final long monitoringPeriod) {
       this.monitoringPeriod = monitoringPeriod;
    }
 
@@ -209,7 +206,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     * @param duration
     *           The duration to set.
     */
-   public void setDuration(long duration) {
+   public void setDuration(final long duration) {
       this.duration = duration;
    }
 
@@ -228,7 +225,12 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     * @param threadQueueSize
     *           The thread queue size.
     */
-   public void setThreadQueueSize(int threadQueueSize) {
+   public void setThreadQueueSize(final int threadQueueSize) {
       this.threadQueueSize = threadQueueSize;
+   }
+
+   @Override
+   protected void validateRunInfo() {
+      assert runInfo.getDuration().getPeriodType() == PeriodType.TIME : this.getClass().getName() + " can only be used with an iteration based run configuration.";
    }
 }

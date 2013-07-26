@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.perfcake.util;
+package org.perfcake.common;
+
 
 /**
  * This is a {@link Period} that can be bound to a specific object. The binding means that the

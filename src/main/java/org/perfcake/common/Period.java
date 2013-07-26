@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.perfcake.util;
+package org.perfcake.common;
 
 import java.io.Serializable;
 
@@ -21,8 +21,6 @@ import java.io.Serializable;
  * Period represent a certain amount of units of a given type. These units are represented
  * using {@link PeriodType}, i.e. time, iterations, percents.
  * Period is an immutable type.
- * 
- * TODO Should go to a different package probably
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * 

@@ -43,6 +43,7 @@ public class Scenario {
    private MessageSenderManager messageSenderManager;
    private ReportManager reportManager;
    private List<MessageTemplate> messageStore;
+   private RunInfo runInfo;
 
    public static final String VERSION = "0.2";
 
@@ -57,7 +58,7 @@ public class Scenario {
     *           scenario name or location URL
     * @throws PerfCakeException
     */
-   public Scenario(String scenario) throws PerfCakeException {
+   public Scenario(final String scenario) throws PerfCakeException {
       if (scenario == null) {
          throw new PerfCakeException("Scenario property is not set. Please use -Dscenario=<scenario name> to specify a scenario.");
       }
@@ -84,8 +85,11 @@ public class Scenario {
 
       ScenarioParser parser = new ScenarioParser(scenarioUrl);
       generator = parser.parseGenerator();
+      runInfo = parser.parseRunInfo();
+      generator.setRunInfo(runInfo);
       messageSenderManager = parser.parseSender(generator.getThreads());
       reportManager = parser.parseReporting();
+      reportManager.setRunInfo(runInfo);
       messageStore = parser.parseMessages();
       parser.parseValidation();
    }

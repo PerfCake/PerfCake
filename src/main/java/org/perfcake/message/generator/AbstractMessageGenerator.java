@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 
 import org.perfcake.PerfCakeException;
+import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
@@ -95,6 +96,11 @@ public abstract class AbstractMessageGenerator {
    protected boolean messageNumberingEnabled = false;
 
    /**
+    * Represents the information about current run
+    */
+   protected RunInfo runInfo;
+
+   /**
     * Initialize the generator. During the initialization the {@link #messageSenderManager} is initialized as well.
     * 
     * @param messageSenderManager
@@ -103,7 +109,7 @@ public abstract class AbstractMessageGenerator {
     *           Message store where the messages are taken from.
     * @throws Exception
     */
-   public void init(MessageSenderManager messageSenderManager, List<MessageTemplate> messageStore) throws Exception {
+   public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception {
       this.messageStore = messageStore;
       this.messageSenderManager = messageSenderManager;
       this.messageSenderManager.init();
@@ -115,9 +121,22 @@ public abstract class AbstractMessageGenerator {
     * @param messageSenderManager
     *           The message sender manager to set.
     */
-   public void setMessageSenderManager(MessageSenderManager messageSenderManager) {
+   public void setMessageSenderManager(final MessageSenderManager messageSenderManager) {
       this.messageSenderManager = messageSenderManager;
    }
+
+   /**
+    * Sets the current run info
+    * 
+    * @param runInfo
+    *           The current run info object
+    */
+   public void setRunInfo(final RunInfo runInfo) {
+      this.runInfo = runInfo;
+      validateRunInfo();
+   }
+
+   abstract protected void validateRunInfo();
 
    /**
     * Sets the report manager
@@ -125,7 +144,7 @@ public abstract class AbstractMessageGenerator {
     * @param reportManager
     *           The report manager to set.
     */
-   public void setReportManager(ReportManager reportManager) {
+   public void setReportManager(final ReportManager reportManager) {
       this.reportManager = reportManager;
    }
 
@@ -153,14 +172,14 @@ public abstract class AbstractMessageGenerator {
     * @return
     */
    protected long getDurationInMillis() {
-      return reportManager.getRunInfo().getRunTime();
+      return runInfo.getRunTime();
    }
 
    /**
     * Sets the timestamp of the moment when generator execution stopped.
     */
    protected void setStopTime() {
-      if (reportManager.getRunInfo().isRunning()) {
+      if (runInfo.isRunning()) {
          reportManager.stop();
       }
    }
@@ -172,8 +191,8 @@ public abstract class AbstractMessageGenerator {
     *           iteration count.
     * @return The current average iteration execution speed.
     */
-   protected float getSpeed(long cnt) {
-      return 1000f * cnt / reportManager.getRunInfo().getRunTime();
+   protected float getSpeed(final long cnt) {
+      return 1000f * cnt / runInfo.getRunTime();
    }
 
    /**
@@ -205,7 +224,7 @@ public abstract class AbstractMessageGenerator {
     * @param threads
     *           The number of threads.
     */
-   public void setThreads(int threads) {
+   public void setThreads(final int threads) {
       this.threads = threads;
    }
 
@@ -224,7 +243,7 @@ public abstract class AbstractMessageGenerator {
     * @param warmUpEnabled
     *           The warmUpEnabled to set.
     */
-   public void setWarmUpEnabled(boolean warmUpEnabled) {
+   public void setWarmUpEnabled(final boolean warmUpEnabled) {
       this.warmUpEnabled = warmUpEnabled;
    }
 
@@ -243,7 +262,7 @@ public abstract class AbstractMessageGenerator {
     * @param minimalWarmUpDuration
     *           The minimal warm-up period duration to set.
     */
-   public void setMinimalWarmUpDuration(long minimalWarmUpDuration) {
+   public void setMinimalWarmUpDuration(final long minimalWarmUpDuration) {
       this.minimalWarmUpDuration = minimalWarmUpDuration;
    }
 
@@ -262,7 +281,7 @@ public abstract class AbstractMessageGenerator {
     * @param minimalWarmUpCount
     *           The value of minimal warm-up iteration count to set.
     */
-   public void setMinimalWarmUpCount(long minimalWarmUpCount) {
+   public void setMinimalWarmUpCount(final long minimalWarmUpCount) {
       this.minimalWarmUpCount = minimalWarmUpCount;
    }
 
@@ -281,7 +300,7 @@ public abstract class AbstractMessageGenerator {
     * @param messageNumberingEnabled
     *           The messageNumberingEnabled to set.
     */
-   public void setMessageNumberingEnabled(boolean messageNumberingEnabled) {
+   public void setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
       this.messageNumberingEnabled = messageNumberingEnabled;
    }
 }

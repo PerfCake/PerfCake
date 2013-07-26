@@ -7,8 +7,8 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
+import org.perfcake.RunInfo;
 import org.perfcake.nreporting.reporters.Reporter;
-import org.perfcake.util.RunInfo;
 
 public class ReportManager {
    private static final Logger log = Logger.getLogger(ReportManager.class);
@@ -22,11 +22,7 @@ public class ReportManager {
       return new MeasurementUnit(runInfo.getNextIteration());
    }
 
-   public RunInfo getRunInfo() {
-      return runInfo;
-   }
-
-   public void setRunInfo(RunInfo runInfo) {
+   public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
    }
 
@@ -39,6 +35,15 @@ public class ReportManager {
          rwLock.readLock().unlock();
       } else {
          log.debug("Skipping measurement unit because the ReportManager has not been started yet.");
+      }
+   }
+
+   public void reset() {
+      runInfo.reset();
+      for (Reporter r : reporters) {
+         rwLock.writeLock().lock();
+         r.reset();
+         rwLock.writeLock().unlock();
       }
    }
 

@@ -1,18 +1,41 @@
+/*
+ * Copyright 2010-2013 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.perfcake.nreporting.reporters;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.perfcake.RunInfo;
+import org.perfcake.common.BoundPeriod;
+import org.perfcake.common.Period;
+import org.perfcake.common.PeriodType;
 import org.perfcake.nreporting.MeasurementUnit;
 import org.perfcake.nreporting.ReportingException;
 import org.perfcake.nreporting.destinations.Destination;
-import org.perfcake.util.BoundPeriod;
-import org.perfcake.util.Period;
-import org.perfcake.util.PeriodType;
-import org.perfcake.util.RunInfo;
+import org.perfcake.nreporting.reporters.accumulators.Accumulator;
 
+/**
+ * 
+ * @author Martin Večeřa <marvenec@gmail.com>
+ * 
+ */
 public abstract class AbstractReporter implements Reporter {
 
    private static final Logger log = Logger.getLogger(AbstractReporter.class);
@@ -21,6 +44,8 @@ public abstract class AbstractReporter implements Reporter {
    protected RunInfo runInfo = null;
    private Thread periodicThread;
    private final Set<BoundPeriod<Destination>> periods = new HashSet<>();
+   @SuppressWarnings("rawtypes")
+   private final Map<String, Accumulator> accumulatedResults = new HashMap<>();
 
    @Override
    public final void report(final MeasurementUnit mu) throws ReportingException {
@@ -29,6 +54,8 @@ public abstract class AbstractReporter implements Reporter {
       }
 
       doReport(mu);
+
+      accumulateResults(mu.getResults());
 
       reportIterations(mu.getIteration());
 
@@ -39,6 +66,22 @@ public abstract class AbstractReporter implements Reporter {
          reportPercentage(percentage);
       }
    }
+
+   @SuppressWarnings("unchecked")
+   protected void accumulateResults(final Map<String, Object> results) {
+      for (String key : results.keySet()) {
+         Object value = results.get(key);
+         if (accumulatedResults.get(key) == null) {
+            accumulatedResults.put(key, getAccumulator(key, value.getClass()));
+         }
+
+         // TODO make sure accumulator was created, if not, report warning
+         accumulatedResults.get(key).add(value);
+      }
+   }
+
+   @SuppressWarnings("rawtypes")
+   abstract protected Accumulator getAccumulator(String key, Class clazz);
 
    private void reportIterations(final long iteration) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
@@ -95,6 +138,11 @@ public abstract class AbstractReporter implements Reporter {
       }
    }
 
+   @Override
+   public final void reset() {
+      doReset();
+   }
+
    abstract protected void doReset();
 
    abstract protected void doReport(MeasurementUnit mu) throws ReportingException;
@@ -120,7 +168,7 @@ public abstract class AbstractReporter implements Reporter {
          return;
       }
 
-      doReset();
+      reset();
 
       for (final Destination d : getDestinations()) {
          d.open();

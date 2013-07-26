@@ -13,18 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.perfcake.util;
+package org.perfcake;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.perfcake.common.Period;
+import org.perfcake.common.PeriodType;
 import org.xnio.channels.UnsupportedOptionException;
 
 /**
  * Information about the current scenario run.
- * TODO this should be directly referenced from Scenario, needs to be fixed after the new reporting is done, it should also go to a different package
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * 
@@ -32,14 +33,8 @@ import org.xnio.channels.UnsupportedOptionException;
 public class RunInfo {
 
    /**
-    * Unique identification string of the current measurement run
-    * TODO use this in scenario, currently only null is passed in
-    */
-   private final String id;
-
-   /**
     * How long is this measurement scheduled to run in milliseconds or iterations.
-    * Another {@link org.perfcake.util.PeriodType Period Types} do not make any sense here.
+    * Another {@link org.perfcake.common.PeriodType Period Types} do not make any sense here.
     */
    private final Period duration;
 
@@ -70,13 +65,10 @@ public class RunInfo {
    /**
     * Creates a new RunInfo.
     * 
-    * @param id
-    *           Unique identifier of this run
     * @param duration
     *           Target duration of the run (time or iterations)
     */
-   public RunInfo(final String id, final Period duration) {
-      this.id = id;
+   public RunInfo(final Period duration) {
       this.duration = duration;
 
       assert duration.getPeriodType() == PeriodType.ITERATION || duration.getPeriodType() == PeriodType.TIME : "Unsupported RunInfo duration set.";
@@ -121,8 +113,6 @@ public class RunInfo {
    /**
     * Resets iteration counter.
     * Use with maximal caution!
-    * 
-    * TODO Make this a protected/private method
     */
    public void reset() {
       iterations.set(0);
@@ -170,15 +160,6 @@ public class RunInfo {
       }
 
       return (progress / duration.getPeriod()) * 100;
-   }
-
-   /**
-    * Gets current measurement unique identifier. This can be null.
-    * 
-    * @return Measurement run identifier
-    */
-   public String getId() {
-      return id;
    }
 
    /**
@@ -237,5 +218,14 @@ public class RunInfo {
     */
    public void addTags(final Set<String> tags) {
       this.tags.addAll(tags);
+   }
+
+   /**
+    * Gets the desired run duration
+    * 
+    * @return The run duration
+    */
+   public Period getDuration() {
+      return duration;
    }
 }

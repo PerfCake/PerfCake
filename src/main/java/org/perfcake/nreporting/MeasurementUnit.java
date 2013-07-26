@@ -1,28 +1,32 @@
 package org.perfcake.nreporting;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 public class MeasurementUnit {
 
-   private long iteration;
+   private final long iteration;
    private long startTime = -1;
    private long stopTime = -1;
    private long totalTime = 0;
 
-   private Map<String, Object> measurementProperties = new HashMap<>();
-   private Map<String, Object> measurementResults = new HashMap<>();
+   private final Map<String, Object> measurementResults = new HashMap<>();
 
-   protected MeasurementUnit(long iteration) {
+   protected MeasurementUnit(final long iteration) {
       this.iteration = iteration;
    }
 
-   public void appendResult(String label, Object value) {
+   public void appendResult(final String label, final Object value) {
       measurementResults.put(label, value);
    }
 
-   public void setProperty(String key, String value) {
-      measurementProperties.put(key, value);
+   public Map<String, Object> getResults() {
+      return Collections.unmodifiableMap(measurementResults);
+   }
+
+   public Object getResult(final String label) {
+      return measurementResults.get(label);
    }
 
    public void startMeasure() {

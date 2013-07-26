@@ -17,12 +17,12 @@ package org.perfcake.nreporting.reporters;
 
 import java.util.Set;
 
+import org.perfcake.RunInfo;
+import org.perfcake.common.BoundPeriod;
+import org.perfcake.common.Period;
 import org.perfcake.nreporting.MeasurementUnit;
 import org.perfcake.nreporting.ReportingException;
 import org.perfcake.nreporting.destinations.Destination;
-import org.perfcake.util.BoundPeriod;
-import org.perfcake.util.Period;
-import org.perfcake.util.RunInfo;
 
 /**
  * Contract of a reporter. Reporter takes
@@ -32,7 +32,7 @@ import org.perfcake.util.RunInfo;
  * Reporter should not report anything unless it has been started with the {@link #start() start()} method.
  * If it is properly started, it should regularly report to all
  * registered destinations depending on the configured reporting periods. Reporter can assume
- * that {@link org.perfcake.util.RunInfo RunInfo} has been set before calling
+ * that {@link org.perfcake.RunInfo RunInfo} has been set before calling
  * the {@link #start() start()} method. It is the pure responsibility of Reporter to publish measurement
  * results to destination in the configured periods. All period types must be supported.
  * For easier development, it is advised to inherit from {@link AbstractReporter} which provides
@@ -106,7 +106,12 @@ public interface Reporter {
    public void stop();
 
    /**
-    * Sets {@link org.perfcake.util.RunInfo Run Info} for the current measurement run. This must be set
+    * Resets the reporter statistics to the initial state. This is mainly used for clean up after a warm-up period.
+    */
+   public void reset();
+
+   /**
+    * Sets {@link org.perfcake.RunInfo Run Info} for the current measurement run. This must be set
     * prior to starting the reporter. Failed to do so can lead to an assertion error.
     * 
     * @param runInfo
