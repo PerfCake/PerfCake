@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Properties;
 
 import org.perfcake.PerfCakeException;
+import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
+import org.perfcake.common.Period;
+import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
@@ -76,6 +79,7 @@ public class ScenarioParserTest {
          AbstractMessageGenerator generator = scenarioParser.parseGenerator();
          Assert.assertTrue(generator instanceof LongtermMessageGenerator, "The generator is not an instance of " + LongtermMessageGenerator.class.getName());
          LongtermMessageGenerator lmg = (LongtermMessageGenerator) generator;
+         lmg.setRunInfo(new RunInfo(new Period(PeriodType.TIME, 30L)));
          Assert.assertEquals(lmg.getMonitoringPeriod(), 1000, "monitoringPeriod"); // default value
          Assert.assertEquals(lmg.getThreadQueueSize(), 5000, "threadQueueSize");
          Assert.assertEquals(lmg.getDuration(), 30, "duration");

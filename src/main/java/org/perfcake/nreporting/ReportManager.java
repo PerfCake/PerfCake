@@ -24,6 +24,11 @@ public class ReportManager {
 
    public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
+      for (Reporter r : reporters) {
+         rwLock.writeLock().lock();
+         r.setRunInfo(runInfo);
+         rwLock.writeLock().unlock();
+      }
    }
 
    public void report(final MeasurementUnit mu) throws ReportingException {
@@ -49,6 +54,7 @@ public class ReportManager {
 
    public void registerReporter(final Reporter reporter) {
       rwLock.writeLock().lock();
+      reporter.setRunInfo(runInfo);
       reporters.add(reporter);
       rwLock.writeLock().unlock();
    }

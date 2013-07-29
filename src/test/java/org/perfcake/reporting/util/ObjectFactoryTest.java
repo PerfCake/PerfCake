@@ -19,6 +19,9 @@ package org.perfcake.reporting.util;
 import java.util.List;
 import java.util.Properties;
 
+import org.perfcake.RunInfo;
+import org.perfcake.common.Period;
+import org.perfcake.common.PeriodType;
 import org.perfcake.message.generator.ImmediateMessageGenerator;
 import org.perfcake.message.sender.CommandSender;
 import org.perfcake.message.sender.HTTPSender;
@@ -33,9 +36,10 @@ public class ObjectFactoryTest {
    public void testObjectSummoning() throws Throwable {
       Properties p = new Properties();
       p.setProperty("threads", "42");
-      p.setProperty("count", "10001");
-      ImmediateMessageGenerator g = (ImmediateMessageGenerator) ObjectFactory.summonInstance(ImmediateMessageGenerator.class.getName(), p);
+      // p.setProperty("count", "10001");
 
+      ImmediateMessageGenerator g = (ImmediateMessageGenerator) ObjectFactory.summonInstance(ImmediateMessageGenerator.class.getName(), p);
+      g.setRunInfo(new RunInfo(new Period(PeriodType.ITERATION, 10001L)));
       Assert.assertEquals(g.getThreads(), 42, "generator's threads");
       Assert.assertEquals(g.getCount(), 10001L, "generator's iteration count");
    }
