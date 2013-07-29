@@ -45,11 +45,6 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
    protected long monitoringPeriod = 1000; // default 1s
 
    /**
-    * The amount of time (in seconds) for which the generator will generate the measured load.
-    */
-   protected long duration = 60; // default, 60 seconds
-
-   /**
     * The size of internal thread queue.
     */
    protected int threadQueueSize = 1000; // default
@@ -106,6 +101,8 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
       } else {
          runTime = 0;
       }
+
+      final long duration = runInfo.getDuration().getPeriod();
 
       while (!(expired = (runTime > duration * 1000)) || !terminated) {
          if (log.isDebugEnabled()) {
@@ -197,17 +194,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     * @return The duration.
     */
    public long getDuration() {
-      return duration;
-   }
-
-   /**
-    * Sets the amount of time (in seconds) for which the generator will generate the measured load.
-    * 
-    * @param duration
-    *           The duration to set.
-    */
-   public void setDuration(final long duration) {
-      this.duration = duration;
+      return runInfo.getDuration().getPeriod();
    }
 
    /**

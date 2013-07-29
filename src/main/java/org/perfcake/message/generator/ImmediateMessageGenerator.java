@@ -45,11 +45,6 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
     */
    protected Map<String, String> messageProperties = null;
 
-   /**
-    * The number of iterations to generate.
-    */
-   protected long count = 1;
-
    /*
     * (non-Javadoc)
     * 
@@ -74,7 +69,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
          log.info("Preparing senders");
       }
       executorService = Executors.newFixedThreadPool(threads);
-      for (int i = 0; i < count; i++) {
+      for (int i = 0; i < runInfo.getDuration().getPeriod(); i++) {
          executorService.submit(new SenderTask(reportManager, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
       }
       executorService.shutdown();
@@ -140,7 +135,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
       for (; i < cnt; i++) {
          executorService.submit(waiting.get(i));
       }
-      for (; i < count; i++) {
+      for (; i < runInfo.getDuration().getPeriod(); i++) {
          executorService.submit(new SenderTask(reportManager, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
       }
       executorService.shutdown();
@@ -152,17 +147,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
     * @return The number of iterations to send.
     */
    public long getCount() {
-      return count;
-   }
-
-   /**
-    * Sets the number of iterations to send.
-    * 
-    * @param count
-    *           The number of iterations to send.
-    */
-   public void setCount(final long count) {
-      this.count = count;
+      return runInfo.getDuration().getPeriod();
    }
 
    @Override
