@@ -91,13 +91,16 @@ public class CSVDestination implements Destination {
 
       final Map<String, Object> results = m.getAll();
 
+      Object defaultResult = m.get();
       // make sure the order of columns is consisten
       if (!csvFile.exists()) {
          sb.append("Time");
          sb.append(delimiter);
          sb.append("Iterations");
-         sb.append(delimiter);
-         sb.append(Measurement.DEFAULT_RESULT);
+         if (defaultResult != null) {
+            sb.append(delimiter);
+            sb.append(Measurement.DEFAULT_RESULT);
+         }
          for (String key : results.keySet()) {
             if (!key.equals(Measurement.DEFAULT_RESULT)) {
                resultNames.add(key);
@@ -111,12 +114,13 @@ public class CSVDestination implements Destination {
       sb.append(timeFormat.format(m.getTime()));
       sb.append(delimiter);
       sb.append(m.getIteration());
-      sb.append(delimiter);
-      Object defaultResult = m.get();
-      if (defaultResult instanceof Quantity<?>) {
-         sb.append(((Quantity<?>) defaultResult).getNumber());
-      } else {
-         sb.append(defaultResult);
+      if (defaultResult != null) {
+         sb.append(delimiter);
+         if (defaultResult instanceof Quantity<?>) {
+            sb.append(((Quantity<?>) defaultResult).getNumber());
+         } else {
+            sb.append(defaultResult);
+         }
       }
 
       Object currentResult;

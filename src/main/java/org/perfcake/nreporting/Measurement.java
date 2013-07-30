@@ -147,9 +147,13 @@ public class Measurement {
       sb.append(iteration);
       sb.append(" iterations][");
       sb.append(percentage);
-      sb.append("%] [");
-      sb.append(get());
-      sb.append("]");
+      sb.append("%]");
+      Object defaultResult = get();
+      if (defaultResult != null) {
+         sb.append(" [");
+         sb.append(get());
+         sb.append("]");
+      }
       for (Entry<String, Object> entry : results.entrySet()) {
          if (!entry.getKey().equals(DEFAULT_RESULT)) {
             sb.append(" [");

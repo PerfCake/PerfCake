@@ -20,12 +20,16 @@ public class CSVDestinationTest {
    private File csvFile;
    private Properties destinationProperties;
    private Measurement measurement;
+   private Measurement measurementWithoutDefault;
 
    @BeforeClass
    public void beforeClass() {
       measurement = new Measurement(42, 123456000, 12345);
       measurement.set(new Quantity<Double>(1111.11, "it/s"));
       measurement.set("another", new Quantity<Double>(222.22, "ms"));
+
+      measurementWithoutDefault = new Measurement(42, 123456000, 12345);
+      measurementWithoutDefault.set("singleResult", new Quantity<Number>(100, "units"));
 
       File csvOutputPath = new File("test-output");
       if (!csvOutputPath.exists()) {
@@ -61,13 +65,27 @@ public class CSVDestinationTest {
    }
 
    @Test
-   public void testDefaultReport() {
+   public void testDefaultProperties() {
       try {
          CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
 
          destination.report(measurement);
 
          assertCSVFileContent("Time;Iterations;Result;another\n34:17:36;12345;1111.11;222.22");
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
+         e.printStackTrace();
+         Assert.fail(e.getMessage());
+      }
+   }
+
+   @Test
+   public void testNoDefaultResultMeasurement() {
+      try {
+         CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
+
+         destination.report(measurementWithoutDefault);
+
+         assertCSVFileContent("Time;Iterations;singleResult\n34:17:36;12345;100");
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
