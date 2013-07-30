@@ -14,6 +14,8 @@ import org.perfcake.nreporting.reporters.accumulators.AvgAccumulator;
  */
 public class DummyReporter extends AbstractReporter {
 
+   private String lastMethod = null;
+
    /**
     * The reporter's loger.
     */
@@ -24,6 +26,7 @@ public class DummyReporter extends AbstractReporter {
       if (log.isDebugEnabled()) {
          log.debug("Reporting " + mu.toString());
       }
+      lastMethod = "doReport";
    }
 
    @Override
@@ -31,16 +34,24 @@ public class DummyReporter extends AbstractReporter {
       if (log.isDebugEnabled()) {
          log.debug("Publishing results...");
       }
+      lastMethod = "doPublishResult";
    }
 
    @SuppressWarnings("rawtypes")
    @Override
    protected Accumulator getAccumulator(final String key, final Class clazz) {
+      lastMethod = "getAccumulator";
       return new AvgAccumulator();
    }
 
    @Override
    protected void doReset() {
       // nothing needed
+      lastMethod = "doReset";
    }
+
+   public String getLastMethod() {
+      return lastMethod;
+   }
+
 }

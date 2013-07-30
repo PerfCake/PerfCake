@@ -157,7 +157,7 @@ public class ScenarioParserTest {
          ReportManager reportManager = scenarioParser.parseReporting();
          Assert.assertNotNull(reportManager);
          Assert.assertEquals(reportManager.getReporters().size(), 1, "reportManager's number of reporters");
-         Reporter reporter = reportManager.getReporters().get(0);
+         Reporter reporter = reportManager.getReporters().toArray(new Reporter[0])[0];
          Assert.assertEquals(reporter.getDestinations().size(), 1, "reporter's number of destinations");
          Destination destination = reporter.getDestinations().iterator().next();
          Assert.assertTrue(destination instanceof DummyDestination, "destination's class");
