@@ -16,13 +16,16 @@
 package org.perfcake.nreporting.reporters.accumulators;
 
 /**
- * Remembers the last value
+ * This accumulator remembers the last value
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class LastValueAccumulator implements Accumulator<Object> {
 
+   /**
+    * Last remembered value
+    */
    private Object lastValue;
 
    @Override
@@ -33,6 +36,11 @@ public class LastValueAccumulator implements Accumulator<Object> {
    @Override
    public Object getResult() {
       return lastValue;
+   }
+
+   @Override
+   public void reset() {
+      lastValue = null;
    }
 
 }

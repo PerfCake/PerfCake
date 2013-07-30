@@ -15,7 +15,8 @@
  */
 package org.perfcake.nreporting.reporters;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.perfcake.common.PeriodType;
 import org.perfcake.nreporting.Measurement;
@@ -35,42 +36,25 @@ import org.perfcake.nreporting.reporters.accumulators.LastValueAccumulator;
  */
 public class ResponseTimeReporter extends AbstractReporter {
 
-   // TODO replace manual counting with AvgAccumulator
-
-   /**
-    * Iterations observed by this reporter
-    */
-   private final AtomicLong iterations = new AtomicLong(0);
-
-   /**
-    * Total response time of all iterations
-    */
-   private final AtomicLong responseTime = new AtomicLong(0);
-
    @Override
    protected void doReport(final MeasurementUnit mu) throws ReportingException {
-      iterations.incrementAndGet();
-      responseTime.addAndGet(mu.getTotalTime());
+      Map<String, Object> result = new HashMap<>();
+      result.put(Measurement.DEFAULT_RESULT, Double.valueOf(mu.getTotalTime()));
+      accumulateResults(result);
    }
 
    @Override
    protected void doPublishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       Measurement m = new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
-      if (responseTime.get() == 0 || iterations.get() == 0) {
-         m.set(new Quantity<Double>(0d, "ms"));
-      } else {
-         m.set(new Quantity<Double>((double) responseTime.get() / iterations.get(), "ms"));
-      }
-
-      // TODO publish accumulated results
+      m.set(new Quantity<Double>((Double) getAccumulatedResult(Measurement.DEFAULT_RESULT), "ms"));
+      publishAccumulatedResult(m);
 
       d.report(m);
    }
 
    @Override
    protected void doReset() {
-      iterations.set(0);
-      responseTime.set(0);
+      // nothing needed, the parent does the job
    }
 
    @SuppressWarnings("rawtypes")

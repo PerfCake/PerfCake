@@ -16,15 +16,32 @@
 package org.perfcake.nreporting.reporters.accumulators;
 
 /**
- * Accumulator is a tool for reporters to accumulate multiple values from measurement units into a single mesurement
+ * Accumulator is a tool for reporters to accumulate multiple values from measurement units into a single mesurement.
+ * Accumulator must be thread safe as it might be called from multiple threads at the same time.
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public interface Accumulator<T> {
 
+   /**
+    * Adds a value to the accumulator. This value is accumulated with the previously reported values.
+    * 
+    * @param value
+    *           The value to be accumulated
+    */
    public void add(T value);
 
+   /**
+    * Get the accumulated result of currently added values.
+    * 
+    * @return The result of the accumulation
+    */
    public T getResult();
+
+   /**
+    * Reset the accumulator to the default state.
+    */
+   public void reset();
 
 }

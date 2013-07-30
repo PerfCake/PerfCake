@@ -38,6 +38,7 @@ import org.perfcake.nreporting.destinations.Destination;
  * For easier development, it is advised to inherit from {@link AbstractReporter} which provides
  * some common functionality including proper results publishing. One should directly implement
  * this interface only when there is a serious reason.
+ * Reporter must be thread safe as it can be called from multiple threads at the same time.
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * 
@@ -67,7 +68,12 @@ public interface Reporter {
 
    /**
     * Registers a destination to receive resulting {@link org.perfcake.nreporting.Measurement Measurements} in
-    * given periods.
+    * given periods. It is the goal of Reporter to make sure the
+    * results are published to the registered destinations. For an easier development it is advised
+    * to extend {@link AbstractReporter} which already takes care of this.
+    * A destination cannot be registered with the same period type multiple times (i.e. one cannot register
+    * a destination with a period of iteration type that reports every 10 iterations, and with a period of
+    * iteration type that reports every 100 iterations at the same time).
     * 
     * @param d
     *           The Destination to which the results should be published
@@ -120,21 +126,10 @@ public interface Reporter {
    public void setRunInfo(RunInfo runInfo);
 
    /**
-    * Registers a reporting period for this reporter. Each period is bound to a specific destination.
-    * It is the goal of Reporter to make sure the
-    * results are published to the registered destinations. For an easier development it is advised
-    * to extend {@link AbstractReporter} which already takes care of this.
-    * Each period can be registered only once as it does not make sense to register the same period multiple
-    * times.
-    * 
-    * @param p
-    *           A reporting period to be added
-    */
-
-   /**
     * Gets an unmodifiable set of registered reporting periods.
     * 
     * @return The unmodifiable set of registered reporting periods.
     */
    public Set<BoundPeriod<Destination>> getReportingPeriods();
+
 }
