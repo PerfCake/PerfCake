@@ -30,6 +30,10 @@ import java.util.concurrent.Executors;
 
 public class PerfCakeAgent {
 
+   public enum Memory {
+      FREE, USED, TOTAL, MAX
+   }
+
    public static void premain(String agentArgs) {
       ExecutorService es = Executors.newSingleThreadExecutor();
       es.submit(new AgentThread(agentArgs));
@@ -85,19 +89,23 @@ public class PerfCakeAgent {
                while ((input = br.readLine()) != null) {
                   String response = "Unrecognized command!";
                   Runtime rt = Runtime.getRuntime();
-                  switch (input) {
-                     case "getFreeMemory":
-                        response = String.valueOf(rt.freeMemory());
-                        break;
-                     case "getMaxMemory":
-                        response = String.valueOf(rt.maxMemory());
-                        break;
-                     case "getTotalMemory":
-                        response = String.valueOf(rt.totalMemory());
-                        break;
-                     case "getUsedMemory":
-                        response = String.valueOf(rt.totalMemory() - rt.freeMemory());
-                        break;
+                  try {
+                     switch (Memory.valueOf(input.toUpperCase())) {
+                        case FREE:
+                           response = String.valueOf(rt.freeMemory());
+                           break;
+                        case MAX:
+                           response = String.valueOf(rt.maxMemory());
+                           break;
+                        case TOTAL:
+                           response = String.valueOf(rt.totalMemory());
+                           break;
+                        case USED:
+                           response = String.valueOf(rt.totalMemory() - rt.freeMemory());
+                           break;
+                     }
+                  } catch (IllegalArgumentException iae) {
+                     err(iae.getLocalizedMessage());
                   }
                   pw.println(response);
                }
