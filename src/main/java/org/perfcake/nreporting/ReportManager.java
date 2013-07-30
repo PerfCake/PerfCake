@@ -1,8 +1,8 @@
 package org.perfcake.nreporting;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -14,7 +14,7 @@ public class ReportManager {
    private static final Logger log = Logger.getLogger(ReportManager.class);
 
    private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
-   private final List<Reporter> reporters = new ArrayList<>();
+   private final Set<Reporter> reporters = new HashSet<>();
    private boolean started = false;
    private RunInfo runInfo;
 
@@ -65,8 +65,8 @@ public class ReportManager {
       rwLock.writeLock().unlock();
    }
 
-   public List<Reporter> getReporters() {
-      return Collections.unmodifiableList(reporters);
+   public Set<Reporter> getReporters() {
+      return Collections.unmodifiableSet(reporters);
    }
 
    public void start() {

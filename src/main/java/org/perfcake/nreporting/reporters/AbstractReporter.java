@@ -272,7 +272,7 @@ public abstract class AbstractReporter implements Reporter {
       assert runInfo != null : "RunInfo must be set prior to starting a reporter.";
 
       if (periods.size() == 0) {
-         log.warn("No reporting periods are configured for this reporter. The reporter is disabled. Call start() again after the periods are registered.");
+         log.warn("No reporting periods are configured for this reporter (" + getClass().getCanonicalName() + "). The reporter is disabled. Call start() again after the periods are registered.");
          return;
       }
 
