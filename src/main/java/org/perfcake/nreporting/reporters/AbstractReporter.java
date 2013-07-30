@@ -101,7 +101,7 @@ public abstract class AbstractReporter implements Reporter {
     * @return The value associated with the given key.
     */
    protected Object getAccumulatedResult(final String key) {
-      return accumulatedResults.get(key);
+      return accumulatedResults.get(key).getResult();
    }
 
    /**
@@ -112,7 +112,7 @@ public abstract class AbstractReporter implements Reporter {
     */
    protected void publishAccumulatedResult(final Measurement m) {
       for (String key : accumulatedResults.keySet()) {
-         m.set(key, accumulatedResults.get(key));
+         m.set(key, accumulatedResults.get(key).getResult());
       }
    }
 
