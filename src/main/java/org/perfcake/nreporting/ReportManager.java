@@ -24,11 +24,11 @@ public class ReportManager {
 
    public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
+      rwLock.writeLock().lock();
       for (Reporter r : reporters) {
-         rwLock.writeLock().lock();
          r.setRunInfo(runInfo);
-         rwLock.writeLock().unlock();
       }
+      rwLock.writeLock().unlock();
    }
 
    public void report(final MeasurementUnit mu) throws ReportingException {
@@ -45,11 +45,11 @@ public class ReportManager {
 
    public void reset() {
       runInfo.reset();
+      rwLock.writeLock().lock();
       for (Reporter r : reporters) {
-         rwLock.writeLock().lock();
          r.reset();
-         rwLock.writeLock().unlock();
       }
+      rwLock.writeLock().unlock();
    }
 
    public void registerReporter(final Reporter reporter) {
@@ -70,11 +70,11 @@ public class ReportManager {
    }
 
    public void start() {
+      rwLock.writeLock().lock();
       for (Reporter r : reporters) {
-         rwLock.writeLock().lock();
          r.start();
-         rwLock.writeLock().unlock();
       }
+      rwLock.writeLock().unlock();
 
       started = true;
       runInfo.start();
@@ -84,11 +84,11 @@ public class ReportManager {
       started = false;
       runInfo.stop();
 
+      rwLock.writeLock().lock();
       for (Reporter r : reporters) {
-         rwLock.writeLock().lock();
          r.stop();
-         rwLock.writeLock().unlock();
       }
+      rwLock.writeLock().unlock();
    }
 
 }

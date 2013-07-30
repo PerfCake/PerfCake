@@ -16,17 +16,25 @@
 package org.perfcake.nreporting.reporters.accumulators;
 
 /**
- * Accumulates an arithmetic average
+ * Accumulates an arithmetic average.
+ * Atomic types are not used because both values must be set at the same time. Hence the methods are synchronized.
  * 
- * TODO write a test in cooperation with ResponseTimeReporter
+ * TODO write a test in cooperation with ResponseTimeReporter, measure if the threads are not blocked too much
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class AvgAccumulator implements Accumulator<Double> {
 
+   /**
+    * Number of reported values
+    */
    private long count = 0;
-   private double sum;
+
+   /**
+    * Sum of the reported values
+    */
+   private double sum = 0d;
 
    @Override
    public synchronized void add(final Double number) {
@@ -41,6 +49,12 @@ public class AvgAccumulator implements Accumulator<Double> {
       } else {
          return sum / count;
       }
+   }
+
+   @Override
+   public synchronized void reset() {
+      count = 0;
+      sum = 0d;
    }
 
 }
