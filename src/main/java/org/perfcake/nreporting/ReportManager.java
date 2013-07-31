@@ -15,7 +15,6 @@ public class ReportManager {
 
    private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
    private final Set<Reporter> reporters = new HashSet<>();
-   private boolean started = false;
    private RunInfo runInfo;
 
    public MeasurementUnit newMeasurementUnit() {
@@ -32,7 +31,7 @@ public class ReportManager {
    }
 
    public void report(final MeasurementUnit mu) throws ReportingException {
-      if (started) {
+      if (runInfo.isRunning()) {
          rwLock.readLock().lock();
          for (Reporter r : reporters) {
             r.report(mu);
@@ -70,18 +69,16 @@ public class ReportManager {
    }
 
    public void start() {
+      runInfo.start(); // runInfo must be started first, otherwise the time monitoring thread in AbstractReporter dies immediately
+
       rwLock.writeLock().lock();
       for (Reporter r : reporters) {
          r.start();
       }
       rwLock.writeLock().unlock();
-
-      started = true;
-      runInfo.start();
    }
 
    public void stop() {
-      started = false;
       runInfo.stop();
 
       rwLock.writeLock().lock();

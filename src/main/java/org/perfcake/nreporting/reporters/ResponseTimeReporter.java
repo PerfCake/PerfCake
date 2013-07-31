@@ -45,7 +45,7 @@ public class ResponseTimeReporter extends AbstractReporter {
 
    @Override
    protected void doPublishResult(final PeriodType periodType, final Destination d) throws ReportingException {
-      Measurement m = new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
+      Measurement m = new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration() - 1);
       m.set(new Quantity<Double>((Double) getAccumulatedResult(Measurement.DEFAULT_RESULT), "ms"));
       publishAccumulatedResult(m);
 

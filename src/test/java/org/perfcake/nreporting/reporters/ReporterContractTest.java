@@ -1,11 +1,17 @@
 package org.perfcake.nreporting.reporters;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.perfcake.RunInfo;
+import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.nreporting.MeasurementUnit;
 import org.perfcake.nreporting.ReportManager;
 import org.perfcake.nreporting.ReportingException;
+import org.perfcake.nreporting.destinations.Destination;
+import org.perfcake.nreporting.destinations.DummyDestination;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -80,6 +86,7 @@ public class ReporterContractTest {
 
       rm.start(); // this logs 3 warnings because we did not add any destinations
       rm.report(mu);
+      long startTime = ri.getStartTime();
       Assert.assertTrue(ri.isRunning());
       Assert.assertEquals(dr.getLastMethod(), "doReport");
 
@@ -88,9 +95,55 @@ public class ReporterContractTest {
 
       rm.stop();
       Assert.assertFalse(ri.isRunning());
+
+      DummyDestination d1 = new DummyDestination();
+      DummyDestination d2 = new DummyDestination();
+
+      r1.registerDestination(d1, new Period(PeriodType.ITERATION, 100));
+      r1.registerDestination(d2, new Period(PeriodType.PERCENTAGE, 10));
+      r1.registerDestination(d1, new Period(PeriodType.TIME, 2000));
+
+      Set<BoundPeriod<Destination>> bp = new HashSet<>();
+      bp.add(new BoundPeriod<Destination>(PeriodType.ITERATION, 100, d1));
+      bp.add(new BoundPeriod<Destination>(PeriodType.PERCENTAGE, 10, d2));
+      bp.add(new BoundPeriod<Destination>(PeriodType.TIME, 2000, d1));
+      Assert.assertTrue(r1.getReportingPeriods().containsAll(bp));
+
+      Assert.assertEquals(ri.getPercentage(), 0d); // we had reset
+      Assert.assertFalse(ri.isRunning());
+      Assert.assertEquals(ri.getStartTime(), startTime);
+      Assert.assertTrue(ri.getEndTime() > ri.getStartTime());
+      Assert.assertTrue(ri.getRunTime() == ri.getEndTime() - ri.getStartTime());
+      rm.start();
+
+      mu = null;
+      for (int i = 0; i <= 100; i++) {
+         mu = rm.newMeasurementUnit();
+         mu.startMeasure();
+         mu.appendResult("avg", (double) i);
+         Thread.sleep(10);
+         mu.stopMeasure();
+         rm.report(mu);
+      }
+      Assert.assertEquals(mu.getIteration(), 100);
+      Assert.assertEquals(mu.getLastTime(), 10);
+      Assert.assertEquals(mu.getTotalTime(), 10);
+      Assert.assertEquals(d1.getLastType(), PeriodType.ITERATION);
+      Assert.assertEquals(d2.getLastType(), PeriodType.PERCENTAGE);
+
+      Thread.sleep(2500);
+
+      Assert.assertEquals(d1.getLastType(), PeriodType.TIME);
+
+      rm.stop();
+
+      // System.out.println(ri);
+
+      // System.out.println(d1.getLastMeasurement());
+
+      // what happens if last iteration is reached
       // verify percentage increase, proper results handling in ResponseTimeReporter (including various types for accumulated values)
       // reset should reset all the parties
       // time based reporting, percentage based reporting, iteration based reporting
    }
-
 }

@@ -80,6 +80,7 @@ public class RunInfo {
    public void start() {
       reset();
       startTime = System.currentTimeMillis();
+      endTime = -1;
    }
 
    /**
@@ -91,8 +92,9 @@ public class RunInfo {
 
    /**
     * Get the current iteration counter value.
-    * This can be used as an approximate value of passed iteration even though some of them
-    * might still be pending their execution.
+    * This can be used as an approximate value of passed iterations even though some of them
+    * might still be pending their execution. The value is always 1 number higher than the number of iterations executed (as the number can be used for
+    * a new iteration).
     * 
     * @return Current iteration counter value
     */
@@ -228,4 +230,10 @@ public class RunInfo {
    public Period getDuration() {
       return duration;
    }
+
+   @Override
+   public String toString() {
+      return "RunInfo [duration=" + duration + ", startTime=" + Long.valueOf(startTime).toString() + ", endTime=" + endTime + ", iterations=" + iterations + ", tags=" + tags + "]";
+   }
+
 }

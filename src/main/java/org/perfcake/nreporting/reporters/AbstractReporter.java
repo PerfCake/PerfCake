@@ -101,7 +101,7 @@ public abstract class AbstractReporter implements Reporter {
     * @return The value associated with the given key.
     */
    protected Object getAccumulatedResult(final String key) {
-      return accumulatedResults.get(key).getResult();
+      return accumulatedResults.get(key) == null ? null : accumulatedResults.get(key).getResult();
    }
 
    /**
@@ -285,7 +285,7 @@ public abstract class AbstractReporter implements Reporter {
       periodicThread = new Thread(new Runnable() {
          @Override
          public void run() {
-            long lastTime = -1;
+            long lastTime = System.currentTimeMillis();
             long now;
 
             try {
