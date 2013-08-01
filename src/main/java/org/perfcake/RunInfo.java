@@ -84,6 +84,10 @@ public class RunInfo {
       iterations.set(0);
    }
 
+   /**
+    * Resets this RunInfo to its original state. If there is a running measurement, a new start time is obtained for the measurement
+    * to be able to continue smoothly.
+    */
    public void reset() {
       if (isRunning()) {
          startTime = System.currentTimeMillis();
@@ -100,6 +104,8 @@ public class RunInfo {
     */
    public void stop() {
       endTime = System.currentTimeMillis();
+
+      iterations.set(0);
    }
 
    /**
@@ -147,8 +153,8 @@ public class RunInfo {
     * @return Completed percents of the current measurement
     */
    public double getPercentage() {
-      if (!isRunning()) {
-         return 0;
+      if (!isStarted()) {
+         return 0d;
       }
 
       double progress;
@@ -187,16 +193,31 @@ public class RunInfo {
    }
 
    /**
-    * Is there a running measurement? This is true if and only if {@link #start()} has been called
-    * and there has been no call to {@link #stop()} since then.
+    * Is there a running measurement? This is true if and only if {@link #isStarted()} returns true and we did not reached
+    * the final iterations.
     * 
     * @return True if the measurement is running
     */
    public boolean isRunning() {
+      return isStarted() && !reachedLastIteration();
+   }
+
+   /**
+    * Was the measurement started? This is true if and only if {@link #start()} has been called
+    * and there has been no call to {@link #stop()} since then.
+    * 
+    * @return True if the measurement has been started.
+    */
+   public boolean isStarted() {
       return startTime != -1 && endTime == -1;
    }
 
-   public boolean isFinished() {
+   /**
+    * Returns true if the last iteration has been reached.
+    * 
+    * @return True if the last iteration has been reached.
+    */
+   private boolean reachedLastIteration() {
       return (duration.getPeriodType().equals(PeriodType.ITERATION) && iterations.get() >= duration.getPeriod()) || (duration.getPeriodType().equals(PeriodType.TIME) && getRunTime() >= duration.getPeriod());
    }
 

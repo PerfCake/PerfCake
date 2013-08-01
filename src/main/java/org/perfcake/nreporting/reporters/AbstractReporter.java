@@ -111,7 +111,7 @@ public abstract class AbstractReporter implements Reporter {
     *           The {@link org.perfcake.nreporting.Measurement} to be filled with the results.
     */
    protected void publishAccumulatedResult(final Measurement m) {
-      for (String key : accumulatedResults.keySet()) {
+      for (final String key : accumulatedResults.keySet()) {
          m.set(key, accumulatedResults.get(key).getResult());
       }
    }
@@ -125,12 +125,12 @@ public abstract class AbstractReporter implements Reporter {
     */
    @SuppressWarnings({ "unchecked", "rawtypes" })
    protected void accumulateResults(final Map<String, Object> results) {
-      for (String key : results.keySet()) {
-         Object value = results.get(key);
+      for (final String key : results.keySet()) {
+         final Object value = results.get(key);
 
          // make sure we have an accumulator set to be able to accumulate the result
          if (accumulatedResults.get(key) == null) {
-            Accumulator a = getAccumulator(key, value.getClass());
+            final Accumulator a = getAccumulator(key, value.getClass());
 
             if (a == null) {
                log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", key, value.getClass().getCanonicalName()));
@@ -166,7 +166,7 @@ public abstract class AbstractReporter implements Reporter {
     */
    private void reportIterations(final long iteration) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
-         if (bp.getPeriodType() == PeriodType.ITERATION && iteration % bp.getPeriod() == 0) {
+         if (bp.getPeriodType() == PeriodType.ITERATION && (iteration == 0 || (iteration + 1) % bp.getPeriod() == 0)) {
             doPublishResult(PeriodType.ITERATION, bp.getBinding());
          }
       }

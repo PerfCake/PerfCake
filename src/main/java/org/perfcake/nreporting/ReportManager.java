@@ -15,19 +15,23 @@ public class ReportManager {
    private RunInfo runInfo;
 
    public MeasurementUnit newMeasurementUnit() {
+      if (!runInfo.isRunning()) {
+         return null;
+      }
+
       return new MeasurementUnit(runInfo.getNextIteration());
    }
 
    public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
-      for (Reporter r : reporters) {
+      for (final Reporter r : reporters) {
          r.setRunInfo(runInfo);
       }
    }
 
    public void report(final MeasurementUnit mu) throws ReportingException {
-      if (runInfo.isRunning()) {
-         for (Reporter r : reporters) {
+      if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
+         for (final Reporter r : reporters) {
             r.report(mu);
          }
       } else {
@@ -37,7 +41,7 @@ public class ReportManager {
 
    public void reset() {
       runInfo.reset();
-      for (Reporter r : reporters) {
+      for (final Reporter r : reporters) {
          r.reset();
       }
    }
@@ -58,7 +62,7 @@ public class ReportManager {
    public void start() {
       runInfo.start(); // runInfo must be started first, otherwise the time monitoring thread in AbstractReporter dies immediately
 
-      for (Reporter r : reporters) {
+      for (final Reporter r : reporters) {
          r.start();
       }
    }
@@ -66,7 +70,7 @@ public class ReportManager {
    public void stop() {
       runInfo.stop();
 
-      for (Reporter r : reporters) {
+      for (final Reporter r : reporters) {
          r.stop();
       }
    }

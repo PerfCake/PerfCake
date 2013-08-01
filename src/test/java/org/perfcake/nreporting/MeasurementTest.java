@@ -16,7 +16,7 @@ public class MeasurementTest {
 
    @Test
    public void testMeasurement() {
-      Measurement m = new Measurement(PERCENTAGE, TIMESTAMP, ITERATIONS);
+      final Measurement m = new Measurement(PERCENTAGE, TIMESTAMP, ITERATIONS - 1); // iterations are indexed from 0 and reported from 1
       m.set("18523.269 it/s");
       m.set("current", "257.58 it/s");
       m.set("average", "300.25 it/s");
