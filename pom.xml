@@ -11,12 +11,13 @@
       <name>PerfCake Community</name>
       <url>https://www.perfcake.org</url>
    </organization>
+   <description>A Lightweight Performance Testing Framework</description>
    <url>https://www.perfcake.org</url>
    <inceptionYear>2013</inceptionYear>
    <developers>
       <developer>
-        <name>Martin Večeřa</name>
-        <email>marvenec@gmail.com</email>
+         <name>Martin Večeřa</name>
+         <email>marvenec@gmail.com</email>
       </developer>
       <developer>
          <name>Pavel Macík</name>
@@ -31,6 +32,14 @@
       <system>GitHub</system>
       <url>https://github.com/PerfCake/PerfCake/issues/</url>
    </issueManagement>
+   <licenses>
+      <license>
+         <name>The Apache Software License, Version 2.0</name>
+         <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+         <distribution>repo</distribution>
+         <comments>A business-friendly OSS license</comments>
+      </license>
+   </licenses>
 
    <repositories>
       <repository>
@@ -300,4 +309,13 @@
          </plugins>
       </pluginManagement>
    </build>
+   <reporting>
+      <plugins>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
+            <version>2.5.2</version>
+         </plugin>
+      </plugins>
+   </reporting>
 </project>
