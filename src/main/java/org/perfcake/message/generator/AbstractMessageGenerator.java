@@ -24,7 +24,7 @@ import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.nreporting.ReportManager;
+import org.perfcake.reporting.ReportManager;
 
 /**
  * <p>

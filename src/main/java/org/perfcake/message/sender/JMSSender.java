@@ -36,7 +36,7 @@ import javax.naming.InitialContext;
 
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
-import org.perfcake.nreporting.MeasurementUnit;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The sender that is able to send messages via JMS.

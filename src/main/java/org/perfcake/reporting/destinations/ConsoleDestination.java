@@ -13,51 +13,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.perfcake.reporting.destinations;
 
-package org.perfcake.message.sender;
-
-import java.io.Serializable;
-import java.util.Map;
-
-import org.perfcake.message.Message;
-import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.reporting.Measurement;
+import org.perfcake.reporting.ReportingException;
 
 /**
- * TODO: Write implementation
+ * The destination that appends the measurements to stdout.
  * 
+ * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
-public class LDAPSender extends AbstractSender {
+public class ConsoleDestination implements Destination {
 
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#init()
+    * @see org.perfcake.reporting.destinations.Destination#open()
     */
    @Override
-   public void init() throws Exception {
-      // TODO Auto-generated method stub
+   public void open() {
+      // nop
    }
 
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#close()
+    * @see org.perfcake.reporting.destinations.Destination#close()
     */
    @Override
    public void close() {
-      // TODO Auto-generated method stub
+      // nop
    }
 
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)
+    * @see org.perfcake.reporting.destinations.Destination#report(org.perfcake.reporting.Measurement)
     */
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public void report(final Measurement m) throws ReportingException {
+      System.out.println(m.toString());
    }
+
 }

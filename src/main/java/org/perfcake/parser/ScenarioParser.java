@@ -55,9 +55,9 @@ import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.nreporting.ReportManager;
-import org.perfcake.nreporting.destinations.Destination;
-import org.perfcake.nreporting.reporters.Reporter;
+import org.perfcake.reporting.ReportManager;
+import org.perfcake.reporting.destinations.Destination;
+import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
@@ -78,8 +78,8 @@ public class ScenarioParser {
 
    private static final String DEFAULT_GENERATOR_PACKAGE = "org.perfcake.message.generator";
    private static final String DEFAULT_SENDER_PACKAGE = "org.perfcake.message.sender";
-   private static final String DEFAULT_REPORTER_PACKAGE = "org.perfcake.nreporting.reporters";
-   private static final String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.nreporting.destinations";
+   private static final String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
+   private static final String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
    private static final String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
 
    public static final Logger log = Logger.getLogger(ScenarioExecution.class);
