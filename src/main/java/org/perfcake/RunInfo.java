@@ -78,8 +78,8 @@ public class RunInfo {
     * Starts a new measurement run. This resets the iteration counter.
     */
    public void start() {
-      reset();
       startTime = System.currentTimeMillis();
+      iterations.set(0);
       endTime = -1;
    }
 
@@ -109,14 +109,6 @@ public class RunInfo {
     */
    public long getNextIteration() {
       return iterations.getAndIncrement();
-   }
-
-   /**
-    * Resets iteration counter.
-    * Use with maximal caution!
-    */
-   public void reset() {
-      iterations.set(0);
    }
 
    /**
@@ -151,7 +143,7 @@ public class RunInfo {
 
       switch (duration.getPeriodType()) {
          case ITERATION:
-            progress = getIteration();
+            progress = Math.max(0d, getIteration()); // at the beginning, iteration can be -1
             break;
          case TIME:
             progress = getRunTime();

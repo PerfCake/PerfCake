@@ -110,6 +110,8 @@ public class ReporterContractTest {
       rm.reset();
       Assert.assertEquals(dr.getLastMethod(), "doReset");
 
+      Thread.sleep(10);
+
       rm.stop();
       Assert.assertFalse(ri.isRunning());
 
@@ -214,7 +216,7 @@ public class ReporterContractTest {
       Assert.assertNull(r2.getAccumulatedResult(Measurement.DEFAULT_RESULT));
       Assert.assertEquals(ri.getPercentage(), 0d);
       Assert.assertEquals(ri.getIteration(), -1L);
-      // Assert.assertEquals(ri.getRunTime(), 0L);
+      Assert.assertEquals(ri.getRunTime(), 0L);
 
       Assert.assertEquals(dr.getLastMethod(), "doReset");
    }

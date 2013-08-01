@@ -43,7 +43,7 @@ public class ReportManager {
    }
 
    public void reset() {
-      runInfo.reset();
+      runInfo.start();
       rwLock.writeLock().lock();
       for (Reporter r : reporters) {
          r.reset();
