@@ -38,14 +38,14 @@ public class ResponseTimeReporter extends AbstractReporter {
 
    @Override
    protected void doReport(final MeasurementUnit mu) throws ReportingException {
-      Map<String, Object> result = new HashMap<>();
+      final Map<String, Object> result = new HashMap<>();
       result.put(Measurement.DEFAULT_RESULT, Double.valueOf(mu.getTotalTime()));
       accumulateResults(result);
    }
 
    @Override
    protected void doPublishResult(final PeriodType periodType, final Destination d) throws ReportingException {
-      Measurement m = new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
+      final Measurement m = new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
       m.set(new Quantity<Double>((Double) getAccumulatedResult(Measurement.DEFAULT_RESULT), "ms"));
       publishAccumulatedResult(m);
 

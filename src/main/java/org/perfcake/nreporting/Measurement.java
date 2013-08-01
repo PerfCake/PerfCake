@@ -152,21 +152,21 @@ public class Measurement {
     */
    @Override
    public String toString() {
-      StringBuffer sb = new StringBuffer();
+      final StringBuffer sb = new StringBuffer();
       sb.append("[");
       sb.append(Utils.timeToHMS(time));
       sb.append("][");
-      sb.append(iteration);
+      sb.append(iteration + 1); // first iteration index is 0
       sb.append(" iterations][");
       sb.append(percentage);
       sb.append("%]");
-      Object defaultResult = get();
+      final Object defaultResult = get();
       if (defaultResult != null) {
          sb.append(" [");
          sb.append(get());
          sb.append("]");
       }
-      for (Entry<String, Object> entry : results.entrySet()) {
+      for (final Entry<String, Object> entry : results.entrySet()) {
          if (!entry.getKey().equals(DEFAULT_RESULT)) {
             sb.append(" [");
             sb.append(entry.getKey());

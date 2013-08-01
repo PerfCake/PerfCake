@@ -2,6 +2,7 @@ package org.perfcake.nreporting.reporters;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
@@ -30,18 +31,17 @@ public class ReporterContractTest {
 
    @Test
    public void noRunInfoTest() throws ReportingException {
-      ResponseTimeReporter r = new ResponseTimeReporter();
+      final ResponseTimeReporter r = new ResponseTimeReporter();
 
       Exception e = null;
       try {
          r.report(null);
-      } catch (ReportingException ee) {
+      } catch (final ReportingException ee) {
          e = ee;
       }
       Assert.assertNotNull(e, "An exception was supposed to be thrown as RunInfo was not set.");
    }
 
-   // TODO split into multiple tests
    @Test(priority = 1)
    public void reportManagerTest() throws ReportingException, InterruptedException {
       rm.registerReporter(r1);
@@ -68,11 +68,14 @@ public class ReporterContractTest {
 
    @Test(priority = 2)
    public void measurementUnitTest() throws ReportingException, InterruptedException {
+      rm.start();
       mu = null;
       for (int i = 1; i <= 500; i++) {
          mu = rm.newMeasurementUnit();
       }
-      Assert.assertEquals(mu.getIteration(), 500);
+      rm.stop();
+      rm.reset();
+      Assert.assertEquals(mu.getIteration(), 499);
       Assert.assertEquals(mu.getLastTime(), -1);
       Assert.assertEquals(mu.getTotalTime(), 0);
 
@@ -98,11 +101,15 @@ public class ReporterContractTest {
       Assert.assertEquals(ri.getRunTime(), 0);
 
       mu = rm.newMeasurementUnit();
+      Assert.assertNull(mu);
+
+      rm.start(); // this logs 3 warnings because we did not add any destinations
+      mu = rm.newMeasurementUnit();
+
       mu.startMeasure();
       Thread.sleep(500);
       mu.stopMeasure();
 
-      rm.start(); // this logs 3 warnings because we did not add any destinations
       rm.report(mu);
       Assert.assertTrue(ri.isRunning());
       Assert.assertEquals(dr.getLastMethod(), "doReport");
@@ -127,13 +134,15 @@ public class ReporterContractTest {
       r1.registerDestination(d2, new Period(PeriodType.PERCENTAGE, 8));
       r1.registerDestination(d1, new Period(PeriodType.TIME, 2000));
 
-      Set<BoundPeriod<Destination>> bp = new HashSet<>();
+      final Set<BoundPeriod<Destination>> bp = new HashSet<>();
       bp.add(new BoundPeriod<Destination>(PeriodType.ITERATION, 100, d1));
       bp.add(new BoundPeriod<Destination>(PeriodType.PERCENTAGE, 8, d2));
       bp.add(new BoundPeriod<Destination>(PeriodType.TIME, 2000, d1));
       Assert.assertTrue(r1.getReportingPeriods().containsAll(bp));
 
       rm.start();
+
+      final AtomicInteger crc = new AtomicInteger(0);
 
       d1.setReportAssert(new ReportAssert() {
 
@@ -145,17 +154,17 @@ public class ReporterContractTest {
                Assert.assertEquals(m.getIteration(), 0L);
                Assert.assertEquals(m.get(), 10d);
                Assert.assertEquals(m.get("avg"), 0d);
-               Assert.assertEquals(m.get("it"), "0");
+               Assert.assertEquals(m.get("it"), "1");
 
                first = false;
             } else {
-               Assert.assertEquals(m.getIteration(), 100L);
+               Assert.assertEquals(m.getIteration(), 99L);
                Assert.assertEquals(m.get(), 10d);
-               Assert.assertEquals(m.get("avg"), 50d);
+               Assert.assertEquals(m.get("avg"), 49.5d);
                Assert.assertEquals(m.get("it"), "100");
+               crc.incrementAndGet(); // this block will be executed twice, first for iteration, second for time
             }
          }
-
       });
 
       d2.setReportAssert(new ReportAssert() {
@@ -173,24 +182,24 @@ public class ReporterContractTest {
             } else {
                Assert.assertEquals(m.getPercentage(), 8);
                Assert.assertEquals((double) m.get(), 10d);
-               // Assert.assertEquals(m.get("avg"), 40d);
+               Assert.assertEquals(m.get("avg"), 39.5d);
+               crc.incrementAndGet();
             }
          }
-
       });
 
       mu = null;
-      for (int i = 0; i <= 100; i++) {
+      for (int i = 1; i <= 100; i++) {
          mu = rm.newMeasurementUnit();
          mu.startMeasure();
-         mu.appendResult("avg", (double) i); // AvgAccumulator should be used
+         mu.appendResult("avg", (double) i - 1); // AvgAccumulator should be used
          mu.appendResult("it", String.valueOf(i)); // LastValueAccumulator should be used
          Thread.sleep(10);
          mu.stopMeasure();
          Assert.assertEquals(mu.getTotalTime(), 10L);
          rm.report(mu);
       }
-      Assert.assertEquals(mu.getIteration(), 100);
+      Assert.assertEquals(mu.getIteration(), 99);
       Assert.assertEquals(mu.getLastTime(), 10);
       Assert.assertEquals(mu.getTotalTime(), 10);
       Assert.assertEquals(d1.getLastType(), PeriodType.ITERATION);
@@ -201,6 +210,8 @@ public class ReporterContractTest {
       Assert.assertEquals(d1.getLastType(), PeriodType.TIME);
 
       rm.stop();
+
+      Assert.assertEquals(crc.get(), 3);
 
       d1.setReportAssert(null);
       d2.setReportAssert(null);
@@ -224,13 +235,23 @@ public class ReporterContractTest {
 
    @Test(priority = 6, timeOut = 10000)
    public void finishReachTest() throws ReportingException, InterruptedException {
-      while (!ri.isFinished()) {
-         rm.newMeasurementUnit();
+      rm.start();
+      double lastPercentage = 0;
+      long lastIteration = 0;
+
+      while (ri.isRunning()) {
+         mu = rm.newMeasurementUnit();
+         lastPercentage = ri.getPercentage();
+         lastIteration = mu.getIteration();
+         rm.report(mu);
       }
 
-      Assert.assertEquals(ri.getIteration(), 999L);
-      Assert.assertEquals(ri.getPercentage(), 100d);
+      Assert.assertEquals(lastIteration, 999L);
+      Assert.assertEquals(lastPercentage, 100d);
+      rm.stop();
+
+      Assert.assertEquals(ri.getPercentage(), 0d);
+      Assert.assertEquals(ri.getIteration(), -1L);
    }
    // what happens if last iteration is reached
-   // time based reporting, percentage based reporting, iteration based reporting
 }
