@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -125,21 +126,19 @@ public abstract class AbstractReporter implements Reporter {
     */
    @SuppressWarnings({ "unchecked", "rawtypes" })
    protected void accumulateResults(final Map<String, Object> results) {
-      for (final String key : results.keySet()) {
-         final Object value = results.get(key);
-
+      for (final Entry<String, Object> entry : results.entrySet()) {
          // make sure we have an accumulator set to be able to accumulate the result
-         if (accumulatedResults.get(key) == null) {
-            final Accumulator a = getAccumulator(key, value.getClass());
+         if (accumulatedResults.get(entry.getKey()) == null) {
+            final Accumulator a = getAccumulator(entry.getKey(), entry.getValue().getClass());
 
             if (a == null) {
-               log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", key, value.getClass().getCanonicalName()));
+               log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", entry.getKey(), entry.getValue().getClass().getCanonicalName()));
             } else {
-               accumulatedResults.put(key, a);
-               accumulatedResults.get(key).add(value);
+               accumulatedResults.put(entry.getKey(), a);
+               accumulatedResults.get(entry.getKey()).add(entry.getValue());
             }
          } else {
-            accumulatedResults.get(key).add(value);
+            accumulatedResults.get(entry.getKey()).add(entry.getValue());
          }
       }
    }
