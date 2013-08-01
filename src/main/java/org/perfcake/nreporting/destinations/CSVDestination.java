@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 import org.perfcake.nreporting.Measurement;
 import org.perfcake.nreporting.Quantity;
 import org.perfcake.nreporting.ReportingException;
-import org.perfcake.nreporting.util.HMSNumberFormat;
+import org.perfcake.util.Utils;
 
 /**
  * The destination that appends the {@link Measurement} into a CSV file.
@@ -38,11 +38,6 @@ public class CSVDestination implements Destination {
    private String delimiter = ";";
 
    /**
-    * Time format in a form of "H:M:S".
-    */
-   private final HMSNumberFormat timeFormat = new HMSNumberFormat();
-
-   /**
     * The destination's logger.
     */
    private static final Logger log = Logger.getLogger(CSVDestination.class);
@@ -50,7 +45,7 @@ public class CSVDestination implements Destination {
    /**
     * The list containing names of results from measurement.
     */
-   private List<String> resultNames = new LinkedList<>();
+   private final List<String> resultNames = new LinkedList<>();
 
    /*
     * (non-Javadoc)
@@ -111,7 +106,7 @@ public class CSVDestination implements Destination {
          sb.append("\n");
       }
 
-      sb.append(timeFormat.format(m.getTime()));
+      sb.append(Utils.timeToHMS(m.getTime()));
       sb.append(delimiter);
       sb.append(m.getIteration());
       if (defaultResult != null) {
@@ -157,7 +152,7 @@ public class CSVDestination implements Destination {
     * @param path
     *           The path value to set.
     */
-   public void setPath(String path) {
+   public void setPath(final String path) {
       this.path = path;
       this.csvFile = new File(this.path);
    }
@@ -177,7 +172,7 @@ public class CSVDestination implements Destination {
     * @param delimiter
     *           The delimiter value to set.
     */
-   public void setDelimiter(String delimiter) {
+   public void setDelimiter(final String delimiter) {
       this.delimiter = delimiter;
    }
 

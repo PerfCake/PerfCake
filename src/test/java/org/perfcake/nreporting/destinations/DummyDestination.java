@@ -8,10 +8,21 @@ import org.perfcake.nreporting.Measurement;
 import org.perfcake.nreporting.ReportingException;
 
 /**
+ * Testing destination.
+ * 
  * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class DummyDestination implements Destination {
+
+   /**
+    * Interface for inserting a test assert into the report method of this destination.
+    * This is used for test purposes.
+    */
+   public static interface ReportAssert {
+      public void report(Measurement m);
+   }
 
    private String property = null;
    private String property2 = null;
@@ -19,6 +30,7 @@ public class DummyDestination implements Destination {
    private String lastMethod = null;
    private Measurement lastMeasurement = null;
    private PeriodType lastType = null;
+   private ReportAssert reportAssert = null;
 
    /*
     * (non-Javadoc)
@@ -51,6 +63,9 @@ public class DummyDestination implements Destination {
    public void report(final Measurement m) throws ReportingException {
       lastMethod = "report";
       lastMeasurement = m;
+      if (reportAssert != null) {
+         reportAssert.report(m);
+      }
       System.out.println(m.toString());
       try {
          throw new Throwable("BAFF");
@@ -108,16 +123,50 @@ public class DummyDestination implements Destination {
       this.property2 = property2;
    }
 
+   /**
+    * Get the last method called on this object.
+    * 
+    * @return The last method name.
+    */
    public String getLastMethod() {
       return lastMethod;
    }
 
+   /**
+    * Gets the last measurement seen by this destination.
+    * 
+    * @return The last measurement observed.
+    */
    public Measurement getLastMeasurement() {
       return lastMeasurement;
    }
 
+   /**
+    * Gets the last type of report period observed by this destination.
+    * 
+    * @return The last type of report period observed.
+    */
    public PeriodType getLastType() {
       return lastType;
+   }
+
+   /**
+    * Gets the report assert registered.
+    * 
+    * @return The report assert set to this destionation.
+    */
+   public ReportAssert getReportAssert() {
+      return reportAssert;
+   }
+
+   /**
+    * Sets a new report assert to this destination.
+    * 
+    * @param reportAssert
+    *           The report assert to be registered.
+    */
+   public void setReportAssert(final ReportAssert reportAssert) {
+      this.reportAssert = reportAssert;
    }
 
 }

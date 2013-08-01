@@ -6,7 +6,7 @@ import org.perfcake.nreporting.MeasurementUnit;
 import org.perfcake.nreporting.ReportingException;
 import org.perfcake.nreporting.destinations.Destination;
 import org.perfcake.nreporting.reporters.accumulators.Accumulator;
-import org.perfcake.nreporting.reporters.accumulators.AvgAccumulator;
+import org.perfcake.nreporting.reporters.accumulators.LastValueAccumulator;
 
 /**
  * @author Pavel Macík <pavel.macik@gmail.com>
@@ -41,7 +41,7 @@ public class DummyReporter extends AbstractReporter {
    @Override
    protected Accumulator getAccumulator(final String key, final Class clazz) {
       lastMethod = "getAccumulator";
-      return new AvgAccumulator();
+      return new LastValueAccumulator();
    }
 
    @Override

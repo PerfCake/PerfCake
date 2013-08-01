@@ -25,7 +25,7 @@ import org.perfcake.nreporting.ReportingException;
 import org.perfcake.nreporting.destinations.Destination;
 
 /**
- * Contract of a reporter. Reporter takes
+ * A contract of Reporter. Reporter takes
  * multiple {@link org.perfcake.nreporting.MeasurementUnit Measurement Units} and combines
  * them into a single {@link org.perfcake.nreporting.Measurement Measurement}. The core method
  * is {@link #report(MeasurementUnit) report()} that is called each time a new measurement unit is ready.

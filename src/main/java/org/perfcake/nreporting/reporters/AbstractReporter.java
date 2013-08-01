@@ -86,7 +86,7 @@ public abstract class AbstractReporter implements Reporter {
       reportIterations(mu.getIteration());
 
       // report each percentage value just once
-      final long percentage = Math.round(runInfo.getPercentage());
+      final long percentage = (long) Math.floor(runInfo.getPercentage());
       if (percentage != lastPercentage) {
          lastPercentage = percentage;
          reportPercentage(percentage);

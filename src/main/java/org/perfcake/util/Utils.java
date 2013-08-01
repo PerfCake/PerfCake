@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,14 +52,14 @@ public class Utils {
     * @return Filtered string with.
     * @throws IOException
     */
-   public static String filterProperties(String text) throws IOException {
+   public static String filterProperties(final String text) throws IOException {
       String propertyPattern = "[^\\\\](\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?})";
       Matcher matcher = Pattern.compile(propertyPattern).matcher(text);
 
       return filterProperties(text, matcher, SystemPropertyGetter.INSTANCE);
    }
 
-   public static String filterProperties(String text, Matcher matcher, PropertyGetter pg) {
+   public static String filterProperties(final String text, final Matcher matcher, final PropertyGetter pg) {
       String filteredString = text;
 
       matcher.reset();
@@ -87,7 +88,7 @@ public class Utils {
     *           Property name
     * @return Property value or <code>null</code>.
     */
-   public static String getProperty(String name) {
+   public static String getProperty(final String name) {
       return getProperty(name, null);
    }
 
@@ -102,14 +103,14 @@ public class Utils {
     *           Default property value
     * @return Property value or <code>defaultValue</code>.
     */
-   public static String getProperty(String name, String defaultValue) {
+   public static String getProperty(final String name, final String defaultValue) {
       return SystemPropertyGetter.INSTANCE.getProperty(name, defaultValue);
    }
 
    /**
     * @param properties
     */
-   public static void logProperties(Logger logger, Level level, Properties properties) {
+   public static void logProperties(final Logger logger, final Level level, final Properties properties) {
       logProperties(logger, level, properties, "");
    }
 
@@ -117,7 +118,7 @@ public class Utils {
     * @param properties
     * @param prefix
     */
-   public static void logProperties(Logger logger, Level level, Properties properties, String prefix) {
+   public static void logProperties(final Logger logger, final Level level, final Properties properties, final String prefix) {
       if (logger.isEnabledFor(level)) {
          for (Entry<Object, Object> property : properties.entrySet()) {
             logger.log(level, prefix + property.getKey() + "=" + property.getValue());
@@ -133,7 +134,7 @@ public class Utils {
     * @return the file contents
     * @throws IOException
     */
-   public static String readFilteredContent(URL url) throws IOException {
+   public static String readFilteredContent(final URL url) throws IOException {
       try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
          return filterProperties(scanner.useDelimiter("\\Z").next());
       } catch (NoSuchElementException nsee) {
@@ -161,7 +162,7 @@ public class Utils {
     * @throws MalformedURLException
     *            when the location cannot be converted to a URL
     */
-   public static URL locationToUrl(String location, String defaultLocationProperty, String defaultLocation, String defaultSuffix) throws MalformedURLException {
+   public static URL locationToUrl(String location, final String defaultLocationProperty, final String defaultLocation, final String defaultSuffix) throws MalformedURLException {
       // is there a protocol specified? suppose just scenario name
       if (location.indexOf("://") < 0) {
          location = "file://" + Utils.getProperty(defaultLocationProperty, defaultLocation) + "/" + location + defaultSuffix;
@@ -177,7 +178,7 @@ public class Utils {
     *           Optional suffix to be added to the path
     * @return the location based on the resourcesDir constant
     */
-   public static String determineDefaultLocation(String locationSuffix) {
+   public static String determineDefaultLocation(final String locationSuffix) {
       return resourcesDir.getAbsolutePath() + "/" + (locationSuffix == null ? "" : locationSuffix);
    }
 
@@ -188,11 +189,29 @@ public class Utils {
     *           a camelCase string
     * @return the same string in equivalent format for Java enum values
     */
-   public static String camelCaseToEnum(String camelCase) {
+   public static String camelCaseToEnum(final String camelCase) {
       final String regex = "([a-z])([A-Z])";
       final String replacement = "$1_$2";
 
       return camelCase.replaceAll(regex, replacement).toUpperCase();
+   }
+
+   /**
+    * Converts time in milliseconds to H:MM:SS format, where H is unbound.
+    * 
+    * @param time
+    *           Timestamp in milliseconds.
+    * @return String representing the timestamp in H:MM:SS format.
+    */
+   public static String timeToHMS(final long time) {
+      long hours = TimeUnit.MILLISECONDS.toHours(time);
+      long minutes = TimeUnit.MILLISECONDS.toMinutes(time - TimeUnit.HOURS.toMillis(hours));
+      long seconds = TimeUnit.MILLISECONDS.toSeconds(time - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes));
+
+      StringBuilder sb = new StringBuilder();
+      sb.append(hours).append(":").append(String.format("%02d", minutes)).append(":").append(String.format("%02d", seconds));
+
+      return sb.toString();
    }
 
 }
