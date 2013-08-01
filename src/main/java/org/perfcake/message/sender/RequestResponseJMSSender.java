@@ -32,7 +32,7 @@ import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
-import org.perfcake.nreporting.MeasurementUnit;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * 

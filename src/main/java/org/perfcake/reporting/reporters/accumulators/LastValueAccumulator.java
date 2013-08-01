@@ -13,36 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package org.perfcake.message.sender;
-
-import java.io.Serializable;
-import java.util.Map;
-
-import org.perfcake.message.Message;
-import org.perfcake.reporting.MeasurementUnit;
+package org.perfcake.reporting.reporters.accumulators;
 
 /**
- * TODO: Provide implementation. This should write to NIO channels.
+ * This accumulator remembers the last value
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
-public class ChannelSender extends AbstractSender {
+public class LastValueAccumulator implements Accumulator<Object> {
+
+   /**
+    * Last remembered value
+    */
+   private Object lastValue;
 
    @Override
-   public void init() throws Exception {
-      // TODO Auto-generated method stub
+   public void add(final Object value) {
+      lastValue = value;
    }
 
    @Override
-   public void close() {
-      // TODO Auto-generated method stub
+   public Object getResult() {
+      return lastValue;
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public void reset() {
+      lastValue = null;
    }
+
 }

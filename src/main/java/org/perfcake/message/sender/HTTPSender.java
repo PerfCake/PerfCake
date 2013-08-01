@@ -31,7 +31,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
-import org.perfcake.nreporting.MeasurementUnit;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The sender that is able to send the messages via HTTP protocol.
@@ -233,7 +233,7 @@ public class HTTPSender extends AbstractSender {
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.nreporting.MeasurementUnit)
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)
     */
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {

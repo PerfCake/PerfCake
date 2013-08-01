@@ -12,8 +12,8 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.ReceivedMessage;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.nreporting.MeasurementUnit;
-import org.perfcake.nreporting.ReportManager;
+import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidatorManager;
 
 /**

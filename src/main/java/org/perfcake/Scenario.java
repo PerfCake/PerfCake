@@ -24,8 +24,8 @@ import org.apache.log4j.Logger;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.nreporting.ReportManager;
 import org.perfcake.parser.ScenarioParser;
+import org.perfcake.reporting.ReportManager;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.ValidatorManager;
 

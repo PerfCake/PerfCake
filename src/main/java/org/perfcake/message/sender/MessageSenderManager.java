@@ -25,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.perfcake.PerfCakeException;
-import org.perfcake.nreporting.ReportManager;
+import org.perfcake.reporting.ReportManager;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.validation.MessageValidator;
 

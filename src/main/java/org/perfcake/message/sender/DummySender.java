@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
-import org.perfcake.nreporting.MeasurementUnit;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * This sender is intended to work as a dummy sender and to be used for

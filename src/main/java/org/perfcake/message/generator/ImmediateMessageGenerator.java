@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
-import org.perfcake.nreporting.ReportManager;
+import org.perfcake.reporting.ReportManager;
 
 /**
  * <p>

@@ -26,7 +26,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.perfcake.message.Message;
-import org.perfcake.nreporting.MeasurementUnit;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The sender that can invoke external command (specified by {@link #target} property)

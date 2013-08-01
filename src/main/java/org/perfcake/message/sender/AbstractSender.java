@@ -22,7 +22,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
-import org.perfcake.nreporting.MeasurementUnit;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The common ancestor for all senders.

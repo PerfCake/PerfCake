@@ -9,8 +9,29 @@
    <name>PerfCake</name>
    <organization>
       <name>PerfCake Community</name>
-      <url>http://www.perfcake.org</url>
+      <url>https://www.perfcake.org</url>
    </organization>
+   <url>https://www.perfcake.org</url>
+   <inceptionYear>2013</inceptionYear>
+   <developers>
+      <developer>
+        <name>Martin Večeřa</name>
+        <email>marvenec@gmail.com</email>
+      </developer>
+      <developer>
+         <name>Pavel Macík</name>
+         <email>pavel.macik@gmail.com</email>
+      </developer>
+   </developers>
+   <ciManagement>
+      <url>
+      </url>
+   </ciManagement>
+   <issueManagement>
+      <system>GitHub</system>
+      <url>https://github.com/PerfCake/PerfCake/issues/</url>
+   </issueManagement>
+
    <repositories>
       <repository>
          <id>maven-central-repository</id>

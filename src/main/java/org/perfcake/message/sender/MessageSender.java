@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
-import org.perfcake.nreporting.MeasurementUnit;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * Interface for a message sender.
