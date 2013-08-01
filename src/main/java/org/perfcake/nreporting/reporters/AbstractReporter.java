@@ -228,6 +228,7 @@ public abstract class AbstractReporter implements Reporter {
 
    @Override
    public final void reset() {
+      lastPercentage = -1;
       accumulatedResults = new HashMap<>();
       doReset();
    }
@@ -292,7 +293,7 @@ public abstract class AbstractReporter implements Reporter {
                while (runInfo.isRunning() && !periodicThread.isInterrupted()) {
                   for (final BoundPeriod<Destination> p : periods) {
                      now = System.currentTimeMillis();
-                     if (p.getPeriodType() == PeriodType.TIME && lastTime + p.getPeriod() < now) {
+                     if (p.getPeriodType() == PeriodType.TIME && lastTime + p.getPeriod() < now && runInfo.getIteration() >= 0) {
                         lastTime = now;
 
                         try {
