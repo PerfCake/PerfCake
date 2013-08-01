@@ -7,15 +7,26 @@ import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
+import org.perfcake.nreporting.Measurement;
 import org.perfcake.nreporting.MeasurementUnit;
 import org.perfcake.nreporting.ReportManager;
 import org.perfcake.nreporting.ReportingException;
 import org.perfcake.nreporting.destinations.Destination;
 import org.perfcake.nreporting.destinations.DummyDestination;
+import org.perfcake.nreporting.destinations.DummyDestination.ReportAssert;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class ReporterContractTest {
+
+   private final ReportManager rm = new ReportManager();
+   private final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, 1000));
+   private final ResponseTimeReporter r1 = new ResponseTimeReporter();
+   private final ResponseTimeReporter r2 = new ResponseTimeReporter();
+   private final DummyReporter dr = new DummyReporter();
+   private final DummyDestination d1 = new DummyDestination();
+   private final DummyDestination d2 = new DummyDestination();
+   private MeasurementUnit mu = null;
 
    @Test
    public void noRunInfoTest() throws ReportingException {
@@ -31,14 +42,8 @@ public class ReporterContractTest {
    }
 
    // TODO split into multiple tests
-   @Test
-   public void f() throws ReportingException, InterruptedException {
-      ReportManager rm = new ReportManager();
-      RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, 1000));
-      ResponseTimeReporter r1 = new ResponseTimeReporter();
-      ResponseTimeReporter r2 = new ResponseTimeReporter();
-      DummyReporter dr = new DummyReporter();
-
+   @Test(priority = 1)
+   public void reportManagerTest() throws ReportingException, InterruptedException {
       rm.registerReporter(r1);
       rm.setRunInfo(ri);
       rm.registerReporter(r2);
@@ -55,8 +60,16 @@ public class ReporterContractTest {
       Assert.assertTrue(rm.getReporters().contains(r2));
 
       rm.registerReporter(dr);
-      MeasurementUnit mu = null;
-      for (int i = 0; i <= 500; i++) {
+      mu = rm.newMeasurementUnit();
+
+      rm.report(mu);
+      Assert.assertNull(dr.getLastMethod(), "No value should have been reported as reporting was not started.");
+   }
+
+   @Test(priority = 2)
+   public void measurementUnitTest() throws ReportingException, InterruptedException {
+      mu = null;
+      for (int i = 1; i <= 500; i++) {
          mu = rm.newMeasurementUnit();
       }
       Assert.assertEquals(mu.getIteration(), 500);
@@ -74,19 +87,23 @@ public class ReporterContractTest {
       mu.stopMeasure();
       Assert.assertTrue(mu.getTotalTime() < 1200); // we slept only for 2x500ms
       Assert.assertTrue(mu.getLastTime() < 600);
+   }
 
+   @Test(priority = 3)
+   public void runInfoTest() throws ReportingException, InterruptedException {
       Assert.assertEquals(ri.getPercentage(), 0d); // we did not run
       Assert.assertFalse(ri.isRunning());
       Assert.assertEquals(ri.getStartTime(), -1);
       Assert.assertEquals(ri.getEndTime(), -1);
       Assert.assertEquals(ri.getRunTime(), 0);
 
-      rm.report(mu);
-      Assert.assertNull(dr.getLastMethod(), "No value should have been reported as reporting was not started.");
+      mu = rm.newMeasurementUnit();
+      mu.startMeasure();
+      Thread.sleep(500);
+      mu.stopMeasure();
 
       rm.start(); // this logs 3 warnings because we did not add any destinations
       rm.report(mu);
-      long startTime = ri.getStartTime();
       Assert.assertTrue(ri.isRunning());
       Assert.assertEquals(dr.getLastMethod(), "doReport");
 
@@ -96,31 +113,76 @@ public class ReporterContractTest {
       rm.stop();
       Assert.assertFalse(ri.isRunning());
 
-      DummyDestination d1 = new DummyDestination();
-      DummyDestination d2 = new DummyDestination();
+      Assert.assertEquals(ri.getPercentage(), 0d); // we had reset
+      Assert.assertFalse(ri.isRunning());
+      Assert.assertTrue(ri.getEndTime() > ri.getStartTime());
+      Assert.assertTrue(ri.getRunTime() == ri.getEndTime() - ri.getStartTime());
+   }
 
+   @Test(priority = 4)
+   public void reportingPeriodTest() throws ReportingException, InterruptedException {
       r1.registerDestination(d1, new Period(PeriodType.ITERATION, 100));
-      r1.registerDestination(d2, new Period(PeriodType.PERCENTAGE, 10));
+      r1.registerDestination(d2, new Period(PeriodType.PERCENTAGE, 8));
       r1.registerDestination(d1, new Period(PeriodType.TIME, 2000));
 
       Set<BoundPeriod<Destination>> bp = new HashSet<>();
       bp.add(new BoundPeriod<Destination>(PeriodType.ITERATION, 100, d1));
-      bp.add(new BoundPeriod<Destination>(PeriodType.PERCENTAGE, 10, d2));
+      bp.add(new BoundPeriod<Destination>(PeriodType.PERCENTAGE, 8, d2));
       bp.add(new BoundPeriod<Destination>(PeriodType.TIME, 2000, d1));
       Assert.assertTrue(r1.getReportingPeriods().containsAll(bp));
 
-      Assert.assertEquals(ri.getPercentage(), 0d); // we had reset
-      Assert.assertFalse(ri.isRunning());
-      Assert.assertEquals(ri.getStartTime(), startTime);
-      Assert.assertTrue(ri.getEndTime() > ri.getStartTime());
-      Assert.assertTrue(ri.getRunTime() == ri.getEndTime() - ri.getStartTime());
       rm.start();
+
+      d1.setReportAssert(new ReportAssert() {
+
+         private boolean first = true;
+
+         @Override
+         public void report(final Measurement m) {
+            if (first) {
+               Assert.assertEquals(m.getIteration(), 0L);
+               Assert.assertEquals(m.get(), 10d);
+               Assert.assertEquals(m.get("avg"), 0d);
+               Assert.assertEquals(m.get("it"), "0");
+
+               first = false;
+            } else {
+               Assert.assertEquals(m.getIteration(), 100L);
+               Assert.assertEquals(m.get(), 10d);
+               Assert.assertEquals(m.get("avg"), 50d);
+               Assert.assertEquals(m.get("it"), "100");
+            }
+         }
+
+      });
+
+      d2.setReportAssert(new ReportAssert() {
+
+         private boolean first = true;
+
+         @Override
+         public void report(final Measurement m) {
+            if (first) {
+               Assert.assertEquals(m.getPercentage(), 0);
+               Assert.assertEquals(m.get(), 10d);
+               Assert.assertEquals(m.get("avg"), 0d);
+
+               first = false;
+            } else {
+               Assert.assertEquals(m.getPercentage(), 8);
+               Assert.assertEquals(m.get(), 10d);
+               Assert.assertEquals(m.get("avg"), 40d);
+            }
+         }
+
+      });
 
       mu = null;
       for (int i = 0; i <= 100; i++) {
          mu = rm.newMeasurementUnit();
          mu.startMeasure();
-         mu.appendResult("avg", (double) i);
+         mu.appendResult("avg", (double) i); // AvgAccumulator should be used
+         mu.appendResult("it", String.valueOf(i)); // LastValueAccumulator should be used
          Thread.sleep(10);
          mu.stopMeasure();
          rm.report(mu);
@@ -137,13 +199,30 @@ public class ReporterContractTest {
 
       rm.stop();
 
-      // System.out.println(ri);
-
-      // System.out.println(d1.getLastMeasurement());
-
-      // what happens if last iteration is reached
-      // verify percentage increase, proper results handling in ResponseTimeReporter (including various types for accumulated values)
-      // reset should reset all the parties
-      // time based reporting, percentage based reporting, iteration based reporting
+      d1.setReportAssert(null);
+      d2.setReportAssert(null);
    }
+
+   @Test(priority = 5)
+   public void reportManagerResetTest() throws ReportingException, InterruptedException {
+      rm.reset();
+      Assert.assertNull(r1.getAccumulatedResult("avg"));
+      Assert.assertNull(r1.getAccumulatedResult("it"));
+      Assert.assertNull(r1.getAccumulatedResult(Measurement.DEFAULT_RESULT));
+      Assert.assertNull(r2.getAccumulatedResult("avg"));
+      Assert.assertNull(r2.getAccumulatedResult("it"));
+      Assert.assertNull(r2.getAccumulatedResult(Measurement.DEFAULT_RESULT));
+      Assert.assertEquals(ri.getPercentage(), 0d);
+      Assert.assertEquals(ri.getIteration(), -1L);
+      // Assert.assertEquals(ri.getRunTime(), 0L);
+
+      Assert.assertEquals(dr.getLastMethod(), "doReset");
+   }
+
+   @Test(priority = 6)
+   public void finishReachTest() throws ReportingException, InterruptedException {
+
+   }
+   // what happens if last iteration is reached
+   // time based reporting, percentage based reporting, iteration based reporting
 }

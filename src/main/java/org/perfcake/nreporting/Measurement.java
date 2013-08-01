@@ -1,27 +1,39 @@
+/*
+ * Copyright 2010-2013 the original author or authors.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.perfcake.nreporting;
 
-import java.text.NumberFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.perfcake.nreporting.util.HMSNumberFormat;
+import org.perfcake.util.Utils;
 
 /**
+ * Measurement is a product of {@link org.perfcake.nreporting.reporters.Reporter}. It is typically a combination of multiple {@link MeasurementUnit Measuremen Units}. The way they are combined is the matter of a particular Reporter.
+ * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class Measurement {
+
    /**
     * The default result name.
     */
    public static final String DEFAULT_RESULT = "Result";
-
-   /**
-    * Hours/Minutes/Second number format.
-    */
-   private static final NumberFormat timeFormat = new HMSNumberFormat();
 
    /**
     * The last progress percentage for what the measurement is valid.
@@ -142,7 +154,7 @@ public class Measurement {
    public String toString() {
       StringBuffer sb = new StringBuffer();
       sb.append("[");
-      sb.append(timeFormat.format(time));
+      sb.append(Utils.timeToHMS(time));
       sb.append("][");
       sb.append(iteration);
       sb.append(" iterations][");

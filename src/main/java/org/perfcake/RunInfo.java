@@ -93,13 +93,12 @@ public class RunInfo {
    /**
     * Get the current iteration counter value.
     * This can be used as an approximate value of passed iterations even though some of them
-    * might still be pending their execution. The value is always 1 number higher than the number of iterations executed (as the number can be used for
-    * a new iteration).
+    * might still be pending their execution.
     * 
-    * @return Current iteration counter value
+    * @return Current iteration counter value, -1 if there was no iteration so far.
     */
    public long getIteration() {
-      return iterations.get();
+      return iterations.get() - 1; // actual number of iterations is 1 lower as we use getAndIncrement()
    }
 
    /**
@@ -191,6 +190,10 @@ public class RunInfo {
     */
    public boolean isRunning() {
       return startTime != -1 && endTime == -1;
+   }
+
+   private boolean isFinished() {
+      return (duration.getPeriodType().equals(PeriodType.ITERATION) && iterations.get() > duration.getPeriod()) || (duration.getPeriodType().equals(PeriodType.TIME) && getRunTime() > duration.getPeriod());
    }
 
    /**

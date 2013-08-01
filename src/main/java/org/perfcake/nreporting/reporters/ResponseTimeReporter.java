@@ -45,7 +45,7 @@ public class ResponseTimeReporter extends AbstractReporter {
 
    @Override
    protected void doPublishResult(final PeriodType periodType, final Destination d) throws ReportingException {
-      Measurement m = new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration() - 1);
+      Measurement m = new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
       m.set(new Quantity<Double>((Double) getAccumulatedResult(Measurement.DEFAULT_RESULT), "ms"));
       publishAccumulatedResult(m);
 
@@ -60,7 +60,7 @@ public class ResponseTimeReporter extends AbstractReporter {
    @SuppressWarnings("rawtypes")
    @Override
    protected Accumulator getAccumulator(final String key, final Class clazz) {
-      if (clazz.getName().equals(Double.class)) {
+      if (Double.class.equals(clazz)) {
          return new AvgAccumulator();
       } else {
          return new LastValueAccumulator();
