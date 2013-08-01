@@ -219,22 +219,14 @@
             <version>1.5</version>
             <configuration>
                <verbose>false</verbose>
-               <addSvnKeyWords>true</addSvnKeyWords>
+               <addSvnKeyWords>false</addSvnKeyWords>
+               <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
                <licenseName>apache_v2</licenseName>
                <roots>
                   <root>src/main/java</root>
                   <root>src/test/java</root>
                </roots>
             </configuration>
-            <executions>
-               <execution>
-                  <id>first</id>
-                  <goals>
-                     <goal>update-file-header</goal>
-                  </goals>
-                  <phase>process-sources</phase>
-               </execution>
-            </executions>
          </plugin>
       </plugins>
       <pluginManagement>
