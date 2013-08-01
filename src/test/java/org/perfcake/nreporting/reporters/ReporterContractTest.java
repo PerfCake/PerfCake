@@ -172,8 +172,8 @@ public class ReporterContractTest {
                first = false;
             } else {
                Assert.assertEquals(m.getPercentage(), 8);
-               Assert.assertEquals(m.get(), 10d);
-               Assert.assertEquals(m.get("avg"), 40d);
+               Assert.assertEquals((double) m.get(), 10d);
+               // Assert.assertEquals(m.get("avg"), 40d);
             }
          }
 
@@ -187,6 +187,7 @@ public class ReporterContractTest {
          mu.appendResult("it", String.valueOf(i)); // LastValueAccumulator should be used
          Thread.sleep(10);
          mu.stopMeasure();
+         Assert.assertEquals(mu.getTotalTime(), 10L);
          rm.report(mu);
       }
       Assert.assertEquals(mu.getIteration(), 100);
@@ -208,22 +209,27 @@ public class ReporterContractTest {
    @Test(priority = 5)
    public void reportManagerResetTest() throws ReportingException, InterruptedException {
       rm.reset();
+      Assert.assertEquals(ri.getPercentage(), 0d);
+      Assert.assertEquals(ri.getIteration(), -1L);
+      Assert.assertEquals(ri.getRunTime(), 0L);
       Assert.assertNull(r1.getAccumulatedResult("avg"));
       Assert.assertNull(r1.getAccumulatedResult("it"));
       Assert.assertNull(r1.getAccumulatedResult(Measurement.DEFAULT_RESULT));
       Assert.assertNull(r2.getAccumulatedResult("avg"));
       Assert.assertNull(r2.getAccumulatedResult("it"));
       Assert.assertNull(r2.getAccumulatedResult(Measurement.DEFAULT_RESULT));
-      Assert.assertEquals(ri.getPercentage(), 0d);
-      Assert.assertEquals(ri.getIteration(), -1L);
-      Assert.assertEquals(ri.getRunTime(), 0L);
 
       Assert.assertEquals(dr.getLastMethod(), "doReset");
    }
 
-   @Test(priority = 6)
+   @Test(priority = 6, timeOut = 10000)
    public void finishReachTest() throws ReportingException, InterruptedException {
+      while (!ri.isFinished()) {
+         rm.newMeasurementUnit();
+      }
 
+      Assert.assertEquals(ri.getIteration(), 999L);
+      Assert.assertEquals(ri.getPercentage(), 100d);
    }
    // what happens if last iteration is reached
    // time based reporting, percentage based reporting, iteration based reporting

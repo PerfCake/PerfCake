@@ -79,8 +79,20 @@ public class RunInfo {
     */
    public void start() {
       startTime = System.currentTimeMillis();
-      iterations.set(0);
       endTime = -1;
+
+      iterations.set(0);
+   }
+
+   public void reset() {
+      if (isRunning()) {
+         startTime = System.currentTimeMillis();
+      } else {
+         startTime = -1;
+      }
+      endTime = -1;
+
+      iterations.set(0);
    }
 
    /**
@@ -98,7 +110,7 @@ public class RunInfo {
     * @return Current iteration counter value, -1 if there was no iteration so far.
     */
    public long getIteration() {
-      return iterations.get() - 1; // actual number of iterations is 1 lower as we use getAndIncrement()
+      return iterations.get() - 1; // actual number of iterations is 1 higher as we use getAndIncrement()
    }
 
    /**
@@ -143,7 +155,7 @@ public class RunInfo {
 
       switch (duration.getPeriodType()) {
          case ITERATION:
-            progress = Math.max(0d, getIteration()); // at the beginning, iteration can be -1
+            progress = getIteration() + 1; // at the beginning, iteration can be -1
             break;
          case TIME:
             progress = getRunTime();
@@ -184,8 +196,8 @@ public class RunInfo {
       return startTime != -1 && endTime == -1;
    }
 
-   private boolean isFinished() {
-      return (duration.getPeriodType().equals(PeriodType.ITERATION) && iterations.get() > duration.getPeriod()) || (duration.getPeriodType().equals(PeriodType.TIME) && getRunTime() > duration.getPeriod());
+   public boolean isFinished() {
+      return (duration.getPeriodType().equals(PeriodType.ITERATION) && iterations.get() >= duration.getPeriod()) || (duration.getPeriodType().equals(PeriodType.TIME) && getRunTime() >= duration.getPeriod());
    }
 
    /**
