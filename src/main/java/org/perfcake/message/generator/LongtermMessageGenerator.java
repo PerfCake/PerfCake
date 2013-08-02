@@ -121,11 +121,11 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
             // should we log a change?
             if (cnt != lastValue) {
                lastValue = cnt;
-               float averageSpeed = getSpeed(cnt);
+               final float averageSpeed = getSpeed(cnt);
 
                if (warmUpEnabled && !isMeasuring) {
-                  float relDelta = averageSpeed / lastSpeed - 1f;
-                  float absDelta = averageSpeed - lastSpeed;
+                  final float relDelta = averageSpeed / lastSpeed - 1f;
+                  final float absDelta = averageSpeed - lastSpeed;
                   if (log.isDebugEnabled()) {
                      log.debug("AverageSpeed: " + averageSpeed + ", LastSpeed: " + lastSpeed);
                      log.debug("Difference: " + absDelta + " (" + relDelta + "%)");
@@ -138,7 +138,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
                   lastSpeed = averageSpeed;
                }
             }
-         } catch (InterruptedException ie) {
+         } catch (final InterruptedException ie) {
             ie.printStackTrace();
             // "Shit happens!", Forrest Gump
          }
