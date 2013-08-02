@@ -12,7 +12,7 @@
    </organization>
    <description>A Lightweight Performance Testing Framework</description>
    <url>https://www.perfcake.org</url>
-   <inceptionYear>2013</inceptionYear>
+   <inceptionYear>2010</inceptionYear>
    <developers>
       <developer>
          <name>Martin Večeřa</name>
@@ -221,6 +221,7 @@
                <verbose>false</verbose>
                <addSvnKeyWords>false</addSvnKeyWords>
                <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+               <processStartTag>asdfjklasjdflkůajsdlfůasjdfůlkasdůfl</processStartTag>
                <licenseName>apache_v2</licenseName>
                <roots>
                   <root>src/main/java</root>
