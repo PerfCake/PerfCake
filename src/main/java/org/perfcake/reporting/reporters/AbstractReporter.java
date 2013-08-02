@@ -313,7 +313,6 @@ public abstract class AbstractReporter implements Reporter {
                   Thread.sleep(500);
                }
             } catch (final InterruptedException e) {
-               e.printStackTrace();
                // this means our job is done
             }
             if (log.isDebugEnabled()) {

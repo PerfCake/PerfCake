@@ -18,8 +18,8 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
-import org.perfcake.util.PerfCakeAgent;
-import org.perfcake.util.PerfCakeAgent.Memory;
+import org.perfcake.util.agent.PerfCakeAgent;
+import org.perfcake.util.agent.PerfCakeAgent.Memory;
 
 /**
  * Reporter that is able to get the memory usage information from a remote JVM,
