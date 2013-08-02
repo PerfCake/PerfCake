@@ -3,10 +3,6 @@ package org.perfcake.reporting.reporters.accumulators;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.perfcake.reporting.reporters.accumulators.Accumulator;
-import org.perfcake.reporting.reporters.accumulators.AvgAccumulator;
-import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
-import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator;
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
@@ -90,7 +86,7 @@ public class AccumulatorsTest {
    public void accumulatorStressTest(final Accumulator a, final Long start, final Long end, final Double result, final Double zero) throws InterruptedException {
       List<Thread> stressors = new ArrayList<>();
 
-      for (int i = 0; i < 1000; i++) {
+      for (int i = 0; i < 500; i++) {
          stressors.add(new Thread(new AccumulatorStressor(a, start, end)));
       }
 
