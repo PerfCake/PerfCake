@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.validation;
 
 import java.io.BufferedReader;
@@ -30,19 +33,19 @@ import org.apache.log4j.Logger;
 public class StringUtil {
    private static Logger log = Logger.getLogger(StringUtil.class);
 
-   public static boolean startsWithIgnoreCase(String haystack, String needle) {
+   public static boolean startsWithIgnoreCase(final String haystack, final String needle) {
       return needle.equalsIgnoreCase(haystack.substring(0, needle.length()));
    }
 
-   public static boolean endsWithIgnoreCase(String haystack, String needle) {
+   public static boolean endsWithIgnoreCase(final String haystack, final String needle) {
       return needle.equalsIgnoreCase(haystack.substring(haystack.length() - needle.length(), haystack.length()));
    }
 
-   public static boolean containsIgnoreCase(String haystack, String needle) {
+   public static boolean containsIgnoreCase(final String haystack, final String needle) {
       return haystack.toLowerCase().indexOf(needle.toLowerCase()) >= 0;
    }
 
-   public static String trim(String str) {
+   public static String trim(final String str) {
       return trim(str, " \n\t'\"");
    }
 
@@ -53,7 +56,7 @@ public class StringUtil {
     * @param trimStr
     * @return
     */
-   public static String trim(String str, String trimStr) {
+   public static String trim(final String str, final String trimStr) {
       int start = 0;
       while (start < str.length() && trimStr.indexOf(str.charAt(start)) >= 0) {
          start++;
@@ -78,7 +81,7 @@ public class StringUtil {
     * @param multiline
     * @return
     */
-   public static String trimLines(String multiline) {
+   public static String trimLines(final String multiline) {
       StringBuffer sb = new StringBuffer();
       BufferedReader br = new BufferedReader(new StringReader(multiline));
       String line;

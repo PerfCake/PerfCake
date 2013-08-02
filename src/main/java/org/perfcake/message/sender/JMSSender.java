@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message.sender;
 
 import java.io.Serializable;
@@ -336,7 +339,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param username
     *           The username to set.
     */
-   public void setUsername(String username) {
+   public void setUsername(final String username) {
       this.username = username;
    }
 
@@ -355,7 +358,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param password
     *           The password to set.
     */
-   public void setPassword(String password) {
+   public void setPassword(final String password) {
       this.password = password;
    }
 
@@ -374,7 +377,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param transacted
     *           The transacted to set.
     */
-   public void setTransacted(boolean transacted) {
+   public void setTransacted(final boolean transacted) {
       this.transacted = transacted;
    }
 
@@ -393,7 +396,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param persistent
     *           The persistent to set.
     */
-   public void setPersistent(boolean persistent) {
+   public void setPersistent(final boolean persistent) {
       this.persistent = persistent;
    }
 
@@ -412,7 +415,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param autoAck
     *           The autoAck to set.
     */
-   public void setAutoAck(boolean autoAck) {
+   public void setAutoAck(final boolean autoAck) {
       this.autoAck = autoAck;
    }
 
@@ -431,7 +434,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param sendAsObject
     *           The sendAsObject to set.
     */
-   public void setSendAsObject(boolean sendAsObject) {
+   public void setSendAsObject(final boolean sendAsObject) {
       this.sendAsObject = sendAsObject;
    }
 
@@ -450,7 +453,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param connectionFactory
     *           The connectionFactory to set.
     */
-   public void setConnectionFactory(String connectionFactory) {
+   public void setConnectionFactory(final String connectionFactory) {
       this.connectionFactory = connectionFactory;
    }
 
@@ -469,7 +472,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param jndiContextFactory
     *           The jndiContextFactory to set.
     */
-   public void setJndiContextFactory(String jndiContextFactory) {
+   public void setJndiContextFactory(final String jndiContextFactory) {
       this.jndiContextFactory = jndiContextFactory;
    }
 
@@ -488,7 +491,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param jndiUrl
     *           The jndiUrl to set.
     */
-   public void setJndiUrl(String jndiUrl) {
+   public void setJndiUrl(final String jndiUrl) {
       this.jndiUrl = jndiUrl;
    }
 
@@ -507,7 +510,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param jndiSecurityPrincipal
     *           The jndiSecurityPrincipal to set.
     */
-   public void setJndiSecurityPrincipal(String jndiSecurityPrincipal) {
+   public void setJndiSecurityPrincipal(final String jndiSecurityPrincipal) {
       this.jndiSecurityPrincipal = jndiSecurityPrincipal;
    }
 
@@ -526,7 +529,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param jndiSecurityCredentials
     *           The jndiSecurityCredentials to set.
     */
-   public void setJndiSecurityCredentials(String jndiSecurityCredentials) {
+   public void setJndiSecurityCredentials(final String jndiSecurityCredentials) {
       this.jndiSecurityCredentials = jndiSecurityCredentials;
    }
 
@@ -545,7 +548,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param replyTo
     *           The replyTo to set.
     */
-   public void setReplyTo(String replyTo) {
+   public void setReplyTo(final String replyTo) {
       this.replyTo = replyTo;
    }
 

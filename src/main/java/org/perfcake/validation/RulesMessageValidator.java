@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.validation;
 
 import java.io.BufferedReader;
@@ -41,9 +44,9 @@ public class RulesMessageValidator implements MessageValidator {
 
    private static final Logger log = Logger.getLogger(RulesMessageValidator.class);
 
-   private HashMap<String, HashMap<Integer, String>> assertionsMap = new HashMap<>();// 1, <lineNo, rule>
+   private final HashMap<String, HashMap<Integer, String>> assertionsMap = new HashMap<>();// 1, <lineNo, rule>
 
-   private HashMap<String, Package> packagesMap = new HashMap<>();// 1, pkg --> ext: more pkgs to one message
+   private final HashMap<String, Package> packagesMap = new HashMap<>();// 1, pkg --> ext: more pkgs to one message
 
    private static String validatorDSL = "messageValidator.dsl";
 
@@ -52,7 +55,7 @@ public class RulesMessageValidator implements MessageValidator {
    }
 
    @Override
-   public void validate(Message message) throws ValidationException {
+   public void validate(final Message message) throws ValidationException {
       HashMap<Integer, String> assertions;
       final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
       assertions = assertionsMap.get("1");
@@ -85,7 +88,7 @@ public class RulesMessageValidator implements MessageValidator {
    }
 
    @Override
-   public boolean isValid(Message message) {
+   public boolean isValid(final Message message) {
       boolean v = true;
       try {
          validate(message);
@@ -96,7 +99,7 @@ public class RulesMessageValidator implements MessageValidator {
    }
 
    @Override
-   public void setAssertions(Node validationNode, String msgId) {
+   public void setAssertions(final Node validationNode, final String msgId) {
       HashMap<Integer, String> assertions = new HashMap<>();
       try {
          BufferedReader br = new BufferedReader(new StringReader(validationNode.getTextContent()));
