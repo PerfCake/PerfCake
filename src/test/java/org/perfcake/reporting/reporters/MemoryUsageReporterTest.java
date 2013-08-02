@@ -35,7 +35,6 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.agent.AgentThread;
-import org.perfcake.util.agent.PerfCakeAgent;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -60,12 +59,12 @@ public class MemoryUsageReporterTest {
       agentThread = new AgentThread("hostname=" + AGENT_HOSTNAME + ",port=" + AGENT_PORT);
       Executors.newSingleThreadExecutor().submit(agentThread);
 
-      Properties reporterProperties = new Properties();
+      final Properties reporterProperties = new Properties();
       reporterProperties.put("hostname", AGENT_HOSTNAME);
       reporterProperties.put("port", AGENT_PORT);
       mur = (MemoryUsageReporter) ObjectFactory.summonInstance(MemoryUsageReporter.class.getName(), reporterProperties);
 
-      Properties destinationProperties = new Properties();
+      final Properties destinationProperties = new Properties();
       dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), destinationProperties);
    }
 
@@ -75,7 +74,7 @@ public class MemoryUsageReporterTest {
       Assert.assertEquals(mur.getHostname(), AGENT_HOSTNAME, "Agent hostname");
       Assert.assertEquals(mur.getPort(), AGENT_PORT, "Agent port");
 
-      List<Measurement> measurementList = new LinkedList<>();
+      final List<Measurement> measurementList = new LinkedList<>();
 
       mur.registerDestination(dest, new Period(PeriodType.ITERATION, 100));
       rm.registerReporter(mur);
@@ -100,7 +99,7 @@ public class MemoryUsageReporterTest {
       }
       rm.stop();
       Assert.assertEquals(measurementList.size(), 11, "Number of Measurement sent to destination");
-      for (Measurement m : measurementList) {
+      for (final Measurement m : measurementList) {
          Assert.assertNotNull(m.get("Used"), "Used memory result");
          Assert.assertNotNull(m.get("Total"), "Total memory result");
          Assert.assertNotNull(m.get("Max"), "Max memory result");
