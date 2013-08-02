@@ -103,43 +103,43 @@ class SenderTask implements Runnable {
       try {
          MeasurementUnit mu = reportManager.newMeasurementUnit();
 
-         // only set numbering to headers if it is enabled, later there is no change to
-         // filter out the headers before sending
-         String msgNumberStr = String.valueOf(mu.getIteration());
-         if (messageNumberingEnabled && isMeasuring) {
-            messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, msgNumberStr);
-         }
-
-         Iterator<MessageTemplate> iterator = messageStore.iterator();
-         if (iterator.hasNext()) {
-            while (iterator.hasNext()) {
-
-               sender = senderManager.acquireSender();
-               MessageTemplate messageToSend = iterator.next();
-               Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
-               long multiplicity = messageToSend.getMultiplicity();
-
-               for (int i = 0; i < multiplicity; i++) {
-                  receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend);
-                  if (ValidatorManager.isEnabled()) {
-                     ValidatorManager.addToResultMessages(receivedMessage);
-                  }
-               }
-
-               senderManager.releaseSender(sender); // !!! important !!!
-               sender = null;
+         if (mu != null) {
+            // only set numbering to headers if it is enabled, later there is no change to
+            // filter out the headers before sending
+            if (messageNumberingEnabled && isMeasuring) {
+               messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration()));
             }
-         } else {
+
             sender = senderManager.acquireSender();
-            receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null);
-            if (ValidatorManager.isEnabled()) {
-               ValidatorManager.addToResultMessages(receivedMessage);
+
+            Iterator<MessageTemplate> iterator = messageStore.iterator();
+            if (iterator.hasNext()) {
+               while (iterator.hasNext()) {
+
+                  MessageTemplate messageToSend = iterator.next();
+                  Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
+                  long multiplicity = messageToSend.getMultiplicity();
+
+                  for (int i = 0; i < multiplicity; i++) {
+                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend);
+                     if (ValidatorManager.isEnabled()) {
+                        ValidatorManager.addToResultMessages(receivedMessage);
+                     }
+                  }
+
+               }
+            } else {
+               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null);
+               if (ValidatorManager.isEnabled()) {
+                  ValidatorManager.addToResultMessages(receivedMessage);
+               }
             }
+
             senderManager.releaseSender(sender); // !!! important !!!
             sender = null;
-         }
 
-         reportManager.report(mu);
+            reportManager.report(mu);
+         }
       } catch (Exception e) {
          e.printStackTrace();
       } finally {

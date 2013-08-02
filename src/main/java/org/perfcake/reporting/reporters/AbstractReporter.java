@@ -287,13 +287,16 @@ public abstract class AbstractReporter implements Reporter {
          public void run() {
             long lastTime = System.currentTimeMillis();
             long now;
+            boolean reported;
 
             try {
                while (runInfo.isRunning() && !periodicThread.isInterrupted()) {
+                  reported = false;
+                  now = System.currentTimeMillis();
+
                   for (final BoundPeriod<Destination> p : periods) {
-                     now = System.currentTimeMillis();
                      if (p.getPeriodType() == PeriodType.TIME && lastTime + p.getPeriod() < now && runInfo.getIteration() >= 0) {
-                        lastTime = now;
+                        reported = true;
 
                         try {
                            doPublishResult(PeriodType.TIME, p.getBinding());
@@ -303,9 +306,14 @@ public abstract class AbstractReporter implements Reporter {
                      }
                   }
 
+                  if (reported) {
+                     lastTime = now;
+                  }
+
                   Thread.sleep(500);
                }
             } catch (final InterruptedException e) {
+               e.printStackTrace();
                // this means our job is done
             }
             if (log.isDebugEnabled()) {

@@ -95,19 +95,11 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
       boolean terminated = false;
       boolean expired = true;
       long lastValue = 0;
-      long runTime;
-      if (isMeasuring) {
-         runTime = getDurationInMillis();
-      } else {
-         runTime = 0;
-      }
 
       final long duration = runInfo.getDuration().getPeriod();
 
-      while (!(expired = (runTime > duration * 1000)) || !terminated) {
-         if (log.isDebugEnabled()) {
-            log.debug("Run time: " + runTime + "/" + (duration * 1000));
-         }
+      while (!(expired = (runInfo.getRunTime() > duration)) || !terminated) {
+         System.out.println("tick");
          try {
             terminated = executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
             if (expired && !executorService.isShutdown()) {
@@ -147,9 +139,6 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
          } catch (InterruptedException ie) {
             ie.printStackTrace();
             // "Shit happens!", Forrest Gump
-         }
-         if (isMeasuring) {
-            runTime = getDurationInMillis();
          }
       }
 

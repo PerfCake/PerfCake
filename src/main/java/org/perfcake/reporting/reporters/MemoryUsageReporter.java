@@ -42,12 +42,12 @@ public class MemoryUsageReporter extends AbstractReporter {
    /**
     * Hostname where {@link PerfCakeAgent} is listening on.
     */
-   private String hostname;
+   private String hostname = "localhost";
 
    /**
     * Port number where {@link PerfCakeAgent} is listening on.
     */
-   private String port;
+   private String port = "8849";
 
    /**
     * IP address of the {@link PerfCakeAgent}.

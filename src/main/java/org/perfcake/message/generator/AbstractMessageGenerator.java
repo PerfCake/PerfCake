@@ -179,7 +179,7 @@ public abstract class AbstractMessageGenerator {
     * Sets the timestamp of the moment when generator execution stopped.
     */
    protected void setStopTime() {
-      if (runInfo.isRunning()) {
+      if (runInfo.isStarted()) {
          reportManager.stop();
       }
    }
