@@ -13,7 +13,7 @@
       </xsd:complexType>
    </xsd:element>
    <xsd:element name="scenario">
-      <xsd:complexType mixed="true">
+      <xsd:complexType>
          <xsd:sequence>
             <xsd:element name="properties" minOccurs="0" maxOccurs="1">
                <xsd:complexType>
