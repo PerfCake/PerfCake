@@ -99,7 +99,6 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
       final long duration = runInfo.getDuration().getPeriod();
 
       while (!(expired = (runInfo.getRunTime() > duration)) || !terminated) {
-         System.out.println("tick");
          try {
             terminated = executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
             if (expired && !executorService.isShutdown()) {
