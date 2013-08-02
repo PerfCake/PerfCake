@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.validation;
 
 import java.io.File;
@@ -44,19 +47,19 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
 
    public static final int HEADER_SIZE = LONG_SIZE * 2;
 
-   private InputStream inputStream;
+   private final InputStream inputStream;
 
-   private OutputStream outputStream;
+   private final OutputStream outputStream;
 
    private RandomAccessFile file;
 
-   private FileChannel channel;
+   private final FileChannel channel;
 
    private long pointer = EMPTY_POINTER;
 
    private long queueSize = 0;
 
-   public FileQueue(String filename) {
+   public FileQueue(final String filename) {
       try {
          boolean fileExists = new File(filename).exists();
          file = new RandomAccessFile(filename, "rw");
@@ -78,7 +81,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
    }
 
    @Override
-   public boolean add(T item) {
+   public boolean add(final T item) {
       try {
          synchronized (this) {
             channel.position(channel.size());
@@ -141,7 +144,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
    }
 
    @Override
-   public boolean addAll(Collection<? extends T> c) {
+   public boolean addAll(final Collection<? extends T> c) {
       for (T item : c) {
          add(item);
       }
@@ -149,7 +152,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
    }
 
    @Override
-   public boolean offer(T e) {
+   public boolean offer(final T e) {
       return add(e);
    }
 
@@ -210,7 +213,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
    }
 
    @Override
-   public boolean contains(Object o) {
+   public boolean contains(final Object o) {
       throw new UnsupportedOperationException();
    }
 
@@ -225,27 +228,27 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
    }
 
    @Override
-   public <T> T[] toArray(T[] a) {
+   public <T> T[] toArray(final T[] a) {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   public boolean remove(Object o) {
+   public boolean remove(final Object o) {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   public boolean containsAll(Collection<?> c) {
+   public boolean containsAll(final Collection<?> c) {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   public boolean removeAll(Collection<?> c) {
+   public boolean removeAll(final Collection<?> c) {
       throw new UnsupportedOperationException();
    }
 
    @Override
-   public boolean retainAll(Collection<?> c) {
+   public boolean retainAll(final Collection<?> c) {
       throw new UnsupportedOperationException();
    }
 

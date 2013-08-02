@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message.generator;
 
 import java.util.List;
@@ -31,11 +34,13 @@ import org.perfcake.reporting.ReportManager;
  * This represents the common ancestor for all generators. It can generate messages using a specified number ({@link #threads}) of concurrent messages senders (see {@link MessageSender}).
  * </p>
  * <p>
- * The generator is also able to 'warm-up' the tested system. The warming is enabled/disabled through {@link #warmUpEnabled} and the minimal iteration count and the warm-up period duration can be tweaked by the respective properties ({@link #minimalWarmUpCount} with the default value of 10,000 and {@link #minimalWarmUpDuration} with the default value of 15,000 ms).
+ * The generator is also able to 'warm-up' the tested system. The warming is enabled/disabled through {@link #warmUpEnabled} and the minimal iteration count and the warm-up period duration can be
+ * tweaked by the respective properties ({@link #minimalWarmUpCount} with the default value of 10,000 and {@link #minimalWarmUpDuration} with the default value of 15,000 ms).
  * </p>
  * <p>
- * When warming is disabled the generator should measure the performance metrics right from the beginning of the generation. But when the warming is enabled it starts to generate the load but it doesn't measure the performance metrics from the beginning. It waits for the following conditions to start the actual measuring. All of the following conditions must be satisfied: The tested system is
- * warmed up (it detects it), the minimal iteration count has been executed and the minimal duration from the very start has exceeded.
+ * When warming is disabled the generator should measure the performance metrics right from the beginning of the generation. But when the warming is enabled it starts to generate the load but it
+ * doesn't measure the performance metrics from the beginning. It waits for the following conditions to start the actual measuring. All of the following conditions must be satisfied: The tested system
+ * is warmed up (it detects it), the minimal iteration count has been executed and the minimal duration from the very start has exceeded.
  * </p>
  * <p>
  * The generator should also have the ability to tag messages by the sequence number that indicated the order of messages.

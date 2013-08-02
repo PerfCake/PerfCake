@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.validation;
 
 import java.util.Queue;
@@ -44,15 +47,15 @@ public class ValidatorManager {
 
    private static Queue<ReceivedMessage> resultMessages = new FileQueue<ReceivedMessage>("target/messagesQueue");
 
-   public static void setFinished(boolean finished) {
+   public static void setFinished(final boolean finished) {
       ValidatorManager.finished = finished;
    }
 
-   public static void addValidator(String validatorId, MessageValidator messageValidator) {
+   public static void addValidator(final String validatorId, final MessageValidator messageValidator) {
       validators.put(validatorId, messageValidator);
    }
 
-   public static MessageValidator getValidator(String validatorId) {
+   public static MessageValidator getValidator(final String validatorId) {
       return validators.get(validatorId);
    }
 
@@ -109,7 +112,7 @@ public class ValidatorManager {
       }
    }
 
-   public static void addToResultMessages(ReceivedMessage receivedMessage) {
+   public static void addToResultMessages(final ReceivedMessage receivedMessage) {
       resultMessages.add(receivedMessage);
    }
 
@@ -117,7 +120,7 @@ public class ValidatorManager {
       return resultMessages.size();
    }
 
-   public static void setAssertionsToValidator(String classname, Node validation, String msgId) {
+   public static void setAssertionsToValidator(final String classname, final Node validation, final String msgId) {
 
    }
 
@@ -125,7 +128,7 @@ public class ValidatorManager {
       return enabled;
    }
 
-   public static void setEnabled(boolean enabled) {
+   public static void setEnabled(final boolean enabled) {
       ValidatorManager.enabled = enabled;
    }
 

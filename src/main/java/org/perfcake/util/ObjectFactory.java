@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.util;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +37,7 @@ public class ObjectFactory {
    private static class EnumConvertUtilsBean extends ConvertUtilsBean {
       @SuppressWarnings({ "rawtypes", "unchecked" })
       @Override
-      public Object convert(String value, Class clazz) {
+      public Object convert(final String value, final Class clazz) {
          if (clazz.isEnum()) {
             return Enum.valueOf(clazz, Utils.camelCaseToEnum(value));
          } else {
@@ -50,7 +53,7 @@ public class ObjectFactory {
     * @throws InvocationTargetException
     * @throws IllegalAccessException
     */
-   public static void setPropertiesOnObject(Object object, Properties properties) throws IllegalAccessException, InvocationTargetException {
+   public static void setPropertiesOnObject(final Object object, final Properties properties) throws IllegalAccessException, InvocationTargetException {
       BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumConvertUtilsBean());
       for (String key : properties.stringPropertyNames()) {
          if (log.isTraceEnabled()) {
@@ -61,7 +64,7 @@ public class ObjectFactory {
       }
    }
 
-   public static Object summonInstance(String className, Properties properties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+   public static Object summonInstance(final String className, final Properties properties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
       Object object = Class.forName(className, false, ObjectFactory.class.getClassLoader()).newInstance();
       setPropertiesOnObject(object, properties);
 

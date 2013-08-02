@@ -221,9 +221,9 @@
                <verbose>false</verbose>
                <addSvnKeyWords>false</addSvnKeyWords>
                <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
-               <processStartTag>=======================================================================\</processStartTag>
-               <processEndTag>=======================================================================/</processEndTag>
-               <sectionDelimiter>-----------------------------------------------------------------------</sectionDelimiter>
+               <processStartTag>-----------------------------------------------------------------------\</processStartTag>
+               <processEndTag>-----------------------------------------------------------------------/</processEndTag>
+               <sectionDelimiter>&nbsp;</sectionDelimiter>
                <organizationName>the original author or authors.</organizationName>
                <licenseName>apache_v2</licenseName>
                <roots>
