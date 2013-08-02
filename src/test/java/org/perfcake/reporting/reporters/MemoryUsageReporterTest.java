@@ -31,7 +31,7 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.agent.AgentThread;
-import org.perfcake.util.agent.PerfCakeAgent.Memory;
+import org.perfcake.util.agent.PerfCakeAgent;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -67,7 +67,7 @@ public class MemoryUsageReporterTest {
 
    @Test
    public void testMemoryUsageReporter() {
-      Assert.assertNotNull(mur, "reporter's instance");
+      Assert.assertNotNull(mur, "Reporter's instance");
       Assert.assertEquals(mur.getHostname(), AGENT_HOSTNAME, "Agent hostname");
       Assert.assertEquals(mur.getPort(), AGENT_PORT, "Agent port");
 
