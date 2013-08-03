@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -96,20 +96,20 @@ public class ScenarioParser {
       try {
          this.scenarioConfig = Utils.readFilteredContent(scenario);
 
-         Source schemaFile = new StreamSource(getClass().getResourceAsStream("/schemas/perfcake-scenario-" + Scenario.VERSION + ".xsd"));
-         Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes()));
+         final Source schemaFile = new StreamSource(getClass().getResourceAsStream("/schemas/perfcake-scenario-" + Scenario.VERSION + ".xsd"));
+         final Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes()));
 
-         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-         Schema schema = schemaFactory.newSchema(schemaFile);
-         Validator validator = schema.newValidator();
+         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+         final Schema schema = schemaFactory.newSchema(schemaFile);
+         final Validator validator = schema.newValidator();
 
          if (log.isDebugEnabled()) {
             log.debug("Validating scenario configuration");
          }
          validator.validate(scenarioXML);
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
-      } catch (SAXException e) {
+      } catch (final SAXException e) {
          throw new PerfCakeException("Cannot validate scenario configuration: ", e);
       }
 
@@ -145,10 +145,10 @@ public class ScenarioParser {
       RunInfo runInfo = null;
 
       try {
-         Element generatorElement = (Element) (xPathEvaluate("generator", scenarioNode).item(0));
-         Element runInfoElement = (Element) (xPathEvaluate("run", generatorElement).item(0));
+         final Element generatorElement = (Element) (xPathEvaluate("generator", scenarioNode).item(0));
+         final Element runInfoElement = (Element) (xPathEvaluate("run", generatorElement).item(0));
          runInfo = new RunInfo(new Period(PeriodType.valueOf(runInfoElement.getAttribute("type").toUpperCase()), Long.valueOf(runInfoElement.getAttribute("value"))));
-      } catch (XPathExpressionException e) {
+      } catch (final XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse generator run information configuration: ", e);
       }
 
@@ -171,17 +171,17 @@ public class ScenarioParser {
       AbstractMessageGenerator generator = null;
 
       try {
-         Element generatorElement = (Element) (xPathEvaluate("generator", scenarioNode).item(0));
+         final Element generatorElement = (Element) (xPathEvaluate("generator", scenarioNode).item(0));
          String generatorClass = generatorElement.getAttribute("class");
          if (generatorClass.indexOf(".") < 0) {
             generatorClass = DEFAULT_GENERATOR_PACKAGE + "." + generatorClass;
          }
          log.info("--- Generator (" + generatorClass + ") ---");
 
-         int threads = Integer.valueOf(generatorElement.getAttribute("threads"));
+         final int threads = Integer.valueOf(generatorElement.getAttribute("threads"));
          log.info("  threads=" + threads);
 
-         Properties generatorProperties = getPropertiesFromSubNodes(generatorElement);
+         final Properties generatorProperties = getPropertiesFromSubNodes(generatorElement);
          Utils.logProperties(log, Level.DEBUG, generatorProperties, "   ");
 
          generator = (AbstractMessageGenerator) ObjectFactory.summonInstance(generatorClass, generatorProperties);
@@ -208,23 +208,23 @@ public class ScenarioParser {
       MessageSenderManager msm;
 
       try {
-         Element senderElement = (Element) (xPathEvaluate("sender", scenarioNode).item(0));
+         final Element senderElement = (Element) (xPathEvaluate("sender", scenarioNode).item(0));
          String senderClass = senderElement.getAttribute("class");
          if (senderClass.indexOf(".") < 0) {
             senderClass = DEFAULT_SENDER_PACKAGE + "." + senderClass;
          }
          log.info("--- Sender (" + senderClass + ") ---");
 
-         Properties senderProperties = getPropertiesFromSubNodes(senderElement);
+         final Properties senderProperties = getPropertiesFromSubNodes(senderElement);
          Utils.logProperties(log, Level.DEBUG, senderProperties, "   ");
 
          msm = new MessageSenderManager();
          msm.setSenderClass(senderClass);
          msm.setSenderPoolSize(senderPoolSize);
-         for (Entry<Object, Object> sProperty : senderProperties.entrySet()) {
+         for (final Entry<Object, Object> sProperty : senderProperties.entrySet()) {
             msm.setMessageSenderProperty(sProperty.getKey(), sProperty.getValue());
          }
-      } catch (XPathExpressionException e) {
+      } catch (final XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse message sender manager configuration: ", e);
       }
 
@@ -245,13 +245,13 @@ public class ScenarioParser {
     * @throws FileNotFoundException
     */
    public List<MessageTemplate> parseMessages() throws PerfCakeException {
-      List<MessageTemplate> messageStore = new ArrayList<>();
+      final List<MessageTemplate> messageStore = new ArrayList<>();
 
       try {
-         Element messagesElement = (Element) (xPathEvaluate("messages", scenarioNode)).item(0);
+         final Element messagesElement = (Element) (xPathEvaluate("messages", scenarioNode)).item(0);
          if (messagesElement != null) {
-            NodeList messageNodes = xPathEvaluate("message", messagesElement);
-            int messageNodesCount = messageNodes.getLength();
+            final NodeList messageNodes = xPathEvaluate("message", messagesElement);
+            final int messageNodesCount = messageNodes.getLength();
             Message currentMessage = null;
             MessageTemplate currentMessageToSend = null;
             Element currentMessageElement = null;
@@ -265,7 +265,7 @@ public class ScenarioParser {
             // File messagesDir = new File(Utils.getProperty("perfcake.messages.dir", Utils.resourcesDir.getAbsolutePath() + "/messages"));
             for (int messageNodeIndex = 0; messageNodeIndex < messageNodesCount; messageNodeIndex++) {
                currentMessageElement = (Element) messageNodes.item(messageNodeIndex);
-               URL messageUrl = Utils.locationToUrl(currentMessageElement.getAttribute("uri"), "perfcake.messages.dir", Utils.determineDefaultLocation("messages"), "");
+               final URL messageUrl = Utils.locationToUrl(currentMessageElement.getAttribute("uri"), "perfcake.messages.dir", Utils.determineDefaultLocation("messages"), "");
                currentMessagePayload = Utils.readFilteredContent(messageUrl);
                currentMessageProperties = getPropertiesFromSubNodes(currentMessageElement);
                currentMessageHeaders = getPropertiesFromSubNodes(currentMessageElement, "header", "name", "value");
@@ -281,10 +281,10 @@ public class ScenarioParser {
                   currentMessageMultiplicity = Long.valueOf(currentMessageMultiplicityAttributeValue);
                }
 
-               NodeList currentMessageValidatorRefNodeList = xPathEvaluate("validatorRef", currentMessageElement);
-               List<String> currentMessageValidatorRefList = new LinkedList<>();
+               final NodeList currentMessageValidatorRefNodeList = xPathEvaluate("validatorRef", currentMessageElement);
+               final List<String> currentMessageValidatorRefList = new LinkedList<>();
                Element currentMessageValidatorRefElement = null;
-               int validatorRefCount = currentMessageValidatorRefNodeList.getLength();
+               final int validatorRefCount = currentMessageValidatorRefNodeList.getLength();
                for (int validatorRefIndex = 0; validatorRefIndex < validatorRefCount; validatorRefIndex++) {
                   currentMessageValidatorRefElement = (Element) currentMessageValidatorRefNodeList.item(validatorRefIndex);
                   currentMessageValidatorRefList.add(currentMessageValidatorRefElement.getAttribute("id"));
@@ -304,9 +304,9 @@ public class ScenarioParser {
                messageStore.add(currentMessageToSend);
             }
          }
-      } catch (XPathExpressionException e) {
+      } catch (final XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse messages configuration: ", e);
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException("Cannot read messages content: ", e);
       }
       return messageStore;
@@ -325,18 +325,18 @@ public class ScenarioParser {
     * @throws ClassNotFoundException
     */
    public ReportManager parseReporting() throws PerfCakeException {
-      ReportManager reportManager = new ReportManager();
+      final ReportManager reportManager = new ReportManager();
 
       try {
          log.info("--- Reporting ---");
-         Element reportingElement = (Element) (xPathEvaluate("reporting", scenarioNode).item(0));
-         Properties reportingProperties = getPropertiesFromSubNodes(reportingElement);
+         final Element reportingElement = (Element) (xPathEvaluate("reporting", scenarioNode).item(0));
+         final Properties reportingProperties = getPropertiesFromSubNodes(reportingElement);
          Utils.logProperties(log, Level.DEBUG, reportingProperties, "   ");
 
          ObjectFactory.setPropertiesOnObject(reportManager, reportingProperties);
 
-         NodeList reporterNodes = xPathEvaluate("reporter", reportingElement);
-         int reporterNodesCount = reporterNodes.getLength();
+         final NodeList reporterNodes = xPathEvaluate("reporter", reportingElement);
+         final int reporterNodesCount = reporterNodes.getLength();
          Reporter currentReporter = null;
          Element currentReporterElement = null;
          Properties currentReporterProperties = null;
@@ -353,7 +353,7 @@ public class ScenarioParser {
 
             log.info("'- Reporter (" + reportClass + ")");
             currentReporterDestinations = xPathEvaluate("destination", currentReporterElement);
-            int currentReporterDestinationsCount = currentReporterDestinations.getLength();
+            final int currentReporterDestinationsCount = currentReporterDestinations.getLength();
             Destination currentDestination = null;
             Element currentDestinationElement = null;
             Properties currentDestinationProperties = null;
@@ -371,7 +371,7 @@ public class ScenarioParser {
                currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
                currentDestinationPeriodsAsProperties = getPropertiesFromSubNodes(currentDestinationElement, "period", "type", "value");
                currentDestinationPeriodSet = new HashSet<>();
-               for (Entry<Object, Object> entry : currentDestinationPeriodsAsProperties.entrySet()) {
+               for (final Entry<Object, Object> entry : currentDestinationPeriodsAsProperties.entrySet()) {
                   currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(((String) entry.getKey()).toUpperCase()), Long.valueOf(entry.getValue().toString())));
                }
                currentReporter.registerDestination(currentDestination, currentDestinationPeriodSet);
@@ -385,19 +385,21 @@ public class ScenarioParser {
       return reportManager;
    }
 
-   public void parseValidation() throws PerfCakeException {
+   public ValidatorManager parseValidation() throws PerfCakeException {
+      final ValidatorManager validatorManager = new ValidatorManager();
+
       log.info("--- Validation ---");
       try {
 
-         Element validationElement = (Element) (xPathEvaluate("validation", scenarioNode)).item(0);
+         final Element validationElement = (Element) (xPathEvaluate("validation", scenarioNode)).item(0);
          if (validationElement != null) {
-            NodeList validatorNodes = xPathEvaluate("validator", validationElement);
+            final NodeList validatorNodes = xPathEvaluate("validator", validationElement);
             Element validatorElement = null;
 
             String validatorId = null;
             String validatorClass = null;
 
-            int validatorNodesCount = validatorNodes.getLength();
+            final int validatorNodesCount = validatorNodes.getLength();
 
             for (int i = 0; i < validatorNodesCount; i++) {
                validatorElement = (Element) validatorNodes.item(i);
@@ -407,23 +409,25 @@ public class ScenarioParser {
                   validatorClass = DEFAULT_VALIDATION_PACKAGE + "." + validatorClass;
                }
 
-               MessageValidator messageValidator = (MessageValidator) Class.forName(validatorClass, false, ScenarioExecution.class.getClassLoader()).newInstance();
+               final MessageValidator messageValidator = (MessageValidator) Class.forName(validatorClass, false, ScenarioExecution.class.getClassLoader()).newInstance();
                messageValidator.setAssertions(validatorNodes.item(i), "1");// add validator to validator mgr coll
 
-               ValidatorManager.addValidator(validatorId, messageValidator);
-               ValidatorManager.setEnabled(true);
+               validatorManager.addValidator(validatorId, messageValidator);
+               validatorManager.setEnabled(true);
             }
          }
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse validation configuration: ", e);
       }
+
+      return validatorManager;
    }
 
    public Properties parseScenarioProperties() throws PerfCakeException {
       log.info("--- Scenario properties ---");
       try {
          return getPropertiesFromSubNodes(xPathEvaluate("properties", scenarioNode).item(0));
-      } catch (XPathExpressionException e) {
+      } catch (final XPathExpressionException e) {
          throw new PerfCakeException("Cannot parse scenario properties configuration: ", e);
       }
    }
@@ -456,9 +460,9 @@ public class ScenarioParser {
     * @throws XPathExpressionException
     */
    private static Properties getPropertiesFromSubNodes(final Node node, final String propertyTagNameAttribute, final String propertyNameAttribute, final String propertyValueAttribute) throws XPathExpressionException {
-      Properties properties = new Properties();
-      NodeList propertyNodes = xPathEvaluate(propertyTagNameAttribute, node);
-      int propertyNodesCount = propertyNodes.getLength();
+      final Properties properties = new Properties();
+      final NodeList propertyNodes = xPathEvaluate(propertyTagNameAttribute, node);
+      final int propertyNodesCount = propertyNodes.getLength();
       Element currentPropertyElement = null;
       for (int i = 0; i < propertyNodesCount; i++) {
          currentPropertyElement = (Element) propertyNodes.item(i);

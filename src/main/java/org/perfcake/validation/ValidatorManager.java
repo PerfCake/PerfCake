@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,39 +35,36 @@ import org.w3c.dom.Node;
  */
 public class ValidatorManager {
 
-   private static TreeMap<String, MessageValidator> validators = new TreeMap<>();
+   private final TreeMap<String, MessageValidator> validators = new TreeMap<>();
 
-   private static boolean finished = false;
+   private boolean finished = false;
 
-   private static boolean allMessagesValid = true;
+   private boolean allMessagesValid = true;
 
-   private static boolean enabled = false;
+   private boolean enabled = false;
 
-   private static final Logger log = Logger.getLogger(ScenarioExecution.class);
+   private final Logger log = Logger.getLogger(ScenarioExecution.class);
 
-   private static Queue<ReceivedMessage> resultMessages = new FileQueue<ReceivedMessage>("target/messagesQueue");
+   private final Queue<ReceivedMessage> resultMessages = new FileQueue<ReceivedMessage>("target/messagesQueue");
 
-   public static void setFinished(final boolean finished) {
-      ValidatorManager.finished = finished;
+   public void setFinished(final boolean finished) {
+      this.finished = finished;
    }
 
-   public static void addValidator(final String validatorId, final MessageValidator messageValidator) {
+   public void addValidator(final String validatorId, final MessageValidator messageValidator) {
       validators.put(validatorId, messageValidator);
    }
 
-   public static MessageValidator getValidator(final String validatorId) {
+   public MessageValidator getValidator(final String validatorId) {
       return validators.get(validatorId);
    }
 
-   public static void startValidation() {
-      Thread t = new Thread(new ValidationThread());
+   public void startValidation() {
+      final Thread t = new Thread(new ValidationThread());
       t.start();
    }
 
-   private static class ValidationThread implements Runnable {
-
-      public ValidationThread() {
-      }
+   private class ValidationThread implements Runnable {
 
       @Override
       public void run() {
@@ -84,8 +81,8 @@ public class ValidatorManager {
          receivedMessage = resultMessages.poll();
          while (!finished || receivedMessage != null) {
             while (receivedMessage != null) {
-               for (String validatorId : receivedMessage.getSentMessage().getValidatorIdList()) {
-                  validator = ValidatorManager.getValidator(validatorId);
+               for (final String validatorId : receivedMessage.getSentMessage().getValidatorIdList()) {
+                  validator = getValidator(validatorId);
                   // verify
                   if (validator != null) {
                      isMessageValid = validator.isValid(new Message(receivedMessage.getPayload()));
@@ -101,7 +98,7 @@ public class ValidatorManager {
             }
             try {
                Thread.sleep(500);
-            } catch (InterruptedException ex) {
+            } catch (final InterruptedException ex) {
                Logger.getLogger(ScenarioExecution.class.getName()).log(Level.ERROR, null, ex);
             }
             receivedMessage = resultMessages.poll();
@@ -112,24 +109,24 @@ public class ValidatorManager {
       }
    }
 
-   public static void addToResultMessages(final ReceivedMessage receivedMessage) {
+   public void addToResultMessages(final ReceivedMessage receivedMessage) {
       resultMessages.add(receivedMessage);
    }
 
-   public static int getSize() {
+   public int getSize() {
       return resultMessages.size();
    }
 
-   public static void setAssertionsToValidator(final String classname, final Node validation, final String msgId) {
+   public void setAssertionsToValidator(final String classname, final Node validation, final String msgId) {
 
    }
 
-   public static boolean isEnabled() {
+   public boolean isEnabled() {
       return enabled;
    }
 
-   public static void setEnabled(final boolean enabled) {
-      ValidatorManager.enabled = enabled;
+   public void setEnabled(final boolean enabled) {
+      this.enabled = enabled;
    }
 
 }
