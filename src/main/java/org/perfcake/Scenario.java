@@ -111,6 +111,7 @@ public class Scenario {
       messageSenderManager.setReportManager(reportManager);
       generator.setReportManager(reportManager);
       generator.setValidatorManager(validatorManager);
+
       try {
          generator.init(messageSenderManager, messageStore);
       } catch (final Exception e) {
@@ -128,9 +129,8 @@ public class Scenario {
          log.trace("Running scenario...");
       }
 
-      if (validatorManager.isEnabled()) {
-         validatorManager.startValidation();
-      }
+      validatorManager.startValidation();
+
       try {
          generator.generate();
       } catch (final Exception e) {
@@ -147,7 +147,12 @@ public class Scenario {
       if (generator != null) {
          generator.close();
       }
-      validatorManager.setFinished(true);
+
+      try {
+         validatorManager.waitForValidation();
+      } catch (final InterruptedException ie) {
+         throw new PerfCakeException("Could not finish messages response validation properly: ", ie);
+      }
 
       if (log.isTraceEnabled()) {
          log.trace("Scenario finished successfully!");

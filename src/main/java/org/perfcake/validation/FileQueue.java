@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,6 @@
 package org.perfcake.validation;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
@@ -35,12 +34,16 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
+import org.perfcake.PerfCakeException;
+
 /**
- * FileQueue is persistent queue, which stores its items to specified file
+ * FileQueue is a persistent queue, which stores its items to specified file
  * 
  * @author Pavel Drozd <ravliv7@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class FileQueue<T extends Serializable> implements Queue<T> {
+
    public static final int EMPTY_POINTER = -1;
 
    public static final int LONG_SIZE = 8;
@@ -59,10 +62,14 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
 
    private long queueSize = 0;
 
-   public FileQueue(final String filename) {
+   public FileQueue(final String filename) throws PerfCakeException {
+      this(new File(filename));
+   }
+
+   public FileQueue(final File queueFile) throws PerfCakeException {
       try {
-         boolean fileExists = new File(filename).exists();
-         file = new RandomAccessFile(filename, "rw");
+         final boolean fileExists = queueFile.exists();
+         file = new RandomAccessFile(queueFile.getAbsolutePath(), "rw");
          if (fileExists) {
             queueSize = file.readLong();
             pointer = file.readLong();
@@ -70,11 +77,10 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
             file.writeLong(queueSize);
             file.writeLong(pointer);
          }
-      } catch (FileNotFoundException e) {
-         throw new RuntimeException(e);
-      } catch (IOException e) {
-         throw new RuntimeException(e);
+      } catch (final RuntimeException | IOException e) {
+         throw new PerfCakeException("Cannot create and open a file queue: ", e);
       }
+
       channel = file.getChannel();
       inputStream = Channels.newInputStream(channel);
       outputStream = Channels.newOutputStream(channel);
@@ -86,7 +92,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
          synchronized (this) {
             channel.position(channel.size());
             // write object to file
-            ObjectOutputStream s = new ObjectOutputStream(outputStream);
+            final ObjectOutputStream s = new ObjectOutputStream(outputStream);
             s.writeObject(item);
             s.flush();
 
@@ -99,7 +105,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
             }
             return true;
          }
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new RuntimeException(e);
       }
    }
@@ -125,7 +131,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
          pointer = EMPTY_POINTER;
          queueSize = 0;
          file.setLength(HEADER_SIZE);
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new RuntimeException(e);
       }
    }
@@ -138,14 +144,14 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
             pointer = file.readLong();
             return pointer == EMPTY_POINTER;
          }
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new RuntimeException(e);
       }
    }
 
    @Override
    public boolean addAll(final Collection<? extends T> c) {
-      for (T item : c) {
+      for (final T item : c) {
          add(item);
       }
       return true;
@@ -158,7 +164,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
 
    @Override
    public T remove() {
-      T item = poll();
+      final T item = poll();
       if (item != null) {
          return item;
       }
@@ -170,7 +176,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
       try {
          synchronized (this) {
             if (pointer != EMPTY_POINTER) {
-               T result = getItem();
+               final T result = getItem();
                pointer = channel.position();
                file.seek(0);
                if (pointer == channel.size()) {
@@ -183,7 +189,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
             }
          }
          return null;
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new RuntimeException(e);
       }
    }
@@ -205,9 +211,9 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
             channel.position(pointer);
             return (T) new ObjectInputStream(inputStream).readObject();
          }
-      } catch (ClassNotFoundException e) {
+      } catch (final ClassNotFoundException e) {
          throw new RuntimeException(e);
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new RuntimeException(e);
       }
    }
@@ -228,7 +234,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
    }
 
    @Override
-   public <T> T[] toArray(final T[] a) {
+   public <U> U[] toArray(final U[] a) {
       throw new UnsupportedOperationException();
    }
 

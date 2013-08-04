@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,12 +50,8 @@ public class RulesMessageValidator implements MessageValidator {
 
    private static String validatorDSL = "messageValidator.dsl";
 
-   public RulesMessageValidator() {
-
-   }
-
    @Override
-   public void validate(final Message message) throws ValidationException {
+   public boolean isValid(final Message message) {
       HashMap<Integer, String> assertions;
       final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
       assertions = assertionsMap.get("1");
@@ -64,7 +60,7 @@ public class RulesMessageValidator implements MessageValidator {
       ruleBase.addPackage(pkg);
       final StatefulSession session = ruleBase.newStatefulSession();
 
-      Map<Integer, String> assertionsCopy = new HashMap<>();
+      final Map<Integer, String> assertionsCopy = new HashMap<>();
       assertionsCopy.putAll(assertions);
 
       session.setGlobal("rulesUsed", assertionsCopy);
@@ -73,7 +69,7 @@ public class RulesMessageValidator implements MessageValidator {
       session.fireAllRules();
       session.dispose();
 
-      for (Integer i : assertionsCopy.keySet()) {
+      for (final Integer i : assertionsCopy.keySet()) {
          if (log.isEnabledFor(Level.ERROR)) {
             log.error("failed assertion: " + assertionsCopy.get(i));
          }
@@ -81,28 +77,20 @@ public class RulesMessageValidator implements MessageValidator {
 
       if (!assertionsCopy.isEmpty()) {
          if (log.isEnabledFor(Level.ERROR)) {
+            // TODO log more verbose message at warn/info/debug levels
             log.error("Message is not valid");
          }
-         throw new ValidationException("Message is not valid: " + message);
+         return false;
       }
-   }
 
-   @Override
-   public boolean isValid(final Message message) {
-      boolean v = true;
-      try {
-         validate(message);
-      } catch (ValidationException e) {
-         v = false;
-      }
-      return v;
+      return true;
    }
 
    @Override
    public void setAssertions(final Node validationNode, final String msgId) {
-      HashMap<Integer, String> assertions = new HashMap<>();
+      final HashMap<Integer, String> assertions = new HashMap<>();
       try {
-         BufferedReader br = new BufferedReader(new StringReader(validationNode.getTextContent()));
+         final BufferedReader br = new BufferedReader(new StringReader(validationNode.getTextContent()));
          int lineNo = 0;
          String line;
 
@@ -121,14 +109,14 @@ public class RulesMessageValidator implements MessageValidator {
             try {
                pkg = RulesBuilder.build(assertions, validatorDSL);
                this.packagesMap.put("1", pkg);
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                if (log.isEnabledFor(Level.ERROR)) {
                   log.error("Rule building exception, " + ex.getMessage());
                }
             }
          }
 
-      } catch (IOException ex) {
+      } catch (final IOException ex) {
          java.util.logging.Logger.getLogger(RulesMessageValidator.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
       }
    }
