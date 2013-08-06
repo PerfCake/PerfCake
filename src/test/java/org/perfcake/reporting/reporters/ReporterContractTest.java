@@ -34,8 +34,6 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.reporting.destinations.DummyDestination.ReportAssert;
-import org.perfcake.reporting.reporters.ResponseTimeReporter;
-import org.perfcake.reporting.reporters.WindowResponseTimeReporter;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

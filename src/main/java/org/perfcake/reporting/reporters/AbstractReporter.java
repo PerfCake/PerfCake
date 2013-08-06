@@ -289,29 +289,32 @@ public abstract class AbstractReporter implements Reporter {
       periodicThread = new Thread(new Runnable() {
          @Override
          public void run() {
-            long lastTime = System.currentTimeMillis();
             long now;
-            boolean reported;
+            Long lastTime;
+            Destination d;
+            Map<Destination, Long> lastTimes = new HashMap<>();
 
             try {
                while (runInfo.isRunning() && !periodicThread.isInterrupted()) {
-                  reported = false;
                   now = System.currentTimeMillis();
 
                   for (final BoundPeriod<Destination> p : periods) {
-                     if (p.getPeriodType() == PeriodType.TIME && lastTime + p.getPeriod() < now && runInfo.getIteration() >= 0) {
-                        reported = true;
+                     d = p.getBinding();
+                     lastTime = lastTimes.get(d);
 
+                     if (lastTime == null) {
+                        lastTime = now;
+                        lastTimes.put(d, lastTime);
+                     }
+
+                     if (p.getPeriodType() == PeriodType.TIME && lastTime + p.getPeriod() < now && runInfo.getIteration() >= 0) {
+                        lastTimes.put(d, now);
                         try {
-                           doPublishResult(PeriodType.TIME, p.getBinding());
+                           doPublishResult(PeriodType.TIME, d);
                         } catch (final ReportingException e) {
                            log.warn("Unable to publish result: ", e);
                         }
                      }
-                  }
-
-                  if (reported) {
-                     lastTime = now;
                   }
 
                   Thread.sleep(500);
