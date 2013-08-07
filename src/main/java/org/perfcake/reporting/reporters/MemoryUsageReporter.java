@@ -25,8 +25,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
@@ -51,7 +49,6 @@ import org.perfcake.util.agent.PerfCakeAgent.Memory;
 public class MemoryUsageReporter extends AbstractReporter {
 
    private static final long BYTES_IN_MIB = 1_048_576L;
-   private static final NumberFormat numberFormat = new DecimalFormat("0.00");
 
    /**
     * The reporter's logger.
@@ -95,7 +92,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     */
    @SuppressWarnings("rawtypes")
    @Override
-   protected Accumulator getAccumulator(String key, Class clazz) {
+   protected Accumulator getAccumulator(final String key, final Class clazz) {
       return new LastValueAccumulator();
    }
 
@@ -165,9 +162,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    @Override
    protected void doPublishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       try {
-         Measurement m = new Measurement((long) runInfo.getPercentage(), runInfo.getRunTime(), runInfo.getIteration());
-         long used = getMemoryUsage(Memory.USED);
-         // m.set(new Quantity<Number>((double) used / BYTES_IN_MIB, "MiB"));
+         Measurement m = newMeasurement();
          m.set("Used", (new Quantity<Number>((double) getMemoryUsage(Memory.USED) / BYTES_IN_MIB, "MiB")));
          m.set("Total", (new Quantity<Number>((double) getMemoryUsage(Memory.TOTAL) / BYTES_IN_MIB, "MiB")));
          m.set("Max", (new Quantity<Number>((double) getMemoryUsage(Memory.MAX) / BYTES_IN_MIB, "MiB")));

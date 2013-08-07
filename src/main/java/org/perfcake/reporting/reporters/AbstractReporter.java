@@ -99,6 +99,15 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    /**
+    * Gets a new measurement pre-filled with values from current run info.
+    * 
+    * @return The new measurement with current values from run info.
+    */
+   public Measurement newMeasurement() {
+      return new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
+   }
+
+   /**
     * Gets a value of an accumulated result.
     * 
     * @param key
