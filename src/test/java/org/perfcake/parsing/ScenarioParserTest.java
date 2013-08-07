@@ -7,6 +7,7 @@ import java.util.Properties;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
+import org.perfcake.ScenarioFactory;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
@@ -25,7 +26,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 public class ScenarioParserTest {
-   private ScenarioParser scenarioParser, noValidationScenarioParser, noMessagesScenarioParser;
+   private ScenarioFactory scenarioFactory, noValidationScenarioFactory, noMessagesScenarioFactory;
 
    private static final int THREADS = 10;
    private static final int MIN_WARMUP_COUNT = 12345;
@@ -42,15 +43,15 @@ public class ScenarioParserTest {
    public void prepareScenarioParser() throws PerfCakeException, URISyntaxException, IOException {
       System.setProperty("perfcake.messages.dir", getClass().getResource("/messages").getPath());
       System.setProperty("test.filtered.property", FILTERED_PROPERTY_VALUE);
-      scenarioParser = new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml"));
-      noValidationScenarioParser = new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-validation.xml"));
-      noMessagesScenarioParser = new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-messages.xml"));
+      scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
+      noValidationScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-validation.xml")).parse());
+      noMessagesScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-messages.xml")).parse());
    }
 
    @Test
    public void parseScenarioPropertiesTest() {
       try {
-         Properties scenarioProperties = scenarioParser.parseScenarioProperties();
+         Properties scenarioProperties = scenarioFactory.parseScenarioProperties();
          Assert.assertEquals(scenarioProperties.get("quickstartName"), "testQS", "quickstartName property");
          Assert.assertEquals(scenarioProperties.get("filteredProperty"), FILTERED_PROPERTY_VALUE, "filteredProperty property");
          Assert.assertEquals(scenarioProperties.get("defaultProperty"), DEFAULT_PROPERTY_VALUE, "defaultProperty property");
@@ -63,7 +64,7 @@ public class ScenarioParserTest {
    @Test
    public void parseSenderTest() {
       try {
-         MessageSenderManager senderManager = scenarioParser.parseSender(THREADS);
+         MessageSenderManager senderManager = scenarioFactory.parseSender(THREADS);
          Assert.assertEquals(senderManager.getSenderClass(), SENDER_CLASS, "senderClass");
          Assert.assertEquals(senderManager.getSenderPoolSize(), THREADS, "senderPoolSize");
          // TODO: add assertions on a sender
@@ -76,7 +77,7 @@ public class ScenarioParserTest {
    @Test
    public void parseGeneratorTest() {
       try {
-         AbstractMessageGenerator generator = scenarioParser.parseGenerator();
+         AbstractMessageGenerator generator = scenarioFactory.parseGenerator();
          Assert.assertTrue(generator instanceof LongtermMessageGenerator, "The generator is not an instance of " + LongtermMessageGenerator.class.getName());
          LongtermMessageGenerator lmg = (LongtermMessageGenerator) generator;
          lmg.setRunInfo(new RunInfo(new Period(PeriodType.TIME, 30L)));
@@ -97,7 +98,7 @@ public class ScenarioParserTest {
    public void parseMessagesTest() {
       try {
          // Message store
-         List<MessageTemplate> messageStore = scenarioParser.parseMessages();
+         List<MessageTemplate> messageStore = scenarioFactory.parseMessages();
          Assert.assertEquals(messageStore.size(), 2);
 
          // Message 1
@@ -142,7 +143,7 @@ public class ScenarioParserTest {
          Assert.assertEquals(validatorIdList2.get(0), FISH_VALIDATOR_ID, "message2 fishValidatorId");
 
          // Messages section is optional
-         List<MessageTemplate> emptyMessageStore = noMessagesScenarioParser.parseMessages();
+         List<MessageTemplate> emptyMessageStore = noMessagesScenarioFactory.parseMessages();
          Assert.assertTrue(emptyMessageStore.isEmpty(), "empty message store with no messages in scenario");
 
       } catch (PerfCakeException e) {
@@ -154,7 +155,7 @@ public class ScenarioParserTest {
    @Test
    public void parseReportingTest() {
       try {
-         ReportManager reportManager = scenarioParser.parseReporting();
+         ReportManager reportManager = scenarioFactory.parseReporting();
          Assert.assertNotNull(reportManager);
          Assert.assertEquals(reportManager.getReporters().size(), 1, "reportManager's number of reporters");
          Reporter reporter = reportManager.getReporters().toArray(new Reporter[0])[0];
@@ -191,11 +192,11 @@ public class ScenarioParserTest {
    @Test
    public void parseValidationTest() {
       try {
-         scenarioParser.parseValidation();
+         scenarioFactory.parseValidation();
          // TODO: add assertions on validation
 
          // validation is optional
-         noValidationScenarioParser.parseValidation();
+         noValidationScenarioFactory.parseValidation();
       } catch (PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());

@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.model.ScenarioModel;
 import org.perfcake.parser.ScenarioParser;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.util.Utils;
@@ -70,6 +71,7 @@ public class Scenario {
       }
 
       log.info("Scenario configuration: " + scenarioUrl.toString());
+      parse();
    }
 
    /**
@@ -83,15 +85,15 @@ public class Scenario {
          log.trace("Parsing scenario " + scenarioUrl.toString());
       }
 
-      ScenarioParser parser = new ScenarioParser(scenarioUrl);
-      generator = parser.parseGenerator();
-      runInfo = parser.parseRunInfo();
+      ScenarioFactory sf = new ScenarioFactory(new ScenarioParser(scenarioUrl).parse());
+      generator = sf.parseGenerator();
+      runInfo = sf.parseRunInfo();
       generator.setRunInfo(runInfo);
-      messageSenderManager = parser.parseSender(generator.getThreads());
-      reportManager = parser.parseReporting();
+      messageSenderManager = sf.parseSender(generator.getThreads());
+      reportManager = sf.parseReporting();
       reportManager.setRunInfo(runInfo);
-      messageStore = parser.parseMessages();
-      parser.parseValidation();
+      messageStore = sf.parseMessages();
+      sf.parseValidation();
    }
 
    /**

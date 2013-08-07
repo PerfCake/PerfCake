@@ -36,7 +36,6 @@ public class ScenarioExecution {
 
       try {
          scenario = new Scenario(Utils.getProperty("scenario"));
-         scenario.parse();
       } catch (PerfCakeException e) {
          log.fatal("Cannot parse scenario: ", e);
          return;
