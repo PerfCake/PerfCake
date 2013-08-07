@@ -95,6 +95,10 @@ public class CSVDestination implements Destination {
     */
    @Override
    public void report(final Measurement m) throws ReportingException {
+      if (log.isDebugEnabled()){
+         log.debug("Reporting measurement: " + m);
+      }
+
       StringBuffer sb = new StringBuffer();
       if (csvFile == null) {
          csvFile = new File(path);
@@ -149,6 +153,9 @@ public class CSVDestination implements Destination {
       }
 
       try (BufferedWriter bw = new BufferedWriter(new FileWriter(csvFile, true))) {
+         if (log.isDebugEnabled()){
+            log.debug("Appending \"" + sb.toString() + "\" to the output file (" + csvFile.getAbsolutePath() + ")");
+         }
          bw.append(sb.toString());
          bw.newLine();
       } catch (IOException ioe) {
