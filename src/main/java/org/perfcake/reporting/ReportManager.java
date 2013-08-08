@@ -21,9 +21,9 @@ package org.perfcake.reporting;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.log4j.Logger;
-import org.hornetq.utils.ConcurrentHashSet;
 import org.perfcake.RunInfo;
 import org.perfcake.reporting.reporters.Reporter;
 
@@ -40,7 +40,7 @@ public class ReportManager {
    /**
     * Set of reporters registered for reporting.
     */
-   private final Set<Reporter> reporters = new ConcurrentHashSet<>();
+   private final Set<Reporter> reporters = new CopyOnWriteArraySet<>();
 
    /**
     * Current run info to control the measurement.

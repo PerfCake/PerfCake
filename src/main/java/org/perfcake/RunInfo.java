@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
-import org.xnio.channels.UnsupportedOptionException;
 
 /**
  * Information about the current scenario run.
@@ -171,7 +170,7 @@ public class RunInfo {
             progress = getRunTime();
             break;
          default:
-            throw new UnsupportedOptionException("Detected unsupported ReportPeriod type.");
+            throw new IllegalArgumentException("Detected unsupported ReportPeriod type.");
       }
 
       return (progress / duration.getPeriod()) * 100;
