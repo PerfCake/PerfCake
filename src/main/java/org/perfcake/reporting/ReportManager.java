@@ -20,11 +20,16 @@
 package org.perfcake.reporting;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hornetq.utils.ConcurrentHashSet;
 import org.perfcake.RunInfo;
+import org.perfcake.common.BoundPeriod;
+import org.perfcake.common.PeriodType;
+import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
 
 /**
@@ -46,6 +51,11 @@ public class ReportManager {
     * Current run info to control the measurement.
     */
    private RunInfo runInfo;
+
+   /**
+    * Thread to assure time based periodical reporting.
+    */
+   private Thread periodicThread;
 
    /**
     * Create a new measurement unit with a unique iteration number.
@@ -179,6 +189,60 @@ public class ReportManager {
       for (final Reporter r : reporters) {
          r.start();
       }
+
+      periodicThread = new Thread(new Runnable() {
+         @Override
+         public void run() {
+            long now;
+            Long lastTime;
+            Destination d;
+            Map<Reporter, Map<Destination, Long>> reportLastTimes = new HashMap<>();
+            Map<Destination, Long> lastTimes = new HashMap<>();
+
+            try {
+               while (runInfo.isRunning() && !periodicThread.isInterrupted()) {
+                  now = System.currentTimeMillis();
+
+                  for (Reporter r : reporters) {
+                     lastTimes = reportLastTimes.get(r);
+
+                     if (lastTimes == null) {
+                        lastTimes = new HashMap<>();
+                        reportLastTimes.put(r, lastTimes);
+                     }
+
+                     for (final BoundPeriod<Destination> p : r.getReportingPeriods()) {
+                        d = p.getBinding();
+                        lastTime = lastTimes.get(d);
+
+                        if (lastTime == null) {
+                           lastTime = now;
+                           lastTimes.put(d, lastTime);
+                        }
+
+                        if (p.getPeriodType() == PeriodType.TIME && lastTime + p.getPeriod() < now && runInfo.getIteration() >= 0) {
+                           lastTimes.put(d, now);
+                           try {
+                              r.publishResult(PeriodType.TIME, d);
+                           } catch (final ReportingException e) {
+                              log.warn("Unable to publish result: ", e);
+                           }
+                        }
+                     }
+                  }
+
+                  Thread.sleep(500);
+               }
+            } catch (final InterruptedException e) {
+               // this means our job is done
+            }
+            if (log.isDebugEnabled()) {
+               log.debug("Gratefully terminating the periodic reporting thread.");
+            }
+         }
+      });
+      periodicThread.setDaemon(true); // allow the thread to die with JVM termination and do not block it
+      periodicThread.start();
    }
 
    /**
@@ -189,11 +253,16 @@ public class ReportManager {
          log.debug("Stopping reporting and all reporters.");
       }
 
-      runInfo.stop();
-
       for (final Reporter r : reporters) {
          r.stop();
       }
+
+      if (periodicThread != null) {
+         periodicThread.interrupt();
+      }
+      periodicThread = null;
+
+      runInfo.stop();
    }
 
 }

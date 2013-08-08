@@ -160,7 +160,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * @see org.perfcake.nreporting.reporters.AbstractReporter#doPublishResult(org.perfcake.common.PeriodType, org.perfcake.nreporting.destinations.Destination)
     */
    @Override
-   protected void doPublishResult(final PeriodType periodType, final Destination d) throws ReportingException {
+   public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       try {
          Measurement m = newMeasurement();
          m.set("Used", (new Quantity<Number>((double) getMemoryUsage(Memory.USED) / BYTES_IN_MIB, "MiB")));

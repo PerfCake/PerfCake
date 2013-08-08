@@ -24,6 +24,7 @@ import java.util.Set;
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
+import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
@@ -70,6 +71,17 @@ public interface Reporter {
     *           The period interval in which the destination should publish results
     */
    public void registerDestination(Destination d, Period p);
+
+   /**
+    * Publishes results to the destination. This method is called only when the results should be published.
+    * 
+    * @param periodType
+    *           A period type that caused the invocation of this method.
+    * @param d
+    *           A destination to which the result should be reported.
+    * @throws ReportingException
+    */
+   public void publishResult(PeriodType periodType, Destination d) throws ReportingException;
 
    /**
     * Registers a destination to receive resulting {@link org.perfcake.reporting.Measurement Measurements} in

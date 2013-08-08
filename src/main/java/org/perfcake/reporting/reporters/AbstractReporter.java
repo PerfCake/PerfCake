@@ -59,11 +59,6 @@ public abstract class AbstractReporter implements Reporter {
    protected RunInfo runInfo = null;
 
    /**
-    * Thread to assure time based periodical reporting.
-    */
-   private Thread periodicThread;
-
-   /**
     * Set of periods bound to destinations. This is used to register destinations and requested reporting periods.
     */
    private final Set<BoundPeriod<Destination>> periods = new HashSet<>();
@@ -179,7 +174,7 @@ public abstract class AbstractReporter implements Reporter {
    private void reportIterations(final long iteration) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
          if (bp.getPeriodType() == PeriodType.ITERATION && (iteration == 0 || (iteration + 1) % bp.getPeriod() == 0)) {
-            doPublishResult(PeriodType.ITERATION, bp.getBinding());
+            publishResult(PeriodType.ITERATION, bp.getBinding());
          }
       }
    }
@@ -194,7 +189,7 @@ public abstract class AbstractReporter implements Reporter {
    private void reportPercentage(final long percentage) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
          if (bp.getPeriodType() == PeriodType.PERCENTAGE && percentage % bp.getPeriod() == 0) {
-            doPublishResult(PeriodType.PERCENTAGE, bp.getBinding());
+            publishResult(PeriodType.PERCENTAGE, bp.getBinding());
          }
       }
    }
@@ -259,17 +254,6 @@ public abstract class AbstractReporter implements Reporter {
     */
    abstract protected void doReport(MeasurementUnit mu) throws ReportingException;
 
-   /**
-    * Publish results to the destination. This method is called only when the results should be published.
-    * 
-    * @param periodType
-    *           A period type that caused the invocation of this method.
-    * @param d
-    *           A destination to which the result should be reported.
-    * @throws ReportingException
-    */
-   abstract protected void doPublishResult(PeriodType periodType, Destination d) throws ReportingException;
-
    @Override
    public final Set<Destination> getDestinations() {
       final Set<Destination> result = new HashSet<>();
@@ -294,59 +278,10 @@ public abstract class AbstractReporter implements Reporter {
       for (final Destination d : getDestinations()) {
          d.open();
       }
-
-      periodicThread = new Thread(new Runnable() {
-         @Override
-         public void run() {
-            long now;
-            Long lastTime;
-            Destination d;
-            Map<Destination, Long> lastTimes = new HashMap<>();
-
-            try {
-               while (runInfo.isRunning() && !periodicThread.isInterrupted()) {
-                  now = System.currentTimeMillis();
-
-                  for (final BoundPeriod<Destination> p : periods) {
-                     d = p.getBinding();
-                     lastTime = lastTimes.get(d);
-
-                     if (lastTime == null) {
-                        lastTime = now;
-                        lastTimes.put(d, lastTime);
-                     }
-
-                     if (p.getPeriodType() == PeriodType.TIME && lastTime + p.getPeriod() < now && runInfo.getIteration() >= 0) {
-                        lastTimes.put(d, now);
-                        try {
-                           doPublishResult(PeriodType.TIME, d);
-                        } catch (final ReportingException e) {
-                           log.warn("Unable to publish result: ", e);
-                        }
-                     }
-                  }
-
-                  Thread.sleep(500);
-               }
-            } catch (final InterruptedException e) {
-               // this means our job is done
-            }
-            if (log.isDebugEnabled()) {
-               log.debug("Gratefully terminating the periodic reporting thread.");
-            }
-         }
-      });
-      periodicThread.setDaemon(true); // allow the thread to die with JVM termination and do not block it
-      periodicThread.start();
    }
 
    @Override
    public void stop() {
-      if (periodicThread != null) {
-         periodicThread.interrupt();
-      }
-      periodicThread = null;
-
       for (final Destination d : getDestinations()) {
          d.close();
       }

@@ -24,7 +24,6 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.AbstractReporter;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 
@@ -50,7 +49,7 @@ public class DummyReporter extends AbstractReporter {
    }
 
    @Override
-   protected void doPublishResult(final PeriodType periodType, final Destination d) throws ReportingException {
+   public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       if (log.isDebugEnabled()) {
          log.debug("Publishing results...");
       }

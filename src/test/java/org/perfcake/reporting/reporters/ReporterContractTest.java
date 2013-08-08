@@ -227,7 +227,8 @@ public class ReporterContractTest {
          mu.stopMeasure();
          mu.appendResult("avg", (double) i - 1); // AvgAccumulator should be used
          mu.appendResult("it", String.valueOf(i)); // LastValueAccumulator should be used
-         Assert.assertTrue(mu.getTotalTime() < 12L && mu.getTotalTime() >= 10L, "Measurement run for 10ms, so the value should not be much different.");
+         // 15 is the tolarance according to Puškvorec's constant
+         Assert.assertTrue(mu.getTotalTime() < 15L && mu.getTotalTime() >= 10L, "Measurement run for 10ms, so the value should not be much different.");
          rm.report(mu);
       }
       Assert.assertEquals(mu.getIteration(), 99);
