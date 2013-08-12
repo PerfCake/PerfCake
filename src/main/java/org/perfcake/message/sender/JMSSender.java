@@ -276,20 +276,20 @@ public abstract class JMSSender extends AbstractSender {
    public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
       switch (messageType) {
-	  	case STRING:
-		  mess = session.createTextMessage((String) message.getPayload());
-		  break;
-	  	case BYTEARRAY:
-	  	  BytesMessage bytesMessage = session.createBytesMessage();
-	  	  bytesMessage.writeUTF((String) message.getPayload());
-	  	  mess = bytesMessage;
-		  break;
-	  	case OBJECT:
-		  mess = session.createObjectMessage(message.getPayload());
-		  break;
-	  	default: 
-		  throw new UnsupportedOperationException();
-	  }
+         case STRING:
+            mess = session.createTextMessage((String) message.getPayload());
+            break;
+         case BYTEARRAY:
+            BytesMessage bytesMessage = session.createBytesMessage();
+            bytesMessage.writeUTF((String) message.getPayload());
+            mess = bytesMessage;
+            break;
+         case OBJECT:
+            mess = session.createObjectMessage(message.getPayload());
+            break;
+         default:
+            throw new UnsupportedOperationException();
+      }
       Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
       for (String property : propertyNameSet) {
          mess.setStringProperty(property, message.getProperty(property));
