@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.jms.BytesMessage;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -47,10 +48,18 @@ import org.perfcake.reporting.MeasurementUnit;
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Jiří Sedláček <jiri@sedlackovi.cz>
  * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Marek Baluch <baluch.git@gmail.com>
  * 
  */
 public abstract class JMSSender extends AbstractSender {
 
+   /**
+    * JMS message type.
+    */
+   public static enum MessageType {
+	   OBJECT, STRING, BYTEARRAY
+   }
+	
    /**
     * The logger's logger.
     */
@@ -122,10 +131,10 @@ public abstract class JMSSender extends AbstractSender {
    protected boolean autoAck = true;
 
    /**
-    * Specifies that the payload should be send as an {@link javax.jms.ObjectMessage} (true)
-    * or {@link javax.jms.TextMessage} (false).
+    * Specifies that the payload should be send as one of {@link JMSSender.MessageType}. Default value
+    * is set to MessageType.STRING.
     */
-   protected boolean sendAsObject = false;
+   protected MessageType messageType = MessageType.STRING;
 
    /**
     * JMS connection factory property.
@@ -266,10 +275,20 @@ public abstract class JMSSender extends AbstractSender {
    @Override
    public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
-      if (!sendAsObject) {
-         mess = session.createTextMessage((String) message.getPayload());
-      } else {
-         mess = session.createObjectMessage(message.getPayload());
+      switch (messageType) {
+         case STRING:
+            mess = session.createTextMessage((String) message.getPayload());
+            break;
+         case BYTEARRAY:
+            BytesMessage bytesMessage = session.createBytesMessage();
+            bytesMessage.writeUTF((String) message.getPayload());
+            mess = bytesMessage;
+            break;
+         case OBJECT:
+            mess = session.createObjectMessage(message.getPayload());
+            break;
+         default:
+            throw new UnsupportedOperationException();
       }
       Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
       for (String property : propertyNameSet) {
@@ -420,22 +439,21 @@ public abstract class JMSSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of sendAsObject.
+    * Set the value of messageType.
     * 
-    * @return The sendAsObject.
+    * @param messageType
     */
-   public boolean isSendAsObject() {
-      return sendAsObject;
+   public void setMessageType(MessageType messageType) {
+	   this.messageType = messageType;
    }
 
    /**
-    * Sets the value of sendAsObject.
+    * Get the value of messageType.
     * 
-    * @param sendAsObject
-    *           The sendAsObject to set.
+    * @return
     */
-   public void setSendAsObject(final boolean sendAsObject) {
-      this.sendAsObject = sendAsObject;
+   public MessageType getMessageType() {
+	   return messageType;
    }
 
    /**
