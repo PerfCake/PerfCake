@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <profiles version="12">
    <profile kind="CodeFormatterProfile" name="perfcake-java-profile" version="12">
       <setting id="org.eclipse.jdt.core.formatter.comment.insert_new_line_before_root_tags" value="insert"/>
@@ -205,7 +205,7 @@
       <setting id="org.eclipse.jdt.core.formatter.insert_new_line_before_while_in_do_statement" value="do not insert"/>
       <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_enum_constant" value="0"/>
       <setting id="org.eclipse.jdt.core.formatter.comment.format_javadoc_comments" value="true"/>
-      <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="400"/>
+      <setting id="org.eclipse.jdt.core.formatter.comment.line_length" value="200"/>
       <setting id="org.eclipse.jdt.core.formatter.insert_new_line_after_annotation_on_package" value="insert"/>
       <setting id="org.eclipse.jdt.core.formatter.blank_lines_between_import_groups" value="1"/>
       <setting id="org.eclipse.jdt.core.formatter.insert_space_before_comma_in_enum_constant_arguments" value="do not insert"/>
@@ -252,7 +252,7 @@
       <setting id="org.eclipse.jdt.core.formatter.alignment_for_resources_in_try" value="0"/>
       <setting id="org.eclipse.jdt.core.formatter.use_tabs_only_for_leading_indentations" value="false"/>
       <setting id="org.eclipse.jdt.core.formatter.alignment_for_arguments_in_annotation" value="0"/>
-      <setting id="org.eclipse.jdt.core.formatter.comment.format_header" value="true"/>
+      <setting id="org.eclipse.jdt.core.formatter.comment.format_header" value="false"/>
       <setting id="org.eclipse.jdt.core.formatter.comment.format_block_comments" value="true"/>
       <setting id="org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_enum_constant" value="do not insert"/>
       <setting id="org.eclipse.jdt.core.formatter.alignment_for_enum_constants" value="0"/>

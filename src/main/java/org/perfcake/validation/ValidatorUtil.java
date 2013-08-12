@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.validation;
 
 import java.util.ArrayList;
@@ -64,7 +67,8 @@ public final class ValidatorUtil {
    }
 
    /**
-    * Validates messages in the <code>list</code> in the interval between <code>from</code> and <code>to</code> borders included. It applies <code>operator</code> on the messages <code>part</code> and the valid <code>value</code>.
+    * Validates messages in the <code>list</code> in the interval between <code>from</code> and <code>to</code> borders included. It applies <code>operator</code> on the messages <code>part</code> and
+    * the valid <code>value</code>.
     * 
     * @param list
     *           Message list.
@@ -84,7 +88,7 @@ public final class ValidatorUtil {
     * @return A boolean value indicating, if validation of all messages passed
     *         (<code>true</code>) or not (<code>false</code>).
     */
-   public static boolean validateMessages(List<Message> list, int from, int to, ValidatorUtil.MessagePart part, String partValue, ValidatorUtil.Operator operator, String value) {
+   public static boolean validateMessages(final List<Message> list, final int from, final int to, final ValidatorUtil.MessagePart part, final String partValue, final ValidatorUtil.Operator operator, final String value) {
       int count = list.size();
       if (to <= from) {
          if (log.isEnabledFor(Level.ERROR)) {
@@ -125,7 +129,7 @@ public final class ValidatorUtil {
     * @return A boolean value indicating, if validation of the message passed
     *         (<code>true</code>) or not (<code>false</code>).
     */
-   public static boolean validateMessage(List<Message> list, int number, ValidatorUtil.MessagePart part, String partName, ValidatorUtil.Operator operator, String value) {
+   public static boolean validateMessage(final List<Message> list, final int number, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {
       int count = list.size();
 
       if (number < 0 || number >= count) {
@@ -171,7 +175,7 @@ public final class ValidatorUtil {
    // return null;
    // }
 
-   public static Object getMessagePart(org.perfcake.message.Message message, ValidatorUtil.MessagePart part, String partName) {
+   public static Object getMessagePart(final org.perfcake.message.Message message, final ValidatorUtil.MessagePart part, final String partName) {
       switch (part) {
          case BODY:
             return message.getPayload();
@@ -198,7 +202,7 @@ public final class ValidatorUtil {
       return null;
    }
 
-   private static boolean validatePart(String str, ValidatorUtil.Operator operator, String value) {
+   private static boolean validatePart(final String str, final ValidatorUtil.Operator operator, final String value) {
       if (str == null) {
          return false;
       }
@@ -225,7 +229,7 @@ public final class ValidatorUtil {
       return false;
    }
 
-   private static String getStringData(Object data) {
+   private static String getStringData(final Object data) {
       if (data == null) {
          return null;
       } else {
@@ -237,7 +241,7 @@ public final class ValidatorUtil {
       }
    }
 
-   private static boolean validateData(Object data, ValidatorUtil.Operator operator, String value) {
+   private static boolean validateData(final Object data, final ValidatorUtil.Operator operator, final String value) {
       String str = getStringData(data);
       return validatePart(str, operator, value);
    }
@@ -246,14 +250,14 @@ public final class ValidatorUtil {
    // return validateData(getMessagePart(message, part, partName), operator, value);
    // }
 
-   public static boolean validateMessage(Message message, ValidatorUtil.MessagePart part, String partName, ValidatorUtil.Operator operator, String value) {
+   public static boolean validateMessage(final Message message, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {
       return validateData(getMessagePart(message, part, partName), operator, value);
    }
 
    // public static boolean validateMessageInverse(org.jboss.soa.esb.qa.perfcake.message.Message message, MessagePart part, String partName, Operator operator, String value) {
    // return !validateMessage(message, part, partName, operator, value);
    // }
-   public static boolean validateMessageInverse(Message message, ValidatorUtil.MessagePart part, String partName, ValidatorUtil.Operator operator, String value) {
+   public static boolean validateMessageInverse(final Message message, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {
       return !validateMessage(message, part, partName, operator, value);
    }
 
@@ -304,7 +308,7 @@ public final class ValidatorUtil {
     * @return A boolean value indicating, if validation of the message passed
     *         (<code>true</code>) or not (<code>false</code>) with actual <code>occurance</code>.
     */
-   public static boolean validateMessageOccurance(List<Message> list, ValidatorUtil.MessagePart part, String partName, ValidatorUtil.Operator operator, String value, ValidatorUtil.Occurance occurance, int treshold) {
+   public static boolean validateMessageOccurance(final List<Message> list, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value, final ValidatorUtil.Occurance occurance, final int treshold) {
       switch (occurance) {
          case NONE:
             for (int i = 0; i < list.size(); i++) {
@@ -349,7 +353,7 @@ public final class ValidatorUtil {
     * @return A boolean value indicating, if validation of the message passed
     *         (<code>true</code>) or not (<code>false</code>) with actual <code>occurance</code>.
     */
-   public static boolean validateMessageOccuranceOnInterval(List<Message> list, int from, int to, ValidatorUtil.MessagePart part, String partName, ValidatorUtil.Operator operator, String value, ValidatorUtil.Occurance occurance, int treshold) {
+   public static boolean validateMessageOccuranceOnInterval(final List<Message> list, final int from, final int to, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value, final ValidatorUtil.Occurance occurance, final int treshold) {
       int count = list.size();
       if (to <= from) {
          if (log.isEnabledFor(Level.ERROR)) {
@@ -384,9 +388,10 @@ public final class ValidatorUtil {
     * @param value
     *           Valid value of validated message part.
     * @return Number of messages in the list that match the criteria (pass the validation).
-    * @see #validateMessage(java.util.List, int, org.jboss.soa.esb.qa.perfcake.validation.ValidatorUtil.MessagePart, java.lang.String, org.jboss.soa.esb.qa.perfcake.validation.ValidatorUtil.Operator, java.lang.String)
+    * @see #validateMessage(java.util.List, int, org.jboss.soa.esb.qa.perfcake.validation.ValidatorUtil.MessagePart, java.lang.String, org.jboss.soa.esb.qa.perfcake.validation.ValidatorUtil.Operator,
+    *      java.lang.String)
     */
-   private static int countMessages(List<Message> list, ValidatorUtil.MessagePart part, String partName, ValidatorUtil.Operator operator, String value) {
+   private static int countMessages(final List<Message> list, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {
       int messageCount = 0;
       for (int i = 0; i < list.size(); i++) {
          if (validateMessage(list, i, part, partName, operator, value)) {
