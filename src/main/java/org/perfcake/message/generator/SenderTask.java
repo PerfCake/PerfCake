@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,57 +50,42 @@ class SenderTask implements Runnable {
    /**
     * Reference to a message sender manager that is providing the message senders.
     */
-   private final MessageSenderManager senderManager;
+   private MessageSenderManager senderManager;
 
    /**
     * Reference to a message store where the messages are taken from.
     */
-   private final List<MessageTemplate> messageStore;
+   private List<MessageTemplate> messageStore;
 
    /**
     * Indicates whether the message numbering is enabled or disabled.
     */
-   private final boolean messageNumberingEnabled;
+   private boolean messageNumberingEnabled;
 
    /**
     * Indicates whether the system is in a state when it measures the performance.
     */
-   private final boolean isMeasuring;
+   private boolean isMeasuring;
 
    /**
-    * Reference to a report manager.
+    * A reference to the current report manager.
     */
-   private final ReportManager reportManager;
+   private ReportManager reportManager;
 
    /**
-    * Creates a new instance of SenderTask.
-    * 
-    * @param reportManager
-    *           Reference to a report manager.
-    * @param counter
-    *           Reference to a counter of successfully executed iterations.
-    * @param senderManager
-    *           Reference to a message sender manager that is providing the message senders.
-    * @param messageStore
-    *           Reference to a message store where the messages are taken from.
-    * @param messageNumberingEnabled
-    *           Indicates whether the message numbering is enabled or disabled.
-    * @param isMeasuring
-    *           Indicates whether the system is in a state when it measures the performance.
+    * A reference to the current validator manager. It is used to validate message responses.
     */
-   public SenderTask(ReportManager reportManager, MessageSenderManager senderManager, List<MessageTemplate> messageStore, boolean messageNumberingEnabled, boolean isMeasuring) {
-      this.reportManager = reportManager;
-      this.senderManager = senderManager;
-      this.messageStore = messageStore;
-      this.messageNumberingEnabled = messageNumberingEnabled;
-      this.isMeasuring = isMeasuring;
+   private ValidatorManager validatorManager;
+
+   protected SenderTask() {
+      // limit the possibilities to construct this class
    }
 
-   public Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) throws Exception {
+   private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) throws Exception {
       sender.preSend(message, messageHeaders);
 
       mu.startMeasure();
-      Serializable result = sender.send(message, messageHeaders, mu);
+      final Serializable result = sender.send(message, messageHeaders, mu);
       mu.stopMeasure();
 
       sender.postSend(message);
@@ -115,33 +100,35 @@ class SenderTask implements Runnable {
     */
    @Override
    public void run() {
-      Properties messageAttributes = new Properties();
-      HashMap<String, String> messageHeaders = new HashMap<>();
+      assert messageStore != null && reportManager != null && validatorManager != null && senderManager != null : "SenderTask was not properly initialized.";
+
+      final Properties messageAttributes = new Properties();
+      final HashMap<String, String> messageHeaders = new HashMap<>();
       MessageSender sender = null;
       ReceivedMessage receivedMessage = null;
       try {
-         MeasurementUnit mu = reportManager.newMeasurementUnit();
+         final MeasurementUnit mu = reportManager.newMeasurementUnit();
 
          // only set numbering to headers if it is enabled, later there is no change to
          // filter out the headers before sending
-         String msgNumberStr = String.valueOf(mu.getIteration());
+         final String msgNumberStr = String.valueOf(mu.getIteration());
          if (messageNumberingEnabled && isMeasuring) {
             messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, msgNumberStr);
          }
 
-         Iterator<MessageTemplate> iterator = messageStore.iterator();
+         final Iterator<MessageTemplate> iterator = messageStore.iterator();
          if (iterator.hasNext()) {
             while (iterator.hasNext()) {
 
                sender = senderManager.acquireSender();
-               MessageTemplate messageToSend = iterator.next();
-               Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
-               long multiplicity = messageToSend.getMultiplicity();
+               final MessageTemplate messageToSend = iterator.next();
+               final Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
+               final long multiplicity = messageToSend.getMultiplicity();
 
                for (int i = 0; i < multiplicity; i++) {
                   receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend);
-                  if (ValidatorManager.isEnabled()) {
-                     ValidatorManager.addToResultMessages(receivedMessage);
+                  if (validatorManager.isEnabled()) {
+                     validatorManager.addToResultMessages(receivedMessage);
                   }
                }
 
@@ -151,20 +138,44 @@ class SenderTask implements Runnable {
          } else {
             sender = senderManager.acquireSender();
             receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null);
-            if (ValidatorManager.isEnabled()) {
-               ValidatorManager.addToResultMessages(receivedMessage);
+            if (validatorManager.isEnabled()) {
+               validatorManager.addToResultMessages(receivedMessage);
             }
             senderManager.releaseSender(sender); // !!! important !!!
             sender = null;
          }
 
          reportManager.report(mu);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          e.printStackTrace();
       } finally {
          if (sender != null) {
             senderManager.releaseSender(sender);
          }
       }
+   }
+
+   protected void setSenderManager(final MessageSenderManager senderManager) {
+      this.senderManager = senderManager;
+   }
+
+   protected void setMessageStore(final List<MessageTemplate> messageStore) {
+      this.messageStore = messageStore;
+   }
+
+   protected void setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
+      this.messageNumberingEnabled = messageNumberingEnabled;
+   }
+
+   protected void setMeasuring(final boolean isMeasuring) {
+      this.isMeasuring = isMeasuring;
+   }
+
+   protected void setReportManager(final ReportManager reportManager) {
+      this.reportManager = reportManager;
+   }
+
+   protected void setValidatorManager(final ValidatorManager validatorManager) {
+      this.validatorManager = validatorManager;
    }
 }

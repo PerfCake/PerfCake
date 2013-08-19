@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,19 +28,18 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
+import org.perfcake.validation.ValidatorManager;
 
 /**
  * <p>
  * This represents the common ancestor for all generators. It can generate messages using a specified number ({@link #threads}) of concurrent messages senders (see {@link MessageSender}).
  * </p>
  * <p>
- * The generator is also able to 'warm-up' the tested system. The warming is enabled/disabled through {@link #warmUpEnabled} and the minimal iteration count and the warm-up period duration can be
- * tweaked by the respective properties ({@link #minimalWarmUpCount} with the default value of 10,000 and {@link #minimalWarmUpDuration} with the default value of 15,000 ms).
+ * The generator is also able to 'warm-up' the tested system. The warming is enabled/disabled through {@link #warmUpEnabled} and the minimal iteration count and the warm-up period duration can be tweaked by the respective properties ({@link #minimalWarmUpCount} with the default value of 10,000 and {@link #minimalWarmUpDuration} with the default value of 15,000 ms).
  * </p>
  * <p>
- * When warming is disabled the generator should measure the performance metrics right from the beginning of the generation. But when the warming is enabled it starts to generate the load but it
- * doesn't measure the performance metrics from the beginning. It waits for the following conditions to start the actual measuring. All of the following conditions must be satisfied: The tested system
- * is warmed up (it detects it), the minimal iteration count has been executed and the minimal duration from the very start has exceeded.
+ * When warming is disabled the generator should measure the performance metrics right from the beginning of the generation. But when the warming is enabled it starts to generate the load but it doesn't measure the performance metrics from the beginning. It waits for the following conditions to start the actual measuring. All of the following conditions must be satisfied: The tested system is
+ * warmed up (it detects it), the minimal iteration count has been executed and the minimal duration from the very start has exceeded.
  * </p>
  * <p>
  * The generator should also have the ability to tag messages by the sequence number that indicated the order of messages.
@@ -59,6 +58,11 @@ public abstract class AbstractMessageGenerator {
     * Report manager.
     */
    protected ReportManager reportManager;
+
+   /**
+    * A reference to the current message validator manager.
+    */
+   protected ValidatorManager validatorManager;
 
    /**
     * Message store where the messages for senders to be send are taken from.
@@ -118,6 +122,19 @@ public abstract class AbstractMessageGenerator {
       this.messageStore = messageStore;
       this.messageSenderManager = messageSenderManager;
       this.messageSenderManager.init();
+   }
+
+   protected SenderTask newSenderTask() {
+      final SenderTask task = new SenderTask();
+
+      task.setMessageStore(messageStore);
+      task.setReportManager(reportManager);
+      task.setSenderManager(messageSenderManager);
+      task.setValidatorManager(validatorManager);
+      task.setMessageNumberingEnabled(isMessageNumberingEnabled());
+      task.setMeasuring(isMeasuring);
+
+      return task;
    }
 
    /**
@@ -307,5 +324,9 @@ public abstract class AbstractMessageGenerator {
     */
    public void setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
       this.messageNumberingEnabled = messageNumberingEnabled;
+   }
+
+   public void setValidatorManager(final ValidatorManager validatorManager) {
+      this.validatorManager = validatorManager;
    }
 }

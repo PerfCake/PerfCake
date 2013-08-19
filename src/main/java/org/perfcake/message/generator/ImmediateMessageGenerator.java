@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,7 +73,7 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
       }
       executorService = Executors.newFixedThreadPool(threads);
       for (int i = 0; i < runInfo.getDuration().getPeriod(); i++) {
-         executorService.submit(new SenderTask(reportManager, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
+         executorService.submit(newSenderTask());
       }
       executorService.shutdown();
 
@@ -90,14 +90,14 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
             terminated = executorService.awaitTermination(1, TimeUnit.SECONDS);
 
             // should we log a change?
-            long cnt = runInfo.getIteration();
+            final long cnt = runInfo.getIteration();
             if (cnt != lastValue) {
                lastValue = cnt;
 
                if (warmUpEnabled && !isMeasuring) {
                   averageSpeed = getSpeed(cnt);
-                  float relDelta = averageSpeed / lastSpeed - 1f;
-                  float absDelta = averageSpeed - lastSpeed;
+                  final float relDelta = averageSpeed / lastSpeed - 1f;
+                  final float absDelta = averageSpeed - lastSpeed;
                   if ((getDurationInMillis() > minimalWarmUpDuration) && (lastValue > minimalWarmUpCount) && (Math.abs(absDelta) < 0.5f || Math.abs(relDelta) < 0.005f)) {
                      isMeasuring = true;
                      postWarmUp();
@@ -105,9 +105,9 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
                   lastSpeed = averageSpeed;
                }
             }
-         } catch (InterruptedException ie) {
+         } catch (final InterruptedException ie) {
             // "Shit happens!", Forrest Gump
-         } catch (Exception e) {
+         } catch (final Exception e) {
             e.printStackTrace();
             executorService.shutdownNow();
          }
@@ -128,18 +128,18 @@ public class ImmediateMessageGenerator extends AbstractMessageGenerator {
       }
       setStartTime();
       executorService.shutdown();
-      List<Runnable> waiting = executorService.shutdownNow();
+      final List<Runnable> waiting = executorService.shutdownNow();
       messageSenderManager.releaseAllSenders();
       executorService.awaitTermination(30, TimeUnit.SECONDS);
       executorService = Executors.newFixedThreadPool(threads);
       reportManager.reset(); // TODO this resets runInfo as well, this should be probably done differently once the warm-up handling is updated
-      int cnt = waiting.size();
+      final int cnt = waiting.size();
       int i = 0;
       for (; i < cnt; i++) {
          executorService.submit(waiting.get(i));
       }
       for (; i < runInfo.getDuration().getPeriod(); i++) {
-         executorService.submit(new SenderTask(reportManager, messageSenderManager, messageStore, messageNumberingEnabled, isMeasuring));
+         executorService.submit(newSenderTask());
       }
       executorService.shutdown();
    }

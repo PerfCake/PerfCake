@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,7 +70,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     */
    private void sendPack(final long count) {
       for (long i = 0; i < count; i++) {
-         executorService.submit(new SenderTask(reportManager, messageSenderManager, messageStore, isMessageNumberingEnabled(), isMeasuring));
+         executorService.submit(newSenderTask());
       }
    }
 
@@ -130,11 +130,11 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
             // should we log a change?
             if (cnt != lastValue) {
                lastValue = cnt;
-               float averageSpeed = getSpeed(cnt);
+               final float averageSpeed = getSpeed(cnt);
 
                if (warmUpEnabled && !isMeasuring) {
-                  float relDelta = averageSpeed / lastSpeed - 1f;
-                  float absDelta = averageSpeed - lastSpeed;
+                  final float relDelta = averageSpeed / lastSpeed - 1f;
+                  final float absDelta = averageSpeed - lastSpeed;
                   if (log.isDebugEnabled()) {
                      log.debug("AverageSpeed: " + averageSpeed + ", LastSpeed: " + lastSpeed);
                      log.debug("Difference: " + absDelta + " (" + relDelta + "%)");
@@ -147,7 +147,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
                   lastSpeed = averageSpeed;
                }
             }
-         } catch (InterruptedException ie) {
+         } catch (final InterruptedException ie) {
             ie.printStackTrace();
             // "Shit happens!", Forrest Gump
          }

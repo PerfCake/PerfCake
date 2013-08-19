@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -72,7 +72,7 @@ public class MessageSenderManager {
 
    public void init() throws Exception {
       for (int i = 0; i < senderPoolSize; i++) {
-         MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
+         final MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
          sender.init();
          messageSendersMap.put(sender, false);
          availableSenders.add(sender);
@@ -81,7 +81,7 @@ public class MessageSenderManager {
 
    public synchronized MessageSender acquireSender() throws Exception {
       if (availableSenders.size() > 0) {
-         MessageSender messageSender = availableSenders.poll();
+         final MessageSender messageSender = availableSenders.poll();
          messageSendersMap.put(messageSender, true);
          return messageSender;
       } else {
@@ -100,8 +100,8 @@ public class MessageSenderManager {
 
    public void releaseAllSenders() {
       synchronized (syncLock) {
-         Set<MessageSender> senderSet = messageSendersMap.keySet();
-         for (MessageSender sender : senderSet) {
+         final Set<MessageSender> senderSet = messageSendersMap.keySet();
+         for (final MessageSender sender : senderSet) {
             releaseSender(sender);
          }
       }
@@ -112,7 +112,7 @@ public class MessageSenderManager {
    }
 
    public void close() throws PerfCakeException {
-      Iterator<MessageSender> iterator = messageSendersMap.keySet().iterator();
+      final Iterator<MessageSender> iterator = messageSendersMap.keySet().iterator();
       while (iterator.hasNext()) {
          iterator.next().close();
       }

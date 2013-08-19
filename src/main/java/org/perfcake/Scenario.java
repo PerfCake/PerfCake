@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -47,6 +47,7 @@ public class Scenario {
    private ReportManager reportManager;
    private List<MessageTemplate> messageStore;
    private RunInfo runInfo;
+   private ValidatorManager validatorManager;
 
    public static final String VERSION = "0.2";
 
@@ -68,7 +69,7 @@ public class Scenario {
 
       try {
          scenarioUrl = Utils.locationToUrl(scenario, "perfcake.scenarios.dir", Utils.determineDefaultLocation("scenarios"), ".xml");
-      } catch (MalformedURLException e) {
+      } catch (final MalformedURLException e) {
          throw new PerfCakeException("Cannot parse scenario configuration location: ", e);
       }
 
@@ -86,7 +87,7 @@ public class Scenario {
          log.trace("Parsing scenario " + scenarioUrl.toString());
       }
 
-      ScenarioParser parser = new ScenarioParser(scenarioUrl);
+      final ScenarioParser parser = new ScenarioParser(scenarioUrl);
       generator = parser.parseGenerator();
       runInfo = parser.parseRunInfo();
       generator.setRunInfo(runInfo);
@@ -94,7 +95,7 @@ public class Scenario {
       reportManager = parser.parseReporting();
       reportManager.setRunInfo(runInfo);
       messageStore = parser.parseMessages();
-      parser.parseValidation();
+      validatorManager = parser.parseValidation();
    }
 
    /**
@@ -109,9 +110,11 @@ public class Scenario {
 
       messageSenderManager.setReportManager(reportManager);
       generator.setReportManager(reportManager);
+      generator.setValidatorManager(validatorManager);
+
       try {
          generator.init(messageSenderManager, messageStore);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          throw new PerfCakeException("Cannot initialize message generator: ", e);
       }
    }
@@ -126,12 +129,11 @@ public class Scenario {
          log.trace("Running scenario...");
       }
 
-      if (ValidatorManager.isEnabled()) {
-         ValidatorManager.startValidation();
-      }
+      validatorManager.startValidation();
+
       try {
          generator.generate();
-      } catch (Exception e) {
+      } catch (final Exception e) {
          throw new PerfCakeException("Error generating messages: ", e);
       }
    }
@@ -145,7 +147,12 @@ public class Scenario {
       if (generator != null) {
          generator.close();
       }
-      ValidatorManager.setFinished(true);
+
+      try {
+         validatorManager.waitForValidation();
+      } catch (final InterruptedException ie) {
+         throw new PerfCakeException("Could not finish messages response validation properly: ", ie);
+      }
 
       if (log.isTraceEnabled()) {
          log.trace("Scenario finished successfully!");

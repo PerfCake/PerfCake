@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,36 +39,28 @@ public class TextMessageValidator implements MessageValidator {
    // ext: more possible expectedOutputs
 
    @Override
-   public void validate(final Message message) throws ValidationException {
-      String trimmedLinesOfPayload = StringUtil.trimLines(message.getPayload().toString());
-      String resultPayload = StringUtil.trim(trimmedLinesOfPayload);
-      String expectedPayload = expectedOutputs.get("1");
+   public boolean isValid(final Message message) {
+      final String trimmedLinesOfPayload = StringUtil.trimLines(message.getPayload().toString());
+      final String resultPayload = StringUtil.trim(trimmedLinesOfPayload);
+      final String expectedPayload = expectedOutputs.get("1");
 
       if (!resultPayload.matches(expectedPayload)) {
          if (log.isEnabledFor(Level.ERROR)) {
+            // TODO log more verbose description at levels like warn/info/debug
             log.error("Message is not valid.");
-            throw new ValidationException("Message is not valid: " + message);
+            return false;
          }
       }
-   }
 
-   @Override
-   public boolean isValid(final Message message) {
-      boolean v = true;
-      try {
-         validate(message);
-      } catch (ValidationException e) {
-         v = false;
-      }
-      return v;
+      return true;
    }
 
    @Override
    public void setAssertions(final Node validationNode, final String msgId) {
-      String expectedOutput = validationNode.getTextContent();
+      final String expectedOutput = validationNode.getTextContent();
 
       // refine
-      String trimmedLinesOfExpected = StringUtil.trimLines(expectedOutput);
+      final String trimmedLinesOfExpected = StringUtil.trimLines(expectedOutput);
       expectedOutputs.put("1", StringUtil.trim(trimmedLinesOfExpected));
    }
 
