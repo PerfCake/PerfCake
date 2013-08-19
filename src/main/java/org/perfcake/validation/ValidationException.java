@@ -19,12 +19,14 @@
  */
 package org.perfcake.validation;
 
+import org.perfcake.PerfCakeException;
+
 /**
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
-public class ValidationException extends Exception {
+public class ValidationException extends PerfCakeException {
 
    private static final long serialVersionUID = -1980381518783639733L;
 
