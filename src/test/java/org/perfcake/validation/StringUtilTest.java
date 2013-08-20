@@ -74,8 +74,8 @@ public class StringUtilTest {
 
    @Test
    public void trimLines() {
-      final String str = " Ahoj,    \n" + "  \t \"toto je monstózní test'  \n" + "\n" + "EOF";
-      final String res = "Ahoj,\n" + "toto je monstózní test\n" + "EOF\n";
+      final String str = " Ahoj,    \n" + "  \t \"toto je monstrózní test'  \n" + "\n" + "EOF";
+      final String res = "Ahoj,\n" + "\"toto je monstrózní test'\n" + "EOF\n";
 
       Assert.assertEquals(StringUtil.trimLines(str), res);
    }

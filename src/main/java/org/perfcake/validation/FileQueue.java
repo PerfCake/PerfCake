@@ -70,7 +70,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
       try {
          final boolean fileExists = queueFile.exists();
          file = new RandomAccessFile(queueFile.getAbsolutePath(), "rw");
-         if (fileExists) {
+         if (fileExists && file.length() > 0) {
             queueSize = file.readLong();
             pointer = file.readLong();
          } else {
