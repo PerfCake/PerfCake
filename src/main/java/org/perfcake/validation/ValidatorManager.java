@@ -86,7 +86,9 @@ public class ValidatorManager {
     */
    public ValidatorManager() throws PerfCakeException {
       try {
-         setQueueFile(File.createTempFile("perfcake", "queue"));
+         final File tmpFile = File.createTempFile("perfcake", "queue");
+         tmpFile.deleteOnExit();
+         setQueueFile(tmpFile);
       } catch (final IOException e) {
          throw new PerfCakeException("Cannot create a file queue for messages to be validated: ", e);
       }
