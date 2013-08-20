@@ -19,21 +19,6 @@
          </includes>
       </fileSet>
       <fileSet>
-         <directory>${project.build.scriptSourceDirectory}</directory>
-         <outputDirectory>bin</outputDirectory>
-         <includes>
-            <include>*.sh</include>
-         </includes>
-         <fileMode>0755</fileMode>
-      </fileSet>
-      <fileSet>
-         <directory>${project.build.scriptSourceDirectory}</directory>
-         <outputDirectory>bin</outputDirectory>
-         <includes>
-            <include>*.bat</include>
-         </includes>
-      </fileSet>
-      <fileSet>
          <directory>${project.build.directory}</directory>
          <outputDirectory>lib</outputDirectory>
          <includes>
@@ -49,6 +34,21 @@
          <includes>
             <include>*javadoc.jar</include>
          </includes>
+      </fileSet>
+      <fileSet>
+         <directory>${project.build.scriptSourceDirectory}</directory>
+         <outputDirectory>bin</outputDirectory>
+         <includes>
+            <include>*.bat</include>
+         </includes>
+      </fileSet>
+      <fileSet>
+         <directory>${project.build.scriptSourceDirectory}</directory>
+         <outputDirectory>bin</outputDirectory>
+         <includes>
+            <include>*.sh</include>
+         </includes>
+         <fileMode>0755</fileMode>
       </fileSet>
    </fileSets>
 </assembly>

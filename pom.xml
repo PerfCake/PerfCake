@@ -202,7 +202,7 @@
                   <archive>
                      <manifest>
                         <addClasspath>true</addClasspath>
-                        <classpathPrefix>lib/</classpathPrefix>
+                        <mainClass>org.perfcake.ScenarioExecution</mainClass>
                      </manifest>
                      <manifestEntries>
                         <Premain-class>org.perfcake.util.PerfCakeAgent</Premain-class>
