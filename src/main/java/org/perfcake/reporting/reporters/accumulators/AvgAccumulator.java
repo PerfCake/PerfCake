@@ -24,39 +24,49 @@ package org.perfcake.reporting.reporters.accumulators;
  * Atomic types are not used because both values must be set at the same time. Hence the methods are synchronized.
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
+ * @author Pavel Macík <pavel.macik@gmail.com>
  * 
  */
-public class AvgAccumulator implements Accumulator<Double> {
+public class AvgAccumulator extends SumAccumulator {
 
    /**
     * Number of reported values
     */
    private long count = 0;
 
-   /**
-    * Sum of the reported values
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.reporting.reporters.accumulators.SumAccumulator#add(java.lang.Double)
     */
-   private double sum = 0d;
-
    @Override
    public synchronized void add(final Double number) {
+      super.add(number);
       count = count + 1;
-      sum = sum + number;
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.reporting.reporters.accumulators.SumAccumulator#getResult()
+    */
    @Override
    public synchronized Double getResult() {
       if (count == 0) {
          return 0d;
       } else {
-         return sum / count;
+         return super.getResult() / count;
       }
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see org.perfcake.reporting.reporters.accumulators.SumAccumulator#reset()
+    */
    @Override
    public synchronized void reset() {
+      super.reset();
       count = 0;
-      sum = 0d;
    }
-
 }
