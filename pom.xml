@@ -25,8 +25,8 @@
       </developer>
    </developers>
    <ciManagement>
-      <url>
-      </url>
+   	  <system>Jenkins</system>
+      <url>https://perfcake.ci.cloudbees.com/</url>
    </ciManagement>
    <issueManagement>
       <system>GitHub</system>
