@@ -6,7 +6,6 @@
    <generator class="LongtermMessageGenerator" threads="${perfcake.performance.thread.count:100}">
       <run type="time" value="${perfcake.performance.duration:300000}"/>
       <property name="threadQueueSize" value="50000"/>
-      <property name="warmUpEnabled" value="false"/>
    </generator>
    <sender class="HTTPSSender">
       <property name="target" value="https://${server.host}:8443/HTTPGatewayHTTPS/http/PerformanceTest/HTTPGatewayHTTPS"/>

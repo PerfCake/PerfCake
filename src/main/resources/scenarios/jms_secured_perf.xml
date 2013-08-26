@@ -6,7 +6,6 @@
    <generator class="LongtermMessageGenerator" threads="${perfcake.performance.thread.count:100}">
       <run type="time" value="${perfcake.performance.duration:300000}"/>
       <property name="threadQueueSize" value="1000"/>
-      <property name="warmUpEnabled" value="false"/>
    </generator>
    <sender class="RequestResponseJMSSender">
       <property name="target" value="queue/jms_secured_perf_request_gw"/>

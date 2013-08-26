@@ -4,7 +4,6 @@
    <generator class="LongtermMessageGenerator" threads="${perfcake.performance.thread.count:100}">
       <run type="time" value="${perfcake.performance.duration:300000}"/>
       <property name="threadQueueSize" value="1000"/>
-      <property name="warmUpEnabled" value="false"/>
    </generator>
    <sender class="DummySender">
       <property name="target" value=""/>
@@ -29,7 +28,4 @@
          </destination>
       </reporter-->
    </reporting>
-   <messages>
-      <message uri="5kB_soap_reply.xml"/>
-   </messages>
 </scenario>

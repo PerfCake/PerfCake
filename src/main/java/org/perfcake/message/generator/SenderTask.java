@@ -37,12 +37,13 @@ import org.perfcake.validation.ValidatorManager;
 
 /**
  * <p>
- * The sender task is a runnable class that is executing a single task of sending the message(s) from the message store using instances of {@link MessageSender} provided by message sender manager (see {@link MessageSenderManager}), receiving the message sender's response and handling the reporting and response message validation.
+ * The sender task is a runnable class that is executing a single task of sending the message(s) from the message store using instances of {@link MessageSender} provided by message sender manager (see
+ * {@link MessageSenderManager}), receiving the message sender's response and handling the reporting and response message validation.
  * </p>
  * <p>
  * It is used by the generators.
  * </p>
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 class SenderTask implements Runnable {
@@ -61,11 +62,6 @@ class SenderTask implements Runnable {
     * Indicates whether the message numbering is enabled or disabled.
     */
    private final boolean messageNumberingEnabled;
-
-   /**
-    * Indicates whether the system is in a state when it measures the performance.
-    */
-   private final boolean isMeasuring;
 
    /**
     * Reference to a report manager.
@@ -88,14 +84,27 @@ class SenderTask implements Runnable {
     * @param isMeasuring
     *           Indicates whether the system is in a state when it measures the performance.
     */
-   public SenderTask(ReportManager reportManager, MessageSenderManager senderManager, List<MessageTemplate> messageStore, boolean messageNumberingEnabled, boolean isMeasuring) {
+   public SenderTask(ReportManager reportManager, MessageSenderManager senderManager, List<MessageTemplate> messageStore, boolean messageNumberingEnabled) {
       this.reportManager = reportManager;
       this.senderManager = senderManager;
       this.messageStore = messageStore;
       this.messageNumberingEnabled = messageNumberingEnabled;
-      this.isMeasuring = isMeasuring;
    }
 
+   /**
+    * Sends the {@link Message} using the {@link MessageSender}.
+    *
+    * @param sender
+    *           Sender to be used to send the message.
+    * @param message
+    *           The message to be send.
+    * @param messageHeaders
+    *           Additional headers of the message.
+    * @param mu
+    *           The measurement unit.
+    * @return The result that the sender returns.
+    * @throws Exception
+    */
    public Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) throws Exception {
       sender.preSend(message, messageHeaders);
 
@@ -108,11 +117,6 @@ class SenderTask implements Runnable {
       return result;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see java.lang.Runnable#run()
-    */
    @Override
    public void run() {
       Properties messageAttributes = new Properties();
@@ -125,7 +129,7 @@ class SenderTask implements Runnable {
          if (mu != null) {
             // only set numbering to headers if it is enabled, later there is no change to
             // filter out the headers before sending
-            if (messageNumberingEnabled && isMeasuring) {
+            if (messageNumberingEnabled) {
                messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration()));
             }
 

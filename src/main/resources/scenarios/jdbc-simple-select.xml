@@ -3,9 +3,8 @@
    <properties>
       <property name="quickstartName" value="eds"/>
    </properties>
-   <generator class="ImmediateMessageGenerator" threads="500">
-      <run type="iteration" value="500000"/>
-      <property name="warmUpEnabled" value="true"/>
+   <generator class="ImmediateMessageGenerator" threads="${perfcake.performance.thread.count:500}">
+      <run type="iteration" value="${perfcake.performance.count:500000}"/>
    </generator>
    <sender class="JDBCSender">
       <property name="target" value="jdbc:postgres:/localhost:5432/postgres"/>
@@ -13,6 +12,9 @@
       <property name="username" value="postgres"/>
       <property name="password" value="password"/>
    </sender>
+   <reporting>
+      <reporter class="WarmUpReporter"/>
+   </reporting>
    <messages>
       <message uri="jdbc-simple-select.sql"/>
    </messages>

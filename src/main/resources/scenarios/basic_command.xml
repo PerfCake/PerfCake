@@ -3,9 +3,8 @@
    <properties>
       <property name="quickstartName" value="basic_command"/>
    </properties>
-   <generator class="ImmediateMessageGenerator" threads="100">
-      <run type="iteration" value="10"/>
-      <property name="warmUpEnabled" value="false"/>
+   <generator class="LongtermMessageGenerator" threads="${perfcake.performance.thread.count:100}">
+      <run type="iteration" value="${perfcake.performance.count:10}"/>
    </generator>
    <sender class="CommandSender">
    </sender>

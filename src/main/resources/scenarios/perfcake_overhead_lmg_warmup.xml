@@ -3,13 +3,13 @@
    <!--properties/-->
    <generator class="LongtermMessageGenerator" threads="${perfcake.performance.thread.count:100}">
       <run type="time" value="${perfcake.performance.duration:300000}"/>
-      <property name="threadQueueSize" value="1000"/>
-      <property name="warmUpEnabled" value="true"/>
+      <property name="threadQueueSize" value="500000"/>
    </generator>
    <sender class="DummySender">
       <property name="target" value=""/>
    </sender>
    <reporting>
+      <reporter class="WarmUpReporter"/>
       <reporter class="ResponseTimeReporter">
          <destination class="CSVDestination">
             <period type="time" value="30000"/>
@@ -29,7 +29,4 @@
          </destination>
       </reporter-->
    </reporting>
-   <messages>
-      <message uri="5kB_soap_reply.xml"/>
-   </messages>
 </scenario>

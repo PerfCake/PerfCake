@@ -46,6 +46,9 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
  */
 public abstract class AbstractReporter implements Reporter {
 
+   /**
+    * The reporter's logger.
+    */
    private static final Logger log = Logger.getLogger(AbstractReporter.class);
 
    /**
@@ -268,16 +271,28 @@ public abstract class AbstractReporter implements Reporter {
    public void start() {
       assert runInfo != null : "RunInfo must be set prior to starting a reporter.";
 
+      if (checkStart()) {
+
+         reset();
+
+         for (final Destination d : getDestinations()) {
+            d.open();
+         }
+      }
+   }
+
+   /**
+    * Checks if the reporter is ready to be started.
+    * 
+    * @return <code>true</code> if the reporter is ready to be started.
+    */
+   protected boolean checkStart() {
       if (periods.size() == 0) {
          log.warn("No reporting periods are configured for this reporter (" + getClass().getCanonicalName() + "). The reporter is disabled. Call start() again after the periods are registered.");
-         return;
+         return false;
       }
 
-      reset();
-
-      for (final Destination d : getDestinations()) {
-         d.open();
-      }
+      return true;
    }
 
    @Override

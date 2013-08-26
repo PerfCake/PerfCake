@@ -20,6 +20,7 @@
 package org.perfcake.message.generator;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -28,7 +29,7 @@ import org.perfcake.reporting.ReportManager;
 
 /**
  * <p>
- * Time driven generator - generates the load for a specified amount of time. The actual duration is specified by the value of {@link #duration} with the default value of 60s.
+ * Generator that is able to generate maximal load.
  * </p>
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
@@ -43,7 +44,7 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
    private static final Logger log = Logger.getLogger(LongtermMessageGenerator.class);
 
    /**
-    * TODO: add javadoc comment (internal field)
+    * The period in milliseconds in which the thread queue is filled with new tasks.
     */
    protected long monitoringPeriod = 1000; // default 1s
 
@@ -52,11 +53,6 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     */
    protected int threadQueueSize = 1000; // default
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.generator.AbstractMessageGenerator#setReportManager(org.perfcake.reporting.ReportManager)
-    */
    @Override
    public void setReportManager(final ReportManager reportManager) {
       super.setReportManager(reportManager);
@@ -69,95 +65,29 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
     *           The number of {@link SenderTask};
     */
    private void sendPack(final long count) {
+      if (log.isDebugEnabled()) {
+         log.debug("Submiting " + count + " sender tasks...");
+      }
       for (long i = 0; i < count; i++) {
-         executorService.submit(new SenderTask(reportManager, messageSenderManager, messageStore, isMessageNumberingEnabled(), isMeasuring));
+         executorService.submit(new SenderTask(reportManager, messageSenderManager, messageStore, isMessageNumberingEnabled()));
       }
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.generator.AbstractMessageGenerator#generate()
-    */
    @Override
    public void generate() throws Exception {
-
-      isMeasuring = !warmUpEnabled;
+      log.info("Starting to generate...");
+      executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(threads);
       setStartTime();
-
-      if (log.isInfoEnabled()) {
-         log.info("Preparing senders");
-      }
-      executorService = Executors.newFixedThreadPool(threads);
       sendPack(threadQueueSize);
 
-      if (warmUpEnabled && log.isInfoEnabled()) {
-         log.info("Warming server up (for at least " + minimalWarmUpDuration + " ms and " + minimalWarmUpCount + " iterations" + ")");
+      while (runInfo.isRunning()) {
+         sendPack(threadQueueSize - executorService.getQueue().size());
+         Thread.sleep(monitoringPeriod);
       }
-      float lastSpeed = Float.MIN_VALUE; // smallest positive nonzero value
-      boolean terminated = false;
-      boolean expired = true;
-      long lastValue = 0;
-
-      final long duration = runInfo.getDuration().getPeriod();
-
-      while (!(expired = (runInfo.getRunTime() > duration)) || !terminated) {
-         try {
-            terminated = executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
-            if (expired && !executorService.isShutdown()) {
-               if (log.isInfoEnabled()) {
-                  log.info("Shutting down the executor service.");
-               }
-               executorService.shutdownNow();
-               terminated = true;
-            }
-
-            final long cnt = runInfo.getIteration();
-
-            if (!expired) {
-               sendPack(cnt - lastValue);
-            }
-
-            // should we log a change?
-            if (cnt != lastValue) {
-               lastValue = cnt;
-               final float averageSpeed = getSpeed(cnt);
-
-               if (warmUpEnabled && !isMeasuring) {
-                  final float relDelta = averageSpeed / lastSpeed - 1f;
-                  final float absDelta = averageSpeed - lastSpeed;
-                  if (log.isDebugEnabled()) {
-                     log.debug("AverageSpeed: " + averageSpeed + ", LastSpeed: " + lastSpeed);
-                     log.debug("Difference: " + absDelta + " (" + relDelta + "%)");
-                  }
-                  if ((getDurationInMillis() > minimalWarmUpDuration) && (lastValue > minimalWarmUpCount) && (Math.abs(absDelta) < 0.5f || Math.abs(relDelta) < 0.005f)) {
-                     isMeasuring = true;
-                     postWarmUp();
-                     lastValue = 0;
-                  }
-                  lastSpeed = averageSpeed;
-               }
-            }
-         } catch (final InterruptedException ie) {
-            ie.printStackTrace();
-            // "Shit happens!", Forrest Gump
-         }
-      }
-
       setStopTime();
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.generator.AbstractMessageGenerator#postWarmUp()
-    */
-   @Override
-   protected void postWarmUp() throws Exception {
-      if (log.isInfoEnabled()) {
-         log.info("Server is warmed up - starting to measure...");
-      }
-      setStartTime();
+      executorService.shutdown();
+      executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
+      executorService.shutdownNow();
    }
 
    /**
@@ -211,4 +141,5 @@ public class LongtermMessageGenerator extends AbstractMessageGenerator {
    protected void validateRunInfo() {
       assert runInfo.getDuration().getPeriodType() == PeriodType.TIME : this.getClass().getName() + " can only be used with an iteration based run configuration.";
    }
+
 }
