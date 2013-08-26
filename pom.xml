@@ -31,7 +31,21 @@
          <name>Pavel Macík</name>
          <email>pavel.macik@gmail.com</email>
       </developer>
+      <developer>
+         <name>Jiří Sedláček</name>
+         <email>jiri@sedlackovi.cz</email>
+      </developer>
    </developers>
+   <contributors>
+      <contributor>
+         <name>Marek Baluch</name>
+         <email>baluchw@gmail.com</email>      	
+      </contributor>	
+      <contributor>
+         <name>Pavel Drozd</name>
+         <email>ravliv7@gmail.com</email>      	
+      </contributor>	
+   </contributors>
    <ciManagement>
       <system>Jenkins</system>
       <url>https://perfcake.ci.cloudbees.com/</url>
@@ -48,38 +62,6 @@
          <comments>A business-friendly OSS license</comments>
       </license>
    </licenses>
-   <repositories>
-      <repository>
-         <id>maven-central-repository</id>
-         <name>Maven Central Repository</name>
-         <url>http://repo.maven.apache.org/maven2</url>
-         <layout>default</layout>
-         <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-         </releases>
-         <snapshots>
-            <enabled>false</enabled>
-            <updatePolicy>never</updatePolicy>
-         </snapshots>
-      </repository>
-   </repositories>
-   <pluginRepositories>
-      <pluginRepository>
-         <id>maven-central-repository</id>
-         <name>Maven Central Repository</name>
-         <url>http://repo.maven.apache.org/maven2/</url>
-         <layout>default</layout>
-         <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-         </releases>
-         <snapshots>
-            <enabled>false</enabled>
-            <updatePolicy>never</updatePolicy>
-         </snapshots>
-      </pluginRepository>
-   </pluginRepositories>
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <maven.exec.plugin.version>1.2</maven.exec.plugin.version>
