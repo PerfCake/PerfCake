@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
+<scenario xmlns="urn:perfcake:scenario:0.3" enabled="true">
    <properties>
       <property name="quickstartName" value="testQS"/>
       <property name="filteredProperty" value="${test.filtered.property:default1}"/>
@@ -23,6 +23,9 @@
             <property name="property2" value="dummy_p2_value"/>
             <period type="iteration" value="100"/>
             <period type="time" value="2000"/>
+         </destination>
+         <destination class="ConsoleDestination" enabled="false">
+            <period type="iteration" value="100"/>
          </destination>
       </reporter>
    </reporting>

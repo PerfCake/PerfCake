@@ -372,20 +372,24 @@ public class ScenarioParser {
             Set<Period> currentDestinationPeriodSet = null;
             for (int j = 0; j < currentReporterDestinationsCount; j++) {
                currentDestinationElement = (Element) currentReporterDestinations.item(j);
-               String destClass = currentDestinationElement.getAttribute("class");
-               if (destClass.indexOf(".") < 0) {
-                  destClass = DEFAULT_DESTINATION_PACKAGE + "." + destClass;
+               final String enabled = currentDestinationElement.getAttribute("enabled");
+
+               if (enabled == null || "".equals(enabled) || Boolean.parseBoolean(enabled)) { // ignore disabled destinations
+                  String destClass = currentDestinationElement.getAttribute("class");
+                  if (destClass.indexOf(".") < 0) {
+                     destClass = DEFAULT_DESTINATION_PACKAGE + "." + destClass;
+                  }
+                  log.info(" '- Destination (" + destClass + ")");
+                  currentDestinationProperties = getPropertiesFromSubNodes(currentDestinationElement);
+                  Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
+                  currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
+                  currentDestinationPeriodsAsProperties = getPropertiesFromSubNodes(currentDestinationElement, "period", "type", "value");
+                  currentDestinationPeriodSet = new HashSet<>();
+                  for (final Entry<Object, Object> entry : currentDestinationPeriodsAsProperties.entrySet()) {
+                     currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(((String) entry.getKey()).toUpperCase()), Long.valueOf(entry.getValue().toString())));
+                  }
+                  currentReporter.registerDestination(currentDestination, currentDestinationPeriodSet);
                }
-               log.info(" '- Destination (" + destClass + ")");
-               currentDestinationProperties = getPropertiesFromSubNodes(currentDestinationElement);
-               Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
-               currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
-               currentDestinationPeriodsAsProperties = getPropertiesFromSubNodes(currentDestinationElement, "period", "type", "value");
-               currentDestinationPeriodSet = new HashSet<>();
-               for (final Entry<Object, Object> entry : currentDestinationPeriodsAsProperties.entrySet()) {
-                  currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(((String) entry.getKey()).toUpperCase()), Long.valueOf(entry.getValue().toString())));
-               }
-               currentReporter.registerDestination(currentDestination, currentDestinationPeriodSet);
             }
             reportManager.registerReporter(currentReporter);
          }

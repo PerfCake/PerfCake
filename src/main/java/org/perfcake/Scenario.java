@@ -49,7 +49,7 @@ public class Scenario {
    private RunInfo runInfo;
    private ValidatorManager validatorManager;
 
-   public static final String VERSION = "0.2";
+   public static final String VERSION = "0.3";
 
    private URL scenarioUrl;
 

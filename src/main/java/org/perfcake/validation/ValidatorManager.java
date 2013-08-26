@@ -197,8 +197,6 @@ public class ValidatorManager {
                      }
 
                      allMessagesValid &= isMessageValid;
-                     // TODO make sure the following line was a mistake
-                     // receivedMessage = resultMessages.poll();
                   }
                }
                if (!fastForward) {
