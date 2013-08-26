@@ -94,8 +94,8 @@ public class Scenario {
       messageSenderManager = parser.parseSender(generator.getThreads());
       reportManager = parser.parseReporting();
       reportManager.setRunInfo(runInfo);
-      messageStore = parser.parseMessages();
       validatorManager = parser.parseValidation();
+      messageStore = parser.parseMessages(validatorManager);
    }
 
    /**

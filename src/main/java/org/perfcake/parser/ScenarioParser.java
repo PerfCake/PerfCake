@@ -244,7 +244,7 @@ public class ScenarioParser {
     * @throws IOException
     * @throws FileNotFoundException
     */
-   public List<MessageTemplate> parseMessages() throws PerfCakeException {
+   public List<MessageTemplate> parseMessages(final ValidatorManager validatorManager) throws PerfCakeException {
       final List<MessageTemplate> messageStore = new ArrayList<>();
 
       try {
@@ -282,16 +282,27 @@ public class ScenarioParser {
                }
 
                final NodeList currentMessageValidatorRefNodeList = xPathEvaluate("validatorRef", currentMessageElement);
-               final List<String> currentMessageValidatorRefList = new LinkedList<>();
+               final List<MessageValidator> currentMessageValidators = new LinkedList<>();
                Element currentMessageValidatorRefElement = null;
                final int validatorRefCount = currentMessageValidatorRefNodeList.getLength();
+
                for (int validatorRefIndex = 0; validatorRefIndex < validatorRefCount; validatorRefIndex++) {
+                  String validatorId = null;
+                  MessageValidator validator = null;
+
                   currentMessageValidatorRefElement = (Element) currentMessageValidatorRefNodeList.item(validatorRefIndex);
-                  currentMessageValidatorRefList.add(currentMessageValidatorRefElement.getAttribute("id"));
+
+                  validatorId = currentMessageValidatorRefElement.getAttribute("id");
+                  validator = validatorManager.getValidator(validatorId);
+                  if (validator == null) {
+                     throw new PerfCakeException(String.format("Validator with id %s not found.", validatorId));
+                  }
+
+                  currentMessageValidators.add(validator);
                }
 
                // create message to be send
-               currentMessageToSend = new MessageTemplate(currentMessage, currentMessageMultiplicity, currentMessageValidatorRefList);
+               currentMessageToSend = new MessageTemplate(currentMessage, currentMessageMultiplicity, currentMessageValidators);
 
                log.info("'- Message (" + messageUrl.toString() + "), " + currentMessageMultiplicity + "x");
                if (log.isDebugEnabled()) {

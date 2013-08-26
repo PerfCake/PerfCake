@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.perfcake.util.Utils;
 import org.perfcake.util.properties.DefaultPropertyGetter;
+import org.perfcake.validation.MessageValidator;
 
 /**
  * 
@@ -37,18 +38,18 @@ public class MessageTemplate {
 
    private final Message message;
    private final long multiplicity;
-   private final List<String> validatorIdList;// may be empty
+   private final List<MessageValidator> validators;// may be empty
    private Matcher matcher;
 
    public Matcher getMatcher() {
       return matcher;
    }
 
-   public MessageTemplate(final Message message, final long multiplicity, final List<String> validatorIdList) {
+   public MessageTemplate(final Message message, final long multiplicity, final List<MessageValidator> validators) {
       this.message = message;
       prepareMatcher();
       this.multiplicity = multiplicity;
-      this.validatorIdList = validatorIdList;
+      this.validators = validators;
    }
 
    public Message getMessage() {
@@ -57,7 +58,7 @@ public class MessageTemplate {
 
    public Message getFilteredMessage(final Properties props) {
       if (getMatcher() != null) {
-         Message m = MessageFactory.getMessage();
+         final Message m = MessageFactory.getMessage();
          String text = this.getMessage().getPayload().toString();
          text = Utils.filterProperties(text, getMatcher(), new DefaultPropertyGetter(props));
 
@@ -74,8 +75,8 @@ public class MessageTemplate {
 
       // find out if there are any attributes in the text message to be replaced
       if (message.getPayload() instanceof String) {
-         String filteredString = (String) message.getPayload();
-         Matcher matcher = Pattern.compile(propertyPattern).matcher(filteredString);
+         final String filteredString = (String) message.getPayload();
+         final Matcher matcher = Pattern.compile(propertyPattern).matcher(filteredString);
          if (matcher.find()) {
             this.matcher = matcher;
          }
@@ -87,7 +88,7 @@ public class MessageTemplate {
       return multiplicity;
    }
 
-   public List<String> getValidatorIdList() {
-      return validatorIdList;
+   public List<MessageValidator> getValidators() {
+      return validators;
    }
 }

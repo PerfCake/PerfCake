@@ -178,7 +178,6 @@ public class ValidatorManager {
       public void run() {
          boolean isMessageValid = false;
          ReceivedMessage receivedMessage = null;
-         MessageValidator validator = null;
          finished = false;
          allMessagesValid = true;
          fastForward = false;
@@ -191,21 +190,13 @@ public class ValidatorManager {
          try {
             while (!validationThread.isInterrupted() && (receivedMessage = resultMessages.poll()) != null) {
                while (receivedMessage != null) {
-                  for (final String validatorId : receivedMessage.getSentMessage().getValidatorIdList()) {
-                     validator = getValidator(validatorId);
-
-                     // verify
-                     if (validator != null) {
-                        isMessageValid = validator.isValid(new Message(receivedMessage.getPayload()));
-                        if (log.isTraceEnabled()) {
-                           log.trace(String.format("Message response %s validated with %s returns %s.", receivedMessage.getPayload().toString(), validator.toString(), String.valueOf(isMessageValid)));
-                        }
-
-                        allMessagesValid &= isMessageValid;
-                     } else {
-                        log.warn(String.format("Validator with id %s not found.", validatorId));
-                        allMessagesValid = false;
+                  for (final MessageValidator validator : receivedMessage.getSentMessage().getValidators()) {
+                     isMessageValid = validator.isValid(new Message(receivedMessage.getPayload()));
+                     if (log.isTraceEnabled()) {
+                        log.trace(String.format("Message response %s validated with %s returns %s.", receivedMessage.getPayload().toString(), validator.toString(), String.valueOf(isMessageValid)));
                      }
+
+                     allMessagesValid &= isMessageValid;
                      // TODO make sure the following line was a mistake
                      // receivedMessage = resultMessages.poll();
                   }

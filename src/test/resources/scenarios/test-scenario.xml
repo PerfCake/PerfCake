@@ -44,6 +44,6 @@
    <validation>
       <validator id="fishValidator" class="TextMessageValidator"><![CDATA[.*fish.*]]></validator>
       <validator id="stupidValidator" class="TextMessageValidator"><![CDATA[.*[Ss]tupid.*]]></validator>
-      <validator id="smileValidator" class="TextMessageValidator"><![CDATA[.*:\\).*]]></validator>
+      <validator id="smileValidator" class="TextMessageValidator"><![CDATA[.*:\).*]]></validator>
    </validation>
 </scenario>
