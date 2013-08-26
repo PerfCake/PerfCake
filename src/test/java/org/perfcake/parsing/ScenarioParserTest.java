@@ -34,7 +34,7 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
-import org.perfcake.message.generator.LongtermMessageGenerator;
+import org.perfcake.message.generator.DefaultMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.parser.ScenarioParser;
 import org.perfcake.reporting.ReportManager;
@@ -99,11 +99,11 @@ public class ScenarioParserTest {
    public void parseGeneratorTest() {
       try {
          AbstractMessageGenerator generator = scenarioParser.parseGenerator();
-         Assert.assertTrue(generator instanceof LongtermMessageGenerator, "The generator is not an instance of " + LongtermMessageGenerator.class.getName());
-         LongtermMessageGenerator lmg = (LongtermMessageGenerator) generator;
-         lmg.setRunInfo(new RunInfo(new Period(PeriodType.TIME, 30L)));
-         Assert.assertEquals(lmg.getThreads(), THREADS, "threads");
-         Assert.assertEquals(lmg.getThreadQueueSize(), 5000);
+         Assert.assertTrue(generator instanceof DefaultMessageGenerator, "The generator is not an instance of " + DefaultMessageGenerator.class.getName());
+         DefaultMessageGenerator dmg = (DefaultMessageGenerator) generator;
+         dmg.setRunInfo(new RunInfo(new Period(PeriodType.TIME, 30L)));
+         Assert.assertEquals(dmg.getThreads(), THREADS, "threads");
+         Assert.assertEquals(dmg.getThreadQueueSize(), 5000);
       } catch (PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());

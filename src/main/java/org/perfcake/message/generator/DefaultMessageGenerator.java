@@ -36,12 +36,12 @@ import org.perfcake.reporting.ReportManager;
  * @author Pavel Macík <pavel.macik@gmail.com>
  * 
  */
-public class LongtermMessageGenerator extends AbstractMessageGenerator {
+public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * The generator's logger.
     */
-   private static final Logger log = Logger.getLogger(LongtermMessageGenerator.class);
+   private static final Logger log = Logger.getLogger(DefaultMessageGenerator.class);
 
    /**
     * The period in milliseconds in which the thread queue is filled with new tasks.

@@ -3,7 +3,7 @@
    <properties>
       <property name="quickstartName" value="camel_gw_jms"/>
    </properties>
-   <generator class="LongtermMessageGenerator" threads="${perfcake.performance.thread.count:25}">
+   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:25}">
       <run type="time" value="${perfcake.performance.duration:300000}"/>
       <property name="threadQueueSize" value="50000"/>
    </generator>

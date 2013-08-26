@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
    <!--properties/-->
-   <generator class="LongtermMessageGenerator" threads="${perfcake.performance.thread.count:100}">
+   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:100}">
       <run type="time" value="${perfcake.performance.duration:300000}"/>
       <property name="threadQueueSize" value="1000"/>
    </generator>

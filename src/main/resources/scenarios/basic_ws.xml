@@ -5,7 +5,7 @@
       <property name="test_property1" value="test_value1"/>
       <property name="test_property2" value="test_value2"/>
    </properties>
-   <generator class="LongtermMessageGenerator" threads="${perfcake.performance.thread.count:200}">
+   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:200}">
       <run type="iteration" value="${perfcake.performance.count:500000}"/>
    </generator>
    <sender class="HTTPSender">

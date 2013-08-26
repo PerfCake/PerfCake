@@ -5,7 +5,7 @@
       <property name="filteredProperty" value="${test.filtered.property:default1}"/>
       <property name="defaultProperty" value="${test.missing.property:default-property-value}"/>
    </properties>
-   <generator class="LongtermMessageGenerator" threads="10">
+   <generator class="DefaultMessageGenerator" threads="10">
       <run type="time" value="30"/>
       <property name="threadQueueSize" value="5000"/>
    </generator>

@@ -3,7 +3,7 @@
    <properties>
       <property name="quickstartName" value="bpel_plain"/>
    </properties>
-   <generator class="LongtermMessageGenerator" threads="${perfcake.performance.thread.count:50}">
+   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:50}">
       <run type="time" value="${perfcake.performance.duration:300000}"/>
       <property name="threadQueueSize" value="50000"/>
    </generator>
