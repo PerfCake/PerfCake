@@ -3,31 +3,33 @@
    <properties>
       <property name="quickstartName" value="sy-plain-http-servlet"/>
    </properties>
-   <generator class="LongtermMessageGenerator" threads="${perfcake.performance.thread.count:100}">
-      <run type="time" value="${perfcake.performance.duration:300}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:100}">
+      <run type="time" value="${perfcake.performance.duration:300000}"/>
       <property name="threadQueueSize" value="50000"/>
-      <property name="warmUpEnabled" value="false"/>
    </generator>
    <sender class="HTTPSender">
       <property name="target" value="http://${server.host}:${server.port}/performance-plain-http-servlet/PlainHttpServlet"/>
       <property name="method" value="POST"/>
    </sender>
    <reporting>
-      <property name="tags" value=""/>
-      <property name="uniqueId" value="${scenario}"/>
       <reporter class="ResponseTimeReporter">
-         <property name="label_type" value="Time"/>
-         <destination class="ConsoleDestination">
-            <period type="percentage" value="1"/>
+         <destination class="CSVDestination">
+            <period type="time" value="30000"/>
+            <property name="path" value="${scenario}-response-time.csv"/>
          </destination>
+         <!--destination class="ConsoleDestination">
+            <period type="time" value="30000" />
+         </destination-->
       </reporter>
-      <!--reporter class="KPIReporter">
-               <property name="label_type" value="Time" />
-               <destination class="CsvDestination">
-                  <property name="outputPath" value="logs"/>
-                  <property name="periodicity" value="10%"/>
-               </destination>
-            </reporter-->
+      <!--reporter class="MemoryUsageReporter">
+         <destination class="CSVDestination">
+            <period type="time" value="30000"/>
+            <property name="path" value="${scenario}-memory-usage.csv" />
+         </destination>
+         <destination class="ConsoleDestination">
+            <period type="time" value="30000" />
+         </destination>
+      </reporter-->
    </reporting>
    <messages>
       <message uri="plain.txt"/>

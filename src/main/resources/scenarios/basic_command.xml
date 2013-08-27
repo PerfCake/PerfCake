@@ -3,24 +3,21 @@
    <properties>
       <property name="quickstartName" value="basic_command"/>
    </properties>
-   <generator class="ImmediateMessageGenerator" threads="100">
-      <!--<property name="count" value="10000" /> -->
-      <property name="count" value="10"/>
-      <property name="warmUpEnabled" value="false"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:100}">
+      <run type="iteration" value="${perfcake.performance.count:10}"/>
    </generator>
    <sender class="CommandSender">
    </sender>
    <reporting>
       <property name="tags" value=""/>
       <property name="uniqueId" value="${scenario}"/>
-      <reporter class="ATReporter">
-         <property name="label_type" value="Time"/>
-         <destination class="CsvDestination">
-            <property name="periodicity" value="10%"/>
-            <property name="outputPath" value="logs"/>
+      <reporter class="ResponseTimeReporter">
+         <destination class="CSVDestination">
+            <period type="iteration" value="1"/>
+            <property name="path" value="${scenario}-response-time.csv"/>
          </destination>
          <destination class="ConsoleDestination">
-            <property name="periodicity" value="1s"/>
+            <period type="time" value="1000"/>
          </destination>
       </reporter>
    </reporting>

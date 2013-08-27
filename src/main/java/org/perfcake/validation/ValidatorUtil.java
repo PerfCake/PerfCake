@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -333,7 +333,8 @@ public final class ValidatorUtil {
     * @param value
     *           Valid value of validated message part.
     * @return Number of messages in the list that match the criteria (pass the validation).
-    * @see #validateMessage(java.util.List, int, org.jboss.soa.esb.qa.perfcake.validation.ValidatorUtil.MessagePart, java.lang.String, org.jboss.soa.esb.qa.perfcake.validation.ValidatorUtil.Operator, java.lang.String)
+    * @see #validateMessage(java.util.List, int, org.jboss.soa.esb.qa.perfcake.validation.ValidatorUtil.MessagePart, java.lang.String, org.jboss.soa.esb.qa.perfcake.validation.ValidatorUtil.Operator,
+    *      java.lang.String)
     */
    private static int countMessages(final List<Message> list, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {
       int messageCount = 0;

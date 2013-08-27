@@ -21,7 +21,9 @@ package org.perfcake.parsing;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.perfcake.PerfCakeException;
@@ -32,13 +34,15 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
-import org.perfcake.message.generator.LongtermMessageGenerator;
+import org.perfcake.message.generator.DefaultMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.parser.ScenarioParser;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.destinations.DummyDestination;
+import org.perfcake.reporting.reporters.DummyReporter;
 import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.reporters.WarmUpReporter;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidatorManager;
 import org.testng.Assert;
@@ -49,7 +53,6 @@ public class ScenarioParserTest {
    private ScenarioParser scenarioParser, noValidationScenarioParser, noMessagesScenarioParser;
 
    private static final int THREADS = 10;
-   private static final int MIN_WARMUP_COUNT = 12345;
    private static final String MESSAGE1_CONTENT = "Stupid is as supid does! :)";
    private static final String MESSAGE2_CONTENT = "I'm the fish!";
    private static final String SENDER_CLASS = "org.perfcake.message.sender.HTTPSender";
@@ -94,18 +97,13 @@ public class ScenarioParserTest {
    @Test
    public void parseGeneratorTest() {
       try {
-         final AbstractMessageGenerator generator = scenarioParser.parseGenerator();
-         Assert.assertTrue(generator instanceof LongtermMessageGenerator, "The generator is not an instance of " + LongtermMessageGenerator.class.getName());
-         final LongtermMessageGenerator lmg = (LongtermMessageGenerator) generator;
-         lmg.setRunInfo(new RunInfo(new Period(PeriodType.TIME, 30L)));
-         Assert.assertEquals(lmg.getMonitoringPeriod(), 1000, "monitoringPeriod"); // default value
-         Assert.assertEquals(lmg.getThreadQueueSize(), 5000, "threadQueueSize");
-         Assert.assertEquals(lmg.getDuration(), 30, "duration");
-         Assert.assertEquals(lmg.isWarmUpEnabled(), true, "warmUpEnabled");
-         Assert.assertEquals(lmg.getThreads(), THREADS, "threads");
-         Assert.assertEquals(lmg.getMinimalWarmUpCount(), MIN_WARMUP_COUNT, "minimalWarmUpCount");
-         Assert.assertEquals(lmg.getMinimalWarmUpDuration(), 15000, "minimalWarmUpDuration"); // default value
-      } catch (final PerfCakeException e) {
+         AbstractMessageGenerator generator = scenarioParser.parseGenerator();
+         Assert.assertTrue(generator instanceof DefaultMessageGenerator, "The generator is not an instance of " + DefaultMessageGenerator.class.getName());
+         DefaultMessageGenerator dmg = (DefaultMessageGenerator) generator;
+         dmg.setRunInfo(new RunInfo(new Period(PeriodType.TIME, 30L)));
+         Assert.assertEquals(dmg.getThreads(), THREADS, "threads");
+         Assert.assertEquals(dmg.getThreadQueueSize(), 5000);
+      } catch (PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -179,10 +177,24 @@ public class ScenarioParserTest {
       try {
          final ReportManager reportManager = scenarioParser.parseReporting();
          Assert.assertNotNull(reportManager);
-         Assert.assertEquals(reportManager.getReporters().size(), 1, "reportManager's number of reporters");
-         final Reporter reporter = reportManager.getReporters().toArray(new Reporter[0])[0];
+         Assert.assertEquals(reportManager.getReporters().size(), 2, "reportManager's number of reporters");
+         final String DUMMY_REPORTER_KEY = "dummy";
+         final String WARM_UP_REPORTER_KEY = "warmup";
+
+         Map<String, Reporter> reportersMap = new HashMap<>();
+         for (Reporter reporter : reportManager.getReporters()) {
+            if (reporter instanceof DummyReporter) {
+               reportersMap.put(DUMMY_REPORTER_KEY, reporter);
+            } else if (reporter instanceof WarmUpReporter) {
+               reportersMap.put(WARM_UP_REPORTER_KEY, reporter);
+            } else {
+               Assert.fail("The reporter should be an instance of either " + DummyReporter.class.getCanonicalName() + " or " + WarmUpReporter.class.getCanonicalName() + ", but it is an instance of " + reporter.getClass().getCanonicalName() + "!");
+            }
+         }
+
+         Reporter reporter = reportersMap.get(DUMMY_REPORTER_KEY);
          Assert.assertEquals(reporter.getDestinations().size(), 1, "reporter's number of destinations");
-         final Destination destination = reporter.getDestinations().iterator().next();
+         Destination destination = reporter.getDestinations().iterator().next();
          Assert.assertTrue(destination instanceof DummyDestination, "destination's class");
          Assert.assertEquals(((DummyDestination) destination).getProperty(), "dummy_p_value", "destination's property value");
          Assert.assertEquals(((DummyDestination) destination).getProperty2(), "dummy_p2_value", "destination's property2 value");
@@ -205,7 +217,16 @@ public class ScenarioParserTest {
             }
          }
          Assert.assertEquals(assertedPeriodCount, 3, "number of period asserted");
-      } catch (final PerfCakeException e) {
+
+         Reporter warmUpReporter = reportersMap.get(WARM_UP_REPORTER_KEY);
+         Assert.assertTrue(warmUpReporter instanceof WarmUpReporter, "reporter's class");
+         Assert.assertEquals(warmUpReporter.getDestinations().size(), 0, "reporter's number of destinations");
+         Assert.assertEquals(((WarmUpReporter) warmUpReporter).getMinimalWarmUpCount(), 12345, "reporter's minimal warmup count");
+         Assert.assertEquals(((WarmUpReporter) warmUpReporter).getMinimalWarmUpDuration(), 15000, "reporter's minimal warmup duration");
+         Assert.assertEquals(((WarmUpReporter) warmUpReporter).getAbsoluteThreshold(), 0.2d, "reporter's absolute threshold");
+         Assert.assertEquals(((WarmUpReporter) warmUpReporter).getRelativeThreshold(), 1d, "reporter's relative threshold");
+
+      } catch (PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }

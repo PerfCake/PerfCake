@@ -25,8 +25,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
@@ -37,8 +35,8 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
-import org.perfcake.util.PerfCakeAgent;
-import org.perfcake.util.PerfCakeAgent.Memory;
+import org.perfcake.util.agent.PerfCakeAgent;
+import org.perfcake.util.agent.PerfCakeAgent.Memory;
 
 /**
  * Reporter that is able to get the memory usage information from a remote JVM,
@@ -51,7 +49,6 @@ import org.perfcake.util.PerfCakeAgent.Memory;
 public class MemoryUsageReporter extends AbstractReporter {
 
    private static final long BYTES_IN_MIB = 1_048_576L;
-   private static final NumberFormat numberFormat = new DecimalFormat("0.00");
 
    /**
     * The reporter's logger.
@@ -61,12 +58,12 @@ public class MemoryUsageReporter extends AbstractReporter {
    /**
     * Hostname where {@link PerfCakeAgent} is listening on.
     */
-   private String hostname;
+   private String hostname = "localhost";
 
    /**
     * Port number where {@link PerfCakeAgent} is listening on.
     */
-   private String port;
+   private String port = "8849";
 
    /**
     * IP address of the {@link PerfCakeAgent}.
@@ -95,7 +92,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     */
    @SuppressWarnings("rawtypes")
    @Override
-   protected Accumulator getAccumulator(String key, Class clazz) {
+   protected Accumulator getAccumulator(final String key, final Class clazz) {
       return new LastValueAccumulator();
    }
 
@@ -157,17 +154,10 @@ public class MemoryUsageReporter extends AbstractReporter {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.nreporting.reporters.AbstractReporter#doPublishResult(org.perfcake.common.PeriodType, org.perfcake.nreporting.destinations.Destination)
-    */
    @Override
-   protected void doPublishResult(final PeriodType periodType, final Destination d) throws ReportingException {
+   public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       try {
-         Measurement m = new Measurement((long) runInfo.getPercentage(), runInfo.getRunTime(), runInfo.getIteration());
-         long used = getMemoryUsage(Memory.USED);
-         // m.set(new Quantity<Number>((double) used / BYTES_IN_MIB, "MiB"));
+         Measurement m = newMeasurement();
          m.set("Used", (new Quantity<Number>((double) getMemoryUsage(Memory.USED) / BYTES_IN_MIB, "MiB")));
          m.set("Total", (new Quantity<Number>((double) getMemoryUsage(Memory.TOTAL) / BYTES_IN_MIB, "MiB")));
          m.set("Max", (new Quantity<Number>((double) getMemoryUsage(Memory.MAX) / BYTES_IN_MIB, "MiB")));

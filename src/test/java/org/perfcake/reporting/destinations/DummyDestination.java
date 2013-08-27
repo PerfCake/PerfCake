@@ -25,7 +25,6 @@ import java.io.StringWriter;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
-import org.perfcake.reporting.destinations.Destination;
 
 /**
  * Testing destination.
@@ -96,7 +95,7 @@ public class DummyDestination implements Destination {
             lastType = PeriodType.ITERATION;
          } else if (sw.toString().contains("reportPercentage")) {
             lastType = PeriodType.PERCENTAGE;
-         } else if (sw.toString().contains("AbstractReporter$1.run")) {
+         } else if (sw.toString().contains("ReportManager$1.run")) {
             lastType = PeriodType.TIME;
          } else {
             t.printStackTrace();

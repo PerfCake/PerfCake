@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 /**
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
+ * @author Pavel Macík <pavel.macik@gmail.com>
  * 
  */
 public class AccumulatorsTest {
@@ -69,6 +70,24 @@ public class AccumulatorsTest {
    }
 
    @Test
+   public void sumAccumulatorTest() {
+      final int START = 10, END = 100;
+
+      SumAccumulator aa = new SumAccumulator();
+
+      Assert.assertEquals(aa.getResult(), 0d);
+
+      for (int i = START; i <= END; i++) {
+         aa.add((double) i);
+      }
+
+      Assert.assertEquals(aa.getResult(), (START + END) * (END - START + 1) / 2d);
+
+      aa.reset();
+      Assert.assertEquals(aa.getResult(), 0d, "SumAccumulator must be 0 after reset.");
+   }
+
+   @Test
    public void slidingWindowAvgAccumulatorTest() {
       final int START = 10, END = 100, WINDOW = 16;
 
@@ -97,7 +116,7 @@ public class AccumulatorsTest {
       int WINDOW = 1000;
 
       // accumulator, start, end, result, after reset
-      return new Object[][] { { new AvgAccumulator(), START, END, new Double((START + END) / 2d), new Double(0) }, { new LastValueAccumulator(), START, END, new Double(END), null }, { new SlidingWindowAvgAccumulator(WINDOW), START, END, new Double((END - WINDOW + 1 + END) / 2d), new Double(0) } };
+      return new Object[][] { { new AvgAccumulator(), START, END, new Double((START + END) / 2d), new Double(0) }, { new SumAccumulator(), START, END, new Double(500L * (START + END) * (END - START + 1L) / 2d), new Double(0) }, { new LastValueAccumulator(), START, END, new Double(END), null }, { new SlidingWindowAvgAccumulator(WINDOW), START, END, new Double((END - WINDOW + 1 + END) / 2d), new Double(0) } };
    }
 
    @Test(dataProvider = "stressTest", groups = { "performance" })
@@ -105,7 +124,7 @@ public class AccumulatorsTest {
    public void accumulatorStressTest(final Accumulator a, final Long start, final Long end, final Double result, final Double zero) throws InterruptedException {
       List<Thread> stressors = new ArrayList<>();
 
-      for (int i = 0; i < 1000; i++) {
+      for (int i = 0; i < 500; i++) {
          stressors.add(new Thread(new AccumulatorStressor(a, start, end)));
       }
 
@@ -121,7 +140,7 @@ public class AccumulatorsTest {
 
       time = System.currentTimeMillis() - time;
 
-      Reporter.log("Stress test length " + time + "ms.");
+      Reporter.log("Stress test (" + a.getClass().getSimpleName() + ") length " + time + "ms.");
 
       Assert.assertEquals(a.getResult(), result);
 
@@ -149,6 +168,5 @@ public class AccumulatorsTest {
             a.add(Double.valueOf(i));
          }
       }
-
    }
 }

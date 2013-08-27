@@ -8,7 +8,11 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
+<<<<<<< HEAD
  * http://www.apache.org/licenses/LICENSE-2.0
+=======
+ *      http://www.apache.org/licenses/LICENSE-2.0
+>>>>>>> feature/refactor-reporting-#5
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,12 +41,13 @@ import org.perfcake.validation.ValidatorManager;
 
 /**
  * <p>
- * The sender task is a runnable class that is executing a single task of sending the message(s) from the message store using instances of {@link MessageSender} provided by message sender manager (see {@link MessageSenderManager}), receiving the message sender's response and handling the reporting and response message validation.
+ * The sender task is a runnable class that is executing a single task of sending the message(s) from the message store using instances of {@link MessageSender} provided by message sender manager (see
+ * {@link MessageSenderManager}), receiving the message sender's response and handling the reporting and response message validation.
  * </p>
  * <p>
  * It is used by the generators.
  * </p>
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 class SenderTask implements Runnable {
@@ -63,12 +68,7 @@ class SenderTask implements Runnable {
    private boolean messageNumberingEnabled;
 
    /**
-    * Indicates whether the system is in a state when it measures the performance.
-    */
-   private boolean isMeasuring;
-
-   /**
-    * A reference to the current report manager.
+    * Reference to a report manager.
     */
    private ReportManager reportManager;
 
@@ -93,11 +93,6 @@ class SenderTask implements Runnable {
       return result;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see java.lang.Runnable#run()
-    */
    @Override
    public void run() {
       assert messageStore != null && reportManager != null && validatorManager != null && senderManager != null : "SenderTask was not properly initialized.";
@@ -107,46 +102,46 @@ class SenderTask implements Runnable {
       MessageSender sender = null;
       ReceivedMessage receivedMessage = null;
       try {
-         final MeasurementUnit mu = reportManager.newMeasurementUnit();
+         MeasurementUnit mu = reportManager.newMeasurementUnit();
 
-         // only set numbering to headers if it is enabled, later there is no change to
-         // filter out the headers before sending
-         final String msgNumberStr = String.valueOf(mu.getIteration());
-         if (messageNumberingEnabled && isMeasuring) {
-            messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, msgNumberStr);
-         }
-
-         final Iterator<MessageTemplate> iterator = messageStore.iterator();
-         if (iterator.hasNext()) {
-            while (iterator.hasNext()) {
-
-               sender = senderManager.acquireSender();
-               final MessageTemplate messageToSend = iterator.next();
-               final Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
-               final long multiplicity = messageToSend.getMultiplicity();
-
-               for (int i = 0; i < multiplicity; i++) {
-                  receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend);
-                  if (validatorManager.isEnabled()) {
-                     validatorManager.addToResultMessages(receivedMessage);
-                  }
-               }
-
-               senderManager.releaseSender(sender); // !!! important !!!
-               sender = null;
+         if (mu != null) {
+            // only set numbering to headers if it is enabled, later there is no change to
+            // filter out the headers before sending
+            if (messageNumberingEnabled) {
+               messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration()));
             }
-         } else {
+
             sender = senderManager.acquireSender();
-            receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null);
-            if (validatorManager.isEnabled()) {
-               validatorManager.addToResultMessages(receivedMessage);
+
+            Iterator<MessageTemplate> iterator = messageStore.iterator();
+            if (iterator.hasNext()) {
+               while (iterator.hasNext()) {
+
+                  MessageTemplate messageToSend = iterator.next();
+                  Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
+                  long multiplicity = messageToSend.getMultiplicity();
+
+                  for (int i = 0; i < multiplicity; i++) {
+                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend);
+                     if (validatorManager.isEnabled()) {
+                        validatorManager.addToResultMessages(receivedMessage);
+                     }
+                  }
+
+               }
+            } else {
+               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null);
+               if (validatorManager.isEnabled()) {
+                  validatorManager.addToResultMessages(receivedMessage);
+               }
             }
+
             senderManager.releaseSender(sender); // !!! important !!!
             sender = null;
-         }
 
-         reportManager.report(mu);
-      } catch (final Exception e) {
+            reportManager.report(mu);
+         }
+      } catch (Exception e) {
          e.printStackTrace();
       } finally {
          if (sender != null) {
@@ -165,10 +160,6 @@ class SenderTask implements Runnable {
 
    protected void setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
       this.messageNumberingEnabled = messageNumberingEnabled;
-   }
-
-   protected void setMeasuring(final boolean isMeasuring) {
-      this.isMeasuring = isMeasuring;
    }
 
    protected void setReportManager(final ReportManager reportManager) {

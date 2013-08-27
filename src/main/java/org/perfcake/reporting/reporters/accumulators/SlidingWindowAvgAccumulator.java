@@ -52,11 +52,16 @@ public class SlidingWindowAvgAccumulator implements Accumulator<Double> {
    @Override
    public Double getResult() {
       double accum = 0;
+      double size = 0;
 
-      for (Object o : fifo) {
-         accum = accum + (Double) o;
+      synchronized (fifo) {
+         for (Object o : fifo) {
+            accum = accum + (Double) o;
+         }
+         size = fifo.size();
       }
-      return fifo.size() == 0 ? 0d : accum / fifo.size();
+
+      return size == 0 ? 0d : accum / size;
    }
 
    @Override

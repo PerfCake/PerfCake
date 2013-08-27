@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -45,6 +46,9 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
  */
 public abstract class AbstractReporter implements Reporter {
 
+   /**
+    * The reporter's logger.
+    */
    private static final Logger log = Logger.getLogger(AbstractReporter.class);
 
    /**
@@ -56,11 +60,6 @@ public abstract class AbstractReporter implements Reporter {
     * RunInfo associated with current measurement.
     */
    protected RunInfo runInfo = null;
-
-   /**
-    * Thread to assure time based periodical reporting.
-    */
-   private Thread periodicThread;
 
    /**
     * Set of periods bound to destinations. This is used to register destinations and requested reporting periods.
@@ -98,6 +97,15 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    /**
+    * Gets a new measurement pre-filled with values from current run info.
+    * 
+    * @return The new measurement with current values from run info.
+    */
+   public Measurement newMeasurement() {
+      return new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
+   }
+
+   /**
     * Gets a value of an accumulated result.
     * 
     * @param key
@@ -129,21 +137,19 @@ public abstract class AbstractReporter implements Reporter {
     */
    @SuppressWarnings({ "unchecked", "rawtypes" })
    protected void accumulateResults(final Map<String, Object> results) {
-      for (final String key : results.keySet()) {
-         final Object value = results.get(key);
-
+      for (final Entry<String, Object> entry : results.entrySet()) {
          // make sure we have an accumulator set to be able to accumulate the result
-         if (accumulatedResults.get(key) == null) {
-            final Accumulator a = getAccumulator(key, value.getClass());
+         if (accumulatedResults.get(entry.getKey()) == null) {
+            final Accumulator a = getAccumulator(entry.getKey(), entry.getValue().getClass());
 
             if (a == null) {
-               log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", key, value.getClass().getCanonicalName()));
+               log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", entry.getKey(), entry.getValue().getClass().getCanonicalName()));
             } else {
-               accumulatedResults.put(key, a);
-               accumulatedResults.get(key).add(value);
+               accumulatedResults.put(entry.getKey(), a);
+               accumulatedResults.get(entry.getKey()).add(entry.getValue());
             }
          } else {
-            accumulatedResults.get(key).add(value);
+            accumulatedResults.get(entry.getKey()).add(entry.getValue());
          }
       }
    }
@@ -171,7 +177,7 @@ public abstract class AbstractReporter implements Reporter {
    private void reportIterations(final long iteration) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
          if (bp.getPeriodType() == PeriodType.ITERATION && (iteration == 0 || (iteration + 1) % bp.getPeriod() == 0)) {
-            doPublishResult(PeriodType.ITERATION, bp.getBinding());
+            publishResult(PeriodType.ITERATION, bp.getBinding());
          }
       }
    }
@@ -186,7 +192,7 @@ public abstract class AbstractReporter implements Reporter {
    private void reportPercentage(final long percentage) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
          if (bp.getPeriodType() == PeriodType.PERCENTAGE && percentage % bp.getPeriod() == 0) {
-            doPublishResult(PeriodType.PERCENTAGE, bp.getBinding());
+            publishResult(PeriodType.PERCENTAGE, bp.getBinding());
          }
       }
    }
@@ -251,17 +257,6 @@ public abstract class AbstractReporter implements Reporter {
     */
    abstract protected void doReport(MeasurementUnit mu) throws ReportingException;
 
-   /**
-    * Publish results to the destination. This method is called only when the results should be published.
-    * 
-    * @param periodType
-    *           A period type that caused the invocation of this method.
-    * @param d
-    *           A destination to which the result should be reported.
-    * @throws ReportingException
-    */
-   abstract protected void doPublishResult(PeriodType periodType, Destination d) throws ReportingException;
-
    @Override
    public final Set<Destination> getDestinations() {
       final Set<Destination> result = new HashSet<>();
@@ -276,66 +271,32 @@ public abstract class AbstractReporter implements Reporter {
    public void start() {
       assert runInfo != null : "RunInfo must be set prior to starting a reporter.";
 
+      if (checkStart()) {
+
+         reset();
+
+         for (final Destination d : getDestinations()) {
+            d.open();
+         }
+      }
+   }
+
+   /**
+    * Checks if the reporter is ready to be started.
+    * 
+    * @return <code>true</code> if the reporter is ready to be started.
+    */
+   protected boolean checkStart() {
       if (periods.size() == 0) {
          log.warn("No reporting periods are configured for this reporter (" + getClass().getCanonicalName() + "). The reporter is disabled. Call start() again after the periods are registered.");
-         return;
+         return false;
       }
 
-      reset();
-
-      for (final Destination d : getDestinations()) {
-         d.open();
-      }
-
-      periodicThread = new Thread(new Runnable() {
-         @Override
-         public void run() {
-            long lastTime = System.currentTimeMillis();
-            long now;
-            boolean reported;
-
-            try {
-               while (runInfo.isRunning() && !periodicThread.isInterrupted()) {
-                  reported = false;
-                  now = System.currentTimeMillis();
-
-                  for (final BoundPeriod<Destination> p : periods) {
-                     if (p.getPeriodType() == PeriodType.TIME && lastTime + p.getPeriod() < now && runInfo.getIteration() >= 0) {
-                        reported = true;
-
-                        try {
-                           doPublishResult(PeriodType.TIME, p.getBinding());
-                        } catch (final ReportingException e) {
-                           log.warn("Unable to publish result: ", e);
-                        }
-                     }
-                  }
-
-                  if (reported) {
-                     lastTime = now;
-                  }
-
-                  Thread.sleep(500);
-               }
-            } catch (final InterruptedException e) {
-               // this means our job is done
-            }
-            if (log.isDebugEnabled()) {
-               log.debug("Gratefully terminating the periodic reporting thread.");
-            }
-         }
-      });
-      periodicThread.setDaemon(true); // allow the thread to die with JVM termination and do not block it
-      periodicThread.start();
+      return true;
    }
 
    @Override
    public void stop() {
-      if (periodicThread != null) {
-         periodicThread.interrupt();
-      }
-      periodicThread = null;
-
       for (final Destination d : getDestinations()) {
          d.close();
       }

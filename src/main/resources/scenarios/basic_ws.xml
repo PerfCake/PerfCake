@@ -5,8 +5,8 @@
       <property name="test_property1" value="test_value1"/>
       <property name="test_property2" value="test_value2"/>
    </properties>
-   <generator class="ImmediateMessageGenerator" threads="200">
-      <property name="count" value="500000"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:200}">
+      <run type="iteration" value="${perfcake.performance.count:500000}"/>
    </generator>
    <sender class="HTTPSender">
       <property name="target" value="http://${server.host}:${server.port}//jaxws-benchmark-basic/EndpointImpl"/>

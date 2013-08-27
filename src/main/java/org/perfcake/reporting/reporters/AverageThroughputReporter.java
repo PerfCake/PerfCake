@@ -19,58 +19,45 @@
  */
 package org.perfcake.reporting.reporters;
 
-import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
+import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
-import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 
 /**
+ * The reporter is able to report the current average throughput (in the means of the number of iterations per second)
+ * from the beggining of the measuring to the moment when the results are published.
+ * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * 
  */
-public class DummyReporter extends AbstractReporter {
-
-   private String lastMethod = null;
-
-   /**
-    * The reporter's loger.
-    */
-   private static final Logger log = Logger.getLogger(DummyReporter.class);
+public class AverageThroughputReporter extends AbstractReporter {
 
    @Override
    protected void doReport(final MeasurementUnit mu) throws ReportingException {
-      if (log.isDebugEnabled()) {
-         log.debug("Reporting " + mu.toString());
-      }
-      lastMethod = "doReport";
+      // nothing to do
    }
 
    @Override
    public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
-      if (log.isDebugEnabled()) {
-         log.debug("Publishing results...");
-      }
-      lastMethod = "doPublishResult";
+      final Measurement m = newMeasurement();
+      Quantity<Double> q = new Quantity<Double>(1000.0 * runInfo.getIteration() / runInfo.getRunTime(), "iterations/s");
+      m.set(q);
+      d.report(m);
+   }
+
+   @Override
+   protected void doReset() {
+      // nothing needed, the parent does the job
    }
 
    @SuppressWarnings("rawtypes")
    @Override
    protected Accumulator getAccumulator(final String key, final Class clazz) {
-      lastMethod = "getAccumulator";
-      return new LastValueAccumulator();
-   }
-
-   @Override
-   protected void doReset() {
-      // nothing needed
-      lastMethod = "doReset";
-   }
-
-   public String getLastMethod() {
-      return lastMethod;
+      return null; // not needed
    }
 
 }

@@ -116,6 +116,11 @@
          <version>3.2.1</version>
       </dependency>
       <dependency>
+         <groupId>commons-collections</groupId>
+         <artifactId>commons-collections</artifactId>
+         <version>${commons-collections.version}</version>
+      </dependency>
+      <dependency>
          <groupId>commons-beanutils</groupId>
          <artifactId>commons-beanutils</artifactId>
          <version>1.8.3</version>
@@ -195,7 +200,7 @@
                         <mainClass>org.perfcake.ScenarioExecution</mainClass>
                      </manifest>
                      <manifestEntries>
-                        <Premain-class>org.perfcake.util.PerfCakeAgent</Premain-class>
+                        <Premain-class>org.perfcake.util.agent.PerfCakeAgent</Premain-class>
                      </manifestEntries>
                   </archive>
                </configuration>
@@ -228,9 +233,15 @@
                         <value>${server.port}</value>
                      </systemProperty>
                      <!-- Custon scenarios directory -->
-                     <!-- <systemProperty> <key>perfcake.scenarios.dir</key> <value>/path/to/scenarios</value></systemProperty> -->
+                     <!-- <systemProperty> -->
+                     <!-- <key>perfcake.scenarios.dir</key> -->
+                     <!-- <value>/path/to/scenarios</value> -->
+                     <!-- </systemProperty> -->
                      <!-- Custon messages directory -->
-                     <!-- <systemProperty> <key>perfcake.messages.dir</key> <value>/path/to/messages</value></systemProperty> -->
+                     <!-- <systemProperty> -->
+                     <!-- <key>perfcake.messages.dir</key> -->
+                     <!-- <value>/path/to/messages</value> -->
+                     <!-- </systemProperty> -->
                      <!-- PerfCake scenario execution properties -->
                      <!-- <systemProperty> -->
                      <!-- <key>perfcake.performance.thread.count</key> -->
