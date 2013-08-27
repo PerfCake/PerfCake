@@ -34,6 +34,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
@@ -96,11 +97,10 @@ public class ScenarioParser {
       try {
          this.scenarioConfig = Utils.readFilteredContent(scenario);
 
-         final Source schemaFile = new StreamSource(getClass().getResourceAsStream("/schemas/perfcake-scenario-" + Scenario.VERSION + ".xsd"));
          final Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes()));
 
          final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-         final Schema schema = schemaFactory.newSchema(schemaFile);
+         final Schema schema = schemaFactory.newSchema(new URL("http://schema.perfcake.org/perfcake-scenario-" + Scenario.VERSION + ".xsd"));
          final Validator validator = schema.newValidator();
 
          if (log.isDebugEnabled()) {
@@ -128,7 +128,9 @@ public class ScenarioParser {
     */
    private Node parseScenarioNode() throws PerfCakeException {
       try {
-         return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(scenarioConfig.getBytes())).getDocumentElement();
+         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+         DocumentBuilder builder = factory.newDocumentBuilder();
+         return builder.parse(new ByteArrayInputStream(scenarioConfig.getBytes())).getDocumentElement();
       } catch (SAXException | IOException | ParserConfigurationException e) {
          throw new PerfCakeException("Cannot parse scenario configuration: ", e);
       }
