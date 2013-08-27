@@ -28,6 +28,11 @@
             <period type="iteration" value="100"/>
          </destination>
       </reporter>
+      <reporter class="MemoryUsageReporter" enabled="false">
+         <destination class="ConsoleDestination">
+            <period type="iteration" value="100"/>
+         </destination>
+      </reporter>
    </reporting>
    <messages>
       <message uri="message1.xml" multiplicity="10">

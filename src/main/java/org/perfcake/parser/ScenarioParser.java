@@ -357,43 +357,47 @@ public class ScenarioParser {
 
          for (int i = 0; i < reporterNodesCount; i++) {
             currentReporterElement = (Element) reporterNodes.item(i);
-            currentReporterProperties = getPropertiesFromSubNodes(currentReporterElement);
-            String reportClass = currentReporterElement.getAttribute("class");
-            if (reportClass.indexOf(".") < 0) {
-               reportClass = DEFAULT_REPORTER_PACKAGE + "." + reportClass;
-            }
-            currentReporter = (Reporter) ObjectFactory.summonInstance(reportClass, currentReporterProperties);
+            final String reporterEnabled = currentReporterElement.getAttribute("enabled");
 
-            log.info("'- Reporter (" + reportClass + ")");
-            currentReporterDestinations = xPathEvaluate("destination", currentReporterElement);
-            final int currentReporterDestinationsCount = currentReporterDestinations.getLength();
-            Destination currentDestination = null;
-            Element currentDestinationElement = null;
-            Properties currentDestinationProperties = null;
-            Properties currentDestinationPeriodsAsProperties = null;
-            Set<Period> currentDestinationPeriodSet = null;
-            for (int j = 0; j < currentReporterDestinationsCount; j++) {
-               currentDestinationElement = (Element) currentReporterDestinations.item(j);
-               final String enabled = currentDestinationElement.getAttribute("enabled");
-
-               if (enabled == null || "".equals(enabled) || Boolean.parseBoolean(enabled)) { // ignore disabled destinations
-                  String destClass = currentDestinationElement.getAttribute("class");
-                  if (destClass.indexOf(".") < 0) {
-                     destClass = DEFAULT_DESTINATION_PACKAGE + "." + destClass;
-                  }
-                  log.info(" '- Destination (" + destClass + ")");
-                  currentDestinationProperties = getPropertiesFromSubNodes(currentDestinationElement);
-                  Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
-                  currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
-                  currentDestinationPeriodsAsProperties = getPropertiesFromSubNodes(currentDestinationElement, "period", "type", "value");
-                  currentDestinationPeriodSet = new HashSet<>();
-                  for (final Entry<Object, Object> entry : currentDestinationPeriodsAsProperties.entrySet()) {
-                     currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(((String) entry.getKey()).toUpperCase()), Long.valueOf(entry.getValue().toString())));
-                  }
-                  currentReporter.registerDestination(currentDestination, currentDestinationPeriodSet);
+            if (reporterEnabled == null || "".equals(reporterEnabled) || Boolean.parseBoolean(reporterEnabled)) { // ignore disabled destinations
+               currentReporterProperties = getPropertiesFromSubNodes(currentReporterElement);
+               String reportClass = currentReporterElement.getAttribute("class");
+               if (reportClass.indexOf(".") < 0) {
+                  reportClass = DEFAULT_REPORTER_PACKAGE + "." + reportClass;
                }
+               currentReporter = (Reporter) ObjectFactory.summonInstance(reportClass, currentReporterProperties);
+
+               log.info("'- Reporter (" + reportClass + ")");
+               currentReporterDestinations = xPathEvaluate("destination", currentReporterElement);
+               final int currentReporterDestinationsCount = currentReporterDestinations.getLength();
+               Destination currentDestination = null;
+               Element currentDestinationElement = null;
+               Properties currentDestinationProperties = null;
+               Properties currentDestinationPeriodsAsProperties = null;
+               Set<Period> currentDestinationPeriodSet = null;
+               for (int j = 0; j < currentReporterDestinationsCount; j++) {
+                  currentDestinationElement = (Element) currentReporterDestinations.item(j);
+                  final String enabled = currentDestinationElement.getAttribute("enabled");
+
+                  if (enabled == null || "".equals(enabled) || Boolean.parseBoolean(enabled)) { // ignore disabled destinations
+                     String destClass = currentDestinationElement.getAttribute("class");
+                     if (destClass.indexOf(".") < 0) {
+                        destClass = DEFAULT_DESTINATION_PACKAGE + "." + destClass;
+                     }
+                     log.info(" '- Destination (" + destClass + ")");
+                     currentDestinationProperties = getPropertiesFromSubNodes(currentDestinationElement);
+                     Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
+                     currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
+                     currentDestinationPeriodsAsProperties = getPropertiesFromSubNodes(currentDestinationElement, "period", "type", "value");
+                     currentDestinationPeriodSet = new HashSet<>();
+                     for (final Entry<Object, Object> entry : currentDestinationPeriodsAsProperties.entrySet()) {
+                        currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(((String) entry.getKey()).toUpperCase()), Long.valueOf(entry.getValue().toString())));
+                     }
+                     currentReporter.registerDestination(currentDestination, currentDestinationPeriodSet);
+                  }
+               }
+               reportManager.registerReporter(currentReporter);
             }
-            reportManager.registerReporter(currentReporter);
          }
       } catch (XPathExpressionException | InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
          throw new PerfCakeException("Cannot parse reporting configuration: ", e);
