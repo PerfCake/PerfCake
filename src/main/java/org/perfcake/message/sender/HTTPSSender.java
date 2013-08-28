@@ -61,7 +61,7 @@ public class HTTPSSender extends HTTPSender {
 
    private KeyStore initKeyStore(final String keyStoreLocation, final String keyStorePassword) throws Exception {
       KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-      try (InputStream is = Utils.locationToUrl(keyStoreLocation, "perfcake.scenarios.dir", Utils.determineDefaultLocation("keystores"), "").openStream()) {
+      try (InputStream is = Utils.locationToUrl(keyStoreLocation, "perfcake.keystores.dir", Utils.determineDefaultLocation("keystores"), "").openStream()) {
          keyStore.load(is, keyStorePassword.toCharArray());
       }
 
