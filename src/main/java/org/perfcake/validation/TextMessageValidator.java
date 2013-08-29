@@ -24,7 +24,6 @@ import java.util.HashMap;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
-import org.w3c.dom.Node;
 
 /**
  * 
@@ -56,11 +55,8 @@ public class TextMessageValidator implements MessageValidator {
    }
 
    @Override
-   public void setAssertions(final Node validationNode, final String msgId) {
-      final String expectedOutput = validationNode.getTextContent();
-
-      // refine
-      final String trimmedLinesOfExpected = StringUtil.trimLines(expectedOutput);
+   public void setAssertions(final String validationRule, final String msgId) {
+      final String trimmedLinesOfExpected = StringUtil.trimLines(validationRule);
       expectedOutputs.put("1", StringUtil.trim(trimmedLinesOfExpected));
    }
 

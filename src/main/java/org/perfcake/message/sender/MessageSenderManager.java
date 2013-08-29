@@ -8,11 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
-<<<<<<< HEAD
- * http://www.apache.org/licenses/LICENSE-2.0
-=======
  *      http://www.apache.org/licenses/LICENSE-2.0
->>>>>>> feature/refactor-reporting-#5
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -76,11 +72,22 @@ public class MessageSenderManager {
 
    public void init() throws Exception {
       for (int i = 0; i < senderPoolSize; i++) {
-         final MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
-         sender.init();
-         messageSendersMap.put(sender, false);
-         availableSenders.add(sender);
+         MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
+         addSenderInstance(sender);
       }
+   }
+
+   /**
+    * adds {@link MessageSender} into available senders and initializes it
+    * 
+    * @param sender
+    * @throws Exception
+    *            if initialization of sender fails
+    */
+   public void addSenderInstance(MessageSender sender) throws Exception {
+      sender.init();
+      messageSendersMap.put(sender, false);
+      availableSenders.add(sender);
    }
 
    public synchronized MessageSender acquireSender() throws Exception {

@@ -37,11 +37,12 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.perfcake.util.Utils;
 
 /**
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
+ * @author Jiří Sedláček <jiri@sedlackovi.cz> 
  */
 public class ScenarioExecution {
 
@@ -118,10 +119,9 @@ public class ScenarioExecution {
       Scenario scenario = null;
 
       try {
-         scenario = new Scenario(commandLine.getOptionValue(PerfCakeConst.SCENARIO_OPT));
-         scenario.parse();
-      } catch (PerfCakeException e) {
-         log.fatal("Cannot parse scenario: ", e);
+         scenario = new ScenarioBuilder().load(Utils.getProperty(PerfCakeConst.SCENARIO_PROPERTY)).build();
+      } catch (Exception e) {
+         log.fatal("Cannot load scenario: ", e);
          return;
       }
 

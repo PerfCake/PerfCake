@@ -32,7 +32,6 @@ import org.drools.RuleBaseFactory;
 import org.drools.StatefulSession;
 import org.drools.rule.Package;
 import org.perfcake.message.Message;
-import org.w3c.dom.Node;
 
 /**
  * 
@@ -87,10 +86,10 @@ public class RulesMessageValidator implements MessageValidator {
    }
 
    @Override
-   public void setAssertions(final Node validationNode, final String msgId) {
+   public void setAssertions(final String validationRule, final String msgId) {
       final HashMap<Integer, String> assertions = new HashMap<>();
       try {
-         final BufferedReader br = new BufferedReader(new StringReader(validationNode.getTextContent()));
+         final BufferedReader br = new BufferedReader(new StringReader(validationRule));
          int lineNo = 0;
          String line;
 
