@@ -19,6 +19,13 @@
  */
 package org.perfcake;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map.Entry;
+
 import org.apache.log4j.Logger;
 import org.perfcake.util.Utils;
 
@@ -34,6 +41,31 @@ public class ScenarioExecution {
    public static void main(final String[] args) {
 
       log.info("=== Welcome to PerfCake ===");
+
+      if (log.isDebugEnabled()) {
+         // Print system properties
+         log.debug("System properties:");
+         List<String> p = new LinkedList<>();
+         for (Entry<Object, Object> entry : System.getProperties().entrySet()) {
+            p.add("\t" + entry.getKey() + "=" + entry.getValue());
+         }
+
+         Collections.sort(p);
+
+         for (String s : p) {
+            log.debug(s);
+         }
+
+         // Print classpath
+         log.debug("Classpath:");
+         ClassLoader currentCL = ScenarioExecution.class.getClassLoader();
+         URL[] curls = ((URLClassLoader) currentCL).getURLs();
+
+         for (int i = 0; i < curls.length; i++) {
+            log.debug("\t" + curls[i]);
+         }
+
+      }
 
       Scenario scenario = null;
 
