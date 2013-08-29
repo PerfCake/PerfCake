@@ -49,6 +49,7 @@ import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.Scenario;
@@ -267,7 +268,7 @@ public class ScenarioParser {
             // File messagesDir = new File(Utils.getProperty("perfcake.messages.dir", Utils.resourcesDir.getAbsolutePath() + "/messages"));
             for (int messageNodeIndex = 0; messageNodeIndex < messageNodesCount; messageNodeIndex++) {
                currentMessageElement = (Element) messageNodes.item(messageNodeIndex);
-               final URL messageUrl = Utils.locationToUrl(currentMessageElement.getAttribute("uri"), "perfcake.messages.dir", Utils.determineDefaultLocation("messages"), "");
+               final URL messageUrl = Utils.locationToUrl(currentMessageElement.getAttribute("uri"), PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"), "");
                currentMessagePayload = Utils.readFilteredContent(messageUrl);
                currentMessageProperties = getPropertiesFromSubNodes(currentMessageElement);
                currentMessageHeaders = getPropertiesFromSubNodes(currentMessageElement, "header", "name", "value");
