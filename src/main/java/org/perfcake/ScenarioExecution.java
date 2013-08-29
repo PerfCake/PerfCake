@@ -25,7 +25,7 @@ import org.perfcake.util.Utils;
 /**
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
+ * @author Jiří Sedláček <jiri@sedlackovi.cz> 
  */
 public class ScenarioExecution {
 
@@ -38,8 +38,8 @@ public class ScenarioExecution {
       Scenario scenario = null;
 
       try {
-         scenario = new Scenario(Utils.getProperty("scenario"));
-      } catch (PerfCakeException e) {
+         scenario = new ScenarioBuilder().load(Utils.getProperty("scenario")).build();
+      } catch (Exception e) {
          log.fatal("Cannot parse scenario: ", e);
          return;
       }

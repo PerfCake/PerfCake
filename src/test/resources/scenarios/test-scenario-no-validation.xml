@@ -30,12 +30,12 @@
    </reporting>
    <messages>
       <message uri="message1.xml" multiplicity="10">
-         <property name="m_property1" value="m_p_value1"/>
-         <property name="m_property2" value="m_p_value2"/>
-         <header name="m_header1" value="m_h_value1"/>
-         <property name="m_property3" value="m_p_value3"/>
-         <header name="m_header2" value="m_h_value2"/>
+      	 <header name="m_header1" value="m_h_value1"/>
+      	 <header name="m_header2" value="m_h_value2"/>
          <header name="m_header3" value="m_h_value3"/>
+         <property name="m_property1" value="m_p_value1"/>
+         <property name="m_property2" value="m_p_value2"/>        
+         <property name="m_property3" value="m_p_value3"/>         
       </message>
       <message uri="message2.txt"/>
    </messages>

@@ -19,26 +19,22 @@
  */
 package org.perfcake;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.model.ScenarioModel;
-import org.perfcake.parser.ScenarioParser;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.util.Utils;
 import org.perfcake.validation.ValidatorManager;
 
 /**
  * 
- * TODO Add public API for use without a scenario in XML
+ * Scenario encapsulates whole test execution, contains all information necessary to run the test.
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
+ * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
 public class Scenario {
 
@@ -47,58 +43,13 @@ public class Scenario {
    private MessageSenderManager messageSenderManager;
    private ReportManager reportManager;
    private List<MessageTemplate> messageStore;
-   private RunInfo runInfo;
 
    public static final String VERSION = "0.2";
 
-   private URL scenarioUrl;
-
-   /**
-    * Create the scenario object. Parse scenario location with replacing system
-    * properties placeholders, treating it first as a scenario name under the
-    * default location and the a complete URL.
-    * 
-    * @param scenario
-    *           scenario name or location URL
-    * @throws PerfCakeException
-    */
-   public Scenario(final String scenario) throws PerfCakeException {
-      if (scenario == null) {
-         throw new PerfCakeException("Scenario property is not set. Please use -Dscenario=<scenario name> to specify a scenario.");
-      }
-
-      try {
-         scenarioUrl = Utils.locationToUrl(scenario, "perfcake.scenarios.dir", Utils.determineDefaultLocation("scenarios"), ".xml");
-      } catch (MalformedURLException e) {
-         throw new PerfCakeException("Cannot parse scenario configuration location: ", e);
-      }
-
-      log.info("Scenario configuration: " + scenarioUrl.toString());
-      parse();
+   public Scenario() {
    }
-
-   /**
-    * Parse the scenario configuration
-    * 
-    * @throws PerfCakeException
-    *            in case of any error during parsing
-    */
-   public void parse() throws PerfCakeException {
-      if (log.isTraceEnabled()) {
-         log.trace("Parsing scenario " + scenarioUrl.toString());
-      }
-
-      ScenarioFactory sf = new ScenarioFactory(new ScenarioParser(scenarioUrl).parse());
-      generator = sf.parseGenerator();
-      runInfo = sf.parseRunInfo();
-      generator.setRunInfo(runInfo);
-      messageSenderManager = sf.parseSender(generator.getThreads());
-      reportManager = sf.parseReporting();
-      reportManager.setRunInfo(runInfo);
-      messageStore = sf.parseMessages();
-      sf.parseValidation();
-   }
-
+   
+   
    /**
     * Initialize the scenario execution
     * 
@@ -153,4 +104,37 @@ public class Scenario {
          log.trace("Scenario finished successfully!");
       }
    }
+
+   AbstractMessageGenerator getGenerator() {
+      return generator;
+   }
+
+   void setGenerator(AbstractMessageGenerator generator) {
+      this.generator = generator;
+   }
+
+   MessageSenderManager getMessageSenderManager() {
+      return messageSenderManager;
+   }
+
+   void setMessageSenderManager(MessageSenderManager messageSenderManager) {
+      this.messageSenderManager = messageSenderManager;
+   }
+
+   ReportManager getReportManager() {
+      return reportManager;
+   }
+
+   void setReportManager(ReportManager reportManager) {
+      this.reportManager = reportManager;
+   }
+
+   List<MessageTemplate> getMessageStore() {
+      return messageStore;
+   }
+
+   void setMessageStore(List<MessageTemplate> messageStore) {
+      this.messageStore = messageStore;
+   }
+
 }

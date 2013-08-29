@@ -1,4 +1,23 @@
-package org.perfcake;
+/*
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -----------------------------------------------------------------------/
+ */
+package org.perfcake.model;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -13,25 +32,23 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.xml.xpath.XPathExpressionException;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeException;
+import org.perfcake.RunInfo;
+import org.perfcake.ScenarioExecution;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.model.Header;
-import org.perfcake.model.Property;
-import org.perfcake.model.ScenarioModel;
-import org.perfcake.model.ScenarioModel.Generator;
-import org.perfcake.model.ScenarioModel.Messages;
-import org.perfcake.model.ScenarioModel.Messages.Message.ValidatorRef;
-import org.perfcake.model.ScenarioModel.Reporting;
-import org.perfcake.model.ScenarioModel.Sender;
-import org.perfcake.model.ScenarioModel.Validation;
+import org.perfcake.model.Scenario.Generator;
+import org.perfcake.model.Scenario.Messages;
+import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
+import org.perfcake.model.Scenario.Reporting;
+import org.perfcake.model.Scenario.Sender;
+import org.perfcake.model.Scenario.Validation;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
@@ -42,7 +59,7 @@ import org.perfcake.validation.ValidatorManager;
 
 /**
  * 
- * @author Jiri Sedlacek <jiri@sedlackovi.cz>
+ * @author Jiří Sedláček <jiri@sedlackovi.cz>
  * 
  */
 public class ScenarioFactory {
@@ -55,15 +72,11 @@ public class ScenarioFactory {
 
    public static final Logger log = Logger.getLogger(ScenarioFactory.class);
    
-   private ScenarioModel scenario;
+   private org.perfcake.model.Scenario scenario;
 
-   public ScenarioFactory(ScenarioModel model) {
+   public ScenarioFactory(org.perfcake.model.Scenario model) {
+      if (model == null) throw new NullPointerException("model has to be passed and cannot be null");
       this.scenario = model;
-   }
-
-   Scenario fromUrl(final URL scenario) {
-      //ScenarioParser parser  = new ScenarioParser(scenario);
-      return null;
    }
    
    /**
@@ -88,7 +101,7 @@ public class ScenarioFactory {
     *           DOM representation of the <code>performance</code> element of
     *           the scenario's definition.
     * @return A message generator.
-    * @throws XPathExpressionException
+    * 
     * @throws InstantiationException
     * @throws IllegalAccessException
     * @throws ClassNotFoundException
@@ -107,7 +120,7 @@ public class ScenarioFactory {
          int threads = Integer.valueOf(gen.getThreads());
          log.info("  threads=" + threads);
 
-         Properties generatorProperties = getPropertiesFromList(gen.getProperties());
+         Properties generatorProperties = getPropertiesFromList(gen.getProperty());
          Utils.logProperties(log, Level.DEBUG, generatorProperties, "   ");
 
          generator = (AbstractMessageGenerator) ObjectFactory.summonInstance(generatorClass, generatorProperties);
@@ -128,7 +141,6 @@ public class ScenarioFactory {
     *           DOM representation of the <code>performance</code> element of
     *           the scenario's definition.
     * @return A message sender manager.
-    * @throws XPathExpressionException
     */
    public MessageSenderManager parseSender(final int senderPoolSize) throws PerfCakeException {
       MessageSenderManager msm;
@@ -140,7 +152,7 @@ public class ScenarioFactory {
       }
       log.info("--- Sender (" + senderClass + ") ---");
 
-      Properties senderProperties = getPropertiesFromList(sen.getProperties());
+      Properties senderProperties = getPropertiesFromList(sen.getProperty());
       Utils.logProperties(log, Level.DEBUG, senderProperties, "   ");
 
       msm = new MessageSenderManager();
@@ -162,7 +174,6 @@ public class ScenarioFactory {
     * @return Message store in a form of {@link Map}&lt;{@link Message}, {@link Long}&gt; where the keys are stored messages and the values
     *         are multiplicity of how many times the message is sent in a single
     *         iteration.
-    * @throws XPathExpressionException
     * @throws IOException
     * @throws FileNotFoundException
     */
@@ -175,13 +186,13 @@ public class ScenarioFactory {
             
             log.info("--- Messages ---");
             // File messagesDir = new File(Utils.getProperty("perfcake.messages.dir", Utils.resourcesDir.getAbsolutePath() + "/messages"));
-            for (Messages.Message m : messages.getMessages()) {
+            for (Messages.Message m : messages.getMessage()) {
                
                URL messageUrl = Utils.locationToUrl(m.getUri(), "perfcake.messages.dir", Utils.determineDefaultLocation("messages"), "");
                String currentMessagePayload = Utils.readFilteredContent(messageUrl);
-               Properties currentMessageProperties = getPropertiesFromList(m.getProperties());
+               Properties currentMessageProperties = getPropertiesFromList(m.getProperty());
                Properties currentMessageHeaders = new Properties();
-               for (Header h : m.getHeaders()) {
+               for (Header h : m.getHeader()) {
                   currentMessageHeaders.setProperty(h.getName(), h.getValue());
                }
 
@@ -197,7 +208,7 @@ public class ScenarioFactory {
                }
                
                List<String> currentMessageValidatorRefList = new LinkedList<>();
-               for (ValidatorRef ref : m.getValidatorRefs()) {
+               for (ValidatorRef ref : m.getValidatorRef()) {
                   currentMessageValidatorRefList.add(ref.getId());
                }
 
@@ -228,7 +239,6 @@ public class ScenarioFactory {
     *           DOM representation of the <code>performance</code> element of
     *           the scenario's definition.
     * @return Report manager.
-    * @throws XPathExpressionException
     * @throws InstantiationException
     * @throws IllegalAccessException
     * @throws ClassNotFoundException
@@ -239,14 +249,14 @@ public class ScenarioFactory {
       try {
          log.info("--- Reporting ---");
          Reporting reporting = scenario.getReporting();
-         Properties reportingProperties = getPropertiesFromList(reporting.getProperties());
+         Properties reportingProperties = getPropertiesFromList(reporting.getProperty());
          Utils.logProperties(log, Level.DEBUG, reportingProperties, "   ");
 
          ObjectFactory.setPropertiesOnObject(reportManager, reportingProperties);
 
-         for (Reporting.Reporter r : reporting.getReporters()) {
+         for (Reporting.Reporter r : reporting.getReporter()) {
             
-            Properties currentReporterProperties = getPropertiesFromList(r.getProperties());
+            Properties currentReporterProperties = getPropertiesFromList(r.getProperty());
             String reportClass = r.getClazz();
             if (reportClass.indexOf(".") < 0) {
                reportClass = DEFAULT_REPORTER_PACKAGE + "." + reportClass;
@@ -255,19 +265,19 @@ public class ScenarioFactory {
 
             log.info("'- Reporter (" + reportClass + ")");
             
-            for (Reporting.Reporter.Destination d : r.getDestinations()) {
+            for (Reporting.Reporter.Destination d : r.getDestination()) {
                
                String destClass = d.getClazz();
                if (destClass.indexOf(".") < 0) {
                   destClass = DEFAULT_DESTINATION_PACKAGE + "." + destClass;
                }
                log.info(" '- Destination (" + destClass + ")");
-               Properties currentDestinationProperties = getPropertiesFromList(d.getProperties());
+               Properties currentDestinationProperties = getPropertiesFromList(d.getProperty());
                Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
                
                Destination currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
                Set<Period> currentDestinationPeriodSet = new HashSet<>();
-               for (org.perfcake.model.ScenarioModel.Reporting.Reporter.Destination.Period p : d.getPeriods()) {
+               for (org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period p : d.getPeriod()) {
                   currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(p.getType().toUpperCase()), Long.valueOf(p.getValue())));
                }
                currentReporter.registerDestination(currentDestination, currentDestinationPeriodSet );
@@ -288,7 +298,7 @@ public class ScenarioFactory {
          Validation validation = scenario.getValidation();
          if (validation != null) {
             
-            for (Validation.Validator v : validation.getValidators()) {
+            for (Validation.Validator v : validation.getValidator()) {
                
                
                String validatorClass = v.getClazz();
@@ -310,7 +320,7 @@ public class ScenarioFactory {
 
    public Properties parseScenarioProperties() throws PerfCakeException {
       log.info("--- Scenario properties ---");
-      return getPropertiesFromList(scenario.getProperties().getProperties());
+      return getPropertiesFromList(scenario.getProperties().getProperty());
    }
    
    private static Properties getPropertiesFromList(List<Property> properties) {

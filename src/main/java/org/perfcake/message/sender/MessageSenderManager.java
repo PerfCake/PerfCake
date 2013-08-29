@@ -46,6 +46,7 @@ public class MessageSenderManager {
    private Queue<MessageSender> availableSenders;
    protected ReportManager reportManager;
    protected MessageValidator messageValidator;
+   private boolean initialized = false;
 
    public MessageSenderManager() {
       super();
@@ -71,12 +72,23 @@ public class MessageSenderManager {
    }
 
    public void init() throws Exception {
-      for (int i = 0; i < senderPoolSize; i++) {
-         MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
-         sender.init();
-         messageSendersMap.put(sender, false);
-         availableSenders.add(sender);
+      if (!initialized ) {
+         for (int i = 0; i < senderPoolSize; i++) {
+            MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
+            addSenderInstance(sender);
+         }
       }
+   }
+
+   /**
+    * adds {@link MessageSender} into available senders and initializes it
+    * @param sender
+    * @throws Exception if initialization of sender fails
+    */
+   public void addSenderInstance(MessageSender sender) throws Exception {
+      sender.init();
+      messageSendersMap.put(sender, false);
+      availableSenders.add(sender);
    }
 
    public synchronized MessageSender acquireSender() throws Exception {
@@ -137,5 +149,9 @@ public class MessageSenderManager {
 
    public Map<MessageSender, Boolean> getMessageSendersMap() {
       return messageSendersMap;
+   }
+   
+   public void setInitialized(boolean initialized) {
+      this.initialized = initialized;
    }
 }

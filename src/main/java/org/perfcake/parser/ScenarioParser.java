@@ -39,12 +39,12 @@ import org.perfcake.util.Utils;
 import org.xml.sax.SAXException;
 
 /**
- * 
- * TODO review logging and refactor parsing
+ * ScenarioParser is a tool for loading XML document with scenario description from URL and producing JAXB model representation
+ * TODO review logging 
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * @author Jiri Sedlacek <jiri@sedlackovi.cz>
+ * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
 public class ScenarioParser {
 
@@ -52,6 +52,11 @@ public class ScenarioParser {
 
    private String scenarioConfig;   
 
+   /**
+    * 
+    * @param scenario
+    * @throws PerfCakeException if URL cannot be read
+    */
    public ScenarioParser(final URL scenario) throws PerfCakeException {
       try {
          this.scenarioConfig = Utils.readFilteredContent(scenario);
@@ -61,17 +66,22 @@ public class ScenarioParser {
       }
    }
 
-   public org.perfcake.model.ScenarioModel parse() throws PerfCakeException {
+   /**
+    * Do the parsing itself by using JAXB
+    * @return
+    * @throws PerfCakeException if XML is not valid or cannot be successfully parsed
+    */
+   public org.perfcake.model.Scenario parse() throws PerfCakeException {
       try {
          Source schemaFile = new StreamSource(getClass().getResourceAsStream("/schemas/perfcake-scenario-" + Scenario.VERSION + ".xsd"));
          Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes()));
          SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
          Schema schema = schemaFactory.newSchema(schemaFile);
 
-         JAXBContext context = JAXBContext.newInstance(org.perfcake.model.ScenarioModel.class);
+         JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
          Unmarshaller unmarshaller = context.createUnmarshaller();
          unmarshaller.setSchema(schema);
-         return (org.perfcake.model.ScenarioModel) unmarshaller.unmarshal(scenarioXML);
+         return (org.perfcake.model.Scenario) unmarshaller.unmarshal(scenarioXML);
       } catch (SAXException e) {
          throw new PerfCakeException("Cannot validate scenario configuration: ", e);
       } catch (JAXBException e) {

@@ -26,7 +26,6 @@ import java.util.Properties;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
-import org.perfcake.ScenarioFactory;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
@@ -35,6 +34,7 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.LongtermMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.model.ScenarioFactory;
 import org.perfcake.parser.ScenarioParser;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.destinations.Destination;
