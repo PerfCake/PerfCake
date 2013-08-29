@@ -43,12 +43,12 @@ import org.perfcake.validation.ValidatorManager;
  * 
  * Uses fluent API to setup builder.
  * 
- * @author Jiří Sedláček <jiri@sedlackovi.cz> 
+ * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
 public class ScenarioBuilder {
 
    public static final Logger log = Logger.getLogger(ScenarioBuilder.class);
-   
+
    private RunInfo runInfo;
    private AbstractSender senderTemplate;
    private List<Reporter> reporters = new ArrayList<>();
@@ -61,21 +61,24 @@ public class ScenarioBuilder {
    private MessageSenderManager messageSenderManager;
 
    public ScenarioBuilder() throws PerfCakeException {
-      
+
    }
-   
+
    /**
     * Sets message generator which will be used for {@link Scenario}
-    * @param any message generator
+    * 
+    * @param any
+    *           message generator
     * @return
     */
    public ScenarioBuilder setGenerator(AbstractMessageGenerator g) {
       this.generator = g;
       return this;
    }
-   
+
    /**
     * Sets {@link RunInfo} object, which will be used for {@link Scenario}
+    * 
     * @param ri
     * @return
     */
@@ -86,6 +89,7 @@ public class ScenarioBuilder {
 
    /**
     * Sets {@link AbstractSender} implementation object, which will be used as a template for preparing pool of senders
+    * 
     * @param s
     * @return
     */
@@ -96,6 +100,7 @@ public class ScenarioBuilder {
 
    /**
     * Adds a {@link Reporter}, which will be used in {@link Scenario} for reporting results. More reporters can be added
+    * 
     * @param r
     * @return
     */
@@ -106,6 +111,7 @@ public class ScenarioBuilder {
 
    /**
     * Adds a {@link MessageTemplate}, which will be used in {@link Scenario}
+    * 
     * @param message
     * @return
     */
@@ -115,30 +121,37 @@ public class ScenarioBuilder {
    }
 
    /**
-    * Put validator under the key validatorId 
+    * Put validator under the key validatorId
+    * 
     * @param validatorId
-    * @param message validator
+    * @param message
+    *           validator
     * @return
     */
    public ScenarioBuilder putMessageValidator(String validatorId, MessageValidator mv) {
       validatorManager.addValidator(validatorId, mv);
       return this;
    }
-   
+
    /**
     * Builds the usable {@link Scenario} object, which can be then used for executing the scenario.
     * 
     * @return
-    * @throws Exception if {@link RunInfo} is not set
-    * @throws Exception if some generator is not set
-    * @throws Exception if some sender is not set
+    * @throws Exception
+    *            if {@link RunInfo} is not set
+    * @throws Exception
+    *            if some generator is not set
+    * @throws Exception
+    *            if some sender is not set
     */
    public Scenario build() throws Exception {
-      if (runInfo == null) throw new IllegalStateException("RunInfo is not set");
-      if (generator == null) throw new IllegalStateException("Generator is not set");
-      if (senderTemplate == null) throw new IllegalStateException("Sender is not set");
-      
-      
+      if (runInfo == null)
+         throw new IllegalStateException("RunInfo is not set");
+      if (generator == null)
+         throw new IllegalStateException("Generator is not set");
+      if (senderTemplate == null)
+         throw new IllegalStateException("Sender is not set");
+
       Scenario sc = new Scenario();
       generator.setRunInfo(runInfo);
       sc.setGenerator(generator);
@@ -156,30 +169,28 @@ public class ScenarioBuilder {
       } else {
          sc.setMessageSenderManager(messageSenderManager);
       }
-      
-      
-      if (reportManager == null) {//if report manager created programaticaly
+
+      if (reportManager == null) {// if report manager created programaticaly
          ReportManager rm = new ReportManager();
          rm.setRunInfo(runInfo);
          for (Reporter r : reporters) {
             rm.registerReporter(r);
          }
          sc.setReportManager(rm);
-      } else { //if report manager parsed directly
+      } else { // if report manager parsed directly
          reportManager.setRunInfo(runInfo);
          sc.setReportManager(reportManager);
       }
-      
-      
+
       sc.setMessageStore(messages);
       validatorManager.startValidation();
-      
+
       return sc;
    }
-   
-   
+
    /**
     * Loads all data needed for {@link Scenario} from JAXB model, build method may be called afterwards.
+    * 
     * @param model
     * @return
     * @throws PerfCakeException
@@ -196,13 +207,14 @@ public class ScenarioBuilder {
 
       return this;
    }
-   
-   
+
    /**
     * loads {@link Scenario} from system property <code>-Dscenario=<scenario name></code>
+    * 
     * @param scenario
     * @return
-    * @throws PerfCakeException if scenario property is not set or there is some problem with parsing the xml document describing the scenario
+    * @throws PerfCakeException
+    *            if scenario property is not set or there is some problem with parsing the xml document describing the scenario
     */
    public ScenarioBuilder load(String scenario) throws PerfCakeException {
       if (scenario == null) {
@@ -211,21 +223,20 @@ public class ScenarioBuilder {
 
       URL scenarioUrl = null;
       try {
-         scenarioUrl  = Utils.locationToUrl(scenario, "perfcake.scenarios.dir", Utils.determineDefaultLocation("scenarios"), ".xml");
+         scenarioUrl = Utils.locationToUrl(scenario, PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"), ".xml");
       } catch (MalformedURLException e) {
          throw new PerfCakeException("Cannot parse scenario configuration location: ", e);
       }
 
       log.info("Scenario configuration: " + scenarioUrl.toString());
-    
+
       if (log.isTraceEnabled()) {
          log.trace("Parsing scenario " + scenarioUrl.toString());
       }
 
-      org.perfcake.model.Scenario model = new ScenarioParser(scenarioUrl).parse();      
-      
-      return load(model);      
+      org.perfcake.model.Scenario model = new ScenarioParser(scenarioUrl).parse();
+
+      return load(model);
    }
-   
-   
+
 }

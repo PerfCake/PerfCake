@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
@@ -62,7 +63,7 @@ public class ScenarioParserTest {
 
    @BeforeClass
    public void prepareScenarioParser() throws PerfCakeException, URISyntaxException, IOException {
-      System.setProperty("perfcake.messages.dir", getClass().getResource("/messages").getPath());
+      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
       System.setProperty("test.filtered.property", FILTERED_PROPERTY_VALUE);
       scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
       noValidationScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-validation.xml")).parse());
