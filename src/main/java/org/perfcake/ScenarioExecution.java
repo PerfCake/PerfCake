@@ -35,6 +35,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
@@ -90,9 +91,9 @@ public class ScenarioExecution {
 
       log.info("=== Welcome to PerfCake ===");
 
-      if (log.isDebugEnabled()) {
+      if (log.isEnabledFor(Level.TRACE)) {
          // Print system properties
-         log.debug("System properties:");
+         log.trace("System properties:");
          List<String> p = new LinkedList<>();
          for (Entry<Object, Object> entry : System.getProperties().entrySet()) {
             p.add("\t" + entry.getKey() + "=" + entry.getValue());
@@ -101,18 +102,17 @@ public class ScenarioExecution {
          Collections.sort(p);
 
          for (String s : p) {
-            log.debug(s);
+            log.trace(s);
          }
 
          // Print classpath
-         log.debug("Classpath:");
+         log.trace("Classpath:");
          ClassLoader currentCL = ScenarioExecution.class.getClassLoader();
          URL[] curls = ((URLClassLoader) currentCL).getURLs();
 
          for (int i = 0; i < curls.length; i++) {
-            log.debug("\t" + curls[i]);
+            log.trace("\t" + curls[i]);
          }
-
       }
 
       Scenario scenario = null;
