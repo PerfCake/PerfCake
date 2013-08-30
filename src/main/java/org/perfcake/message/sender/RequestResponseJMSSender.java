@@ -21,6 +21,7 @@ package org.perfcake.message.sender;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -55,6 +56,9 @@ public class RequestResponseJMSSender extends JMSSender {
    private long receivingTimeout = 1000; // default 1s
    private int receiveAttempts = 5;
 
+   private String correlationId     = UUID.randomUUID().toString();
+   private boolean useCorrelationId = false;
+   
    @Override
    public void init() throws Exception {
       super.init();
@@ -70,7 +74,11 @@ public class RequestResponseJMSSender extends JMSSender {
             }
             responseConnection.start();
             responseSession = responseConnection.createQueueSession(transacted, Session.AUTO_ACKNOWLEDGE);
-            responseReceiver = responseSession.createReceiver(responseQueue);
+            if (useCorrelationId) {
+               responseReceiver = responseSession.createReceiver(responseQueue, "JMSCorrelationID='" + correlationId + "'");
+            } else {
+               responseReceiver = responseSession.createReceiver(responseQueue);
+            }
          }
 
       } catch (Exception e) {
@@ -111,6 +119,16 @@ public class RequestResponseJMSSender extends JMSSender {
       }
    }
 
+   @Override
+   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties) throws Exception {
+	   super.preSend(message, properties);
+	   if (useCorrelationId) {
+	      // set the correlation ID
+		  mess.setJMSCorrelationID(correlationId);
+	   }
+		  
+   }
+   
    @Override
    public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       // send the request message
@@ -160,6 +178,14 @@ public class RequestResponseJMSSender extends JMSSender {
       }
    }
 
+   public void setUseCorrelationId(boolean useCorrelationId) {
+	   this.useCorrelationId = useCorrelationId;
+   }
+   
+   public boolean isUseCorrelationId() {
+	   return useCorrelationId;
+   }
+   
    public long getReceivingTimeout() {
       return receivingTimeout;
    }
