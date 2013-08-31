@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
+<scenario xmlns="urn:perfcake:scenario:0.3">
    <properties>
       <property name="quickstartName" value="testQS"/>
       <property name="filteredProperty" value="${test.filtered.property:default1}"/>
       <property name="defaultProperty" value="${test.missing.property:default-property-value}"/>
    </properties>
-   <generator class="LongtermMessageGenerator" threads="10">
+   <generator class="DefaultMessageGenerator" threads="10">
+      <run type="time" value="30"/>
       <property name="threadQueueSize" value="5000"/>
-      <property name="duration" value="30"/>
-      <property name="warmUpEnabled" value="true"/>
-      <property name="minimalWarmUpCount" value="12345"/>
    </generator>
    <sender class="HTTPSender">
       <property name="target" value="http://${server.host}:${server.port}/HTTPGateway/http/PerformanceTest/HTTPGateway"/>

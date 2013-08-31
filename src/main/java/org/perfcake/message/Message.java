@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message;
 
 import java.io.Serializable;
@@ -35,7 +38,7 @@ public class Message implements Serializable {
       this.properties = new Properties();
    }
 
-   public Message(Serializable payload) {
+   public Message(final Serializable payload) {
       this();
       this.payload = payload;
    }
@@ -44,19 +47,19 @@ public class Message implements Serializable {
       return properties;
    }
 
-   public void setProperties(Properties properties) {
+   public void setProperties(final Properties properties) {
       this.properties = properties;
    }
 
-   public String getProperty(String name) {
+   public String getProperty(final String name) {
       return properties.getProperty(name);
    }
 
-   public String getProperty(String name, String defaultValue) {
+   public String getProperty(final String name, final String defaultValue) {
       return properties.getProperty(name, defaultValue);
    }
 
-   public void setProperty(String name, String value) {
+   public void setProperty(final String name, final String value) {
       properties.setProperty(name, value);
    }
 
@@ -64,11 +67,11 @@ public class Message implements Serializable {
       return payload;
    }
 
-   public void setPayload(Serializable payload) {
+   public void setPayload(final Serializable payload) {
       this.payload = payload;
    }
 
-   public void setHeaders(Properties headers) {
+   public void setHeaders(final Properties headers) {
       this.headers = headers;
    }
 
@@ -76,20 +79,20 @@ public class Message implements Serializable {
       return headers;
    }
 
-   public void setHeader(String name, String value) {
+   public void setHeader(final String name, final String value) {
       headers.put(name, value);
    }
 
-   public String getHeader(String name) {
+   public String getHeader(final String name) {
       return headers.getProperty(name);
    }
 
-   public String getHeader(String name, String defaultValue) {
+   public String getHeader(final String name, final String defaultValue) {
       return headers.getProperty(name, defaultValue);
    }
 
    @Override
-   public boolean equals(Object obj) {
+   public boolean equals(final Object obj) {
       if (obj == null) {
          return false;
       }

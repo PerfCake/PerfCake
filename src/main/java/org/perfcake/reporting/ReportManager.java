@@ -1,269 +1,268 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.reporting;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.log4j.Logger;
+import org.perfcake.RunInfo;
+import org.perfcake.common.BoundPeriod;
+import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.ATReporter;
-import org.perfcake.reporting.reporters.CustomReporter;
 import org.perfcake.reporting.reporters.Reporter;
-import org.perfcake.reporting.reporters.ResponseTimeReporter;
 
 /**
- * <p>
- * Report manager has responsibility of collecting performance data and providing them to reporters.
- * </p>
- * <p>
- * There is always 1 instance of ReportManager for 1 test thus we can set tags/unique identifiers right into the ReportManagers properties.
- * </p>
- * <p>
- * Programmers should use report* methods to report about various events. .
- * </p>
- * <p>
- * To use reporting capabilities, programmer must call reportTestStarted() and at the end of the Test programmer has to call reportTestFinished()
- * </p>
+ * ReportManager that controls the reporting facilities.
  * 
- * <p>
- * Report manager allows following properties
- * <table border="1">
- * <tr>
- * <td>Property name</td>
- * <td>Description</td>
- * <td>Required</td>
- * <td>Sample value</td>
- * <td>Default</td>
- * </tr>
- * <tr>
- * <td>tags</td>
- * <td>Tags that describe the test properties</td>
- * <td>YES</td>
- * <td>testcomponent1, esb, java</td>
- * <td></td>
- * </tr>
- * <tr>
- * <td>uniqueId</td>
- * <td>Unique ID that will be used as a identifier of this test. To assure uniqueness the scenario file should define this id with aid of some variable</td>
- * <td>YES</td>
- * <td>TestHTTP_GW_${testnumber}</td>
- * <td></td>
- * </tr>
- * </table>
- * </p>
- * 
- * @author Filip Nguyen <nguyen.filip@gmail.com>
+ * @author Martin Večera <marvenec@gmail.com>
  * 
  */
-public class ReportManager extends ScenarioConfigurationElement {
+public class ReportManager {
+
    private static final Logger log = Logger.getLogger(ReportManager.class);
 
-   private static final String PROP_UNIQ_ID = "uniqueId";
-
-   private static final String PROP_TAGS = "tags";
-
-   private String tags = "";
-   private String uniqueId = null;
-
    /**
-    * Information about running test case
+    * Set of reporters registered for reporting.
     */
-   private TestRunInfo testRunInfo = new TestRunInfo();
-
-   private List<Reporter> reporters = new ArrayList<Reporter>();
+   private final Set<Reporter> reporters = new CopyOnWriteArraySet<>();
 
    /**
-    * Reporters
+    * Current run info to control the measurement.
     */
-   private ATReporter atreporter = null;
-
-   private ResponseTimeReporter rtreporter = null;
-
-   private CustomReporter measurementReporter = null;
+   private RunInfo runInfo;
 
    /**
-    * Test case info should be provided to the ReportManager through property
-    * elements in scenario XML, this method is called when parsing of these
-    * elements is done and Report Manager thus can construct the TestRunInfo
+    * Thread to assure time based periodical reporting.
+    */
+   private Thread periodicThread;
+
+   /**
+    * Create a new measurement unit with a unique iteration number.
     * 
-    * @throws ReportsException
+    * @return A new measurement unit with a unique iteration number, or null if a measurement is not running or is already finished.
     */
-   @Override
-   public void loadConfigValues() throws ReportsException {
-      TestRunInfo tci = getTestRunInfo();
-      tci.addTags(splitCommaSeparatedProperty(tags));
-
-      tci.setUniqueId(uniqueId);
-      if (uniqueId == null || uniqueId.equals("")) {
-         throw new ReportsException(PROP_UNIQ_ID + " property in scenario file has to be " + "nonempty string for ReportManager.");
+   public MeasurementUnit newMeasurementUnit() {
+      if (!runInfo.isRunning()) {
+         return null;
       }
-   }
 
-   @Override
-   public void assertUntouchedProperties() throws ReportsException {
-      for (Reporter reporter : reporters) {
-         reporter.assertUntouchedProperties();
+      if (log.isTraceEnabled()) {
+         log.trace("Creating a new measurement unit.");
       }
+
+      return new MeasurementUnit(runInfo.getNextIteration());
    }
 
    /**
-    * Reports that test started. This method always has to be called before
-    * starting the test.
-    */
-   public void reportTestStarted() {
-
-      testRunInfo.setTestStartTime(System.currentTimeMillis());
-      for (Reporter r : reporters) {
-         try {
-            r.reportStart();
-         } catch (ReportsException e) {
-            log.error("Unable to report test start: ", e);
-         }
-      }
-   }
-
-   /**
-    * Reports that test finished. This method always has to be called after test
-    * finishes. If this method isn't called then various problems will arise for
-    * example test reports won't be commited to database or csv files!
+    * Set {@link org.perfcake.RunInfo} for the current measurement run.
     * 
-    * @throws ReportsException
+    * @param runInfo
+    *           The RunInfo that contains information about the current measurement.
     */
-   public void reportTestFinished() {
-      if (!testRunInfo.testStarted()) {
-         log.warn("Error while finishing test, nothing is going to be reported. The test didn't even started! Please call " + "reportTestStarted() before test starts.");
-         return;
+   public void setRunInfo(final RunInfo runInfo) {
+      if (log.isDebugEnabled()) {
+         log.debug("A new run info set " + runInfo);
       }
 
-      testRunInfo.setTestEndTime(System.currentTimeMillis());
-      for (Reporter r : reporters) {
-         try {
-            r.reportEnd();
-         } catch (ReportsException e) {
-            log.error("Unable to report test end: ", e);
-         }
-      }
-
-      if (log.isInfoEnabled()) {
-         long iters = testRunInfo.getProcessedIterations();
-         long duration = testRunInfo.getTestEndTime() - testRunInfo.getTestStartTime();
-         log.info(iters + " iterations was processed in " + duration + " ms (" + 1000f * iters / duration + " iterations/s)");
+      this.runInfo = runInfo;
+      for (final Reporter r : reporters) {
+         r.setRunInfo(runInfo);
       }
    }
 
    /**
-    * Reports custom measurement.
+    * Report a newly measured {@link MeasurementUnit}. Each Measurement Unit must be reported exactly once.
     * 
-    * @param measurement
+    * @param mu
+    *           A MeasurementUnit to be reported.
+    * @throws ReportingException
+    *            If reporting could not be done properly.
     */
-   public void report(Measurement measurement) {
-      if (measurementReporter != null && testRunInfo.testStarted() && !testRunInfo.testFinished()) {
-         try {
-            measurementReporter.report(measurement);
-         } catch (ReportsException e) {
-            log.error("Unable to report measurement: ", e);
-         }
+   public void report(final MeasurementUnit mu) throws ReportingException {
+      if (log.isTraceEnabled()) {
+         log.trace("Reporting a new measurement unit " + mu);
       }
-   }
 
-   private Object reportIterationLock = new Object();
+      ReportingException e = null;
 
-   /**
-    * Call this method to report that iteration has been processed. This method
-    * handles situations when report of iteration is made but the test has not
-    * been yet started.
-    * 
-    * @throws ReportsException
-    */
-   public void reportIteration() throws ReportsException {
-      synchronized (reportIterationLock) {
-         if (testRunInfo.testStarted() && !testRunInfo.testFinished()) {
-            long it = testRunInfo.incrementIteration();
-            // When the iteration passes some destinations might hit the
-            // treshold upon which they have to report.
-            for (Reporter reporter : reporters) {
-               for (Destination dest : reporter.getDestinations()) {
-                  if (dest.isIterationaryPeriodic()) {
-                     if (it % dest.getItTreshold() == 0) {
-                        dest.periodicalTick();
-                     }
-                  }
-               }
+      if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
+         for (final Reporter r : reporters) {
+            try {
+               r.report(mu);
+            } catch (final ReportingException re) {
+               log.warn("Error reporting a measurement unit " + mu, re);
+               e = re; // store the latest exception and give chance to other reporters as well
             }
          }
+      } else {
+         log.info("Skipping the measurement unit (" + mu + ") because the ReportManager has not been started yet.");
+      }
+
+      if (e != null) {
+         throw e;
       }
    }
 
    /**
-    * Use this method to report that there was certain response time of certain
-    * component.
-    * 
-    * @param time
-    *           Response time in miliseconds
+    * Resets reporting to the zero state. It is used after the warm-up period.
     */
-   public void reportResponseTime(double time) {
-      if (rtreporter != null && testRunInfo.testStarted() && !testRunInfo.testFinished()) {
-         rtreporter.report(time);
+   public void reset() {
+      if (log.isDebugEnabled()) {
+         log.debug("Reseting reporting.");
+      }
+
+      runInfo.reset();
+      for (final Reporter r : reporters) {
+         r.reset();
       }
    }
 
-   public void addReporter(Reporter reporter) throws ReportsException {
-      if (testRunInfo == null) {
-         throw new ReportsException("Cannot add reporter to report manager before TestCaseInfo is set. To set TestCase info please call constructTestCaseInfo() after the property elements of Report Manager are set.");
+   /**
+    * Registers a new {@link org.perfcake.reporting.reporters.Reporter}.
+    * 
+    * @param reporter
+    *           A reporter to be registered.
+    */
+   public void registerReporter(final Reporter reporter) {
+      if (log.isDebugEnabled()) {
+         log.debug("Registering a new reporter " + reporter);
       }
 
-      if (reporter instanceof ATReporter) {
-         atreporter = (ATReporter) reporter;
-      }
-      if (reporter instanceof ResponseTimeReporter) {
-         rtreporter = (ResponseTimeReporter) reporter;
-      }
-      if (reporter instanceof CustomReporter) {
-         measurementReporter = (CustomReporter) reporter;
-      }
-
-      reporter.setTestRunInfo(testRunInfo);
-      reporter.loadConfigValues();
+      reporter.setRunInfo(runInfo);
       reporters.add(reporter);
    }
 
-   public TestRunInfo getTestRunInfo() {
-      if (testRunInfo == null) {
-         testRunInfo = new TestRunInfo();
+   /**
+    * Removes a registered {@link org.perfcake.reporting.reporters.Reporter}.
+    * 
+    * @param reporter
+    *           A reporter to unregistered.
+    */
+   public void unregisterReporter(final Reporter reporter) {
+      if (log.isDebugEnabled()) {
+         log.debug("Removing the reporter " + reporter);
       }
 
-      return testRunInfo;
+      reporters.remove(reporter);
    }
 
-   public String getTags() {
-      return tags;
+   /**
+    * Gets an immutable set of current reporters.
+    * 
+    * @return An immutable set of currently registered reporters.
+    */
+   public Set<Reporter> getReporters() {
+      return Collections.unmodifiableSet(reporters);
    }
 
-   public void setTags(String tags) {
-      this.tags = tags;
+   /**
+    * Starts the reporting facility.
+    */
+   public void start() {
+      if (log.isDebugEnabled()) {
+         log.debug("Starting reporting and all reporters.");
+      }
+
+      runInfo.start(); // runInfo must be started first, otherwise the time monitoring thread in AbstractReporter dies immediately
+
+      for (final Reporter r : reporters) {
+         r.start();
+      }
+
+      periodicThread = new Thread(new Runnable() {
+         @Override
+         public void run() {
+            long now;
+            Long lastTime;
+            Destination d;
+            Map<Reporter, Map<Destination, Long>> reportLastTimes = new HashMap<>();
+            Map<Destination, Long> lastTimes = new HashMap<>();
+
+            try {
+               while (runInfo.isRunning() && !periodicThread.isInterrupted()) {
+                  now = System.currentTimeMillis();
+
+                  for (Reporter r : reporters) {
+                     lastTimes = reportLastTimes.get(r);
+
+                     if (lastTimes == null) {
+                        lastTimes = new HashMap<>();
+                        reportLastTimes.put(r, lastTimes);
+                     }
+
+                     for (final BoundPeriod<Destination> p : r.getReportingPeriods()) {
+                        d = p.getBinding();
+                        lastTime = lastTimes.get(d);
+
+                        if (lastTime == null) {
+                           lastTime = now;
+                           lastTimes.put(d, lastTime);
+                        }
+
+                        if (p.getPeriodType() == PeriodType.TIME && lastTime + p.getPeriod() < now && runInfo.getIteration() >= 0) {
+                           lastTimes.put(d, now);
+                           try {
+                              r.publishResult(PeriodType.TIME, d);
+                           } catch (final ReportingException e) {
+                              log.warn("Unable to publish result: ", e);
+                           }
+                        }
+                     }
+                  }
+
+                  Thread.sleep(500);
+               }
+            } catch (final InterruptedException e) {
+               // this means our job is done
+            }
+            if (log.isDebugEnabled()) {
+               log.debug("Gratefully terminating the periodic reporting thread.");
+            }
+         }
+      });
+      periodicThread.setDaemon(true); // allow the thread to die with JVM termination and do not block it
+      periodicThread.start();
    }
 
-   public String getUniqueId() {
-      return uniqueId;
-   }
+   /**
+    * Stops the reporting facility.
+    */
+   public void stop() {
+      if (log.isDebugEnabled()) {
+         log.debug("Stopping reporting and all reporters.");
+      }
 
-   public void setUniqueId(String uniqueId) {
-      this.uniqueId = uniqueId;
+      for (final Reporter r : reporters) {
+         r.stop();
+      }
+
+      if (periodicThread != null) {
+         periodicThread.interrupt();
+      }
+      periodicThread = null;
+
+      runInfo.stop();
    }
 
 }

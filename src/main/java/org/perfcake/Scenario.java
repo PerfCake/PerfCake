@@ -1,40 +1,40 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.parser.ScenarioParser;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.util.Utils;
 import org.perfcake.validation.ValidatorManager;
 
 /**
  * 
- * TODO Add public API for use without a scenario in XML
+ * Scenario encapsulates whole test execution, contains all information necessary to run the test.
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
+ * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
 public class Scenario {
 
@@ -43,52 +43,9 @@ public class Scenario {
    private MessageSenderManager messageSenderManager;
    private ReportManager reportManager;
    private List<MessageTemplate> messageStore;
+   private ValidatorManager validatorManager;
 
-   public static final String VERSION = "0.2";
-
-   private URL scenarioUrl;
-
-   /**
-    * Create the scenario object. Parse scenario location with replacing system
-    * properties placeholders, treating it first as a scenario name under the
-    * default location and the a complete URL.
-    * 
-    * @param scenario
-    *           scenario name or location URL
-    * @throws PerfCakeException
-    */
-   public Scenario(String scenario) throws PerfCakeException {
-      if (scenario == null) {
-         throw new PerfCakeException("Scenario property is not set. Please use -Dscenario=<scenario name> to specify a scenario.");
-      }
-
-      try {
-         scenarioUrl = Utils.locationToUrl(scenario, "perfcake.scenarios.dir", Utils.determineDefaultLocation("scenarios"), ".xml");
-      } catch (MalformedURLException e) {
-         throw new PerfCakeException("Cannot parse scenario configuration location: ", e);
-      }
-
-      log.info("Scenario configuration: " + scenarioUrl.toString());
-   }
-
-   /**
-    * Parse the scenario configuration
-    * 
-    * @throws PerfCakeException
-    *            in case of any error during parsing
-    */
-   public void parse() throws PerfCakeException {
-      if (log.isTraceEnabled()) {
-         log.trace("Parsing scenario " + scenarioUrl.toString());
-      }
-
-      ScenarioParser parser = new ScenarioParser(scenarioUrl);
-      generator = parser.parseGenerator();
-      messageSenderManager = parser.parseSender(generator.getThreads());
-      reportManager = parser.parseReporting();
-      messageStore = parser.parseMessages();
-      parser.parseValidation();
-   }
+   public static final String VERSION = "0.3";
 
    /**
     * Initialize the scenario execution
@@ -102,9 +59,11 @@ public class Scenario {
 
       messageSenderManager.setReportManager(reportManager);
       generator.setReportManager(reportManager);
+      generator.setValidatorManager(validatorManager);
+
       try {
          generator.init(messageSenderManager, messageStore);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          throw new PerfCakeException("Cannot initialize message generator: ", e);
       }
    }
@@ -119,12 +78,11 @@ public class Scenario {
          log.trace("Running scenario...");
       }
 
-      if (ValidatorManager.isEnabled()) {
-         ValidatorManager.startValidation();
-      }
+      validatorManager.startValidation();
+
       try {
          generator.generate();
-      } catch (Exception e) {
+      } catch (final Exception e) {
          throw new PerfCakeException("Error generating messages: ", e);
       }
    }
@@ -138,10 +96,48 @@ public class Scenario {
       if (generator != null) {
          generator.close();
       }
-      ValidatorManager.setFinished(true);
+
+      try {
+         validatorManager.waitForValidation();
+      } catch (final InterruptedException ie) {
+         throw new PerfCakeException("Could not finish messages response validation properly: ", ie);
+      }
 
       if (log.isTraceEnabled()) {
          log.trace("Scenario finished successfully!");
       }
    }
+
+   AbstractMessageGenerator getGenerator() {
+      return generator;
+   }
+
+   void setGenerator(AbstractMessageGenerator generator) {
+      this.generator = generator;
+   }
+
+   MessageSenderManager getMessageSenderManager() {
+      return messageSenderManager;
+   }
+
+   void setMessageSenderManager(MessageSenderManager messageSenderManager) {
+      this.messageSenderManager = messageSenderManager;
+   }
+
+   ReportManager getReportManager() {
+      return reportManager;
+   }
+
+   void setReportManager(ReportManager reportManager) {
+      this.reportManager = reportManager;
+   }
+
+   List<MessageTemplate> getMessageStore() {
+      return messageStore;
+   }
+
+   void setMessageStore(List<MessageTemplate> messageStore) {
+      this.messageStore = messageStore;
+   }
+
 }

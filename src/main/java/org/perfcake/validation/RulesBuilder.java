@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.validation;
 
 import java.io.FileInputStream;
@@ -29,7 +32,8 @@ import org.drools.rule.Package;
 
 /**
  * 
- * @author Marek Baluch <baluchw@gmail.com>, Lucie Fabriková <lucie.fabrikova@gmail.com>
+ * @author Marek Baluch <baluchw@gmail.com>
+ * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  */
 public class RulesBuilder {
 
@@ -47,14 +51,14 @@ public class RulesBuilder {
     * @return compiled Drools package
     * @throws Exception
     */
-   public static Package build(Map<Integer, String> assertions, String dsl) throws Exception {
+   public static Package build(final Map<Integer, String> assertions, final String dsl) throws Exception {
       System.out.println("BUILDING RULES");
 
       if (log.isDebugEnabled()) {
          log.debug("Building rules.");
       }
 
-      StringBuilder sBuilder = new StringBuilder();
+      final StringBuilder sBuilder = new StringBuilder();
       sBuilder.append("package org.perfcake.validation\n\n");
       sBuilder.append("global java.util.Map rulesUsed\n");
       sBuilder.append("import java.util.Map\n");
@@ -71,9 +75,11 @@ public class RulesBuilder {
          String assertion = assertions.get(i);
          assertion = assertion.trim();
          if (assertion.length() > 0 && !assertion.startsWith("#")) {
-            int lineNumber = i + 1;
+            final int lineNumber = i + 1;
 
-            String rule = String.format("rule \"Line %d\"\n  dialect \"java\"\n  when\n    %s\n  then\n   > rulesUsed.remove(%d);\nend\n", lineNumber, assertion, lineNumber - 1, lineNumber);// rules numbered from 1
+            final String rule = String.format("rule \"Line %d\"\n  dialect \"java\"\n  when\n    %s\n  then\n   > rulesUsed.remove(%d);\nend\n", lineNumber, assertion, lineNumber - 1, lineNumber);// rules
+            // numbered
+            // from 1
 
             sBuilder.append(rule);
          }
@@ -83,11 +89,8 @@ public class RulesBuilder {
       }
 
       // InputStream dslis = RulesBuilder.class.getResourceAsStream(dsl);
-      InputStream dslis = new FileInputStream(resourcesDir + dsl);
-      if (dslis == null) {
-         throw new RuntimeException("Resource not found: " + dsl);
-      }
-      PackageBuilder pBuilder = new PackageBuilder();
+      final InputStream dslis = new FileInputStream(resourcesDir + dsl);
+      final PackageBuilder pBuilder = new PackageBuilder();
       pBuilder.addPackageFromDrl(new StringReader(sBuilder.toString()), new InputStreamReader(dslis));
 
       // Check the builder for errors
@@ -99,7 +102,7 @@ public class RulesBuilder {
       }
 
       // get the compiled package (which is serializable)
-      Package pkg = pBuilder.getPackage();
+      final Package pkg = pBuilder.getPackage();
       return pkg;
    }
 

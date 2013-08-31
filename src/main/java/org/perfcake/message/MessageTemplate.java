@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message;
 
 import java.util.List;
@@ -23,6 +26,7 @@ import java.util.regex.Pattern;
 
 import org.perfcake.util.Utils;
 import org.perfcake.util.properties.DefaultPropertyGetter;
+import org.perfcake.validation.MessageValidator;
 
 /**
  * 
@@ -34,28 +38,27 @@ public class MessageTemplate {
 
    private final Message message;
    private final long multiplicity;
-   private final List<String> validatorIdList;// may be empty
+   private final List<MessageValidator> validators;// may be empty
    private Matcher matcher;
 
    public Matcher getMatcher() {
       return matcher;
    }
 
-
-   public MessageTemplate(Message message, long multiplicity, List<String> validatorIdList) {
+   public MessageTemplate(final Message message, final long multiplicity, final List<MessageValidator> validators) {
       this.message = message;
       prepareMatcher();
       this.multiplicity = multiplicity;
-      this.validatorIdList = validatorIdList;
+      this.validators = validators;
    }
 
    public Message getMessage() {
       return message;
    }
 
-   public Message getFilteredMessage(Properties props) {
+   public Message getFilteredMessage(final Properties props) {
       if (getMatcher() != null) {
-         Message m = MessageFactory.getMessage();
+         final Message m = MessageFactory.getMessage();
          String text = this.getMessage().getPayload().toString();
          text = Utils.filterProperties(text, getMatcher(), new DefaultPropertyGetter(props));
 
@@ -72,8 +75,8 @@ public class MessageTemplate {
 
       // find out if there are any attributes in the text message to be replaced
       if (message.getPayload() instanceof String) {
-         String filteredString = (String) message.getPayload();
-         Matcher matcher = Pattern.compile(propertyPattern).matcher(filteredString);
+         final String filteredString = (String) message.getPayload();
+         final Matcher matcher = Pattern.compile(propertyPattern).matcher(filteredString);
          if (matcher.find()) {
             this.matcher = matcher;
          }
@@ -85,7 +88,7 @@ public class MessageTemplate {
       return multiplicity;
    }
 
-   public List<String> getValidatorIdList() {
-      return validatorIdList;
+   public List<MessageValidator> getValidators() {
+      return validators;
    }
 }

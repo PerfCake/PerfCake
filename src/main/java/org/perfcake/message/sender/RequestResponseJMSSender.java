@@ -1,23 +1,27 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message.sender;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -32,6 +36,7 @@ import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * 
@@ -51,6 +56,9 @@ public class RequestResponseJMSSender extends JMSSender {
    private long receivingTimeout = 1000; // default 1s
    private int receiveAttempts = 5;
 
+   private String correlationId     = UUID.randomUUID().toString();
+   private boolean useCorrelationId = false;
+   
    @Override
    public void init() throws Exception {
       super.init();
@@ -66,7 +74,11 @@ public class RequestResponseJMSSender extends JMSSender {
             }
             responseConnection.start();
             responseSession = responseConnection.createQueueSession(transacted, Session.AUTO_ACKNOWLEDGE);
-            responseReceiver = responseSession.createReceiver(responseQueue);
+            if (useCorrelationId) {
+               responseReceiver = responseSession.createReceiver(responseQueue, "JMSCorrelationID='" + correlationId + "'");
+            } else {
+               responseReceiver = responseSession.createReceiver(responseQueue);
+            }
          }
 
       } catch (Exception e) {
@@ -108,9 +120,20 @@ public class RequestResponseJMSSender extends JMSSender {
    }
 
    @Override
-   public Serializable doSend(org.perfcake.message.Message message, Map<String, String> properties) throws Exception {
-      super.doSend(message, properties);
-      
+   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties) throws Exception {
+	   super.preSend(message, properties);
+	   if (useCorrelationId) {
+	      // set the correlation ID
+		  mess.setJMSCorrelationID(correlationId);
+	   }
+		  
+   }
+   
+   @Override
+   public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
+      // send the request message
+      super.doSend(message, properties, mu);
+
       try {
          if (transacted) {
             session.commit();
@@ -155,11 +178,19 @@ public class RequestResponseJMSSender extends JMSSender {
       }
    }
 
+   public void setUseCorrelationId(boolean useCorrelationId) {
+	   this.useCorrelationId = useCorrelationId;
+   }
+   
+   public boolean isUseCorrelationId() {
+	   return useCorrelationId;
+   }
+   
    public long getReceivingTimeout() {
       return receivingTimeout;
    }
 
-   public void setReceivingTimeout(long receivingTimeout) {
+   public void setReceivingTimeout(final long receivingTimeout) {
       this.receivingTimeout = receivingTimeout;
    }
 
@@ -167,7 +198,7 @@ public class RequestResponseJMSSender extends JMSSender {
       return receiveAttempts;
    }
 
-   public void setReceiveAttempts(int receiveAttempts) {
+   public void setReceiveAttempts(final int receiveAttempts) {
       this.receiveAttempts = receiveAttempts;
    }
 
@@ -175,7 +206,7 @@ public class RequestResponseJMSSender extends JMSSender {
       return responseTarget;
    }
 
-   public void setresponseTarget(String responseTarget) {
+   public void setresponseTarget(final String responseTarget) {
       this.responseTarget = responseTarget;
    }
 

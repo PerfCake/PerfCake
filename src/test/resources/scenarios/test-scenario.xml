@@ -1,41 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
+<scenario xmlns="urn:perfcake:scenario:0.3">
    <properties>
       <property name="quickstartName" value="testQS"/>
       <property name="filteredProperty" value="${test.filtered.property:default1}"/>
       <property name="defaultProperty" value="${test.missing.property:default-property-value}"/>
    </properties>
-   <generator class="LongtermMessageGenerator" threads="10">
+   <generator class="DefaultMessageGenerator" threads="10">
+      <run type="time" value="30"/>
       <property name="threadQueueSize" value="5000"/>
-      <property name="duration" value="30"/>
-      <property name="warmUpEnabled" value="true"/>
-      <property name="minimalWarmUpCount" value="12345"/>
    </generator>
    <sender class="HTTPSender">
       <property name="target" value="http://${server.host}:${server.port}/HTTPGateway/http/PerformanceTest/HTTPGateway"/>
    </sender>
    <reporting>
-      <property name="tags" value=""/>
-      <property name="uniqueId" value="${scenario}"/>
-      <reporter class="ATReporter">
-         <property name="labelType" value="Time"/>
-         <destination class="CsvDestination">
-            <property name="periodicity" value="10%"/>
-            <property name="outputPath" value="logs"/>
+      <reporter class="WarmUpReporter">
+         <property name="minimalWarmUpCount" value="12345"/>
+         <property name="relativeThreshold" value="1"/>
+      </reporter>
+      <reporter class="DummyReporter">
+         <destination class="DummyDestination">
+         	<period type="percentage" value="50"/>
+         	<period type="iteration" value="100"/>
+            <period type="time" value="2000"/>
+            <property name="property" value="dummy_p_value"/>            
+            <property name="property2" value="dummy_p2_value"/>            
          </destination>
+         <destination class="ConsoleDestination" enabled="false">
+            <period type="iteration" value="100"/>
+         </destination>
+      </reporter>
+      <reporter class="MemoryUsageReporter" enabled="false">
          <destination class="ConsoleDestination">
-            <property name="periodicity" value="1s"/>
+            <period type="iteration" value="100"/>
          </destination>
       </reporter>
    </reporting>
    <messages>
       <message uri="message1.xml" multiplicity="10">
-         <property name="m_property1" value="m_p_value1"/>
-         <property name="m_property2" value="m_p_value2"/>
-         <header name="m_header1" value="m_h_value1"/>
-         <property name="m_property3" value="m_p_value3"/>
+      	 <header name="m_header1" value="m_h_value1"/>
          <header name="m_header2" value="m_h_value2"/>
          <header name="m_header3" value="m_h_value3"/>
+         <property name="m_property1" value="m_p_value1"/>
+         <property name="m_property2" value="m_p_value2"/>         
+         <property name="m_property3" value="m_p_value3"/>         
          <validatorRef id="stupidValidator"/>
          <validatorRef id="smileValidator"/>
       </message>
@@ -46,6 +53,6 @@
    <validation>
       <validator id="fishValidator" class="TextMessageValidator"><![CDATA[.*fish.*]]></validator>
       <validator id="stupidValidator" class="TextMessageValidator"><![CDATA[.*[Ss]tupid.*]]></validator>
-      <validator id="smileValidator" class="TextMessageValidator"><![CDATA[.*:\\).*]]></validator>
+      <validator id="smileValidator" class="TextMessageValidator"><![CDATA[.*:\).*]]></validator>
    </validation>
 </scenario>

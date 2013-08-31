@@ -1,222 +1,152 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.reporting.reporters;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
-import org.apache.log4j.Logger;
-import org.perfcake.reporting.ReportsException;
-import org.perfcake.reporting.ScenarioConfigurationElement;
-import org.perfcake.reporting.TestRunInfo;
+import org.perfcake.RunInfo;
+import org.perfcake.common.BoundPeriod;
+import org.perfcake.common.Period;
+import org.perfcake.common.PeriodType;
+import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 
 /**
- * <p>
- * Reporter is used to listen to generated performance measurements and transform them into reportable format. Then according to it's settings the reporter will report this data into those destinations (csv, database, ftp, console) and with specified periodicity.
- * </p>
- * <p/>
- * <table border="1">
- * <tr>
- * <td>Property name</td>
- * <td>Description</td>
- * <td>Required</td>
- * <td>Sample value</td>
- * <td>Default</td>
- * </tr>
- * <tr>
- * <td>decimal_format</td>
- * <td>Format of outputed decimal numbers</td>
- * <td>NO</td>
- * <td>0.00</td>
- * <td>0.0000</td>
- * </tr>
- * <tr>
- * <td>label_type</td>
- * <td>Label type that this reporter should use. Currently time and iteration are supported. If this is set to "default" then its up to specific reporter to choose labeling strategy.</td>
- * </td>
- * <td>YES</td>
- * <td>Iteration</td>
- * <td>default</td>
- * </tr>
- * </table>
+ * A contract of Reporter. Reporter takes
+ * multiple {@link org.perfcake.reporting.MeasurementUnit Measurement Units} and combines
+ * them into a single {@link org.perfcake.reporting.Measurement Measurement}. The core method
+ * is {@link #report(MeasurementUnit) report()} that is called each time a new measurement unit is ready.
+ * Reporter should not report anything unless it has been started with the {@link #start() start()} method.
+ * If it is properly started, it should regularly report to all
+ * registered destinations depending on the configured reporting periods. Reporter can assume
+ * that {@link org.perfcake.RunInfo RunInfo} has been set before calling
+ * the {@link #start() start()} method. It is the pure responsibility of Reporter to publish measurement
+ * results to destination in the configured periods. All period types must be supported.
+ * For easier development, it is advised to inherit from {@link AbstractReporter} which provides
+ * some common functionality including proper results publishing. One should directly implement
+ * this interface only when there is a serious reason.
+ * Reporter must be thread safe as it can be called from multiple threads at the same time.
  * 
- * @author Filip Nguyen <nguyen.filip@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
+ * 
  */
-public abstract class Reporter extends ScenarioConfigurationElement {
-   /**
-    * Three following booleans drive the way how the labeling is done.
-    */
-   protected boolean labelingTimely = false;
-
-   protected boolean labelingIteration = false;
-
-   protected boolean labelingDefault = false;
-
-   private static final String PROP_DECIMAL_FORMAT = "decimal_format";
+public interface Reporter {
 
    /**
-    * Formatter available for extension classes to use for formatting decimals
-    * into string.
-    */
-   protected DecimalFormat decimalFormat = null;
-
-   /**
-    * All destinations into which this reporter will report.
-    */
-   protected List<Destination> destinations = new ArrayList<Destination>();
-
-   private static final Logger log = Logger.getLogger(Reporter.class);
-
-   protected TestRunInfo testRunInfo;
-
-   private static final String PROP_LABEL_TYPE = "label_type";
-
-   @Override
-   public void loadConfigValues() throws ReportsException {
-      decimalFormat = new DecimalFormat(getStringProperty(PROP_DECIMAL_FORMAT, "0.0000"));
-
-      String labelType = getStringProperty(PROP_LABEL_TYPE, "default");
-      if (labelType.toLowerCase().equals(LabelTypes.ITERATIONS.toLowerCase())) {
-         labelingIteration = true;
-      } else if (labelType.toLowerCase().equals(LabelTypes.TIME.toLowerCase())) {
-         labelingTimely = true;
-      } else if (labelType.toLowerCase().equals("default")) {
-         labelingDefault = true;
-      } else {
-         throw new ReportsException("The label_type [" + labelType + "] must have one of the following value (case insensitive): " + LabelTypes.ITERATIONS + ", " + LabelTypes.TIME);
-      }
-
-      loadConfigVals();
-   }
-
-   public abstract void loadConfigVals() throws ReportsException;
-
-   public abstract void periodicalTick(Destination dest) throws ReportsException;
-
-   public void reportStart() throws ReportsException {
-      for (Destination dest : destinations) {
-         if (dest.isTimelyPeriodic()) {
-            PeriodicalReportingThread periodicalThread = new PeriodicalReportingThread(this.getClass().getSimpleName(), dest);
-            periodicalThread.start();
-         }
-      }
-
-      testStarted();
-   }
-
-   public void reportEnd() throws ReportsException {
-      for (Destination dest : destinations) {
-         dest.stopThread();
-      }
-      testEnded();
-   }
-
-   public abstract void testStarted();
-
-   public abstract void testEnded() throws ReportsException;
-
-   public void setTestRunInfo(TestRunInfo trInfo) throws ReportsException {
-      if (trInfo == null) {
-         throw new ReportsException("Trying to set null for testRunInfo for reporter: " + this.getClass().getSimpleName());
-      }
-
-      this.testRunInfo = trInfo;
-
-      for (Destination dest : destinations) {
-         dest.setTestRunInfo(testRunInfo);
-      }
-   }
-
-   public void addDestination(Destination dest) throws ReportsException {
-      dest.loadConfigValues();
-      dest.assertUntouchedProperties();
-      dest.setReporter(this);
-      destinations.add(dest);
-      if (testRunInfo != null) {
-         dest.setTestRunInfo(testRunInfo);
-      }
-   }
-
-   public List<Destination> getDestinations() {
-      return destinations;
-   }
-
-   public String getLabelType() throws ReportsException {
-      return getLabelType("Label type choose error");
-   }
-
-   public String getLabel() throws ReportsException {
-      return getLabel("Label type choose error");
-   }
-
-   /**
-    * Gets label type that should be placed on value. If the reporter has set
-    * fixed number of iterations or time the label type will be chosen
-    * acordingly.
+    * This method is called each time a new {@link org.perfcake.reporting.MeasurementUnit Measurement Unit} is obtained. Each unit is reported once and only once to each of the reporters. The reporter
+    * is
+    * not allowed to modify the Measurement Unit
     * 
-    * @param defaultVal
-    * @return
-    * @throws ReportsException 
+    * @param mu
+    *           Measurement Unit from a run iteration
     */
-   public String getLabelType(String defaultVal) throws ReportsException {
-      if (!labelingTimely && !labelingIteration) {
-         return defaultVal;
-      }
-
-      if (labelingIteration) {
-         return LabelTypes.ITERATIONS;
-      }
-
-      if (labelingTimely) {
-         return LabelTypes.TIME;
-      }
-
-      if (labelingDefault) {
-         throw new ReportsException("Labeling is set to default. Please provide implementation in reporter to either set labelingIteration or provider default value directly into getLabelType method");
-      }
-
-      throw new ReportsException("The reporter is not configured to be either timely or iterationary");
-   }
+   public void report(MeasurementUnit mu) throws ReportingException;
 
    /**
-    * Gets label that should be placed on value. If the reporter has set fixed
-    * number of iterations or time the label will be chosen acordingly.
-    * @throws ReportsException 
+    * Registers a destination to receive resulting {@link org.perfcake.reporting.Measurement Measurements} in
+    * a given period.
+    * 
+    * @param d
+    *           The Destination to which the results should be published
+    * 
+    * @param p
+    *           The period interval in which the destination should publish results
     */
-   public String getLabel(String defaultVal) throws ReportsException {
-      if (!labelingTimely && !labelingIteration) {
-         return defaultVal;
-      }
+   public void registerDestination(Destination d, Period p);
 
-      if (labelingIteration) {
-         return String.valueOf(testRunInfo.getProcessedIterations());
-      }
+   /**
+    * Publishes results to the destination. This method is called only when the results should be published.
+    * 
+    * @param periodType
+    *           A period type that caused the invocation of this method.
+    * @param d
+    *           A destination to which the result should be reported.
+    * @throws ReportingException
+    */
+   public void publishResult(PeriodType periodType, Destination d) throws ReportingException;
 
-      if (labelingTimely) {
-         return testRunInfo.getTestRunTimeString();
-      }
+   /**
+    * Registers a destination to receive resulting {@link org.perfcake.reporting.Measurement Measurements} in
+    * given periods. It is the goal of Reporter to make sure the
+    * results are published to the registered destinations. For an easier development it is advised
+    * to extend {@link AbstractReporter} which already takes care of this.
+    * A destination cannot be registered with the same period type multiple times (i.e. one cannot register
+    * a destination with a period of iteration type that reports every 10 iterations, and with a period of
+    * iteration type that reports every 100 iterations at the same time).
+    * 
+    * @param d
+    *           The Destination to which the results should be published
+    * 
+    * @param p
+    *           The set of period intervals in which the destination should publish results
+    */
+   public void registerDestination(Destination d, Set<Period> p);
 
-      if (labelingDefault) {
-         throw new ReportsException("Labeling is set to default. Please provide implementation in reporter to either set labelingIteration or provider default value directly into getLabelType method");
-      }
+   /**
+    * Removes a previously registered Destination. The method removes all occurrences of the destination
+    * should it be registered with multiple periods. A Reporter should close the Destination if it is still open.
+    * 
+    * @param d
+    *           The Destination to be unregistered (and stopped)
+    */
+   public void unregisterDestination(Destination d);
 
-      throw new ReportsException("The reporter is not configured to be either timely or iterationary");
+   /**
+    * Gets an unmodifiable list of all registered destinations.
+    * 
+    * @return An unmodifiable list of all currently registered destinations.
+    */
+   public Set<Destination> getDestinations();
 
-   }
+   /**
+    * Starts the reporter. After a call to this method, reporter will report measurement results to the
+    * registered destinations. All destinations are started as well.
+    */
+   public void start();
+
+   /**
+    * Stops the reporter. After a call to this method, no more results will be reported to the destinatons.
+    * All destinations are stopped as well.
+    */
+   public void stop();
+
+   /**
+    * Resets the reporter statistics to the initial state. This is mainly used for clean up after a warm-up period.
+    */
+   public void reset();
+
+   /**
+    * Sets {@link org.perfcake.RunInfo Run Info} for the current measurement run. This must be set
+    * prior to starting the reporter. Failed to do so can lead to an assertion error.
+    * 
+    * @param runInfo
+    *           RunInfo for the current measurement run
+    */
+   public void setRunInfo(RunInfo runInfo);
+
+   /**
+    * Gets an unmodifiable set of registered reporting periods.
+    * 
+    * @return The unmodifiable set of registered reporting periods.
+    */
+   public Set<BoundPeriod<Destination>> getReportingPeriods();
+
 }

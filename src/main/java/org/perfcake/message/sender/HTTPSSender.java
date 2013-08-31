@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message.sender;
 
 import java.io.InputStream;
@@ -51,14 +54,14 @@ public class HTTPSSender extends HTTPSender {
    }
 
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
       ((HttpsURLConnection) requestConnection).setSSLSocketFactory(sslFactory);
    }
 
-   private KeyStore initKeyStore(String keyStoreLocation, String keyStorePassword) throws Exception {
+   private KeyStore initKeyStore(final String keyStoreLocation, final String keyStorePassword) throws Exception {
       KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-      try (InputStream is = Utils.locationToUrl(keyStoreLocation, "perfcake.scenarios.dir", Utils.determineDefaultLocation("keystores"), "").openStream()) {
+      try (InputStream is = Utils.locationToUrl(keyStoreLocation, "perfcake.keystores.dir", Utils.determineDefaultLocation("keystores"), "").openStream()) {
          keyStore.load(is, keyStorePassword.toCharArray());
       }
 
@@ -101,7 +104,7 @@ public class HTTPSSender extends HTTPSender {
       return keyStore;
    }
 
-   public void setKeyStore(String keyStore) {
+   public void setKeyStore(final String keyStore) {
       this.keyStore = keyStore;
    }
 
@@ -109,7 +112,7 @@ public class HTTPSSender extends HTTPSender {
       return keyStorePassword;
    }
 
-   public void setKeyStorePassword(String keyStorePassword) {
+   public void setKeyStorePassword(final String keyStorePassword) {
       this.keyStorePassword = keyStorePassword;
    }
 
@@ -117,7 +120,7 @@ public class HTTPSSender extends HTTPSender {
       return trustStore;
    }
 
-   public void setTrustStore(String trustStore) {
+   public void setTrustStore(final String trustStore) {
       this.trustStore = trustStore;
    }
 
@@ -125,7 +128,7 @@ public class HTTPSSender extends HTTPSender {
       return trustStorePassword;
    }
 
-   public void setTrustStorePassword(String trustStorePassword) {
+   public void setTrustStorePassword(final String trustStorePassword) {
       this.trustStorePassword = trustStorePassword;
    }
 

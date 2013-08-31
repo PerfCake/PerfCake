@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message.sender;
 
 import java.io.Serializable;
@@ -21,8 +24,7 @@ import java.util.Map;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
-import org.perfcake.reporting.ReportManager;
-import org.perfcake.validation.MessageValidator;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * Interface for a message sender.
@@ -42,29 +44,18 @@ public interface MessageSender {
     */
    public void close() throws PerfCakeException;
 
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception;
+
    /**
     * Sends a message.
     */
-   public Serializable send(Message message) throws Exception;
+   public Serializable send(final Message message, final MeasurementUnit mu) throws Exception;
 
    /**
     * Sends a message with additional properties.
     */
-   public Serializable send(Message message, Map<String, String> properties) throws Exception;
+   public Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception;
 
-   /**
-    * Returns response time in nanoseconds.
-    */
-   public long getResponseTime();
-
-   /**
-    * Report manager that any sender can use to report anything.
-    **/
-   public void setReportManager(ReportManager reportManager);
-
-   /**
-    * Message validator usable for I/O (most probably just O) message validation.
-    */
-   public void setMessageValidator(MessageValidator messageValidator);
+   public void postSend(final Message message) throws Exception;
 
 }

@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message.sender;
 
 import java.io.Serializable;
@@ -28,6 +31,7 @@ import java.util.Map;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The sender that is able to send SQL queries via JDBC.
@@ -107,7 +111,8 @@ public class JDBCSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
       statement = connection.createStatement();
    }
 
@@ -117,7 +122,7 @@ public class JDBCSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       boolean result = statement.execute((String) message.getPayload());
       Serializable retVal;
       if (result) {
@@ -160,20 +165,11 @@ public class JDBCSender extends AbstractSender {
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
-    */
-   @Override
-   public Serializable doSend(Message message) throws Exception {
-      return send(message, null);
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
     * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
     */
    @Override
-   public void postSend(Message message) throws Exception {
+   public void postSend(final Message message) throws Exception {
+      super.postSend(message);
       statement.close();
    }
 
@@ -192,7 +188,7 @@ public class JDBCSender extends AbstractSender {
     * @param jdbcURL
     *           The jdbcURL to set.
     */
-   public void setJdbcURL(String jdbcURL) {
+   public void setJdbcURL(final String jdbcURL) {
       this.jdbcURL = jdbcURL;
    }
 
@@ -211,7 +207,7 @@ public class JDBCSender extends AbstractSender {
     * @param driverClass
     *           The driverClass to set.
     */
-   public void setDriverClass(String driverClass) {
+   public void setDriverClass(final String driverClass) {
       this.driverClass = driverClass;
    }
 
@@ -230,7 +226,7 @@ public class JDBCSender extends AbstractSender {
     * @param username
     *           The username to set.
     */
-   public void setUsername(String username) {
+   public void setUsername(final String username) {
       this.username = username;
    }
 
@@ -249,7 +245,7 @@ public class JDBCSender extends AbstractSender {
     * @param password
     *           The password to set.
     */
-   public void setPassword(String password) {
+   public void setPassword(final String password) {
       this.password = password;
    }
 

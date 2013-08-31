@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message.sender;
 
 import java.io.BufferedReader;
@@ -26,6 +29,7 @@ import java.util.Map;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
+import org.perfcake.reporting.MeasurementUnit;
 import org.testng.log4testng.Logger;
 
 /**
@@ -63,7 +67,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
    /**
     * The sender's logger.
     */
-   private Logger log = Logger.getLogger(AbstractSocketSender.class);
+   private final Logger log = Logger.getLogger(AbstractSocketSender.class);
 
    /*
     * (non-Javadoc)
@@ -127,7 +131,8 @@ abstract public class AbstractSocketSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
       openSocket();
       openStreams();
    }
@@ -135,10 +140,10 @@ abstract public class AbstractSocketSender extends AbstractSender {
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public Serializable doSend(Message message) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       out.print(message.getPayload().toString());
 
       if (out.checkError()) { // flush and check for error
@@ -156,20 +161,11 @@ abstract public class AbstractSocketSender extends AbstractSender {
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
-    */
-   @Override
-   public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
-      throw new UnsupportedOperationException("This sender does not support message properties.");
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
     * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
     */
    @Override
-   public void postSend(Message message) throws Exception {
+   public void postSend(final Message message) throws Exception {
+      super.postSend(message);
       closeSocket();
    }
 

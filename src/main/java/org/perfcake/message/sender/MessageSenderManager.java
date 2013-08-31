@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- *
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message.sender;
 
 import java.util.Iterator;
@@ -30,7 +33,7 @@ import org.perfcake.util.ObjectFactory;
 import org.perfcake.validation.MessageValidator;
 
 /**
- *
+ * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class MessageSenderManager {
@@ -38,8 +41,8 @@ public class MessageSenderManager {
    private static final Object syncLock = new Object();
    private int senderPoolSize = 100;
    private String senderClass;
-   private Map<MessageSender, Boolean> messageSendersMap;
-   private Properties messageSenderProperties;
+   private final Map<MessageSender, Boolean> messageSendersMap;
+   private final Properties messageSenderProperties;
    private Queue<MessageSender> availableSenders;
    protected ReportManager reportManager;
    protected MessageValidator messageValidator;
@@ -51,36 +54,45 @@ public class MessageSenderManager {
       messageSendersMap = new ConcurrentHashMap<MessageSender, Boolean>();
    }
 
-   public void setMessageValidator(MessageValidator messageValidator) {
+   public void setMessageValidator(final MessageValidator messageValidator) {
       this.messageValidator = messageValidator;
    }
 
-   public void setReportManager(ReportManager reportManager) {
+   public void setReportManager(final ReportManager reportManager) {
       this.reportManager = reportManager;
    }
 
-   public void setMessageSenderProperty(String property, String value) {
+   public void setMessageSenderProperty(final String property, final String value) {
       messageSenderProperties.put(property, value);
    }
 
-   public void setMessageSenderProperty(Object property, Object value) {
-      messageSenderProperties.put((String) property, (String) value);
+   public void setMessageSenderProperty(final Object property, final Object value) {
+      messageSenderProperties.put(property, value);
    }
 
    public void init() throws Exception {
       for (int i = 0; i < senderPoolSize; i++) {
          MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
-         sender.setReportManager(reportManager);
-         sender.setMessageValidator(messageValidator);
-         sender.init();
-         messageSendersMap.put(sender, false);
-         availableSenders.add(sender);
+         addSenderInstance(sender);
       }
+   }
+
+   /**
+    * adds {@link MessageSender} into available senders and initializes it
+    * 
+    * @param sender
+    * @throws Exception
+    *            if initialization of sender fails
+    */
+   public void addSenderInstance(MessageSender sender) throws Exception {
+      sender.init();
+      messageSendersMap.put(sender, false);
+      availableSenders.add(sender);
    }
 
    public synchronized MessageSender acquireSender() throws Exception {
       if (availableSenders.size() > 0) {
-         MessageSender messageSender = availableSenders.poll();
+         final MessageSender messageSender = availableSenders.poll();
          messageSendersMap.put(messageSender, true);
          return messageSender;
       } else {
@@ -88,7 +100,7 @@ public class MessageSenderManager {
       }
    }
 
-   public void releaseSender(MessageSender messageSender) {
+   public void releaseSender(final MessageSender messageSender) {
       synchronized (syncLock) {
          if (messageSendersMap.get(messageSender)) {
             availableSenders.add(messageSender);
@@ -99,8 +111,8 @@ public class MessageSenderManager {
 
    public void releaseAllSenders() {
       synchronized (syncLock) {
-         Set<MessageSender> senderSet = messageSendersMap.keySet();
-         for (MessageSender sender : senderSet) {
+         final Set<MessageSender> senderSet = messageSendersMap.keySet();
+         for (final MessageSender sender : senderSet) {
             releaseSender(sender);
          }
       }
@@ -111,7 +123,7 @@ public class MessageSenderManager {
    }
 
    public void close() throws PerfCakeException {
-      Iterator<MessageSender> iterator = messageSendersMap.keySet().iterator();
+      final Iterator<MessageSender> iterator = messageSendersMap.keySet().iterator();
       while (iterator.hasNext()) {
          iterator.next().close();
       }
@@ -121,7 +133,7 @@ public class MessageSenderManager {
       return senderPoolSize;
    }
 
-   public void setSenderPoolSize(int senderPoolSize) {
+   public void setSenderPoolSize(final int senderPoolSize) {
       this.senderPoolSize = senderPoolSize;
       availableSenders = new LinkedBlockingQueue<MessageSender>(senderPoolSize);
    }
@@ -130,7 +142,7 @@ public class MessageSenderManager {
       return senderClass;
    }
 
-   public void setSenderClass(String senderClass) {
+   public void setSenderClass(final String senderClass) {
       this.senderClass = senderClass;
    }
 

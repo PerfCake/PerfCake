@@ -6,9 +6,11 @@ logs
 test-output
 
 # Eclipse stuff
+bin
 .settings
 .project
 .classpath
+bin
 
 # Package Files #
 *.jar

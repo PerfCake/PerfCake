@@ -1,107 +1,185 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.reporting;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.perfcake.util.Utils;
+
 /**
- * Represents one discrete performance measurement.
+ * Measurement is a product of {@link org.perfcake.reporting.reporters.Reporter}. It is typically a combination of multiple {@link MeasurementUnit Measuremen Units}. The way they are combined is the
+ * matter of a particular Reporter.
  * 
- * @author Filip Nguyen <nguyen.filip@gmail.com>
+ * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
 public class Measurement {
-   /**
-    * For example average response time; average throughoutput. These types are
-    * as constants in MeasurementTypes class.
-    */
-   private String measurementType;
 
    /**
-    * Type of lables used for this Measurement for example "number of messages",
-    * "time".
+    * The default result name.
     */
-   private String labelType;
+   public static final String DEFAULT_RESULT = "Result";
 
    /**
-    * Concrete label: "00:12:01" or "34"
+    * The last progress percentage for what the measurement is valid.
     */
-   private String label = "";
+   private final long percentage;
 
    /**
-    * Value of the measurement. Concrete number represting average throughoutput
-    * or whatever measurement type is measured.
+    * The last timestamp for what the measurement is valid.
     */
-   private String value = "";
+   private final long time;
 
-   public Measurement(String measurementType, String labelType, String label, String value) {
+   /**
+    * The last iteration for what the measurement is valid.
+    */
+   private final long iteration;
+
+   /**
+    * The map containing the named results.
+    */
+   private final Map<String, Object> results = new HashMap<>();
+
+   /**
+    * Creates a new instance of Measurement.
+    * 
+    * @param percentage
+    * @param time
+    * @param iteration
+    */
+   public Measurement(final long percentage, final long time, final long iteration) {
       super();
-
-      if (measurementType == null || "".equals(measurementType.trim())) {
-         throw new IllegalArgumentException("Measurement type must be nonempty string! E.g. Response Time");
-      }
-      if (labelType == null || "".equals(labelType.trim())) {
-         throw new IllegalArgumentException("Label type must be nonempty string! E.g. Time");
-      }
-      if (label == null || "".equals(label.trim())) {
-         throw new IllegalArgumentException("Label must be nonempty string! E.g. 00:01:13");
-      }
-      if (value == null || "".equals(value.trim())) {
-         throw new IllegalArgumentException("Value must be nonempty string! E.g. 345");
-      }
-
-      this.measurementType = measurementType;
-      this.labelType = labelType;
-      this.label = label;
-      this.value = value;
+      this.percentage = percentage;
+      this.time = time;
+      this.iteration = iteration;
    }
 
-   public String getMeasurementType() {
-      return measurementType;
+   /**
+    * Used to read the value of percentage.
+    * 
+    * @return The percentage.
+    */
+   public long getPercentage() {
+      return percentage;
    }
 
-   public void setMeasurementType(String measurementType) {
-      this.measurementType = measurementType;
+   /**
+    * Used to read the value of time.
+    * 
+    * @return The time.
+    */
+   public long getTime() {
+      return time;
    }
 
-   public String getLabelType() {
-      return labelType;
+   /**
+    * Used to read the value of iteration.
+    * 
+    * @return The iteration.
+    */
+   public long getIteration() {
+      return iteration;
    }
 
-   public void setLabelType(String labelType) {
-      this.labelType = labelType;
+   /**
+    * Used to read the value of results.
+    * 
+    * @return The results.
+    */
+   public Map<String, Object> getAll() {
+      return results;
    }
 
-   public String getLabel() {
-      return label;
+   /**
+    * Used to read the value of the default result.
+    * 
+    * @return The default result.
+    */
+   public Object get() {
+      return get(DEFAULT_RESULT);
    }
 
-   public void setLabel(String label) {
-      this.label = label;
+   /**
+    * @param name
+    * @return
+    */
+   public Object get(final String name) {
+      return results.get(name);
    }
 
-   public String getValue() {
-      return value;
+   /**
+    * 
+    * Used to append a named result.
+    * 
+    * @param name
+    *           Name of the result.
+    * @param result
+    *           The result value.
+    */
+   public void set(final String name, final Object result) {
+      results.put(name, result);
    }
 
-   public void setValue(String value) {
-      this.value = value;
+   /**
+    * Used to set the default result.
+    * 
+    * @param result
+    *           The default result value.
+    */
+   public void set(final Object result) {
+      results.put(DEFAULT_RESULT, result);
    }
 
+   /*
+    * (non-Javadoc)
+    * 
+    * @see java.lang.Object#toString()
+    */
    @Override
    public String toString() {
-      return "Measurement{" + "measurementType='" + measurementType + '\'' + ", labelType='" + labelType + '\'' + ", label='" + label + '\'' + ", value='" + value + '\'' + '}';
+      final StringBuffer sb = new StringBuffer();
+      sb.append("[");
+      sb.append(Utils.timeToHMS(time));
+      sb.append("][");
+      sb.append(iteration + 1); // first iteration index is 0
+      sb.append(" iterations][");
+      sb.append(percentage);
+      sb.append("%]");
+      final Object defaultResult = get();
+      if (defaultResult != null) {
+         sb.append(" [");
+         sb.append(get());
+         sb.append("]");
+      }
+      for (final Entry<String, Object> entry : results.entrySet()) {
+         if (!entry.getKey().equals(DEFAULT_RESULT)) {
+            sb.append(" [");
+            sb.append(entry.getKey());
+            sb.append(" => ");
+            sb.append(entry.getValue());
+            sb.append("]");
+         }
+      }
+      return sb.toString();
    }
 }

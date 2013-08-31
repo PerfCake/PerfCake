@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message.sender;
 
 import java.io.Serializable;
@@ -21,6 +24,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.jms.BytesMessage;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
 import javax.jms.JMSException;
@@ -36,6 +40,7 @@ import javax.naming.InitialContext;
 
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The sender that is able to send messages via JMS.
@@ -43,10 +48,18 @@ import org.perfcake.PerfCakeException;
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Jiří Sedláček <jiri@sedlackovi.cz>
  * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Marek Baluch <baluch.git@gmail.com>
  * 
  */
 public abstract class JMSSender extends AbstractSender {
 
+   /**
+    * JMS message type.
+    */
+   public static enum MessageType {
+	   OBJECT, STRING, BYTEARRAY
+   }
+	
    /**
     * The logger's logger.
     */
@@ -118,10 +131,10 @@ public abstract class JMSSender extends AbstractSender {
    protected boolean autoAck = true;
 
    /**
-    * Specifies that the payload should be send as an {@link javax.jms.ObjectMessage} (true)
-    * or {@link javax.jms.TextMessage} (false).
+    * Specifies that the payload should be send as one of {@link JMSSender.MessageType}. Default value
+    * is set to MessageType.STRING.
     */
-   protected boolean sendAsObject = false;
+   protected MessageType messageType = MessageType.STRING;
 
    /**
     * JMS connection factory property.
@@ -260,11 +273,22 @@ public abstract class JMSSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public void preSend(org.perfcake.message.Message message, Map<String, String> properties) throws Exception {
-      if (!sendAsObject) {
-         mess = session.createTextMessage((String) message.getPayload());
-      } else {
-         mess = session.createObjectMessage(message.getPayload());
+   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
+      switch (messageType) {
+         case STRING:
+            mess = session.createTextMessage((String) message.getPayload());
+            break;
+         case BYTEARRAY:
+            BytesMessage bytesMessage = session.createBytesMessage();
+            bytesMessage.writeUTF((String) message.getPayload());
+            mess = bytesMessage;
+            break;
+         case OBJECT:
+            mess = session.createObjectMessage(message.getPayload());
+            break;
+         default:
+            throw new UnsupportedOperationException();
       }
       Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
       for (String property : propertyNameSet) {
@@ -288,7 +312,7 @@ public abstract class JMSSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public Serializable doSend(org.perfcake.message.Message message, Map<String, String> properties) throws Exception {
+   public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       if (log.isDebugEnabled()) {
          log.debug("Sending a message: " + message.getPayload().toString());
       }
@@ -319,26 +343,6 @@ public abstract class JMSSender extends AbstractSender {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
-    */
-   @Override
-   public Serializable doSend(org.perfcake.message.Message message) throws Exception {
-      return null;
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
-    */
-   @Override
-   public void postSend(org.perfcake.message.Message message) throws Exception {
-
-   }
-
    /**
     * Used to read the value of username.
     * 
@@ -354,7 +358,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param username
     *           The username to set.
     */
-   public void setUsername(String username) {
+   public void setUsername(final String username) {
       this.username = username;
    }
 
@@ -373,7 +377,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param password
     *           The password to set.
     */
-   public void setPassword(String password) {
+   public void setPassword(final String password) {
       this.password = password;
    }
 
@@ -392,7 +396,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param transacted
     *           The transacted to set.
     */
-   public void setTransacted(boolean transacted) {
+   public void setTransacted(final boolean transacted) {
       this.transacted = transacted;
    }
 
@@ -411,7 +415,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param persistent
     *           The persistent to set.
     */
-   public void setPersistent(boolean persistent) {
+   public void setPersistent(final boolean persistent) {
       this.persistent = persistent;
    }
 
@@ -430,27 +434,26 @@ public abstract class JMSSender extends AbstractSender {
     * @param autoAck
     *           The autoAck to set.
     */
-   public void setAutoAck(boolean autoAck) {
+   public void setAutoAck(final boolean autoAck) {
       this.autoAck = autoAck;
    }
 
    /**
-    * Used to read the value of sendAsObject.
+    * Set the value of messageType.
     * 
-    * @return The sendAsObject.
+    * @param messageType
     */
-   public boolean isSendAsObject() {
-      return sendAsObject;
+   public void setMessageType(MessageType messageType) {
+	   this.messageType = messageType;
    }
 
    /**
-    * Sets the value of sendAsObject.
+    * Get the value of messageType.
     * 
-    * @param sendAsObject
-    *           The sendAsObject to set.
+    * @return
     */
-   public void setSendAsObject(boolean sendAsObject) {
-      this.sendAsObject = sendAsObject;
+   public MessageType getMessageType() {
+	   return messageType;
    }
 
    /**
@@ -468,7 +471,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param connectionFactory
     *           The connectionFactory to set.
     */
-   public void setConnectionFactory(String connectionFactory) {
+   public void setConnectionFactory(final String connectionFactory) {
       this.connectionFactory = connectionFactory;
    }
 
@@ -487,7 +490,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param jndiContextFactory
     *           The jndiContextFactory to set.
     */
-   public void setJndiContextFactory(String jndiContextFactory) {
+   public void setJndiContextFactory(final String jndiContextFactory) {
       this.jndiContextFactory = jndiContextFactory;
    }
 
@@ -506,7 +509,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param jndiUrl
     *           The jndiUrl to set.
     */
-   public void setJndiUrl(String jndiUrl) {
+   public void setJndiUrl(final String jndiUrl) {
       this.jndiUrl = jndiUrl;
    }
 
@@ -525,7 +528,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param jndiSecurityPrincipal
     *           The jndiSecurityPrincipal to set.
     */
-   public void setJndiSecurityPrincipal(String jndiSecurityPrincipal) {
+   public void setJndiSecurityPrincipal(final String jndiSecurityPrincipal) {
       this.jndiSecurityPrincipal = jndiSecurityPrincipal;
    }
 
@@ -544,7 +547,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param jndiSecurityCredentials
     *           The jndiSecurityCredentials to set.
     */
-   public void setJndiSecurityCredentials(String jndiSecurityCredentials) {
+   public void setJndiSecurityCredentials(final String jndiSecurityCredentials) {
       this.jndiSecurityCredentials = jndiSecurityCredentials;
    }
 
@@ -563,7 +566,7 @@ public abstract class JMSSender extends AbstractSender {
     * @param replyTo
     *           The replyTo to set.
     */
-   public void setReplyTo(String replyTo) {
+   public void setReplyTo(final String replyTo) {
       this.replyTo = replyTo;
    }
 

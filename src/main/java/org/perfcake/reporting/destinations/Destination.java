@@ -1,210 +1,59 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.reporting.destinations;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.io.Closeable;
 
-import org.apache.log4j.Logger;
 import org.perfcake.reporting.Measurement;
-import org.perfcake.reporting.NullPeriodicity;
-import org.perfcake.reporting.Periodicity;
-import org.perfcake.reporting.ReportsException;
-import org.perfcake.reporting.ScenarioConfigurationElement;
-import org.perfcake.reporting.TestRunInfo;
-import org.perfcake.reporting.reporters.PeriodicalReportingThread;
-import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.ReportingException;
 
 /**
- * <p>
- * Destination is place where things are to be reported with reporter. Examples of such destinations are: database, csvfile, console.
- * </p>
+ * Destination represents a channel to which performance measurement results can be reported.
+ * Destinations are registered with {@link org.perfcake.reporting.reporters.Reporter Reporters} and are completely controlled by them. The only responsibility of a destination is to open
+ * a reporting channel, report measurements, and close the reporting channel.
+ * It is the role of {@link org.perfcake.reporting.Measurement} to provide all the information
+ * to be reported (including value types, names, units and custom labels).
  * 
- * <p>
- * We will report many different kinds of reports into one general data structure defined in conceptual model. The definition follows
- * </p>
- * 
- * <p>
- * 
- * <h2>Tables</h2>
- * <h3>TestRun</h3>
- * Concrete build in Jenkins. For this build results are collected.
- * 
- * <h3>Measurements</h3>
- * Measurements contain collection of measured values that represent output of the test. For example response time can be measured.
- * 
- * <h3>Measurement type</h3>
- * Type of the Measurement with regard to it's semantic that has been collected e.g. Response time, Iterations per second.
- * 
- * <h3>Label type</h3>
- * LabelType is type of labels for Measured values. Because Measurement can contain many Measured values then each value is labeled somehow. For example possible label types: Time, Processed messages, Message number
- * 
- * <h3>MeasuredValues</h3>
- * 00:02:33, 445
- * 
- * <h2>Example</h2>
- * Complete example could be as follows.
- * 
- * MeasurementTypes MT1 ResponseTime MT2 Iterations per second
- * 
- * Label types L1 Time L2 Processed messages
- * 
- * Measurements S1 MT1 L1
- * 
- * MeasuredValues S1 00:01:00 50ms S1 00:01:30 48ms S1 00:01:30 47ms S1 00:02:00 47ms
- * </p>
- * 
- * <p>
- * This destination can be set following properties:
- * <table border="1">
- * <tr>
- * <td>Property name</td>
- * <td>Description</td>
- * <td>Required</td>
- * <td>Sample value</td>
- * </tr>
- * <tr>
- * <td>periodicity</td>
- * <td>How often (in Periodicity string, see javadoc for Periodicity) should this reporter report to its destinations.</td>
- * <td>NO</td>
- * <td>10s</td>
- * </tr>
- * </table>
- * 
- * @author Filip Nguyen <nguyen.filip@gmail.com>
+ * @author Martin Večera <marvenec@gmail.com>
  * 
  */
-public abstract class Destination extends ScenarioConfigurationElement {
-   private static final Logger log = Logger.getLogger(Destination.class);
-
-   private Periodicity periodicityObject = null;
-
-   private String periodicity = null;
-
-   protected TestRunInfo testRunInfo;
-
-   private Reporter reporter;
-
-   private PeriodicalReportingThread periodicalThread;
-
-   protected ConcurrentLinkedQueue<Measurement> messageQueue = new ConcurrentLinkedQueue<Measurement>();
-
-   @Override
-   public void loadConfigValues() throws ReportsException {
-      if (periodicity == null) {
-         periodicityObject = new NullPeriodicity();
-      } else {
-         periodicityObject = Periodicity.constructFromString(periodicity);
-      }
-      loadSpecificConfigValues();
-   }
-
-   public abstract void send() throws ReportsException;
+public interface Destination extends Closeable {
 
    /**
-    * Measurement is pending to get outputed. This method shoudn't allow
-    * duplicit measurements for same label.
-    * 
-    * @param measurement
+    * Opens the destination for reporting.
     */
-   private Map<String, Measurement> lastMeasurementsForTypes = new HashMap<String, Measurement>();
+   public void open();
 
-   public void addMessageToSendQueue(Measurement measurement) {
+   /**
+    * Closes the destination. No other value should be reported after that.
+    */
+   @Override
+   public void close();
 
-      if (lastMeasurementsForTypes.containsKey(measurement.getMeasurementType())) {
-         Measurement lastMeasurement = lastMeasurementsForTypes.get(measurement.getMeasurementType());
-         if (lastMeasurement.getMeasurementType().equals(measurement.getMeasurementType()) && lastMeasurement.getLabel().equals(measurement.getLabel())) {
-            log.warn("There was measurement [" + measurement + "] that had same label as lastly added measurement [" + lastMeasurement + "]. This duplicit measurement will be discarded!");
-            return;
-         }
-      }
-      {
-         lastMeasurementsForTypes.put(measurement.getMeasurementType(), measurement);
-      }
-      messageQueue.add(measurement);
-      lastMeasurementsForTypes.remove(measurement.getMeasurementType());
-      lastMeasurementsForTypes.put(measurement.getMeasurementType(), measurement);
-   }
-
-   public void addMessagesToSendQueue(List<Measurement> measurements) {
-      for (Measurement m : measurements) {
-         addMessageToSendQueue(m);
-      }
-   }
-
-   public void stopThread() {
-      if (periodicalThread != null) {
-         periodicalThread.stopThread();
-      }
-   }
-
-   public void setPeriodicalThread(PeriodicalReportingThread periodicalReportingThread) throws ReportsException {
-      if (reporter == null) {
-         throw new ReportsException("The destination " + this.getClass().getSimpleName() + " doesn't have reporter attached but is trying to be started as periodical! Nobody to report to!");
-      }
-      periodicalThread = periodicalReportingThread;
-   }
-
-   public void periodicalTick() throws ReportsException {
-      reporter.periodicalTick(this);
-   }
-
-   public abstract void loadSpecificConfigValues() throws ReportsException;
-
-   public Reporter getReporter() {
-      return reporter;
-   }
-
-   public void setReporter(Reporter reporter) {
-      this.reporter = reporter;
-   }
-
-   public void setTestRunInfo(TestRunInfo testRunInfo) {
-      this.testRunInfo = testRunInfo;
-      periodicityObject.setTestRunInfo(testRunInfo);
-   }
-
-   public TestRunInfo getTestCaseInfo() {
-      return testRunInfo;
-   }
-
-   public boolean isTimelyPeriodic() throws ReportsException {
-      return periodicityObject.isTimely();
-   }
-
-   public float getPeriodicalInterval() throws ReportsException {
-      return periodicityObject.getTimePeriodicity();
-   }
-
-   public boolean isIterationaryPeriodic() throws ReportsException {
-      return periodicityObject.isIterationary();
-   }
-
-   public int getItTreshold() throws ReportsException {
-      return periodicityObject.getIterationalPeriodicity();
-   }
-
-   public String getPeriodicity() {
-      return periodicity;
-   }
-
-   public void setPeriodicity(String periodicity) {
-      this.periodicity = periodicity;
-   }
+   /**
+    * Report a new {@link org.perfcake.reporting.Measurement} to the destination.
+    * 
+    * @param m
+    *           A measurement to be reported
+    * @throws ReportingException
+    *            When an error occured during reporting the measurement like no space left on device. The root cause should be encapsulated.
+    */
+   public void report(Measurement m) throws ReportingException;
 }

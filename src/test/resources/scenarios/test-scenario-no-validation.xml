@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
+<scenario xmlns="urn:perfcake:scenario:0.3">
    <properties>
       <property name="quickstartName" value="testQS"/>
       <property name="filteredProperty" value="${test.filtered.property:default1}"/>
       <property name="defaultProperty" value="${test.missing.property:default-property-value}"/>
    </properties>
-   <generator class="LongtermMessageGenerator" threads="10">
+   <generator class="DefaultMessageGenerator" threads="10">
+      <run type="time" value="30"/>
       <property name="threadQueueSize" value="5000"/>
-      <property name="duration" value="30"/>
-      <property name="warmUpEnabled" value="true"/>
-      <property name="minimalWarmUpCount" value="12345"/>
    </generator>
    <sender class="HTTPSender">
       <property name="target" value="http://${server.host}:${server.port}/HTTPGateway/http/PerformanceTest/HTTPGateway"/>
@@ -30,12 +28,12 @@
    </reporting>
    <messages>
       <message uri="message1.xml" multiplicity="10">
-         <property name="m_property1" value="m_p_value1"/>
-         <property name="m_property2" value="m_p_value2"/>
-         <header name="m_header1" value="m_h_value1"/>
-         <property name="m_property3" value="m_p_value3"/>
-         <header name="m_header2" value="m_h_value2"/>
+      	 <header name="m_header1" value="m_h_value1"/>
+      	 <header name="m_header2" value="m_h_value2"/>
          <header name="m_header3" value="m_h_value3"/>
+         <property name="m_property1" value="m_p_value1"/>
+         <property name="m_property2" value="m_p_value2"/>        
+         <property name="m_property3" value="m_p_value3"/>         
       </message>
       <message uri="message2.txt"/>
    </messages>

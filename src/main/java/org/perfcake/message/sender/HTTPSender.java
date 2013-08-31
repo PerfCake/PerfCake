@@ -1,19 +1,22 @@
 /*
- * Copyright 2010-2013 the original author or authors.
- * 
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- * http://www.apache.org/licenses/LICENSE-2.0
+ *      http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * -----------------------------------------------------------------------/
  */
-
 package org.perfcake.message.sender;
 
 import java.io.InputStream;
@@ -23,7 +26,6 @@ import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +34,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The sender that is able to send the messages via HTTP protocol.
@@ -62,6 +65,9 @@ public class HTTPSender extends AbstractSender {
     */
    private Method method = Method.POST;
 
+   /**
+    * Enumeration on available HTTP methods.
+    */
    public static enum Method {
       GET, POST, HEAD, OPTIONS, PUT, DELETE, TRACE
    }
@@ -117,7 +123,7 @@ public class HTTPSender extends AbstractSender {
     * @param expectedResponseCodes
     *           The expectedResponseCodes property to set.
     */
-   public void setExpectedResponseCodes(String expectedResponseCodes) {
+   public void setExpectedResponseCodes(final String expectedResponseCodes) {
       this.expectedResponseCodes = expectedResponseCodes;
       setExpectedResponseCodesList(expectedResponseCodes.split(","));
    }
@@ -146,7 +152,7 @@ public class HTTPSender extends AbstractSender {
     * @param codes
     *           The array of codes.
     */
-   protected void setExpectedResponseCodesList(String[] codes) {
+   protected void setExpectedResponseCodesList(final String[] codes) {
       LinkedList<Integer> numCodes = new LinkedList<Integer>();
       for (String code : codes) {
          numCodes.add(Integer.parseInt(code.trim()));
@@ -162,7 +168,7 @@ public class HTTPSender extends AbstractSender {
     * @return
     *         true/false according to if the code is expected or not.
     */
-   private boolean checkResponseCode(int code) {
+   private boolean checkResponseCode(final int code) {
       for (int i : expectedResponseCodeList) {
          if (i == code) {
             return true;
@@ -177,13 +183,12 @@ public class HTTPSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
-      if (message != null) {
-         payload = message.getPayload().toString();
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
+      payload = message.getPayload().toString();
+      if (payload != null) {
          payloadLenght = payload.length();
       } else {
-         message = new Message();
-         payload = null;
          payloadLenght = 0;
       }
 
@@ -231,21 +236,10 @@ public class HTTPSender extends AbstractSender {
    /*
     * (non-Javadoc)
     * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message)
+    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)
     */
    @Override
-   public Serializable doSend(Message message) throws Exception {
-      // nop
-      return null;
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
-    */
-   @Override
-   public Serializable doSend(Message message, Map<String, String> properties) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       int respCode = -1;
       requestConnection.connect();
       if (payload != null && (method == Method.POST || method == Method.PUT)) {
@@ -291,7 +285,8 @@ public class HTTPSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
     */
    @Override
-   public void postSend(Message message) throws Exception {
+   public void postSend(final Message message) throws Exception {
+      super.postSend(message);
       requestConnection.disconnect();
    }
 
@@ -310,7 +305,7 @@ public class HTTPSender extends AbstractSender {
     * @param method
     *           The HTTP method to set.
     */
-   public void setMethod(Method method) {
+   public void setMethod(final Method method) {
       this.method = method;
    }
 
