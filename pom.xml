@@ -6,7 +6,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake</artifactId>
-   <version>0.3-SNAPSHOT</version>
+   <version>0.3</version>
    <packaging>jar</packaging>
    <name>PerfCake</name>
    <organization>
@@ -20,7 +20,8 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-   </scm>
+     <tag>v0.3</tag>
+  </scm>
    <developers>
       <developer>
          <name>Martin Večeřa</name>
@@ -143,7 +144,7 @@
                <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
                <processStartTag>-----------------------------------------------------------------------\</processStartTag>
                <processEndTag>-----------------------------------------------------------------------/</processEndTag>
-               <sectionDelimiter>&nbsp;
+               <sectionDelimiter> 
                </sectionDelimiter>
                <organizationName>the original author or authors.</organizationName>
                <licenseName>apache_v2</licenseName>
@@ -284,7 +285,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <ignore/>
+                              <ignore />
                            </action>
                         </pluginExecution>
                      </pluginExecutions>
