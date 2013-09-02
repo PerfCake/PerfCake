@@ -78,7 +78,9 @@ public class Scenario {
          log.trace("Running scenario...");
       }
 
-      validatorManager.startValidation();
+      if (validatorManager.isEnabled()){
+         validatorManager.startValidation();
+      }
 
       try {
          generator.generate();
@@ -138,6 +140,16 @@ public class Scenario {
 
    void setMessageStore(List<MessageTemplate> messageStore) {
       this.messageStore = messageStore;
+   }
+
+   /**
+    * Sets the value of validatorManager.
+    * 
+    * @param validatorManager
+    *           The value of validatorManager to set.
+    */
+   void setValidatorManager(ValidatorManager validatorManager) {
+      this.validatorManager = validatorManager);
    }
 
 }
