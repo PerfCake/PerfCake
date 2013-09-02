@@ -50,12 +50,13 @@ public class ScenarioParser {
 
    public static final Logger log = Logger.getLogger(ScenarioParser.class);
 
-   private String scenarioConfig;   
+   private String scenarioConfig;
 
    /**
     * 
     * @param scenario
-    * @throws PerfCakeException if URL cannot be read
+    * @throws PerfCakeException
+    *            if URL cannot be read
     */
    public ScenarioParser(final URL scenario) throws PerfCakeException {
       try {
@@ -68,8 +69,10 @@ public class ScenarioParser {
 
    /**
     * Do the parsing itself by using JAXB
+    * 
     * @return
-    * @throws PerfCakeException if XML is not valid or cannot be successfully parsed
+    * @throws PerfCakeException
+    *            if XML is not valid or cannot be successfully parsed
     */
    public org.perfcake.model.Scenario parse() throws PerfCakeException {
       try {

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:0.2" enabled="true">
+<scenario xmlns="urn:perfcake:scenario:1.0">
    <properties>
       <property name="quickstartName" value="eds"/>
    </properties>
