@@ -71,7 +71,7 @@ public class ScenarioExecution {
       if (commandLine.hasOption(PerfCakeConst.SCENARIO_OPT)) {
          System.setProperty(PerfCakeConst.SCENARIO_PROPERTY, commandLine.getOptionValue(PerfCakeConst.SCENARIO_OPT));
       } else {
-         formatter.printHelp("ScenarioExecution -s <SCENARIO> [-sd <SCENARIO_DIR>] [-md <MESSAGES_DIR>] [-D<property=value>]*", options);
+         formatter.printHelp("ScenarioExecution -s <SCENARIO> [-sd <SCENARIOS_DIR>] [-md <MESSAGES_DIR>] [-D<property=value>]*", options);
          return;
       }
 
