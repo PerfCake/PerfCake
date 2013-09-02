@@ -130,6 +130,7 @@ public class ScenarioBuilder {
     */
    public ScenarioBuilder putMessageValidator(String validatorId, MessageValidator mv) {
       validatorManager.addValidator(validatorId, mv);
+      validatorManager.setEnabled(true);
       return this;
    }
 
@@ -149,7 +150,7 @@ public class ScenarioBuilder {
          throw new IllegalStateException("RunInfo is not set");
       if (generator == null)
          throw new IllegalStateException("Generator is not set");
-      if (senderTemplate == null)
+      if (messageSenderManager == null && senderTemplate == null)
          throw new IllegalStateException("Sender is not set");
 
       Scenario sc = new Scenario();
@@ -183,7 +184,7 @@ public class ScenarioBuilder {
       }
 
       sc.setMessageStore(messages);
-      validatorManager.startValidation();
+      sc.setValidatorManager(validatorManager);
 
       return sc;
    }
