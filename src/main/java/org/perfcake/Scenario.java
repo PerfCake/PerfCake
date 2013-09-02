@@ -149,7 +149,7 @@ public class Scenario {
     *           The value of validatorManager to set.
     */
    void setValidatorManager(ValidatorManager validatorManager) {
-      this.validatorManager = validatorManager);
+      this.validatorManager = validatorManager;
    }
 
 }
