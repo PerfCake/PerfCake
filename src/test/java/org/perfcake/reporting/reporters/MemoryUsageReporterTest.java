@@ -60,8 +60,8 @@ public class MemoryUsageReporterTest {
       Executors.newSingleThreadExecutor().submit(agentThread);
 
       final Properties reporterProperties = new Properties();
-      reporterProperties.put("hostname", AGENT_HOSTNAME);
-      reporterProperties.put("port", AGENT_PORT);
+      reporterProperties.put("agentHostname", AGENT_HOSTNAME);
+      reporterProperties.put("agentPort", AGENT_PORT);
       mur = (MemoryUsageReporter) ObjectFactory.summonInstance(MemoryUsageReporter.class.getName(), reporterProperties);
 
       final Properties destinationProperties = new Properties();
@@ -71,8 +71,8 @@ public class MemoryUsageReporterTest {
    @Test
    public void testMemoryUsageReporter() {
       Assert.assertNotNull(mur, "Reporter's instance");
-      Assert.assertEquals(mur.getHostname(), AGENT_HOSTNAME, "Agent hostname");
-      Assert.assertEquals(mur.getPort(), AGENT_PORT, "Agent port");
+      Assert.assertEquals(mur.getAgentHostname(), AGENT_HOSTNAME, "Agent hostname");
+      Assert.assertEquals(mur.getAgentPort(), AGENT_PORT, "Agent port");
 
       final List<Measurement> measurementList = new LinkedList<>();
 
