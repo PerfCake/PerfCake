@@ -8,7 +8,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.Utils;
 
 /**
  * The sender that can invoke external command (specified by {@link #target} property)
@@ -137,7 +138,7 @@ public class CommandSender extends AbstractSender {
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       process = Runtime.getRuntime().exec(command, environmentVariables);
       if (messageFrom == MessageFrom.STDIN) {
-         writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(process.getOutputStream())), true);
+         writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(process.getOutputStream()), Utils.getDefaultEncoding()), true);
          writer.write(messagePayload);
          writer.flush();
          writer.close();
@@ -145,7 +146,7 @@ public class CommandSender extends AbstractSender {
 
       process.waitFor();
       char[] cbuf = new char[10 * 1024];
-      this.reader = new InputStreamReader(process.getInputStream());
+      this.reader = new InputStreamReader(process.getInputStream(), Utils.getDefaultEncoding());
       // note that Content-Length is available at this point
       StringBuilder sb = new StringBuilder();
       int ch = reader.read(cbuf);
@@ -207,4 +208,20 @@ public class CommandSender extends AbstractSender {
    protected void setCommandPrefix(final String commandPrefix) {
       this.commandPrefix = commandPrefix;
    }
+
+   /**
+    * @return the environmentVariables
+    */
+   public String[] getEnvironmentVariables() {
+      return environmentVariables;
+   }
+
+   /**
+    * @param environmentVariables
+    *           the environmentVariables to set
+    */
+   public void setEnvironmentVariables(String[] environmentVariables) {
+      this.environmentVariables = environmentVariables;
+   }
+
 }

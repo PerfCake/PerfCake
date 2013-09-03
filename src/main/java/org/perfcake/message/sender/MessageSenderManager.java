@@ -44,8 +44,8 @@ public class MessageSenderManager {
    private final Map<MessageSender, Boolean> messageSendersMap;
    private final Properties messageSenderProperties;
    private Queue<MessageSender> availableSenders;
-   protected ReportManager reportManager;
-   protected MessageValidator messageValidator;
+   private ReportManager reportManager;
+   private MessageValidator messageValidator;
 
    public MessageSenderManager() {
       super();

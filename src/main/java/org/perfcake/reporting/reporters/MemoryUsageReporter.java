@@ -22,6 +22,7 @@ package org.perfcake.reporting.reporters;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -35,6 +36,7 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
+import org.perfcake.util.Utils;
 import org.perfcake.util.agent.PerfCakeAgent;
 import org.perfcake.util.agent.PerfCakeAgent.Memory;
 
@@ -130,8 +132,8 @@ public class MemoryUsageReporter extends AbstractReporter {
             log.debug("Creating socket " + host + ":" + agentPort + "...");
          }
          socket = new Socket(host, Integer.valueOf(agentPort));
-         requestWriter = new PrintWriter(socket.getOutputStream(), true);
-         responseReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+         requestWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Utils.getDefaultEncoding()), true);
+         responseReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), Utils.getDefaultEncoding()));
       } catch (IOException ioe) {
          ioe.printStackTrace();
       }

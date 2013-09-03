@@ -29,6 +29,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.drools.compiler.PackageBuilder;
 import org.drools.rule.Package;
+import org.perfcake.util.Utils;
 
 /**
  * 
@@ -77,7 +78,7 @@ public class RulesBuilder {
          if (assertion.length() > 0 && !assertion.startsWith("#")) {
             final int lineNumber = i + 1;
 
-            final String rule = String.format("rule \"Line %d\"\n  dialect \"java\"\n  when\n    %s\n  then\n   > rulesUsed.remove(%d);\nend\n", lineNumber, assertion, lineNumber - 1, lineNumber);// rules
+            final String rule = String.format("rule \"Line %d\"%n  dialect \"java\"%n  when%n    %s%n  then%n   > rulesUsed.remove(%d);%nend%n", lineNumber, assertion, lineNumber - 1, lineNumber);// rules
             // numbered
             // from 1
 
@@ -91,7 +92,7 @@ public class RulesBuilder {
       // InputStream dslis = RulesBuilder.class.getResourceAsStream(dsl);
       final InputStream dslis = new FileInputStream(resourcesDir + dsl);
       final PackageBuilder pBuilder = new PackageBuilder();
-      pBuilder.addPackageFromDrl(new StringReader(sBuilder.toString()), new InputStreamReader(dslis));
+      pBuilder.addPackageFromDrl(new StringReader(sBuilder.toString()), new InputStreamReader(dslis, Utils.getDefaultEncoding()));
 
       // Check the builder for errors
       if (pBuilder.hasErrors()) {

@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.Utils;
 
 /**
  * The sender that is able to send the messages via HTTP protocol.
@@ -243,9 +244,10 @@ public class HTTPSender extends AbstractSender {
       int respCode = -1;
       requestConnection.connect();
       if (payload != null && (method == Method.POST || method == Method.PUT)) {
-         OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream());
+         OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream(), Utils.getDefaultEncoding());
          out.write(payload, 0, payloadLenght);
          out.flush();
+         out.close();
          requestConnection.getOutputStream().close();
       }
 
@@ -264,7 +266,7 @@ public class HTTPSender extends AbstractSender {
          rcis = requestConnection.getErrorStream();
       }
       char[] cbuf = new char[10 * 1024];
-      InputStreamReader read = new InputStreamReader(rcis);
+      InputStreamReader read = new InputStreamReader(rcis, Utils.getDefaultEncoding());
       // note that Content-Length is available at this point
       StringBuilder sb = new StringBuilder();
       int ch = read.read(cbuf);

@@ -19,12 +19,14 @@
  */
 package org.perfcake.validation;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
+import org.perfcake.util.Utils;
 
 /**
  * Utilities used for messages validation.
@@ -212,7 +214,11 @@ public final class ValidatorUtil {
          return null;
       } else {
          if (data instanceof byte[]) {
-            return new String((byte[]) data);
+            try {
+               return new String((byte[]) data, Utils.getDefaultEncoding());
+            } catch (UnsupportedEncodingException e) {
+               return new String((byte[]) data);
+            }
          } else {
             return data.toString();
          }
