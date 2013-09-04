@@ -189,7 +189,7 @@ public class ValidatorManager {
 
          try {
             while (!validationThread.isInterrupted() && (receivedMessage = resultMessages.poll()) != null) {
-               while (receivedMessage != null) {
+               if (receivedMessage != null) {
                   for (final MessageValidator validator : receivedMessage.getSentMessage().getValidators()) {
                      isMessageValid = validator.isValid(new Message(receivedMessage.getPayload()));
                      if (log.isTraceEnabled()) {
