@@ -28,9 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.perfcake.PerfCakeException;
-import org.perfcake.reporting.ReportManager;
 import org.perfcake.util.ObjectFactory;
-import org.perfcake.validation.MessageValidator;
 
 /**
  * 
@@ -44,22 +42,12 @@ public class MessageSenderManager {
    private final Map<MessageSender, Boolean> messageSendersMap;
    private final Properties messageSenderProperties;
    private Queue<MessageSender> availableSenders;
-   private ReportManager reportManager;
-   private MessageValidator messageValidator;
 
    public MessageSenderManager() {
       super();
       messageSenderProperties = new Properties();
       availableSenders = new LinkedBlockingQueue<MessageSender>(senderPoolSize);
       messageSendersMap = new ConcurrentHashMap<MessageSender, Boolean>();
-   }
-
-   public void setMessageValidator(final MessageValidator messageValidator) {
-      this.messageValidator = messageValidator;
-   }
-
-   public void setReportManager(final ReportManager reportManager) {
-      this.reportManager = reportManager;
    }
 
    public void setMessageSenderProperty(final String property, final String value) {

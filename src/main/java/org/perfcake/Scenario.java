@@ -57,7 +57,6 @@ public class Scenario {
          log.trace("Scenario initialization...");
       }
 
-      messageSenderManager.setReportManager(reportManager);
       generator.setReportManager(reportManager);
       generator.setValidatorManager(validatorManager);
 
@@ -78,7 +77,7 @@ public class Scenario {
          log.trace("Running scenario...");
       }
 
-      if (validatorManager.isEnabled()){
+      if (validatorManager.isEnabled()) {
          validatorManager.startValidation();
       }
 
