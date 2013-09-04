@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -186,8 +187,9 @@ public class HTTPSender extends AbstractSender {
    @Override
    public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
-      payload = message.getPayload().toString();
-      if (payload != null) {
+
+      if (message.getPayload() != null) {
+         payload = message.getPayload().toString();
          payloadLenght = payload.length();
       } else {
          payloadLenght = 0;
@@ -203,19 +205,18 @@ public class HTTPSender extends AbstractSender {
       if (payloadLenght > 0) {
          requestConnection.setRequestProperty("Content-Length", Integer.toString(payloadLenght));
       }
-      Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
-      for (String property : propertyNameSet) {
-         requestConnection.setRequestProperty(property, message.getProperty(property));
+      for (Entry<Object, Object> property : message.getProperties().entrySet()) {
+         requestConnection.setRequestProperty(property.getKey().toString(), property.getValue().toString());
       }
       // set additional properties
       if (log.isDebugEnabled()) {
          log.debug("Setting HTTP headers");
       }
       if (properties != null) {
-         propertyNameSet = properties.keySet();
-         for (String property : propertyNameSet) {
-            String pValue = (properties.get(property));
-            requestConnection.setRequestProperty(property, pValue);
+         for (Entry<String, String> property : properties.entrySet()) {
+            String pKey = property.getKey();
+            String pValue = property.getValue();
+            requestConnection.setRequestProperty(pKey, pValue);
             if (log.isDebugEnabled()) {
                log.debug(property + ": " + pValue);
             }
@@ -253,9 +254,10 @@ public class HTTPSender extends AbstractSender {
 
       respCode = requestConnection.getResponseCode();
       if (!checkResponseCode(respCode)) {
-         String errorMess = "The server returned an unexpected HTTP response code: " + respCode + " " + "\"" + requestConnection.getResponseMessage() + "\". Expected HTTP codes are ";
+         StringBuffer errorMess = new StringBuffer();
+         errorMess.append("The server returned an unexpected HTTP response code: ").append(respCode).append(" ").append("\"").append(requestConnection.getResponseMessage()).append("\". Expected HTTP codes are ");
          for (int code : expectedResponseCodeList) {
-            errorMess += Integer.toString(code) + ", ";
+            errorMess.append(Integer.toString(code)).append(", ");
          }
          throw new PerfCakeException(errorMess.substring(0, errorMess.length() - 2) + ".");
       }

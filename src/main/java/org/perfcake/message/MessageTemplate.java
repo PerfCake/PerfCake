@@ -19,6 +19,7 @@
  */
 package org.perfcake.message;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
@@ -33,13 +34,15 @@ import org.perfcake.validation.MessageValidator;
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class MessageTemplate {
+public class MessageTemplate implements Serializable {
+   private static final long serialVersionUID = 6172258079690233417L;
+
    private static final String propertyPattern = "[^\\\\](#\\{([^#\\{:]+)(:[^#\\{:]*)?})";
 
    private final Message message;
    private final long multiplicity;
    private final List<MessageValidator> validators;// may be empty
-   private Matcher matcher;
+   private transient Matcher matcher;
 
    public Matcher getMatcher() {
       return matcher;

@@ -40,10 +40,6 @@ import org.perfcake.util.Utils;
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
-/**
- * @author pmacik
- * 
- */
 public class CommandSender extends AbstractSender {
 
    /**
