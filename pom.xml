@@ -7,6 +7,11 @@
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake</artifactId>
    <version>1.0-SNAPSHOT</version>
+   <parent>
+      <groupId>org.sonatype.oss</groupId>
+      <artifactId>oss-parent</artifactId>
+      <version>7</version>
+   </parent>
    <packaging>jar</packaging>
    <name>PerfCake</name>
    <organization>
@@ -21,7 +26,7 @@
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
       <tag>HEAD</tag>
-  </scm>
+   </scm>
    <developers>
       <developer>
          <name>Martin Večeřa</name>
@@ -267,6 +272,14 @@
                      ${project.version})</doctitle>
                </configuration>
             </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-gpg-plugin</artifactId>
+               <version>1.4</version>
+               <configuration>
+                  <useAgent>true</useAgent>
+               </configuration>
+            </plugin>
             <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
             <plugin>
                <groupId>org.eclipse.m2e</groupId>
@@ -285,7 +298,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <ignore />
+                              <ignore/>
                            </action>
                         </pluginExecution>
                      </pluginExecutions>
