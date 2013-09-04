@@ -188,9 +188,15 @@ public class ScenarioFactory {
 
             log.info("--- Messages ---");
             for (Messages.Message m : messages.getMessage()) {
-
-               URL messageUrl = Utils.locationToUrl(m.getUri(), PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"), "");
-               String currentMessagePayload = Utils.readFilteredContent(messageUrl);
+               URL messageUrl;
+               String currentMessagePayload;
+               if (m.getUri() != null) {
+                  messageUrl = Utils.locationToUrl(m.getUri(), PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"), "");
+                  currentMessagePayload = Utils.readFilteredContent(messageUrl);
+               } else {
+                  messageUrl = null;
+                  currentMessagePayload = null;
+               }
                Properties currentMessageProperties = getPropertiesFromList(m.getProperty());
                Properties currentMessageHeaders = new Properties();
                for (Header h : m.getHeader()) {
@@ -221,7 +227,7 @@ public class ScenarioFactory {
                // create message to be send
                MessageTemplate currentMessageToSend = new MessageTemplate(currentMessage, currentMessageMultiplicity, currentMessageValidators);
 
-               log.info("'- Message (" + messageUrl.toString() + "), " + currentMessageMultiplicity + "x");
+               log.info("'- Message (" + (messageUrl != null ? messageUrl.toString() : "") + "), " + currentMessageMultiplicity + "x");
                if (log.isDebugEnabled()) {
                   log.debug("  '- Properties:");
                   Utils.logProperties(log, Level.DEBUG, currentMessageProperties, "   '- ");
