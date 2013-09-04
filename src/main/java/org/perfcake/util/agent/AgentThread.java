@@ -39,7 +39,7 @@ public class AgentThread implements Runnable {
       try {
          // parse agent properties
          Properties props = new Properties();
-         if ("".equals(agentArgs) && agentArgs != null) {
+         if (!"".equals(agentArgs) && agentArgs != null) {
             String[] args = agentArgs.split(",");
             for (String arg : args) {
                String[] keyValuePair = arg.split("=");

@@ -217,9 +217,9 @@ public class Utils {
 
       return sb.toString();
    }
-   
+
    /**
-    * Uses -Ddefault.encoding=<default_encoding> system property, if this property is not set, <b>UTF-8</b> is used.
+    * Uses {@link PerfCakeConst#DEFAULT_ENCODING_PROPERTY} system property, if this property is not set, <b>UTF-8</b> is used.
     * 
     * @return String representation of default encoding for all read and written files
     */

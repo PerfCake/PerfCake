@@ -23,6 +23,7 @@ package org.perfcake;
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Jiří Sedláček <jiri@sedlackovi.cz>
+ * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public final class PerfCakeConst {
    public static final String PERFORMANCE_MESSAGE_PROPERTY = "PerfCake_Performance";
