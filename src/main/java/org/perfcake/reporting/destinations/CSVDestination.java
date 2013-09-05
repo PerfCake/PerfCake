@@ -21,8 +21,9 @@ package org.perfcake.reporting.destinations;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -148,7 +149,7 @@ public class CSVDestination implements Destination {
          }
       }
 
-      try (BufferedWriter bw = new BufferedWriter(new FileWriter(csvFile, true))) {
+      try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(csvFile, true), Utils.getDefaultEncoding()))) {
          bw.append(sb.toString());
          bw.newLine();
       } catch (IOException ioe) {

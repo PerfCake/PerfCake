@@ -58,34 +58,34 @@ echo.
 goto error
 
 :chkMHome
-if not "%PERFCAKE_HOME%"=="" goto valMHome
+if not "%PERFCAKE_HOME%"=="" goto valPCHome
 
 if "%OS%"=="Windows_NT" SET "PERFCAKE_HOME=%~dp0.."
 if "%OS%"=="WINNT" SET "PERFCAKE_HOME=%~dp0.."
-if not "%PERFCAKE_HOME%"=="" goto valMHome
+if not "%PERFCAKE_HOME%"=="" goto valPCHome
 
 echo.
 echo ERROR: PERFCAKE_HOME not found in your environment.
 echo Please set the PERFCAKE_HOME variable in your environment to match the
-echo location of the Maven installation
+echo location of the PerfCake installation
 echo.
 goto error
 
-:valMHome
+:valPCHome
 
-:stripMHome
-if not "_%PERFCAKE_HOME:~-1%"=="_\" goto checkMBat
+:stripPCHome
+if not "_%PERFCAKE_HOME:~-1%"=="_\" goto checkPCBat
 set "PERFCAKE_HOME=%PERFCAKE_HOME:~0,-1%"
-goto stripMHome
+goto stripPCHome
 
-:checkMBat
-if exist "%PERFCAKE_HOME%\bin\mvn.bat" goto init
+:checkPCBat
+if exist "%PERFCAKE_HOME%\bin\perfcake.bat" goto init
 
 echo.
 echo ERROR: PERFCAKE_HOME is set to an invalid directory.
 echo PERFCAKE_HOME = "%PERFCAKE_HOME%"
 echo Please set the PERFCAKE_HOME variable in your environment to match the
-echo location of the Maven installation
+echo location of the PerfCake installation
 echo.
 goto error
 @REM ==== END VALIDATION ====
@@ -129,7 +129,14 @@ SET PERFCAKE_JAVA_EXE="%JAVA_HOME%\bin\java.exe"
 
 @REM Start PerfCake
 :runPERFCAKE
-%PERFCAKE_JAVA_EXE% -jar %PERFCAKE_HOME%\lib\perfcake*.jar %PERFCAKE_CMD_LINE_ARGS%
+for /f "delims=" %%i in ('dir /s /b %PERFCAKE_HOME%\lib\perfcake*.jar') do set PERFCAKE_JAR=%%i && goto pcJarFound
+:pcJarFound
+if not "%PERFCAKE_JAR%"=="" goto execPerfCake
+echo ERROR: could not find PerfCake jar file (%PERFCAKE_HOME%\lib\perfcake*.jar)
+goto error
+
+:execPerfCake
+%PERFCAKE_JAVA_EXE% -jar %PERFCAKE_JAR% %PERFCAKE_CMD_LINE_ARGS%
 if ERRORLEVEL 1 goto error
 goto end
 
@@ -154,15 +161,9 @@ goto postExec
 
 :postExec
 
-if not "%PERFCAKE_SKIP_RC%" == "" goto skipRcPost
-if exist "%HOME%\mavenrc_post.bat" call "%HOME%\mavenrc_post.bat"
-:skipRcPost
-
 @REM pause the batch file if PERFCAKE_BATCH_PAUSE is set to 'on'
 if "%PERFCAKE_BATCH_PAUSE%" == "on" pause
 
 if "%PERFCAKE_TERMINATE_CMD%" == "on" exit %ERROR_CODE%
 
 cmd /C exit /B %ERROR_CODE%
-
-

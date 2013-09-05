@@ -22,6 +22,7 @@ package org.perfcake.reporting.reporters;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -35,6 +36,7 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
+import org.perfcake.util.Utils;
 import org.perfcake.util.agent.PerfCakeAgent;
 import org.perfcake.util.agent.PerfCakeAgent.Memory;
 
@@ -58,12 +60,12 @@ public class MemoryUsageReporter extends AbstractReporter {
    /**
     * Hostname where {@link PerfCakeAgent} is listening on.
     */
-   private String hostname = "localhost";
+   private String agentHostname = "localhost";
 
    /**
     * Port number where {@link PerfCakeAgent} is listening on.
     */
-   private String port = "8849";
+   private String agentPort = "8849";
 
    /**
     * IP address of the {@link PerfCakeAgent}.
@@ -125,13 +127,13 @@ public class MemoryUsageReporter extends AbstractReporter {
    public void start() {
       super.start();
       try {
-         host = InetAddress.getByName(hostname);
+         host = InetAddress.getByName(agentHostname);
          if (log.isDebugEnabled()) {
-            log.debug("Creating socket " + host + ":" + port + "...");
+            log.debug("Creating socket " + host + ":" + agentPort + "...");
          }
-         socket = new Socket(host, Integer.valueOf(port));
-         requestWriter = new PrintWriter(socket.getOutputStream(), true);
-         responseReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+         socket = new Socket(host, Integer.valueOf(agentPort));
+         requestWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Utils.getDefaultEncoding()), true);
+         responseReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), Utils.getDefaultEncoding()));
       } catch (IOException ioe) {
          ioe.printStackTrace();
       }
@@ -184,41 +186,41 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of hostname.
+    * Used to read the value of agentHostname.
     * 
-    * @return The hostname value.
+    * @return The agent hostname value.
     */
-   public String getHostname() {
-      return hostname;
+   public String getAgentHostname() {
+      return agentHostname;
    }
 
    /**
-    * Used to set the value of hostname.
+    * Used to set the value of agentHostname.
     * 
-    * @param hostname
-    *           The hostname value to set.
+    * @param agentHostname
+    *           The agent hostname value to set.
     */
-   public void setHostname(final String hostname) {
-      this.hostname = hostname;
+   public void setAgentHostname(final String agentHostname) {
+      this.agentHostname = agentHostname;
    }
 
    /**
-    * Used to read the value of port.
+    * Used to read the value of agentPort.
     * 
-    * @return The port value.
+    * @return The agent port value.
     */
-   public String getPort() {
-      return port;
+   public String getAgentPort() {
+      return agentPort;
    }
 
    /**
-    * Used to set the value of port.
+    * Used to set the value of agentPort.
     * 
-    * @param port
-    *           The port value to set.
+    * @param agentPort
+    *           The agent port value to set.
     */
-   public void setPort(final String port) {
-      this.port = port;
+   public void setAgentPort(final String agentPort) {
+      this.agentPort = agentPort;
    }
 
 }

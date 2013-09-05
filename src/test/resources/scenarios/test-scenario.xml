@@ -49,6 +49,9 @@
       <message uri="message2.txt">
          <validatorRef id="fishValidator"/>
       </message>
+      <message>
+         <header name="h3_name" value="h3_value"/>
+      </message>
    </messages>
    <validation>
       <validator id="fishValidator" class="TextMessageValidator"><![CDATA[.*fish.*]]></validator>
