@@ -43,4 +43,6 @@ public final class PerfCakeConst {
    public static final String SCENARIO_OPT = "scenario";
    public static final String SCENARIOS_DIR_OPT = "scenarios-dir";
    public static final String MESSAGES_DIR_OPT = "messages-dir";
+
+   public static final String WARM_UP_TAG = "warmUp";
 }

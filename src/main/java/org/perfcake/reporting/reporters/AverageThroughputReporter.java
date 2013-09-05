@@ -25,7 +25,6 @@ import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.accumulators.Accumulator;
 
 /**
  * The reporter is able to report the current average throughput (in the means of the number of iterations per second)
@@ -53,11 +52,4 @@ public class AverageThroughputReporter extends AbstractReporter {
    protected void doReset() {
       // nothing needed, the parent does the job
    }
-
-   @SuppressWarnings("rawtypes")
-   @Override
-   protected Accumulator getAccumulator(final String key, final Class clazz) {
-      return null; // not needed
-   }
-
 }

@@ -30,7 +30,6 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.AvgAccumulator;
-import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 
 /**
  * Reports average response time of all measure units
@@ -67,7 +66,7 @@ public class ResponseTimeReporter extends AbstractReporter {
       if (Double.class.equals(clazz)) {
          return new AvgAccumulator();
       } else {
-         return new LastValueAccumulator();
+         return super.getAccumulator(key, clazz);
       }
    }
 

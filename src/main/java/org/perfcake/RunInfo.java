@@ -254,6 +254,16 @@ public class RunInfo {
    }
 
    /**
+    * Removes a tag from this run.
+    * 
+    * @param tag
+    *           A tag to be removed
+    */
+   public void removeTag(final String tag) {
+      this.tags.remove(tag);
+   }
+
+   /**
     * Gets the desired run duration
     * 
     * @return The run duration
