@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
@@ -87,10 +88,11 @@ public class WarmUpReporter extends AbstractReporter {
    /**
     * The period in milliseconds in which the checking if the tested system is warmed up.
     */
-   private long checkingPeriod = 1000;
+   private final long checkingPeriod = 1000;
 
    @Override
    public void start() {
+      runInfo.addTag(PerfCakeConst.WARM_UP_TAG);
       if (log.isInfoEnabled()) {
          log.info("Warming the tested system up (for at least " + minimalWarmUpDuration + " ms and " + minimalWarmUpCount + " iterations) ...");
       }
@@ -98,13 +100,13 @@ public class WarmUpReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(PeriodType periodType, Destination d) throws ReportingException {
+   public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       throw new ReportingException("No destination is allowed on " + getClass().getSimpleName());
    }
 
    @SuppressWarnings("rawtypes")
    @Override
-   protected Accumulator getAccumulator(String key, Class clazz) {
+   protected Accumulator getAccumulator(final String key, final Class clazz) {
       return new SlidingWindowAvgAccumulator(16);
    }
 
@@ -132,6 +134,7 @@ public class WarmUpReporter extends AbstractReporter {
                      log.info("The tested system is warmed up.");
                   }
                   runInfo.reset();
+                  runInfo.removeTag(PerfCakeConst.WARM_UP_TAG);
                   warmed = true;
                }
             }
