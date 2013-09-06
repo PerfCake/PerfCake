@@ -188,11 +188,12 @@ public class HTTPSender extends AbstractSender {
    public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
 
-      if (message.getPayload() != null) {
+      payloadLenght = 0;
+      if (message == null) {
+         payload = null;
+      } else if (message.getPayload() != null) {
          payload = message.getPayload().toString();
          payloadLenght = payload.length();
-      } else {
-         payloadLenght = 0;
       }
 
       requestConnection = (HttpURLConnection) url.openConnection();
@@ -205,32 +206,46 @@ public class HTTPSender extends AbstractSender {
       if (payloadLenght > 0) {
          requestConnection.setRequestProperty("Content-Length", Integer.toString(payloadLenght));
       }
-      for (Entry<Object, Object> property : message.getProperties().entrySet()) {
-         requestConnection.setRequestProperty(property.getKey().toString(), property.getValue().toString());
-      }
-      // set additional properties
+
       if (log.isDebugEnabled()) {
          log.debug("Setting HTTP headers");
       }
+
+      // set message properties as HTTP headers
+      if (message != null) {
+         for (Entry<Object, Object> property : message.getProperties().entrySet()) {
+            String pKey = property.getKey().toString();
+            String pValue = property.getValue().toString();
+            requestConnection.setRequestProperty(pKey, pValue);
+            if (log.isDebugEnabled()) {
+               log.debug(pKey + ": " + pValue);
+            }
+         }
+      }
+
+      // set message headers as HTTP headers
+      if (message != null) {
+         if (message.getHeaders().size() > 0) {
+            for (Entry<Object, Object> property : message.getHeaders().entrySet()) {
+               String pKey = property.getKey().toString();
+               String pValue = property.getValue().toString();
+               requestConnection.setRequestProperty(pKey, pValue);
+               if (log.isDebugEnabled()) {
+                  log.debug(pKey + ": " + pValue);
+               }
+            }
+         }
+      }
+
+      // set additional properties as HTTP headers
       if (properties != null) {
          for (Entry<String, String> property : properties.entrySet()) {
             String pKey = property.getKey();
             String pValue = property.getValue();
             requestConnection.setRequestProperty(pKey, pValue);
             if (log.isDebugEnabled()) {
-               log.debug(property + ": " + pValue);
+               log.debug(pKey + ": " + pValue);
             }
-         }
-      }
-
-      if (message.getHeaders().size() > 0) {
-         Set<String> headerNameSet = message.getHeaders().stringPropertyNames();
-         for (String header : headerNameSet) {
-            String hValue = message.getHeader(header);
-            if (log.isDebugEnabled()) {
-               log.debug(header + ": " + hValue);
-            }
-            requestConnection.setRequestProperty(header, hValue);
          }
       }
    }
