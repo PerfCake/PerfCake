@@ -51,33 +51,16 @@ public class DummyDestination implements Destination {
    private PeriodType lastType = null;
    private ReportAssert reportAssert = null;
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.reporting.destinations.Destination#open()
-    */
    @Override
    public void open() {
       lastMethod = "open";
-      // nop
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.reporting.destinations.Destination#close()
-    */
    @Override
    public void close() {
       lastMethod = "close";
-      // nop
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.reporting.destinations.Destination#report(org.perfcake.reporting.Measurement)
-    */
    @Override
    public void report(final Measurement m) throws ReportingException {
       lastMethod = "report";

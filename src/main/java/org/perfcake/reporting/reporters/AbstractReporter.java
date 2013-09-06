@@ -105,7 +105,7 @@ public abstract class AbstractReporter implements Reporter {
     */
    public Measurement newMeasurement() {
       Measurement m = new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
-      m.set(PerfCakeConst.WARM_UP_TAG, runInfo.getTags().contains(PerfCakeConst.WARM_UP_TAG));
+      m.set(PerfCakeConst.WARM_UP_TAG, runInfo.hasTag(PerfCakeConst.WARM_UP_TAG));
       return m;
    }
 
@@ -183,10 +183,14 @@ public abstract class AbstractReporter implements Reporter {
     */
    private void reportIterations(final long iteration) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
-         if (bp.getPeriodType() == PeriodType.ITERATION && (iteration == 0 || (iteration + 1) % bp.getPeriod() == 0)) {
+         if (bp.getPeriodType() == PeriodType.ITERATION && (iteration == 0 || (iteration + 1) % bp.getPeriod() == 0) || isLastIteration(iteration)) {
             publishResult(PeriodType.ITERATION, bp.getBinding());
          }
       }
+   }
+
+   private boolean isLastIteration(final long iteration) {
+      return runInfo.getDuration().getPeriodType().equals(PeriodType.ITERATION) && runInfo.getDuration().getPeriod() == iteration + 1;
    }
 
    /**

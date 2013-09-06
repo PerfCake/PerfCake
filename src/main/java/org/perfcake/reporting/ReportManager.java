@@ -197,7 +197,7 @@ public class ReportManager {
             Long lastTime;
             Destination d;
             Map<Reporter, Map<Destination, Long>> reportLastTimes = new HashMap<>();
-            Map<Destination, Long> lastTimes = new HashMap<>();
+            Map<Destination, Long> lastTimes;
 
             try {
                while (runInfo.isRunning() && !periodicThread.isInterrupted()) {
