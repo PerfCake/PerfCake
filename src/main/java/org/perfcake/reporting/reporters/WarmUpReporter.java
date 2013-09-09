@@ -64,12 +64,12 @@ public class WarmUpReporter extends AbstractReporter {
    private long minimalWarmUpCount = 10000; // by JIT
 
    /**
-    * The relative difference threshold to determine whether the iteration length is not changing much.
+    * The relative difference threshold to determine whether the throughput is not changing much.
     */
    private double relativeThreshold = 0.002d; // 0.2%
 
    /**
-    * The absolute difference threshold to determine whether the iteration length is not changing much.
+    * The absolute difference threshold to determine whether the throughput is not changing much.
     */
    private double absoluteThreshold = 0.2d; // 0.2
 

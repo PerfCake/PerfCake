@@ -30,7 +30,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
@@ -99,21 +98,11 @@ public class HTTPSender extends AbstractSender {
     */
    private int payloadLenght;
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.sender.AbstractSender#init()
-    */
    @Override
    public void init() throws Exception {
       url = new URL(target);
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.sender.AbstractSender#close()
-    */
    @Override
    public void close() {
       // nop
@@ -179,11 +168,6 @@ public class HTTPSender extends AbstractSender {
       return false;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
@@ -250,11 +234,6 @@ public class HTTPSender extends AbstractSender {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)
-    */
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       int respCode = -1;
@@ -298,11 +277,6 @@ public class HTTPSender extends AbstractSender {
       return payload;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
-    */
    @Override
    public void postSend(final Message message) throws Exception {
       super.postSend(message);
