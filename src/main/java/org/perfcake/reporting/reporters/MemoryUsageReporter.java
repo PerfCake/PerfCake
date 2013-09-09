@@ -36,7 +36,6 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
-import org.perfcake.util.Utils;
 import org.perfcake.util.agent.PerfCakeAgent;
 import org.perfcake.util.agent.PerfCakeAgent.Memory;
 
@@ -87,42 +86,22 @@ public class MemoryUsageReporter extends AbstractReporter {
     */
    private PrintWriter requestWriter;
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.nreporting.reporters.AbstractReporter#getAccumulator(java.lang.String, java.lang.Class)
-    */
    @SuppressWarnings("rawtypes")
    @Override
    protected Accumulator getAccumulator(final String key, final Class clazz) {
       return new LastValueAccumulator();
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.nreporting.reporters.AbstractReporter#doReset()
-    */
    @Override
    protected void doReset() {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.nreporting.reporters.AbstractReporter#doReport(org.perfcake.nreporting.MeasurementUnit)
-    */
    @Override
    protected void doReport(final MeasurementUnit mu) throws ReportingException {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.nreporting.reporters.AbstractReporter#start()
-    */
    @Override
    public void start() {
       super.start();
@@ -132,18 +111,13 @@ public class MemoryUsageReporter extends AbstractReporter {
             log.debug("Creating socket " + host + ":" + agentPort + "...");
          }
          socket = new Socket(host, Integer.valueOf(agentPort));
-         requestWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Utils.getDefaultEncoding()), true);
-         responseReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), Utils.getDefaultEncoding()));
+         requestWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), PerfCakeAgent.DEFAULT_ENCODING), true);
+         responseReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), PerfCakeAgent.DEFAULT_ENCODING));
       } catch (IOException ioe) {
          ioe.printStackTrace();
       }
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.nreporting.reporters.AbstractReporter#stop()
-    */
    @Override
    public void stop() {
       super.stop();
