@@ -19,6 +19,9 @@
  */
 package org.perfcake;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Calendar;
@@ -57,6 +60,7 @@ public class ScenarioExecution {
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.SCENARIO_OPT).withDescription("scenario to be executed").hasArg().withArgName("SCENARIO").create("s"));
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.SCENARIOS_DIR_OPT).withDescription("directory for scenarios").hasArg().withArgName("SCENARIOS_DIR").create("sd"));
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.MESSAGES_DIR_OPT).withDescription("directory for messages").hasArg().withArgName("MESSAGES_DIR").create("md"));
+      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.PROPERTIES_FILE_OPT).withDescription("custom system properties file").hasArg().withArgName("PROPERTIES_FILE").create("pf"));
       options.addOption(OptionBuilder.withArgName("property=value").hasArgs(2).withValueSeparator().withDescription("system properties").create("D"));
 
       final CommandLineParser commandLineParser = new GnuParser();
@@ -83,7 +87,22 @@ public class ScenarioExecution {
          System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, commandLine.getOptionValue(PerfCakeConst.MESSAGES_DIR_OPT));
       }
 
-      Properties props = commandLine.getOptionProperties("D");
+      if (commandLine.hasOption(PerfCakeConst.PROPERTIES_FILE_OPT)) {
+          System.setProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY, commandLine.getOptionValue(PerfCakeConst.PROPERTIES_FILE_OPT));
+      }
+      
+      Properties props = new Properties();
+      if(System.getProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY) != null) {
+          try {
+              props.load(new FileInputStream(System.getProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY)));
+          } catch (FileNotFoundException e1) {
+              // bad file path, we can still continue without reading file
+              e1.printStackTrace();
+          } catch (IOException e1) {
+              e1.printStackTrace();
+          }
+      }
+      props.putAll(commandLine.getOptionProperties("D"));
       for (Entry<Object, Object> entry : props.entrySet()) {
          System.setProperty(entry.getKey().toString(), entry.getValue().toString());
       }
