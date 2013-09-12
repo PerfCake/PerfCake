@@ -42,7 +42,7 @@ import org.perfcake.util.Utils;
 /**
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * @author Jiří Sedláček <jiri@sedlackovi.cz> 
+ * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
 public class ScenarioExecution {
 
@@ -77,10 +77,14 @@ public class ScenarioExecution {
 
       if (commandLine.hasOption(PerfCakeConst.SCENARIOS_DIR_OPT)) {
          System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, commandLine.getOptionValue(PerfCakeConst.SCENARIOS_DIR_OPT));
+      } else {
+         System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"));
       }
 
       if (commandLine.hasOption(PerfCakeConst.MESSAGES_DIR_OPT)) {
          System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, commandLine.getOptionValue(PerfCakeConst.MESSAGES_DIR_OPT));
+      } else {
+         System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"));
       }
 
       Properties props = commandLine.getOptionProperties("D");
