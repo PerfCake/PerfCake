@@ -67,9 +67,8 @@ public class ScenarioBuilder {
    /**
     * Sets message generator which will be used for {@link Scenario}
     * 
-    * @param any
-    *           message generator
-    * @return
+    * @param any message generator
+    * @return this
     */
    public ScenarioBuilder setGenerator(AbstractMessageGenerator g) {
       this.generator = g;
@@ -79,8 +78,8 @@ public class ScenarioBuilder {
    /**
     * Sets {@link RunInfo} object, which will be used for {@link Scenario}
     * 
-    * @param ri
-    * @return
+    * @param RunInfo
+    * @return this
     */
    public ScenarioBuilder setRunInfo(RunInfo ri) {
       this.runInfo = ri;
@@ -90,8 +89,8 @@ public class ScenarioBuilder {
    /**
     * Sets {@link AbstractSender} implementation object, which will be used as a template for preparing pool of senders
     * 
-    * @param s
-    * @return
+    * @param AbstractSender implementation
+    * @return this
     */
    public ScenarioBuilder setSender(AbstractSender s) {
       this.senderTemplate = s;
@@ -101,8 +100,8 @@ public class ScenarioBuilder {
    /**
     * Adds a {@link Reporter}, which will be used in {@link Scenario} for reporting results. More reporters can be added
     * 
-    * @param r
-    * @return
+    * @param Reporter implementation
+    * @return this
     */
    public ScenarioBuilder addReporter(Reporter r) {
       reporters.add(r);
@@ -112,8 +111,8 @@ public class ScenarioBuilder {
    /**
     * Adds a {@link MessageTemplate}, which will be used in {@link Scenario}
     * 
-    * @param message
-    * @return
+    * @param MessageTemplate
+    * @return this
     */
    public ScenarioBuilder addMessage(MessageTemplate message) {
       messages.add(message);
@@ -138,12 +137,12 @@ public class ScenarioBuilder {
     * Builds the usable {@link Scenario} object, which can be then used for executing the scenario.
     * 
     * @return
-    * @throws Exception
+    * @throws IllegalStateException
     *            if {@link RunInfo} is not set
-    * @throws Exception
+    * @throws IllegalStateException
     *            if some generator is not set
-    * @throws Exception
-    *            if some sender is not set
+    * @throws IllegalStateException
+    *            if some sender is not set or messageSenderManager was not loaded 
     */
    public Scenario build() throws Exception {
       if (runInfo == null)
