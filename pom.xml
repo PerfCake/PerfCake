@@ -6,7 +6,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake</artifactId>
-   <version>0.3</version>
+   <version>0.3.2</version>
    <packaging>jar</packaging>
    <name>PerfCake</name>
    <organization>
@@ -20,7 +20,7 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-      <tag>v0.3</tag>
+      <tag>v0.3.2</tag>
   </scm>
    <developers>
       <developer>
