@@ -106,7 +106,7 @@ public class ReportManager {
 
       ReportingException e = null;
 
-      if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
+      if (runInfo.isStarted() || runInfo.reachedLastIteration()) { // cannot use isRunning while we still want the last iteration to be reported
          for (final Reporter r : reporters) {
             try {
                r.report(mu);
