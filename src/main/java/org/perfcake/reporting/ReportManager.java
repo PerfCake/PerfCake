@@ -57,6 +57,8 @@ public class ReportManager {
     */
    private Thread periodicThread;
 
+   private boolean lastIterationReported = false;
+
    /**
     * Create a new measurement unit with a unique iteration number.
     * 
@@ -106,7 +108,10 @@ public class ReportManager {
 
       ReportingException e = null;
 
-      if (runInfo.isStarted() || runInfo.reachedLastIteration()) { // cannot use isRunning while we still want the last iteration to be reported
+      boolean lastIteration = runInfo.reachedLastIteration();
+      if (runInfo.isStarted() || (lastIteration && !lastIterationReported)) { // cannot use isRunning while we still want the last iteration to be reported
+         lastIteration = lastIterationReported;
+
          for (final Reporter r : reporters) {
             try {
                r.report(mu);
@@ -131,6 +136,8 @@ public class ReportManager {
       if (log.isDebugEnabled()) {
          log.debug("Reseting reporting.");
       }
+
+      lastIterationReported = false;
 
       runInfo.reset();
       for (final Reporter r : reporters) {
@@ -183,6 +190,8 @@ public class ReportManager {
       if (log.isDebugEnabled()) {
          log.debug("Starting reporting and all reporters.");
       }
+
+      lastIterationReported = false;
 
       runInfo.start(); // runInfo must be started first, otherwise the time monitoring thread in AbstractReporter dies immediately
 
