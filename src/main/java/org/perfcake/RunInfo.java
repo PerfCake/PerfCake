@@ -220,7 +220,7 @@ public class RunInfo {
     * 
     * @return True if the last iteration has been reached.
     */
-   public boolean reachedLastIteration() {
+   private boolean reachedLastIteration() {
       return (duration.getPeriodType().equals(PeriodType.ITERATION) && iterations.get() >= duration.getPeriod()) || (duration.getPeriodType().equals(PeriodType.TIME) && getRunTime() >= duration.getPeriod());
    }
 
