@@ -22,6 +22,8 @@ package org.perfcake;
 /**
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
+ * @author Jiří Sedláček <jiri@sedlackovi.cz>
+ * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public final class PerfCakeConst {
    public static final String PERFORMANCE_MESSAGE_PROPERTY = "PerfCake_Performance";
@@ -33,6 +35,7 @@ public final class PerfCakeConst {
    public static final String COUNT_MESSAGE_PROPERTY = "PerfCake_Performance_Count";
 
    public static final String SCENARIO_PROPERTY = "perfcake.scenario";
+   public static final String DEFAULT_ENCODING_PROPERTY = "perfcake.encoding";
    public static final String TIMESTAMP_PROPERTY = "perfcake.run.timestamp";
    public static final String SCENARIOS_DIR_PROPERTY = "perfcake.scenarios.dir";
    public static final String MESSAGES_DIR_PROPERTY = "perfcake.messages.dir";
@@ -40,4 +43,6 @@ public final class PerfCakeConst {
    public static final String SCENARIO_OPT = "scenario";
    public static final String SCENARIOS_DIR_OPT = "scenarios-dir";
    public static final String MESSAGES_DIR_OPT = "messages-dir";
+
+   public static final String WARM_UP_TAG = "warmUp";
 }

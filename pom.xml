@@ -6,7 +6,12 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake</artifactId>
-   <version>0.3.2</version>
+   <version>1.0</version>
+   <parent>
+      <groupId>org.sonatype.oss</groupId>
+      <artifactId>oss-parent</artifactId>
+      <version>7</version>
+   </parent>
    <packaging>jar</packaging>
    <name>PerfCake</name>
    <organization>
@@ -20,8 +25,8 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-      <tag>v0.3.2</tag>
-  </scm>
+      <tag>v1.0</tag>
+   </scm>
    <developers>
       <developer>
          <name>Martin Večeřa</name>
@@ -133,6 +138,17 @@
       </dependency>
    </dependencies>
    <build>
+      <resources>
+         <resource>
+            <directory>src/main/resources</directory>
+            <excludes>
+               <exclude>keystores/*</exclude>
+               <exclude>messages/*</exclude>
+               <exclude>scenarios/*</exclude>
+               <exclude>log4j.xml</exclude>
+            </excludes>
+         </resource>
+      </resources>
       <plugins>
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
@@ -201,6 +217,7 @@
                      </manifest>
                      <manifestEntries>
                         <Premain-class>org.perfcake.util.agent.PerfCakeAgent</Premain-class>
+                        <Class-Path>../resources/ ../</Class-Path>
                      </manifestEntries>
                   </archive>
                </configuration>
@@ -265,6 +282,14 @@
                      ${project.version})</windowtitle>
                   <doctitle>${project.name} API Documentation (version
                      ${project.version})</doctitle>
+               </configuration>
+            </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-gpg-plugin</artifactId>
+               <version>1.4</version>
+               <configuration>
+                  <useAgent>true</useAgent>
                </configuration>
             </plugin>
             <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->

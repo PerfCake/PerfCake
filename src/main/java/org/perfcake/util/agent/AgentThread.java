@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -12,20 +13,26 @@ import java.util.Properties;
 
 import org.perfcake.util.agent.PerfCakeAgent.Memory;
 
+/**
+ * The actuall implementation of the PerfCake agent.
+ * 
+ * @author Pavel Macík <pavel.macik@gmail.com>
+ * 
+ */
 public class AgentThread implements Runnable {
+   /**
+    * Agent's arguments.
+    */
+   private final String agentArgs;
 
-   private String agentArgs;
-
+   /**
+    * @param agentArgs
+    */
    public AgentThread(String agentArgs) {
       super();
       this.agentArgs = agentArgs;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see java.lang.Runnable#run()
-    */
    @Override
    public void run() {
       InetAddress host = null;
@@ -37,7 +44,7 @@ public class AgentThread implements Runnable {
       try {
          // parse agent properties
          Properties props = new Properties();
-         if (agentArgs != "" && agentArgs != null) {
+         if (!"".equals(agentArgs) && agentArgs != null) {
             String[] args = agentArgs.split(",");
             for (String arg : args) {
                String[] keyValuePair = arg.split("=");
@@ -66,8 +73,8 @@ public class AgentThread implements Runnable {
             log("Client connected from " + socket.getInetAddress().getHostAddress());
             is = socket.getInputStream();
             String input = null;
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            PrintWriter pw = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is, PerfCakeAgent.DEFAULT_ENCODING));
+            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), PerfCakeAgent.DEFAULT_ENCODING), true);
             while ((input = br.readLine()) != null) {
                String response = "Unrecognized command!";
                Runtime rt = Runtime.getRuntime();
@@ -107,10 +114,22 @@ public class AgentThread implements Runnable {
       }
    }
 
+   /**
+    * Logs a message.
+    * 
+    * @param msg
+    *           Message to be logged.
+    */
    private static void log(String msg) {
       System.out.println(PerfCakeAgent.class.getSimpleName() + " > " + msg);
    }
 
+   /**
+    * Logs an error message.
+    * 
+    * @param msg
+    *           Message to be logged.
+    */
    private static void err(String msg) {
       System.err.println(PerfCakeAgent.class.getSimpleName() + " > ERROR: " + msg);
    }

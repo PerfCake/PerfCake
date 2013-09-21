@@ -47,7 +47,7 @@ import org.perfcake.validation.ValidatorManager;
  * <p>
  * It is used by the generators.
  * </p>
- *
+ * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 class SenderTask implements Runnable {

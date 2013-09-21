@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
@@ -63,12 +64,12 @@ public class WarmUpReporter extends AbstractReporter {
    private long minimalWarmUpCount = 10000; // by JIT
 
    /**
-    * The relative difference threshold to determine whether the iteration length is not changing much.
+    * The relative difference threshold to determine whether the throughput is not changing much.
     */
    private double relativeThreshold = 0.002d; // 0.2%
 
    /**
-    * The absolute difference threshold to determine whether the iteration length is not changing much.
+    * The absolute difference threshold to determine whether the throughput is not changing much.
     */
    private double absoluteThreshold = 0.2d; // 0.2
 
@@ -77,8 +78,21 @@ public class WarmUpReporter extends AbstractReporter {
     */
    private boolean warmed = false;
 
+   /**
+    * The index number of the checking period in which the current run is.
+    * 
+    * @see #checkingPeriod
+    */
+   private long checkingPeriodIndex = 0;
+
+   /**
+    * The period in milliseconds in which the checking if the tested system is warmed up.
+    */
+   private final long checkingPeriod = 1000;
+
    @Override
    public void start() {
+      runInfo.addTag(PerfCakeConst.WARM_UP_TAG);
       if (log.isInfoEnabled()) {
          log.info("Warming the tested system up (for at least " + minimalWarmUpDuration + " ms and " + minimalWarmUpCount + " iterations) ...");
       }
@@ -86,14 +100,14 @@ public class WarmUpReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(PeriodType periodType, Destination d) throws ReportingException {
+   public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       throw new ReportingException("No destination is allowed on " + getClass().getSimpleName());
    }
 
    @SuppressWarnings("rawtypes")
    @Override
-   protected Accumulator getAccumulator(String key, Class clazz) {
-      return new SlidingWindowAvgAccumulator(64);
+   protected Accumulator getAccumulator(final String key, final Class clazz) {
+      return new SlidingWindowAvgAccumulator(16);
    }
 
    @Override
@@ -104,22 +118,30 @@ public class WarmUpReporter extends AbstractReporter {
    @Override
    protected synchronized void doReport(final MeasurementUnit mu) throws ReportingException {
       if (!warmed) {
-         final double currentThoughput = (double) runInfo.getIteration() / runInfo.getRunTime();
-         final Double lastThroughput = (Double) getAccumulatedResult(Measurement.DEFAULT_RESULT);
-         if (lastThroughput != null) {
-            final double relDelta = Math.abs(currentThoughput / lastThroughput - 1f);
-            final double absDelta = Math.abs(currentThoughput - lastThroughput);
-            if ((runInfo.getRunTime() > minimalWarmUpDuration) && (runInfo.getIteration() > minimalWarmUpCount) && (absDelta < absoluteThreshold || relDelta < relativeThreshold)) {
-               if (log.isInfoEnabled()) {
-                  log.info("The tested system is warmed up.");
+         if (runInfo.getRunTime() / checkingPeriod > checkingPeriodIndex) {
+            checkingPeriodIndex++;
+            // The throughput unit is number of iterations per second
+            final double currentThoughput = 1000.0 * runInfo.getIteration() / runInfo.getRunTime();
+            final Double lastThroughput = (Double) getAccumulatedResult(Measurement.DEFAULT_RESULT);
+            if (lastThroughput != null) {
+               final double relDelta = Math.abs(currentThoughput / lastThroughput - 1.0);
+               final double absDelta = Math.abs(currentThoughput - lastThroughput);
+               if (log.isTraceEnabled()) {
+                  log.trace("checkingPeriodIndex=" + checkingPeriodIndex + ", currentThroughput=" + currentThoughput + ", lastThroughput=" + lastThroughput + ", absDelta=" + absDelta + ", relDelta=" + relDelta);
                }
-               runInfo.reset();
-               warmed = true;
+               if ((runInfo.getRunTime() > minimalWarmUpDuration) && (runInfo.getIteration() > minimalWarmUpCount) && (absDelta < absoluteThreshold || relDelta < relativeThreshold)) {
+                  if (log.isInfoEnabled()) {
+                     log.info("The tested system is warmed up.");
+                  }
+                  runInfo.reset();
+                  runInfo.removeTag(PerfCakeConst.WARM_UP_TAG);
+                  warmed = true;
+               }
             }
+            final Map<String, Object> result = new HashMap<>();
+            result.put(Measurement.DEFAULT_RESULT, Double.valueOf(currentThoughput));
+            accumulateResults(result);
          }
-         final Map<String, Object> result = new HashMap<>();
-         result.put(Measurement.DEFAULT_RESULT, Double.valueOf(currentThoughput));
-         accumulateResults(result);
       }
    }
 

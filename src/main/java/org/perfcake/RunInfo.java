@@ -234,6 +234,17 @@ public class RunInfo {
    }
 
    /**
+    * Checks for a presence of a given tag.
+    * 
+    * @param tag
+    *           A tag to be checked
+    * @return True if the specified tag is set for this run info
+    */
+   public boolean hasTag(final String tag) {
+      return tags.contains(tag);
+   }
+
+   /**
     * Associate a new tag with this measurement.
     * 
     * @param tag
@@ -251,6 +262,16 @@ public class RunInfo {
     */
    public void addTags(final Set<String> tags) {
       this.tags.addAll(tags);
+   }
+
+   /**
+    * Removes a tag from this run.
+    * 
+    * @param tag
+    *           A tag to be removed
+    */
+   public void removeTag(final String tag) {
+      this.tags.remove(tag);
    }
 
    /**

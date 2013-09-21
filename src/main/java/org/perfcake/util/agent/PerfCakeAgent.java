@@ -19,12 +19,35 @@ package org.perfcake.util.agent;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+/**
+ * PerfCake agent that can be used to monitor tested system's JVM.
+ * 
+ * @author Pavel Macík <pavel.macik@gmail.com>
+ * 
+ */
 public class PerfCakeAgent {
 
+   /**
+    * Default encoding of the input and output streams.
+    */
+   public static final String DEFAULT_ENCODING = "UTF-8";
+
+   /**
+    * The memory type.
+    * 
+    * @author Pavel Macík <pavel.macik@gmail.com>
+    * 
+    */
    public enum Memory {
       FREE, USED, TOTAL, MAX
    }
 
+   /**
+    * {@link PerfCakeAgent}'s pre-main method.
+    * 
+    * @param agentArgs
+    *           Agent arguments.
+    */
    public static void premain(String agentArgs) {
       ExecutorService es = Executors.newSingleThreadExecutor();
       es.submit(new AgentThread(agentArgs));

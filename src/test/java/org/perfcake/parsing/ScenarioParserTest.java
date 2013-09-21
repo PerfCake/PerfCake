@@ -117,7 +117,7 @@ public class ScenarioParserTest {
          // Message store
          ValidatorManager validatorManager = scenarioFactory.parseValidation();
          List<MessageTemplate> messageStore = scenarioFactory.parseMessages(validatorManager);
-         Assert.assertEquals(messageStore.size(), 2);
+         Assert.assertEquals(messageStore.size(), 3);
 
          // Message 1
          final MessageTemplate mts1 = messageStore.get(0);
@@ -162,6 +162,14 @@ public class ScenarioParserTest {
          Assert.assertEquals(validatorsList2.size(), 1, "message2 validatorIdList size");
          Assert.assertTrue(validatorsList2.get(0).isValid(new Message("Go for fishing!")));
          Assert.assertFalse(validatorsList2.get(0).isValid(new Message("Go for mushroom picking! There are no Fish.")));
+
+         // Message 3
+         final MessageTemplate mts3 = messageStore.get(2);
+         final Message m3 = mts3.getMessage();
+         Assert.assertNotNull(m3, "message 3 instance");
+         Assert.assertNull(m3.getPayload(), "message 3 payload");
+         Assert.assertEquals(m3.getHeaders().size(), 1, "message 3 header count");
+         Assert.assertEquals(m3.getHeader("h3_name"), "h3_value", "message 3 header value");
 
          // Messages section is optional
          validatorManager = noMessagesScenarioFactory.parseValidation();

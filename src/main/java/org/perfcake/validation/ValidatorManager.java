@@ -189,15 +189,13 @@ public class ValidatorManager {
 
          try {
             while (!validationThread.isInterrupted() && (receivedMessage = resultMessages.poll()) != null) {
-               while (receivedMessage != null) {
-                  for (final MessageValidator validator : receivedMessage.getSentMessage().getValidators()) {
-                     isMessageValid = validator.isValid(new Message(receivedMessage.getPayload()));
-                     if (log.isTraceEnabled()) {
-                        log.trace(String.format("Message response %s validated with %s returns %s.", receivedMessage.getPayload().toString(), validator.toString(), String.valueOf(isMessageValid)));
-                     }
-
-                     allMessagesValid &= isMessageValid;
+               for (final MessageValidator validator : receivedMessage.getSentMessage().getValidators()) {
+                  isMessageValid = validator.isValid(new Message(receivedMessage.getPayload()));
+                  if (log.isTraceEnabled()) {
+                     log.trace(String.format("Message response %s validated with %s returns %s.", receivedMessage.getPayload().toString(), validator.toString(), String.valueOf(isMessageValid)));
                   }
+
+                  allMessagesValid &= isMessageValid;
                }
                if (!fastForward) {
                   Thread.sleep(500); // we do not want to block senders

@@ -22,6 +22,7 @@ package org.perfcake.reporting.reporters;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -58,12 +59,12 @@ public class MemoryUsageReporter extends AbstractReporter {
    /**
     * Hostname where {@link PerfCakeAgent} is listening on.
     */
-   private String hostname = "localhost";
+   private String agentHostname = "localhost";
 
    /**
     * Port number where {@link PerfCakeAgent} is listening on.
     */
-   private String port = "8849";
+   private String agentPort = "8849";
 
    /**
     * IP address of the {@link PerfCakeAgent}.
@@ -85,63 +86,38 @@ public class MemoryUsageReporter extends AbstractReporter {
     */
    private PrintWriter requestWriter;
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.nreporting.reporters.AbstractReporter#getAccumulator(java.lang.String, java.lang.Class)
-    */
    @SuppressWarnings("rawtypes")
    @Override
    protected Accumulator getAccumulator(final String key, final Class clazz) {
       return new LastValueAccumulator();
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.nreporting.reporters.AbstractReporter#doReset()
-    */
    @Override
    protected void doReset() {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.nreporting.reporters.AbstractReporter#doReport(org.perfcake.nreporting.MeasurementUnit)
-    */
    @Override
    protected void doReport(final MeasurementUnit mu) throws ReportingException {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.nreporting.reporters.AbstractReporter#start()
-    */
    @Override
    public void start() {
       super.start();
       try {
-         host = InetAddress.getByName(hostname);
+         host = InetAddress.getByName(agentHostname);
          if (log.isDebugEnabled()) {
-            log.debug("Creating socket " + host + ":" + port + "...");
+            log.debug("Creating socket " + host + ":" + agentPort + "...");
          }
-         socket = new Socket(host, Integer.valueOf(port));
-         requestWriter = new PrintWriter(socket.getOutputStream(), true);
-         responseReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+         socket = new Socket(host, Integer.valueOf(agentPort));
+         requestWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), PerfCakeAgent.DEFAULT_ENCODING), true);
+         responseReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), PerfCakeAgent.DEFAULT_ENCODING));
       } catch (IOException ioe) {
          ioe.printStackTrace();
       }
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.nreporting.reporters.AbstractReporter#stop()
-    */
    @Override
    public void stop() {
       super.stop();
@@ -184,41 +160,41 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of hostname.
+    * Used to read the value of agentHostname.
     * 
-    * @return The hostname value.
+    * @return The agent hostname value.
     */
-   public String getHostname() {
-      return hostname;
+   public String getAgentHostname() {
+      return agentHostname;
    }
 
    /**
-    * Used to set the value of hostname.
+    * Used to set the value of agentHostname.
     * 
-    * @param hostname
-    *           The hostname value to set.
+    * @param agentHostname
+    *           The agent hostname value to set.
     */
-   public void setHostname(final String hostname) {
-      this.hostname = hostname;
+   public void setAgentHostname(final String agentHostname) {
+      this.agentHostname = agentHostname;
    }
 
    /**
-    * Used to read the value of port.
+    * Used to read the value of agentPort.
     * 
-    * @return The port value.
+    * @return The agent port value.
     */
-   public String getPort() {
-      return port;
+   public String getAgentPort() {
+      return agentPort;
    }
 
    /**
-    * Used to set the value of port.
+    * Used to set the value of agentPort.
     * 
-    * @param port
-    *           The port value to set.
+    * @param agentPort
+    *           The agent port value to set.
     */
-   public void setPort(final String port) {
-      this.port = port;
+   public void setAgentPort(final String agentPort) {
+      this.agentPort = agentPort;
    }
 
 }

@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeConst;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
@@ -215,6 +216,15 @@ public class Utils {
       sb.append(hours).append(":").append(String.format("%02d", minutes)).append(":").append(String.format("%02d", seconds));
 
       return sb.toString();
+   }
+
+   /**
+    * Uses {@link PerfCakeConst#DEFAULT_ENCODING_PROPERTY} system property, if this property is not set, <b>UTF-8</b> is used.
+    * 
+    * @return String representation of default encoding for all read and written files
+    */
+   public static String getDefaultEncoding() {
+      return Utils.getProperty(PerfCakeConst.DEFAULT_ENCODING_PROPERTY, "UTF-8");
    }
 
 }

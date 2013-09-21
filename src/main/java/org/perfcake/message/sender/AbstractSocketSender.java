@@ -22,6 +22,7 @@ package org.perfcake.message.sender;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.Socket;
@@ -30,6 +31,7 @@ import java.util.Map;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.Utils;
 import org.testng.log4testng.Logger;
 
 /**
@@ -104,8 +106,8 @@ abstract public class AbstractSocketSender extends AbstractSender {
     * @throws Exception
     */
    private void openStreams() throws Exception {
-      out = new PrintWriter(socket.getOutputStream(), true);
-      in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+      out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Utils.getDefaultEncoding()), true);
+      in = new BufferedReader(new InputStreamReader(socket.getInputStream(), Utils.getDefaultEncoding()));
    }
 
    /**

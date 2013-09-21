@@ -202,11 +202,11 @@ public class RequestResponseJMSSender extends JMSSender {
       this.receiveAttempts = receiveAttempts;
    }
 
-   public String getresponseTarget() {
+   public String getResponseTarget() {
       return responseTarget;
    }
 
-   public void setresponseTarget(final String responseTarget) {
+   public void setResponseTarget(final String responseTarget) {
       this.responseTarget = responseTarget;
    }
 

@@ -188,9 +188,15 @@ public class ScenarioFactory {
 
             log.info("--- Messages ---");
             for (Messages.Message m : messages.getMessage()) {
-
-               URL messageUrl = Utils.locationToUrl(m.getUri(), PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"), "");
-               String currentMessagePayload = Utils.readFilteredContent(messageUrl);
+               URL messageUrl;
+               String currentMessagePayload;
+               if (m.getUri() != null) {
+                  messageUrl = Utils.locationToUrl(m.getUri(), PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"), "");
+                  currentMessagePayload = Utils.readFilteredContent(messageUrl);
+               } else {
+                  messageUrl = null;
+                  currentMessagePayload = null;
+               }
                Properties currentMessageProperties = getPropertiesFromList(m.getProperty());
                Properties currentMessageHeaders = new Properties();
                for (Header h : m.getHeader()) {
@@ -221,7 +227,7 @@ public class ScenarioFactory {
                // create message to be send
                MessageTemplate currentMessageToSend = new MessageTemplate(currentMessage, currentMessageMultiplicity, currentMessageValidators);
 
-               log.info("'- Message (" + messageUrl.toString() + "), " + currentMessageMultiplicity + "x");
+               log.info("'- Message (" + (messageUrl != null ? messageUrl.toString() : "") + "), " + currentMessageMultiplicity + "x");
                if (log.isDebugEnabled()) {
                   log.debug("  '- Properties:");
                   Utils.logProperties(log, Level.DEBUG, currentMessageProperties, "   '- ");
@@ -255,41 +261,43 @@ public class ScenarioFactory {
       try {
          log.info("--- Reporting ---");
          Reporting reporting = scenario.getReporting();
-         Properties reportingProperties = getPropertiesFromList(reporting.getProperty());
-         Utils.logProperties(log, Level.DEBUG, reportingProperties, "   ");
+         if (reporting != null) {
+            Properties reportingProperties = getPropertiesFromList(reporting.getProperty());
+            Utils.logProperties(log, Level.DEBUG, reportingProperties, "   ");
 
-         ObjectFactory.setPropertiesOnObject(reportManager, reportingProperties);
+            ObjectFactory.setPropertiesOnObject(reportManager, reportingProperties);
 
-         for (Reporting.Reporter r : reporting.getReporter()) {
-            if (r.isEnabled()) {
-               Properties currentReporterProperties = getPropertiesFromList(r.getProperty());
-               String reportClass = r.getClazz();
-               if (reportClass.indexOf(".") < 0) {
-                  reportClass = DEFAULT_REPORTER_PACKAGE + "." + reportClass;
-               }
-               Reporter currentReporter = (Reporter) ObjectFactory.summonInstance(reportClass, currentReporterProperties);
-
-               log.info("'- Reporter (" + reportClass + ")");
-
-               for (Reporting.Reporter.Destination d : r.getDestination()) {
-                  if (d.isEnabled()) {
-                     String destClass = d.getClazz();
-                     if (destClass.indexOf(".") < 0) {
-                        destClass = DEFAULT_DESTINATION_PACKAGE + "." + destClass;
-                     }
-                     log.info(" '- Destination (" + destClass + ")");
-                     Properties currentDestinationProperties = getPropertiesFromList(d.getProperty());
-                     Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
-
-                     Destination currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
-                     Set<Period> currentDestinationPeriodSet = new HashSet<>();
-                     for (org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period p : d.getPeriod()) {
-                        currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(p.getType().toUpperCase()), Long.valueOf(p.getValue())));
-                     }
-                     currentReporter.registerDestination(currentDestination, currentDestinationPeriodSet);
+            for (Reporting.Reporter r : reporting.getReporter()) {
+               if (r.isEnabled()) {
+                  Properties currentReporterProperties = getPropertiesFromList(r.getProperty());
+                  String reportClass = r.getClazz();
+                  if (reportClass.indexOf(".") < 0) {
+                     reportClass = DEFAULT_REPORTER_PACKAGE + "." + reportClass;
                   }
+                  Reporter currentReporter = (Reporter) ObjectFactory.summonInstance(reportClass, currentReporterProperties);
+
+                  log.info("'- Reporter (" + reportClass + ")");
+
+                  for (Reporting.Reporter.Destination d : r.getDestination()) {
+                     if (d.isEnabled()) {
+                        String destClass = d.getClazz();
+                        if (destClass.indexOf(".") < 0) {
+                           destClass = DEFAULT_DESTINATION_PACKAGE + "." + destClass;
+                        }
+                        log.info(" '- Destination (" + destClass + ")");
+                        Properties currentDestinationProperties = getPropertiesFromList(d.getProperty());
+                        Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
+
+                        Destination currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
+                        Set<Period> currentDestinationPeriodSet = new HashSet<>();
+                        for (org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period p : d.getPeriod()) {
+                           currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(p.getType().toUpperCase()), Long.valueOf(p.getValue())));
+                        }
+                        currentReporter.registerDestination(currentDestination, currentDestinationPeriodSet);
+                     }
+                  }
+                  reportManager.registerReporter(currentReporter);
                }
-               reportManager.registerReporter(currentReporter);
             }
          }
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {

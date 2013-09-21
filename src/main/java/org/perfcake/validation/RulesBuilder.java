@@ -29,6 +29,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.drools.compiler.PackageBuilder;
 import org.drools.rule.Package;
+import org.perfcake.util.Utils;
 
 /**
  * 
@@ -68,7 +69,6 @@ public class RulesBuilder {
       sBuilder.append("import org.perfcake.validation.ValidatorUtil.Operator\n");
       sBuilder.append("import org.perfcake.validation.ValidatorUtil.Occurance\n");
 
-      // sBuilder.append("expander messageValidator.dsl\n");
       sBuilder.append("expander ").append(dsl).append("\n");
 
       for (int i = 0; i < assertions.size(); i++) {
@@ -77,9 +77,8 @@ public class RulesBuilder {
          if (assertion.length() > 0 && !assertion.startsWith("#")) {
             final int lineNumber = i + 1;
 
-            final String rule = String.format("rule \"Line %d\"\n  dialect \"java\"\n  when\n    %s\n  then\n   > rulesUsed.remove(%d);\nend\n", lineNumber, assertion, lineNumber - 1, lineNumber);// rules
-            // numbered
-            // from 1
+            // rules numbered from 1
+            final String rule = String.format("rule \"Line %d\"%n  dialect \"java\"%n  when%n    %s%n  then%n   > rulesUsed.remove(%d);%nend%n", lineNumber, assertion, lineNumber - 1);
 
             sBuilder.append(rule);
          }
@@ -88,10 +87,9 @@ public class RulesBuilder {
          log.debug("Built rules:\n" + sBuilder.toString());
       }
 
-      // InputStream dslis = RulesBuilder.class.getResourceAsStream(dsl);
       final InputStream dslis = new FileInputStream(resourcesDir + dsl);
       final PackageBuilder pBuilder = new PackageBuilder();
-      pBuilder.addPackageFromDrl(new StringReader(sBuilder.toString()), new InputStreamReader(dslis));
+      pBuilder.addPackageFromDrl(new StringReader(sBuilder.toString()), new InputStreamReader(dslis, Utils.getDefaultEncoding()));
 
       // Check the builder for errors
       if (pBuilder.hasErrors()) {

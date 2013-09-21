@@ -116,7 +116,7 @@ public class ReportManager {
             }
          }
       } else {
-         log.info("Skipping the measurement unit (" + mu + ") because the ReportManager has not been started yet.");
+         log.debug("Skipping the measurement unit (" + mu + ") because the ReportManager is not started.");
       }
 
       if (e != null) {
@@ -197,7 +197,7 @@ public class ReportManager {
             Long lastTime;
             Destination d;
             Map<Reporter, Map<Destination, Long>> reportLastTimes = new HashMap<>();
-            Map<Destination, Long> lastTimes = new HashMap<>();
+            Map<Destination, Long> lastTimes;
 
             try {
                while (runInfo.isRunning() && !periodicThread.isInterrupted()) {

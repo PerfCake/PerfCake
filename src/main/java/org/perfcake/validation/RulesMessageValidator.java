@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -68,9 +69,9 @@ public class RulesMessageValidator implements MessageValidator {
       session.fireAllRules();
       session.dispose();
 
-      for (final Integer i : assertionsCopy.keySet()) {
+      for (final Entry<Integer, String> entry : assertionsCopy.entrySet()) {
          if (log.isEnabledFor(Level.ERROR)) {
-            log.error("failed assertion: " + assertionsCopy.get(i));
+            log.error("failed assertion: " + entry.getValue());
          }
       }
 

@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeConst;
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
@@ -36,6 +37,7 @@ import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
+import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 
 /**
  * Basic reporter that should be used to write any real reporter. This implementation makes sure
@@ -102,7 +104,9 @@ public abstract class AbstractReporter implements Reporter {
     * @return The new measurement with current values from run info.
     */
    public Measurement newMeasurement() {
-      return new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
+      Measurement m = new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
+      m.set(PerfCakeConst.WARM_UP_TAG, runInfo.hasTag(PerfCakeConst.WARM_UP_TAG));
+      return m;
    }
 
    /**
@@ -156,7 +160,8 @@ public abstract class AbstractReporter implements Reporter {
 
    /**
     * Gets an appropriate accumulator for a given key from the Measuremen Unit's results map and its class.
-    * This must be specified by the child classes.
+    * This should be overriden by the child classes. By default, last value accumulator is returned. This must
+    * remain at least for {@link org.perfcake.PerfCakeConst.WARM_UP_TAG}.
     * 
     * @param key
     *           Name of the key from the results map.
@@ -165,7 +170,9 @@ public abstract class AbstractReporter implements Reporter {
     * @return An appropriate accumulator instance.
     */
    @SuppressWarnings("rawtypes")
-   abstract protected Accumulator getAccumulator(String key, Class clazz);
+   protected Accumulator getAccumulator(final String key, final Class clazz) {
+      return new LastValueAccumulator();
+   }
 
    /**
     * Reports iteration changes to registered destinations.
@@ -176,10 +183,14 @@ public abstract class AbstractReporter implements Reporter {
     */
    private void reportIterations(final long iteration) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
-         if (bp.getPeriodType() == PeriodType.ITERATION && (iteration == 0 || (iteration + 1) % bp.getPeriod() == 0)) {
+         if (bp.getPeriodType() == PeriodType.ITERATION && (iteration == 0 || (iteration + 1) % bp.getPeriod() == 0) || isLastIteration(iteration)) {
             publishResult(PeriodType.ITERATION, bp.getBinding());
          }
       }
+   }
+
+   private boolean isLastIteration(final long iteration) {
+      return runInfo.getDuration().getPeriodType().equals(PeriodType.ITERATION) && runInfo.getDuration().getPeriod() == iteration + 1;
    }
 
    /**
@@ -191,7 +202,7 @@ public abstract class AbstractReporter implements Reporter {
     */
    private void reportPercentage(final long percentage) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
-         if (bp.getPeriodType() == PeriodType.PERCENTAGE && percentage % bp.getPeriod() == 0) {
+         if (bp.getPeriodType() == PeriodType.PERCENTAGE && (percentage % bp.getPeriod() == 0 || percentage == 100)) {
             publishResult(PeriodType.PERCENTAGE, bp.getBinding());
          }
       }
