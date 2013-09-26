@@ -25,7 +25,7 @@ import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -76,12 +76,12 @@ public class HTTPSender extends AbstractSender {
    /**
     * The list of response codes that are expected to be returned by HTTP response.
     */
-   private List<Integer> expectedResponseCodeList = Arrays.asList(DEFAULT_EXPECTED_CODE);
+   private List<Integer> expectedResponseCodeList = new ArrayList<>();
 
    /**
     * The property for expected response codes.
     */
-   private String expectedResponseCodes = String.valueOf(DEFAULT_EXPECTED_CODE);
+   private String expectedResponseCodes = null;
 
    /**
     * The HTTP request connection.
@@ -160,6 +160,9 @@ public class HTTPSender extends AbstractSender {
     *         true/false according to if the code is expected or not.
     */
    private boolean checkResponseCode(final int code) {
+      if (expectedResponseCodeList.isEmpty()) {
+         return true;
+      }
       for (int i : expectedResponseCodeList) {
          if (i == code) {
             return true;
