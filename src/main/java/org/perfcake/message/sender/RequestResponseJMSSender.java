@@ -33,6 +33,7 @@ import javax.jms.QueueReceiver;
 import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
@@ -81,7 +82,7 @@ public class RequestResponseJMSSender extends JMSSender {
             }
          }
 
-      } catch (Exception e) {
+      } catch (JMSException | NamingException | RuntimeException | PerfCakeException e) {
          throw new PerfCakeException(e);
       }
    }
