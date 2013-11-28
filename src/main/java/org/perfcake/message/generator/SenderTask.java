@@ -23,12 +23,16 @@
  */
 package org.perfcake.message.generator;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
@@ -51,6 +55,11 @@ import org.perfcake.validation.ValidatorManager;
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 class SenderTask implements Runnable {
+
+   /**
+    * Sender task's logger.
+    */
+   private Logger log = Logger.getLogger(SenderTask.class);
 
    /**
     * Reference to a message sender manager that is providing the message senders.
@@ -81,16 +90,23 @@ class SenderTask implements Runnable {
       // limit the possibilities to construct this class
    }
 
-   private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) throws Exception {
-      sender.preSend(message, messageHeaders);
+   private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) {
+      try {
+         sender.preSend(message, messageHeaders);
 
-      mu.startMeasure();
-      final Serializable result = sender.send(message, messageHeaders, mu);
-      mu.stopMeasure();
+         mu.startMeasure();
+         final Serializable result = sender.send(message, messageHeaders, mu);
+         mu.stopMeasure();
 
-      sender.postSend(message);
+         sender.postSend(message);
 
-      return result;
+         return result;
+      } catch (Exception e) {
+         if (log.isEnabledFor(Level.ERROR)) {
+            log.error("Exception occured!", e);
+         }
+      }
+      return null;
    }
 
    @Override
