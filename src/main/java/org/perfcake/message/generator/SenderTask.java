@@ -23,9 +23,7 @@
  */
 package org.perfcake.message.generator;
 
-import java.io.PrintWriter;
 import java.io.Serializable;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
