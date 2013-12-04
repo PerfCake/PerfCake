@@ -37,6 +37,7 @@ import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
@@ -223,7 +224,7 @@ public abstract class JMSSender extends AbstractSender {
          connection.start();
          sender = session.createSender(queue);
          sender.setDeliveryMode(persistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
-      } catch (Exception e) {
+      } catch (JMSException | NamingException | RuntimeException | PerfCakeException e) {
          throw new PerfCakeException(e);
       }
    }

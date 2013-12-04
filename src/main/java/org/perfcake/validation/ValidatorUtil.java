@@ -20,6 +20,7 @@
 package org.perfcake.validation;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -217,7 +218,7 @@ public final class ValidatorUtil {
             try {
                return new String((byte[]) data, Utils.getDefaultEncoding());
             } catch (UnsupportedEncodingException e) {
-               return new String((byte[]) data);
+               return new String((byte[]) data, Charset.defaultCharset());
             }
          } else {
             return data.toString();
