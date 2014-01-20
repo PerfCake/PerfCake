@@ -54,7 +54,7 @@ public class GroovySender extends CommandSender {
     */
    public String getGroovyExecutable() {
       if (groovyExecutable == null) {
-         groovyExecutable = System.getenv("GROOVY_HOME") + File.separator + "groovy";
+         groovyExecutable = System.getenv("GROOVY_HOME") + File.separator + "bin" + File.separator + "groovy";
       }
       return groovyExecutable;
    }
