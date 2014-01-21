@@ -44,7 +44,7 @@ import org.perfcake.util.properties.SystemPropertyGetter;
  */
 public class Utils {
 
-   public static final File resourcesDir = new File("src/main/resources");
+   public static final File resourcesDir = new File("resources");
    public static final Logger log = Logger.getLogger(Utils.class);
 
    /**

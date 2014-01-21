@@ -142,6 +142,10 @@ if $cygwin; then
     CLASSPATH=`cygpath --path --windows "$CLASSPATH"`
 fi
 
+# Set the PerfCake working directory
+cd "$PERFCAKE_HOME"
+
+# Run PerfCake
 exec "$JAVACMD" \
   -jar "${PERFCAKE_HOME}"/lib/perfcake*.jar \
   "$@"

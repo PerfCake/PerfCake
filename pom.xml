@@ -241,6 +241,10 @@
                   <arguments>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
+                     <argument>-sd</argument>
+                     <argument>${basedir}/src/main/resources/scenarios</argument>
+                     <argument>-md</argument>
+                     <argument>${basedir}/src/main/resources/messages</argument>
                      <argument>-Dserver.host=${server.host}</argument>
                      <argument>-Dserver.port=${server.port}</argument>
                   </arguments>
