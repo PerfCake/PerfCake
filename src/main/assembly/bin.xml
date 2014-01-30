@@ -31,6 +31,15 @@
          <fileMode>0644</fileMode>
       </fileSet>
       <fileSet>
+         <directory>${basedir}/lib/ext</directory>
+         <outputDirectory>lib/ext</outputDirectory>
+         <includes>
+            <include>*.jar</include>
+            <include>README*</include>
+         </includes>
+         <fileMode>0644</fileMode>
+      </fileSet>
+      <fileSet>
          <directory>${basedir}/src/main/resources</directory>
          <outputDirectory>resources</outputDirectory>
          <includes>

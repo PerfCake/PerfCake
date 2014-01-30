@@ -237,8 +237,12 @@
                <groupId>org.codehaus.mojo</groupId>
                <artifactId>exec-maven-plugin</artifactId>
                <configuration>
-                  <mainClass>org.perfcake.ScenarioExecution</mainClass>
+                  <executable>java</executable>
                   <arguments>
+                     <argument>-Djava.ext.dirs=${basedir}/lib/ext</argument>
+                     <argument>-cp</argument>
+                     <classpath/>
+                     <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
                      <argument>-sd</argument>

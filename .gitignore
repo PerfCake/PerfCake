@@ -10,7 +10,9 @@ bin
 .settings
 .project
 .classpath
-bin
+
+# Lib
+lib/ext/*.jar
 
 # Package Files #
 *.jar
