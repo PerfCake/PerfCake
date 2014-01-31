@@ -75,7 +75,7 @@ public abstract class AbstractReporter implements Reporter {
    private Map<String, Accumulator> accumulatedResults = new HashMap<>();
 
    /**
-    * Reports a single {@link org.perfcake.reporting.MeasurementUnit} to this reporter. This calls {@link #doReport(MeasurementUnit)} overrided by a child,
+    * Reports a single {@link org.perfcake.reporting.MeasurementUnit} to this reporter. This calls {@link #doReport(MeasurementUnit)} overridden by a child,
     * accumulates results and reports iteration change and percentage change (if any).
     */
    @Override
@@ -91,6 +91,8 @@ public abstract class AbstractReporter implements Reporter {
       reportIterations(mu.getIteration());
 
       // report each percentage value just once
+      // TODO: A problematic piece of code. Some percentage values can be skipped if the test runs too fast. All values between last reported and current must be passed to reportPercentage().
+      // TODO: Check whether the value of percentage can get lower than previously recorded.
       final long percentage = (long) Math.floor(runInfo.getPercentage());
       if (percentage != lastPercentage) {
          lastPercentage = percentage;
@@ -133,7 +135,7 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    /**
-    * For each key of the Mesurement Unit's results map, ask for an accumulator and accumulate the value with the previous values.
+    * For each key of the Measurement Unit's results map, ask for an accumulator and accumulate the value with the previous values.
     * Childs can use this method to accumulate the main result as well (be it a total response time or anything else).
     * 
     * @param results
@@ -159,8 +161,8 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    /**
-    * Gets an appropriate accumulator for a given key from the Measuremen Unit's results map and its class.
-    * This should be overriden by the child classes. By default, last value accumulator is returned. This must
+    * Gets an appropriate accumulator for a given key from the Measurement Unit's results map and its class.
+    * This should be overridden by the child classes. By default, last value accumulator is returned. This must
     * remain at least for {@link org.perfcake.PerfCakeConst.WARM_UP_TAG}.
     * 
     * @param key

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,10 +31,10 @@ import org.perfcake.reporting.ReportManager;
  * <p>
  * Generator that is able to generate maximal load.
  * </p>
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
- * 
+ *
  */
 public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
@@ -60,7 +60,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Place a specified number of {@link SenderTask} implementing the message sending task to internal thread queue.
-    * 
+    *
     * @param count
     *           The number of {@link SenderTask};
     */
@@ -69,6 +69,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
          log.debug("Submiting " + count + " sender tasks...");
       }
       for (long i = 0; i < count; i++) {
+         // TODO: ITERATION based RI must be checked before placing each task, we might have run out of iterations
          executorService.submit(newSenderTask());
       }
    }
@@ -84,6 +85,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
          sendPack(threadQueueSize - executorService.getQueue().size());
          Thread.sleep(monitoringPeriod);
       }
+      // TODO: in the case of ITERATION based runInfo, we should wait here for all the iterations to be processed (before calling setStopTime() because this resets RI and reporting)
       setStopTime();
       executorService.shutdown();
       executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
@@ -92,7 +94,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Used to read the value of monitoringPeriod.
-    * 
+    *
     * @return The monitoringPeriod.
     */
    public long getMonitoringPeriod() {
@@ -101,7 +103,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Sets the value of monitoringPeriod.
-    * 
+    *
     * @param monitoringPeriod
     *           The monitoringPeriod to set.
     */
@@ -111,7 +113,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Used to read the amount of time (in seconds) for which the generator will generate the measured load.
-    * 
+    *
     * @return The duration.
     */
    public long getDuration() {
@@ -120,7 +122,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Used to read the size of the internal thread queue.
-    * 
+    *
     * @return The thread queue size.
     */
    public int getThreadQueueSize() {
@@ -129,7 +131,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Sets the the size of the internal thread queue.
-    * 
+    *
     * @param threadQueueSize
     *           The thread queue size.
     */
@@ -139,6 +141,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    @Override
    protected void validateRunInfo() {
+      // TODO: Why we could not use ITERATION based RI??? This checks for TIME based RI, but the messages states the opposite, what is its meaning?
       assert runInfo.getDuration().getPeriodType() == PeriodType.TIME : this.getClass().getName() + " can only be used with an iteration based run configuration.";
    }
 

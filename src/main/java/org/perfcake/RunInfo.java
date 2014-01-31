@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,9 +29,9 @@ import org.perfcake.common.PeriodType;
 
 /**
  * Information about the current scenario run.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
+ *
  */
 public class RunInfo {
 
@@ -67,7 +67,7 @@ public class RunInfo {
 
    /**
     * Creates a new RunInfo.
-    * 
+    *
     * @param duration
     *           Target duration of the run (time or iterations)
     */
@@ -105,6 +105,7 @@ public class RunInfo {
    /**
     * Stops the measurement run.
     */
+   // TODO: should this reset iterations and thus percentage?
    public void stop() {
       endTime = System.currentTimeMillis();
 
@@ -115,7 +116,7 @@ public class RunInfo {
     * Get the current iteration counter value.
     * This can be used as an approximate value of passed iterations even though some of them
     * might still be pending their execution.
-    * 
+    *
     * @return Current iteration counter value, -1 if there was no iteration so far.
     */
    public long getIteration() {
@@ -125,7 +126,7 @@ public class RunInfo {
    /**
     * Get the next iteration counter value.
     * This automatically increases the iteration counter for the next call to obtain a different value.
-    * 
+    *
     * @return The next available iteration counter value
     */
    public long getNextIteration() {
@@ -135,7 +136,7 @@ public class RunInfo {
    /**
     * Gets the current measurement run time in millisecond. If the system clock changed
     * during the running measurement, this value will be influenced.
-    * 
+    *
     * @return Current measurement run time
     */
    public long getRunTime() {
@@ -152,9 +153,10 @@ public class RunInfo {
     * Gets the current measurement progress in percents.
     * If the run is limited by time based period and the system clock changed during the measurement,
     * the result value will be influenced.
-    * 
+    *
     * @return Completed percents of the current measurement
     */
+   // TODO: Make sure that this method does not return 0 at the end of the test. It must remain at 100 until a call to reset() or start()
    public double getPercentage() {
       if (!isStarted()) {
          return 0d;
@@ -179,7 +181,7 @@ public class RunInfo {
    /**
     * Gets Unix time of the measurement start. If the system clock changed during the measurement,
     * this value will not represent the real start.
-    * 
+    *
     * @return Measurement start time
     */
    public long getStartTime() {
@@ -188,7 +190,7 @@ public class RunInfo {
 
    /**
     * Gets Unix time of the measurement end.
-    * 
+    *
     * @return Measurement end time
     */
    public long getEndTime() {
@@ -198,7 +200,7 @@ public class RunInfo {
    /**
     * Is there a running measurement? This is true if and only if {@link #isStarted()} returns true and we did not reached
     * the final iterations.
-    * 
+    *
     * @return True if the measurement is running
     */
    public boolean isRunning() {
@@ -208,7 +210,7 @@ public class RunInfo {
    /**
     * Was the measurement started? This is true if and only if {@link #start()} has been called
     * and there has been no call to {@link #stop()} since then.
-    * 
+    *
     * @return True if the measurement has been started.
     */
    public boolean isStarted() {
@@ -217,7 +219,7 @@ public class RunInfo {
 
    /**
     * Returns true if the last iteration has been reached.
-    * 
+    *
     * @return True if the last iteration has been reached.
     */
    private boolean reachedLastIteration() {
@@ -226,7 +228,7 @@ public class RunInfo {
 
    /**
     * Gets an unmodifiable set of tags associated with this measurement run.
-    * 
+    *
     * @return An unmodifiable set of tags
     */
    public Set<String> getTags() {
@@ -235,7 +237,7 @@ public class RunInfo {
 
    /**
     * Checks for a presence of a given tag.
-    * 
+    *
     * @param tag
     *           A tag to be checked
     * @return True if the specified tag is set for this run info
@@ -246,7 +248,7 @@ public class RunInfo {
 
    /**
     * Associate a new tag with this measurement.
-    * 
+    *
     * @param tag
     *           A new tag to be associated
     */
@@ -256,7 +258,7 @@ public class RunInfo {
 
    /**
     * A set of tags to be associated with the current measurement.
-    * 
+    *
     * @param tags
     *           A set of tags to be associated
     */
@@ -266,7 +268,7 @@ public class RunInfo {
 
    /**
     * Removes a tag from this run.
-    * 
+    *
     * @param tag
     *           A tag to be removed
     */
@@ -276,7 +278,7 @@ public class RunInfo {
 
    /**
     * Gets the desired run duration
-    * 
+    *
     * @return The run duration
     */
    public Period getDuration() {
@@ -285,7 +287,7 @@ public class RunInfo {
 
    @Override
    public String toString() {
-      return "RunInfo [duration=" + duration + ", startTime=" + Long.valueOf(startTime).toString() + ", endTime=" + endTime + ", iterations=" + iterations + ", tags=" + tags + "]";
+      return String.format("RunInfo [duration=%s, startTime=%d, endTime=%d, iterations=%d, tags=%s, started=%d, running=%d, percentage=%.3f]", duration, startTime, endTime, getIteration(), tags, isStarted() ? 1 : 0, isRunning() ? 1 : 0, getPercentage());
    }
 
 }
