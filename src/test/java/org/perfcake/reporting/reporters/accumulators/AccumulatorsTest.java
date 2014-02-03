@@ -116,7 +116,10 @@ public class AccumulatorsTest {
       int WINDOW = 1000;
 
       // accumulator, start, end, result, after reset
-      return new Object[][] { { new AvgAccumulator(), START, END, new Double((START + END) / 2d), new Double(0) }, { new SumAccumulator(), START, END, new Double(500L * (START + END) * (END - START + 1L) / 2d), new Double(0) }, { new LastValueAccumulator(), START, END, new Double(END), null }, { new SlidingWindowAvgAccumulator(WINDOW), START, END, new Double((END - WINDOW + 1 + END) / 2d), new Double(0) } };
+      return new Object[][] { { new AvgAccumulator(), START, END, (START + END) / 2d, 0d },
+            { new SumAccumulator(), START, END, 500L * (START + END) * (END - START + 1L) / 2d, 0d },
+            { new LastValueAccumulator(), START, END, (double) END, null },
+            { new SlidingWindowAvgAccumulator(WINDOW), START, END, (END - WINDOW + 1 + END) / 2d, 0d } };
    }
 
    @Test(dataProvider = "stressTest", groups = { "performance" })

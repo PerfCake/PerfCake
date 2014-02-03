@@ -14,6 +14,9 @@ bin
 # Lib
 lib/ext/*.jar
 
+# IntelliJ Idea
+.idea
+
 # Package Files #
 *.jar
 *.war

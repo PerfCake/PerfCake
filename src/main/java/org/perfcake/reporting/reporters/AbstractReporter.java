@@ -34,6 +34,7 @@ import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
@@ -52,6 +53,11 @@ public abstract class AbstractReporter implements Reporter {
     * The reporter's logger.
     */
    private static final Logger log = Logger.getLogger(AbstractReporter.class);
+
+   /**
+    * ReportManager that owns this reporter.
+    */
+   protected ReportManager reportManager = null;
 
    /**
     * Remembers the last observed percentage state of the measurement run. This is used to report change to this value only once.
@@ -120,6 +126,11 @@ public abstract class AbstractReporter implements Reporter {
     */
    protected Object getAccumulatedResult(final String key) {
       return accumulatedResults.get(key) == null ? null : accumulatedResults.get(key).getResult();
+   }
+
+   @Override
+   public void setReportManager(ReportManager reportManager) {
+      this.reportManager = reportManager;
    }
 
    /**

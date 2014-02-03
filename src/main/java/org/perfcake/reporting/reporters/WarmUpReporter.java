@@ -133,13 +133,13 @@ public class WarmUpReporter extends AbstractReporter {
                   if (log.isInfoEnabled()) {
                      log.info("The tested system is warmed up.");
                   }
-                  runInfo.reset();
+                  reportManager.reset();
                   runInfo.removeTag(PerfCakeConst.WARM_UP_TAG);
                   warmed = true;
                }
             }
             final Map<String, Object> result = new HashMap<>();
-            result.put(Measurement.DEFAULT_RESULT, Double.valueOf(currentThoughput));
+            result.put(Measurement.DEFAULT_RESULT, currentThoughput);
             accumulateResults(result);
          }
       }

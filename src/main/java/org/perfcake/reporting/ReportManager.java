@@ -42,6 +42,8 @@ public class ReportManager {
 
    private static final Logger log = Logger.getLogger(ReportManager.class);
 
+   private volatile boolean resetLastTimes = false;
+
    /**
     * Set of reporters registered for reporting.
     */
@@ -133,6 +135,7 @@ public class ReportManager {
       }
 
       runInfo.reset();
+      resetLastTimes = true;
       for (final Reporter r : reporters) {
          r.reset();
       }
@@ -149,6 +152,7 @@ public class ReportManager {
          log.debug("Registering a new reporter " + reporter);
       }
 
+      reporter.setReportManager(this);
       reporter.setRunInfo(runInfo);
       reporters.add(reporter);
    }
@@ -164,6 +168,8 @@ public class ReportManager {
          log.debug("Removing the reporter " + reporter);
       }
 
+      reporter.setReportManager(null);
+      reporter.setRunInfo(null);
       reporters.remove(reporter);
    }
 
@@ -201,6 +207,11 @@ public class ReportManager {
 
             try {
                while (runInfo.isRunning() && !periodicThread.isInterrupted()) {
+                  if (resetLastTimes) {
+                     reportLastTimes = new HashMap<>();
+                     resetLastTimes = false;
+                  }
+
                   now = System.currentTimeMillis();
 
                   for (Reporter r : reporters) {

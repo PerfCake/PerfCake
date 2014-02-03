@@ -26,6 +26,7 @@ import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 
@@ -141,6 +142,16 @@ public interface Reporter {
     *           RunInfo for the current measurement run
     */
    public void setRunInfo(RunInfo runInfo);
+
+   /**
+    * Sets {@link org.perfcake.reporting.ReportManager Report Manager} for the report to be able to control and
+    * monitor the current status of reporting.
+    *
+    * @param reportManager
+    *           ReportManager that owns this Reporter
+    */
+   public void setReportManager(ReportManager reportManager);
+
 
    /**
     * Gets an unmodifiable set of registered reporting periods.

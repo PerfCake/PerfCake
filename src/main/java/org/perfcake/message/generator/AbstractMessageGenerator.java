@@ -131,7 +131,7 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-    * TODO: write javadoc
+    * Verifies that the current configuration of {@link org.perfcake.RunInfo} is supported by the current generator
     */
    abstract protected void validateRunInfo();
 

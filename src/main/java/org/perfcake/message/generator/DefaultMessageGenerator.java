@@ -141,8 +141,9 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    @Override
    protected void validateRunInfo() {
-      // TODO: Why we could not use ITERATION based RI??? This checks for TIME based RI, but the messages states the opposite, what is its meaning?
-      assert runInfo.getDuration().getPeriodType() == PeriodType.TIME : this.getClass().getName() + " can only be used with an iteration based run configuration.";
+      if (runInfo.getDuration().getPeriodType() == PeriodType.PERCENTAGE) {
+         throw new IllegalStateException(String.format("%s can only be used with an iteration based run configuration.", this.getClass().getName()));
+      }
    }
 
 }
