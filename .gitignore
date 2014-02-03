@@ -16,6 +16,7 @@ lib/ext/*.jar
 
 # IntelliJ Idea
 .idea
+*.iml
 
 # Package Files #
 *.jar
