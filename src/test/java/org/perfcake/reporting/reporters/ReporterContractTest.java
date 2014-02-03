@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -283,8 +283,8 @@ public class ReporterContractTest {
       Assert.assertEquals(lastPercentage, 100d);
       rm.stop();
 
-      Assert.assertEquals(ri.getPercentage(), 0d);
-      Assert.assertEquals(ri.getIteration(), -1L);
+      Assert.assertEquals(ri.getPercentage(), 100d);
+      Assert.assertEquals(ri.getIteration(), 999L);
    }
    // what happens if last iteration is reached
 }

@@ -123,10 +123,10 @@ public class RunInfoTest {
       log.info("STOP      " + ri);
       Assert.assertEquals(ri.getStartTime(), startTime);
       Assert.assertTrue(ri.getEndTime() > startTime);
-      Assert.assertEquals(ri.getIteration(), -1);
+      Assert.assertEquals(ri.getIteration(), 100);
       Assert.assertFalse(ri.isStarted());
       Assert.assertFalse(ri.isRunning());
-      Assert.assertEquals(ri.getPercentage(), 0d);
+      Assert.assertEquals(ri.getPercentage(), 101d);
    }
 
    @Test
@@ -223,9 +223,10 @@ public class RunInfoTest {
       log.info("STOP      " + ri);
       Assert.assertEquals(ri.getStartTime(), startTime);
       Assert.assertTrue(ri.getEndTime() > startTime);
-      Assert.assertEquals(ri.getIteration(), -1);
+      Assert.assertEquals(ri.getIteration(), 100);
       Assert.assertFalse(ri.isStarted());
       Assert.assertFalse(ri.isRunning());
-      Assert.assertEquals(ri.getPercentage(), 0d);
+      Assert.assertTrue(ri.getPercentage() > 100d); // for a time based runInfo, the world never dies
+      Assert.assertTrue(ri.getPercentage() < 110d); // but we should not be far behind 100%
    }
 }

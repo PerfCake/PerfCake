@@ -109,7 +109,7 @@ public class RunInfo {
    public void stop() {
       endTime = System.currentTimeMillis();
 
-      iterations.set(0);
+     // iterations.set(0);
    }
 
    /**
@@ -158,7 +158,7 @@ public class RunInfo {
     */
    // TODO: Make sure that this method does not return 0 at the end of the test. It must remain at 100 until a call to reset() or start()
    public double getPercentage() {
-      if (!isStarted()) {
+      if (startTime == -1 /*!isStarted()*/) {
          return 0d;
       }
 
