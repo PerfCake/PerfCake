@@ -72,6 +72,11 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       }
    }
 
+   /**
+    * Adaptive termination of sender tasks. Waits for tasks to be finished. While they are some tasks remaining and some of them get terminated, keep waiting.
+    * 
+    * @throws InterruptedException
+    */
    private void adaptiveTermination() throws InterruptedException {
       executorService.shutdown();
       int active = executorService.getActiveCount(), lastActive = 0;
@@ -80,6 +85,10 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
          lastActive = active;
          executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
          active = executorService.getActiveCount();
+
+         if (log.isDebugEnabled()) {
+            log.debug(String.format("Adaptive test execution termination in progress. Tasks finished in last round: %d", lastActive - active));
+         }
       }
    }
 
@@ -96,12 +105,18 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
             Thread.sleep(monitoringPeriod);
          }
       }
-      // TODO: in the case of ITERATION based runInfo, we should wait here for all the iterations to be processed (before calling setStopTime() because this resets RI and reporting)
-      if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) {
+      log.info("Reached test end. Shutting down execution...");
+
+      if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // in case of iterations, we wait for the tasks to be finished first
          adaptiveTermination();
+         setStopTime();
+      } else { // in case of time, we must stop measurement first
+         setStopTime();
+         adaptiveTermination();
+
       }
+
       executorService.shutdownNow();
-      setStopTime();
    }
 
    /**
