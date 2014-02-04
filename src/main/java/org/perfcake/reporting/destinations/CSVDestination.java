@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -65,96 +65,85 @@ public class CSVDestination implements Destination {
    /**
     * The list containing names of results from measurement.
     */
-   private final List<String> resultNames = new LinkedList<>();
+   private final List<String> resultNames = new ArrayList<>();
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.reporting.destinations.Destination#open()
-    */
    @Override
    public void open() {
-      // TODO Auto-generated method stub
-
+      csvFile = new File(path);
+      if (log.isDebugEnabled()) {
+         log.debug("Output path: " + csvFile.getPath());
+      }
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.reporting.destinations.Destination#close()
-    */
    @Override
    public void close() {
-      // TODO Auto-generated method stub
-
+      // nothing to do
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.perfcake.reporting.destinations.Destination#report(org.perfcake.reporting.Measurement)
-    */
    @Override
    public void report(final Measurement m) throws ReportingException {
-      StringBuffer sb = new StringBuffer();
-      if (csvFile == null) {
-         csvFile = new File(path);
-         if (log.isDebugEnabled()) {
-            log.debug("Output path not specified. Using the default one: " + csvFile.getPath());
-         }
-      }
+      final String delim = delimiter; // not to have delimiter locked most of the time
+      synchronized (this) {
+         final StringBuffer sb = new StringBuffer();
+         final Map<String, Object> results = m.getAll();
+         final Object defaultResult = m.get();
 
-      final Map<String, Object> results = m.getAll();
-
-      Object defaultResult = m.get();
-      // make sure the order of columns is consisten
-      if (!csvFile.exists()) {
-         sb.append("Time");
-         sb.append(delimiter);
-         sb.append("Iterations");
-         if (defaultResult != null) {
-            sb.append(delimiter);
-            sb.append(Measurement.DEFAULT_RESULT);
-         }
-         for (String key : results.keySet()) {
-            if (!key.equals(Measurement.DEFAULT_RESULT)) {
-               resultNames.add(key);
-               sb.append(delimiter);
-               sb.append(key);
+         if (resultNames.isEmpty()) {
+            for (String key : results.keySet()) {
+               if (!key.equals(Measurement.DEFAULT_RESULT)) {
+                  resultNames.add(key);
+               }
             }
          }
-         sb.append("\n");
-      }
 
-      sb.append(Utils.timeToHMS(m.getTime()));
-      sb.append(delimiter);
-      sb.append(m.getIteration());
-      if (defaultResult != null) {
-         sb.append(delimiter);
-         if (defaultResult instanceof Quantity<?>) {
-            sb.append(((Quantity<?>) defaultResult).getNumber());
-         } else {
-            sb.append(defaultResult);
+         // make sure the order of columns is consistent
+         final boolean csvFileExists = csvFile.exists();
+         if (!csvFileExists) {
+            sb.append("Time");
+            sb.append(delim);
+            sb.append("Iterations");
+            if (defaultResult != null) {
+               sb.append(delim);
+               sb.append(Measurement.DEFAULT_RESULT);
+            }
+            for (String key : resultNames) {
+               sb.append(delim);
+               sb.append(key);
+            }
+            sb.append("\n");
+         }
+
+         sb.append(Utils.timeToHMS(m.getTime()));
+         sb.append(delim);
+         sb.append(m.getIteration() + 1);
+         if (defaultResult != null) {
+            sb.append(delim);
+            if (defaultResult instanceof Quantity<?>) {
+               sb.append(((Quantity<?>) defaultResult).getNumber());
+            } else {
+               sb.append(defaultResult);
+            }
+         }
+
+         Object currentResult;
+         for (String resultName : resultNames) {
+            sb.append(delim);
+            currentResult = results.get(resultName);
+            if (currentResult instanceof Quantity<?>) {
+               sb.append(((Quantity<?>) currentResult).getNumber());
+            } else {
+               sb.append(currentResult);
+            }
+         }
+
+         try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(csvFile, true), Utils.getDefaultEncoding()))) {
+            bw.append(sb.toString());
+            bw.newLine();
+         } catch (IOException ioe) {
+            throw new ReportingException("Could not append a report to the file: " + csvFile.getPath(), ioe);
          }
       }
 
-      Object currentResult;
-      for (String resultName : resultNames) {
-         sb.append(delimiter);
-         currentResult = results.get(resultName);
-         if (currentResult instanceof Quantity<?>) {
-            sb.append(((Quantity<?>) currentResult).getNumber());
-         } else {
-            sb.append(currentResult);
-         }
-      }
-
-      try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(csvFile, true), Utils.getDefaultEncoding()))) {
-         bw.append(sb.toString());
-         bw.newLine();
-      } catch (IOException ioe) {
-         throw new ReportingException("Could not append a report to the file: " + csvFile.getPath(), ioe);
-      }
    }
 
    /**

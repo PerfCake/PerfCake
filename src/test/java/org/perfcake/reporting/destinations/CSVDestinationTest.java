@@ -41,15 +41,21 @@ public class CSVDestinationTest {
    private Properties destinationProperties;
    private Measurement measurement;
    private Measurement measurementWithoutDefault;
+   private Measurement measurementStringResult;
+   private static final long ITERATION = 12345;
 
    @BeforeClass
    public void beforeClass() {
-      measurement = new Measurement(42, 123456000, 12345);
+      measurement = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
       measurement.set(new Quantity<Double>(1111.11, "it/s"));
       measurement.set("another", new Quantity<Double>(222.22, "ms"));
 
-      measurementWithoutDefault = new Measurement(42, 123456000, 12345);
+      measurementWithoutDefault = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
       measurementWithoutDefault.set("singleResult", new Quantity<Number>(100, "units"));
+
+      measurementStringResult = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
+      measurementStringResult.set("StringValue");
+      measurementStringResult.set("StringResult", "StringValue2");
 
       File csvOutputPath = new File("test-output");
       if (!csvOutputPath.exists()) {
@@ -75,9 +81,11 @@ public class CSVDestinationTest {
       try {
          CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
 
+         destination.open();
          destination.report(measurement);
+         destination.close();
 
-         assertCSVFileContent("Time,Iterations,Result,another\n34:17:36,12345,1111.11,222.22");
+         assertCSVFileContent("Time,Iterations," + Measurement.DEFAULT_RESULT + ",another\n34:17:36," + ITERATION + ",1111.11,222.22");
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
@@ -89,9 +97,11 @@ public class CSVDestinationTest {
       try {
          CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
 
+         destination.open();
          destination.report(measurement);
+         destination.close();
 
-         assertCSVFileContent("Time;Iterations;Result;another\n34:17:36;12345;1111.11;222.22");
+         assertCSVFileContent("Time;Iterations;" + Measurement.DEFAULT_RESULT + ";another\n34:17:36;" + ITERATION + ";1111.11;222.22");
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
@@ -103,9 +113,27 @@ public class CSVDestinationTest {
       try {
          CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
 
+         destination.open();
          destination.report(measurementWithoutDefault);
+         destination.close();
 
-         assertCSVFileContent("Time;Iterations;singleResult\n34:17:36;12345;100");
+         assertCSVFileContent("Time;Iterations;singleResult\n34:17:36;" + ITERATION + ";100");
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
+         e.printStackTrace();
+         Assert.fail(e.getMessage());
+      }
+   }
+
+   @Test
+   public void testStringResultMeasurement() {
+      try {
+         CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
+
+         destination.open();
+         destination.report(measurementStringResult);
+         destination.close();
+
+         assertCSVFileContent("Time;Iterations;" + Measurement.DEFAULT_RESULT + ";StringResult\n34:17:36;" + ITERATION + ";StringValue;StringValue2");
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
