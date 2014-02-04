@@ -240,6 +240,8 @@
                   <executable>java</executable>
                   <arguments>
                      <argument>-Djava.ext.dirs=${basedir}/lib/ext</argument>
+                     <argument>-Dlog4j.configuration=file://${basedir}/src/main/resources/log4j.xml</argument>
+                     <argument>-ea</argument>
                      <argument>-cp</argument>
                      <classpath/>
                      <argument>org.perfcake.ScenarioExecution</argument>
@@ -267,6 +269,9 @@
                            <include>*.log</include>
                         </includes>
                         <followSymlinks>false</followSymlinks>
+                     </fileset>
+                     <fileset>
+                        <directory>${basedir}/test-output</directory>
                      </fileset>
                   </filesets>
                </configuration>
