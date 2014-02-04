@@ -28,13 +28,10 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.ReportManager;
 
 /**
- * <p>
- * Generator that is able to generate maximal load.
- * </p>
+ * <p> Generator that is able to generate maximal load. </p>
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
- *
  */
 public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
@@ -62,15 +59,27 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     * Place a specified number of {@link SenderTask} implementing the message sending task to internal thread queue.
     *
     * @param count
-    *           The number of {@link SenderTask};
+    *       The number of {@link SenderTask};
     */
    private void sendPack(final long count) {
       if (log.isDebugEnabled()) {
          log.debug("Submiting " + count + " sender tasks...");
       }
       for (long i = 0; i < count; i++) {
-         // TODO: ITERATION based RI must be checked before placing each task, we might have run out of iterations
-         executorService.submit(newSenderTask());
+         if (runInfo.isRunning()) { // didn't we run out of iterations or time?
+            executorService.submit(newSenderTask());
+         }
+      }
+   }
+
+   private void adaptiveTermination() throws InterruptedException {
+      executorService.shutdown();
+      int active = executorService.getActiveCount(), lastActive = 0;
+
+      while (active > 0 && lastActive != active) { // make sure the threads are finishing
+         lastActive = active;
+         executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
+         active = executorService.getActiveCount();
       }
    }
 
@@ -83,13 +92,16 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
       while (runInfo.isRunning()) {
          sendPack(threadQueueSize - executorService.getQueue().size());
-         Thread.sleep(monitoringPeriod);
+         if (runInfo.isRunning()) { // we don't want to waste time here when the time is over, we must stop quickly
+            Thread.sleep(monitoringPeriod);
+         }
       }
       // TODO: in the case of ITERATION based runInfo, we should wait here for all the iterations to be processed (before calling setStopTime() because this resets RI and reporting)
-      setStopTime();
-      executorService.shutdown();
-      executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
+      if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) {
+         adaptiveTermination();
+      }
       executorService.shutdownNow();
+      setStopTime();
    }
 
    /**
@@ -105,7 +117,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     * Sets the value of monitoringPeriod.
     *
     * @param monitoringPeriod
-    *           The monitoringPeriod to set.
+    *       The monitoringPeriod to set.
     */
    public void setMonitoringPeriod(final long monitoringPeriod) {
       this.monitoringPeriod = monitoringPeriod;
@@ -133,7 +145,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     * Sets the the size of the internal thread queue.
     *
     * @param threadQueueSize
-    *           The thread queue size.
+    *       The thread queue size.
     */
    public void setThreadQueueSize(final int threadQueueSize) {
       this.threadQueueSize = threadQueueSize;

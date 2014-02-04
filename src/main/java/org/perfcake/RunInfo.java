@@ -105,11 +105,8 @@ public class RunInfo {
    /**
     * Stops the measurement run.
     */
-   // TODO: should this reset iterations and thus percentage?
    public void stop() {
       endTime = System.currentTimeMillis();
-
-     // iterations.set(0);
    }
 
    /**
@@ -156,9 +153,8 @@ public class RunInfo {
     *
     * @return Completed percents of the current measurement
     */
-   // TODO: Make sure that this method does not return 0 at the end of the test. It must remain at 100 until a call to reset() or start()
    public double getPercentage() {
-      if (startTime == -1 /*!isStarted()*/) {
+      if (startTime == -1) {
          return 0d;
       }
 
