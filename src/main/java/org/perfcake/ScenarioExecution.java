@@ -94,22 +94,24 @@ public class ScenarioExecution {
 
       if (commandLine.hasOption(PerfCakeConst.PLUGINS_DIR_OPT)) {
          System.setProperty(PerfCakeConst.PLUGINS_DIR_PROPERTY, commandLine.getOptionValue(PerfCakeConst.PLUGINS_DIR_OPT));
+      } else {
+         System.setProperty(PerfCakeConst.PLUGINS_DIR_PROPERTY, Utils.DEFAULT_PLUGINS_DIR.getAbsolutePath());
       }
-      
+
       if (commandLine.hasOption(PerfCakeConst.PROPERTIES_FILE_OPT)) {
-          System.setProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY, commandLine.getOptionValue(PerfCakeConst.PROPERTIES_FILE_OPT));
+         System.setProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY, commandLine.getOptionValue(PerfCakeConst.PROPERTIES_FILE_OPT));
       }
-            
+
       Properties props = new Properties();
-      if(System.getProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY) != null) {
-          try {
-              props.load(new FileInputStream(System.getProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY)));
-          } catch (FileNotFoundException e1) {
-              // bad file path, we can still continue without reading file
-              e1.printStackTrace();
-          } catch (IOException e1) {
-              e1.printStackTrace();
-          }
+      if (System.getProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY) != null) {
+         try {
+            props.load(new FileInputStream(System.getProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY)));
+         } catch (FileNotFoundException e1) {
+            // bad file path, we can still continue without reading file
+            e1.printStackTrace();
+         } catch (IOException e1) {
+            e1.printStackTrace();
+         }
       }
       props.putAll(commandLine.getOptionProperties("D"));
       for (Entry<Object, Object> entry : props.entrySet()) {

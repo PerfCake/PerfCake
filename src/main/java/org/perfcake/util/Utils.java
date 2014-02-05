@@ -48,8 +48,9 @@ import org.perfcake.util.properties.SystemPropertyGetter;
  */
 public class Utils {
 
-   public static final File resourcesDir = new File("resources");
-   public static final Logger log = Logger.getLogger(Utils.class);
+   public static final File DEFAULT_RESOURCES_DIR = new File("resources");
+   public static final File DEFAULT_PLUGINS_DIR = new File("lib/plugins");
+   private static final Logger log = Logger.getLogger(Utils.class);
 
    /**
     * It takes a string and replaces all ${&lt;property.name&gt;} placeholders
@@ -187,7 +188,7 @@ public class Utils {
     * @return the location based on the resourcesDir constant
     */
    public static String determineDefaultLocation(final String locationSuffix) {
-      return resourcesDir.getAbsolutePath() + "/" + (locationSuffix == null ? "" : locationSuffix);
+      return DEFAULT_RESOURCES_DIR.getAbsolutePath() + "/" + (locationSuffix == null ? "" : locationSuffix);
    }
 
    /**

@@ -39,6 +39,7 @@ import org.perfcake.PerfCakeConst;
 public class ObjectFactory {
 
    private static final Logger log = Logger.getLogger(ObjectFactory.class);
+   private static ClassLoader pluginClassLoader = null;
 
    private static class EnumConvertUtilsBean extends ConvertUtilsBean {
       @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -76,41 +77,43 @@ public class ObjectFactory {
 
       return object;
    }
-   
+
    protected static ClassLoader getPluginClassLoader() {
-      ClassLoader currentClassLoader = ObjectFactory.class.getClassLoader();
-      String pluginsDirProp = Utils.getProperty(PerfCakeConst.PLUGINS_DIR_PROPERTY);
-      if(pluginsDirProp == null)
-         return currentClassLoader;
-      
-      File pluginsDir = new File(pluginsDirProp);
-      File[] plugins = pluginsDir.listFiles(new FileExtensionFilter(".jar"));
-      
-      if((plugins == null) || (plugins.length == 0))
-         return currentClassLoader;
-      
-      URL[] pluginURLs = new URL[plugins.length];
-      for(int i = 0; i < plugins.length; i++)
-         try {
-            pluginURLs[i] = plugins[i].toURI().toURL();
-         } catch(MalformedURLException e) {
-            log.warn(String.format("Cannot resolve path to plugin '%s', skipping this file",  plugins[i]));
-         }
-      URLClassLoader pluginClassLoader = new URLClassLoader(pluginURLs, currentClassLoader);
-      
+      if (pluginClassLoader == null) {
+         ClassLoader currentClassLoader = ObjectFactory.class.getClassLoader();
+         String pluginsDirProp = Utils.getProperty(PerfCakeConst.PLUGINS_DIR_PROPERTY);
+         if (pluginsDirProp == null)
+            return currentClassLoader;
+
+         File pluginsDir = new File(pluginsDirProp);
+         File[] plugins = pluginsDir.listFiles(new FileExtensionFilter(".jar"));
+
+         if ((plugins == null) || (plugins.length == 0))
+            return currentClassLoader;
+
+         URL[] pluginURLs = new URL[plugins.length];
+         for (int i = 0; i < plugins.length; i++)
+            try {
+               pluginURLs[i] = plugins[i].toURI().toURL();
+            } catch (MalformedURLException e) {
+               log.warn(String.format("Cannot resolve path to plugin '%s', skipping this file", plugins[i]));
+            }
+         pluginClassLoader = new URLClassLoader(pluginURLs, currentClassLoader);
+      }
+
       return pluginClassLoader;
    }
-   
+
    private static class FileExtensionFilter implements FilenameFilter {
       private final String extension;
-      
+
       public FileExtensionFilter(String extension) {
-          this.extension = extension;
+         this.extension = extension;
       }
 
       public boolean accept(File dir, String name) {
-          return name.endsWith(extension) ? true : false;
+         return name.endsWith(extension) ? true : false;
       }
-  }
-
+   }
+   
 }
