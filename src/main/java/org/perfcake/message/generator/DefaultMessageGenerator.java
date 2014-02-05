@@ -74,7 +74,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Adaptive termination of sender tasks. Waits for tasks to be finished. While they are some tasks remaining and some of them get terminated, keep waiting.
-    * 
+    *
     * @throws InterruptedException
     */
    private void adaptiveTermination() throws InterruptedException {
