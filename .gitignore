@@ -13,6 +13,7 @@ bin
 
 # Lib
 lib/ext/*.jar
+lib/plugins/*.jar
 
 # IntelliJ Idea
 .idea
