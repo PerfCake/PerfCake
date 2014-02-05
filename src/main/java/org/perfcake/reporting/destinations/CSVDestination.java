@@ -106,7 +106,6 @@ public class CSVDestination implements Destination {
          sb.append(delimiter);
          sb.append(key);
       }
-      sb.append("\n");
 
       fileHeaders = sb.toString();
    }
