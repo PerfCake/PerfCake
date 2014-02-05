@@ -60,6 +60,7 @@ public class ScenarioExecution {
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.SCENARIO_OPT).withDescription("scenario to be executed").hasArg().withArgName("SCENARIO").create("s"));
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.SCENARIOS_DIR_OPT).withDescription("directory for scenarios").hasArg().withArgName("SCENARIOS_DIR").create("sd"));
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.MESSAGES_DIR_OPT).withDescription("directory for messages").hasArg().withArgName("MESSAGES_DIR").create("md"));
+      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.PLUGINS_DIR_OPT).withDescription("directory for plugins").hasArg().withArgName("PLUGINS_DIR").create("pd"));
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.PROPERTIES_FILE_OPT).withDescription("custom system properties file").hasArg().withArgName("PROPERTIES_FILE").create("pf"));
       options.addOption(OptionBuilder.withArgName("property=value").hasArgs(2).withValueSeparator().withDescription("system properties").create("D"));
 
@@ -91,10 +92,14 @@ public class ScenarioExecution {
          System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"));
       }
 
+      if (commandLine.hasOption(PerfCakeConst.PLUGINS_DIR_OPT)) {
+         System.setProperty(PerfCakeConst.PLUGINS_DIR_PROPERTY, commandLine.getOptionValue(PerfCakeConst.PLUGINS_DIR_OPT));
+      }
+      
       if (commandLine.hasOption(PerfCakeConst.PROPERTIES_FILE_OPT)) {
           System.setProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY, commandLine.getOptionValue(PerfCakeConst.PROPERTIES_FILE_OPT));
       }
-      
+            
       Properties props = new Properties();
       if(System.getProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY) != null) {
           try {

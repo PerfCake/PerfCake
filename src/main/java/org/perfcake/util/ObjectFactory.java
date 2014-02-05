@@ -19,12 +19,18 @@
  */
 package org.perfcake.util;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Properties;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeConst;
 
 /**
  * 
@@ -65,9 +71,46 @@ public class ObjectFactory {
    }
 
    public static Object summonInstance(final String className, final Properties properties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
-      Object object = Class.forName(className, false, ObjectFactory.class.getClassLoader()).newInstance();
+      Object object = Class.forName(className, false, getPluginClassLoader()).newInstance();
       setPropertiesOnObject(object, properties);
 
       return object;
    }
+   
+   protected static ClassLoader getPluginClassLoader() {
+      ClassLoader currentClassLoader = ObjectFactory.class.getClassLoader();
+      String pluginsDirProp = Utils.getProperty(PerfCakeConst.PLUGINS_DIR_PROPERTY);
+      if(pluginsDirProp == null)
+         return currentClassLoader;
+      
+      File pluginsDir = new File(pluginsDirProp);
+      File[] plugins = pluginsDir.listFiles(new FileExtensionFilter(".jar"));
+      
+      if((plugins == null) || (plugins.length == 0))
+         return currentClassLoader;
+      
+      URL[] pluginURLs = new URL[plugins.length];
+      for(int i = 0; i < plugins.length; i++)
+         try {
+            pluginURLs[i] = plugins[i].toURI().toURL();
+         } catch(MalformedURLException e) {
+            log.warn(String.format("Cannot resolve path to plugin '%s', skipping this file",  plugins[i]));
+         }
+      URLClassLoader pluginClassLoader = new URLClassLoader(pluginURLs, currentClassLoader);
+      
+      return pluginClassLoader;
+   }
+   
+   private static class FileExtensionFilter implements FilenameFilter {
+      private final String extension;
+      
+      public FileExtensionFilter(String extension) {
+          this.extension = extension;
+      }
+
+      public boolean accept(File dir, String name) {
+          return name.endsWith(extension) ? true : false;
+      }
+  }
+
 }
