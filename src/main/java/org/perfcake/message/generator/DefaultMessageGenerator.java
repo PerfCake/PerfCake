@@ -63,7 +63,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     */
    private void sendPack(final long count) {
       if (log.isDebugEnabled()) {
-         log.debug("Submiting " + count + " sender tasks...");
+         log.debug("Submitting " + count + " sender tasks...");
       }
       for (long i = 0; i < count; i++) {
          if (runInfo.isRunning()) { // didn't we run out of iterations or time?
@@ -81,7 +81,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       executorService.shutdown();
       int active = executorService.getActiveCount(), lastActive = 0;
 
-      while (active > 0 && lastActive != active) { // make sure the threads are finishing
+      while (active > 0 && lastActive != active) { // make sure the threads arSubmitinge finishing
          lastActive = active;
          executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
          active = executorService.getActiveCount();
