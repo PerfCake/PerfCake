@@ -39,6 +39,7 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
+import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 
 /**
  * Basic reporter that should be used to write any real reporter. This implementation makes sure that the contract defined as part of {@link Reporter} is held. The class is also well tested.
@@ -56,6 +57,11 @@ public abstract class AbstractReporter implements Reporter {
     * ReportManager that owns this reporter.
     */
    protected ReportManager reportManager = null;
+
+   /**
+    * Remembers the maximal value of observed MeasurementUnits.
+    */
+   protected MaxLongValueAccumulator maxIteration = new MaxLongValueAccumulator();
 
    /**
     * Remembers the last observed percentage state of the measurement run. This is used to report change to this value only once.
@@ -87,6 +93,8 @@ public abstract class AbstractReporter implements Reporter {
          throw new ReportingException("RunInfo has not been set for this reporter.");
       }
 
+      maxIteration.add(mu.getIteration());
+
       doReport(mu);
 
       accumulateResults(mu.getResults());
@@ -111,7 +119,8 @@ public abstract class AbstractReporter implements Reporter {
     * @return The new measurement with current values from run info.
     */
    public Measurement newMeasurement() {
-      Measurement m = new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
+      Long iterations = maxIteration.getResult();
+      Measurement m = new Measurement(Math.round(runInfo.getPercentage(iterations)), runInfo.getRunTime(), iterations);
       m.set(PerfCakeConst.WARM_UP_TAG, runInfo.hasTag(PerfCakeConst.WARM_UP_TAG));
       return m;
    }
@@ -259,6 +268,7 @@ public abstract class AbstractReporter implements Reporter {
    @Override
    public final void reset() {
       lastPercentage = -1;
+      maxIteration.reset();
       accumulatedResults = new HashMap<>();
       doReset();
    }

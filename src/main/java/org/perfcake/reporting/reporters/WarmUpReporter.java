@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,9 +42,9 @@ import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator
  * The system is considered warmed up when all of the following conditions are satisfied: The iteration length is not changing much over the time, the minimal iteration count has been executed and the
  * minimal duration from the very start has exceeded.
  * </p>
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
- * 
+ *
  */
 public class WarmUpReporter extends AbstractReporter {
 
@@ -80,7 +80,7 @@ public class WarmUpReporter extends AbstractReporter {
 
    /**
     * The index number of the checking period in which the current run is.
-    * 
+    *
     * @see #checkingPeriod
     */
    private long checkingPeriodIndex = 0;
@@ -121,7 +121,7 @@ public class WarmUpReporter extends AbstractReporter {
          if (runInfo.getRunTime() / checkingPeriod > checkingPeriodIndex) {
             checkingPeriodIndex++;
             // The throughput unit is number of iterations per second
-            final double currentThoughput = 1000.0 * runInfo.getIteration() / runInfo.getRunTime();
+            final double currentThoughput = 1000.0 * maxIteration.getResult() / runInfo.getRunTime();
             final Double lastThroughput = (Double) getAccumulatedResult(Measurement.DEFAULT_RESULT);
             if (lastThroughput != null) {
                final double relDelta = Math.abs(currentThoughput / lastThroughput - 1.0);
@@ -129,7 +129,7 @@ public class WarmUpReporter extends AbstractReporter {
                if (log.isTraceEnabled()) {
                   log.trace("checkingPeriodIndex=" + checkingPeriodIndex + ", currentThroughput=" + currentThoughput + ", lastThroughput=" + lastThroughput + ", absDelta=" + absDelta + ", relDelta=" + relDelta);
                }
-               if ((runInfo.getRunTime() > minimalWarmUpDuration) && (runInfo.getIteration() > minimalWarmUpCount) && (absDelta < absoluteThreshold || relDelta < relativeThreshold)) {
+               if ((runInfo.getRunTime() > minimalWarmUpDuration) && (maxIteration.getResult() > minimalWarmUpCount) && (absDelta < absoluteThreshold || relDelta < relativeThreshold)) {
                   if (log.isInfoEnabled()) {
                      log.info("The tested system is warmed up.");
                   }
@@ -152,7 +152,7 @@ public class WarmUpReporter extends AbstractReporter {
 
    /**
     * Used to read the value of minimal warm-up period duration.
-    * 
+    *
     * @return The minimal warm-up period duration.
     */
    public long getMinimalWarmUpDuration() {
@@ -161,7 +161,7 @@ public class WarmUpReporter extends AbstractReporter {
 
    /**
     * Sets the value of minimal warm-up period duration.
-    * 
+    *
     * @param minimalWarmUpDuration
     *           The minimal warm-up period duration to set.
     */
@@ -171,7 +171,7 @@ public class WarmUpReporter extends AbstractReporter {
 
    /**
     * Used to read the value of minimal warm-up iteration count.
-    * 
+    *
     * @return The value of minimal warm-up iteration count.
     */
    public long getMinimalWarmUpCount() {
@@ -180,7 +180,7 @@ public class WarmUpReporter extends AbstractReporter {
 
    /**
     * Sets the value of minimal warm-up iteration count.
-    * 
+    *
     * @param minimalWarmUpCount
     *           The value of minimal warm-up iteration count to set.
     */
@@ -190,7 +190,7 @@ public class WarmUpReporter extends AbstractReporter {
 
    /**
     * Used to read the value of relativeThreshold.
-    * 
+    *
     * @return The value of relativeThreshold.
     */
    public double getRelativeThreshold() {
@@ -199,7 +199,7 @@ public class WarmUpReporter extends AbstractReporter {
 
    /**
     * Sets the value of relativeThreshold.
-    * 
+    *
     * @param relativeThreshold
     *           The value of relativeThreshold to set.
     */
@@ -209,7 +209,7 @@ public class WarmUpReporter extends AbstractReporter {
 
    /**
     * Used to read the value of absoluteThreshold.
-    * 
+    *
     * @return The value of absoluteThreshold.
     */
    public double getAbsoluteThreshold() {
@@ -218,7 +218,7 @@ public class WarmUpReporter extends AbstractReporter {
 
    /**
     * Sets the value of absoluteThreshold.
-    * 
+    *
     * @param absoluteThreshold
     *           The value of absoluteThreshold to set.
     */

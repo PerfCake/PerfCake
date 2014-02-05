@@ -21,6 +21,7 @@ package org.perfcake.reporting.reporters.accumulators;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.testng.Assert;
 import org.testng.Reporter;
@@ -110,6 +111,24 @@ public class AccumulatorsTest {
 
       aa.reset();
       Assert.assertEquals(aa.getResult(), 0d, "SlidingWindowAvgAccumulator must be 0 after reset.");
+   }
+
+   @Test
+   public void maxLongValueAccumulatorTest() {
+      MaxLongValueAccumulator mlva = new MaxLongValueAccumulator();
+      Assert.assertEquals((long) mlva.getResult(), (long) Long.MIN_VALUE);
+
+      mlva.add(1l);
+      Assert.assertEquals((long) mlva.getResult(), 1l);
+
+      Random r = new Random();
+      for(int i = 0; i < 5000; i++) {
+         mlva.add(r.nextLong() >> 32);
+      }
+      Assert.assertTrue(mlva.getResult() <= Long.MAX_VALUE >> 32);
+
+      mlva.add(Long.MAX_VALUE);
+      Assert.assertEquals((long) mlva.getResult(), Long.MAX_VALUE);
    }
 
    @DataProvider(name = "stressTest")
