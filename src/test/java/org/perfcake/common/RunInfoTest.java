@@ -117,7 +117,7 @@ public class RunInfoTest {
       Assert.assertEquals(ri.getIteration(), 100);
       Assert.assertTrue(ri.isStarted());
       Assert.assertFalse(ri.isRunning());
-      Assert.assertEquals(ri.getPercentage(), 101d);
+      Assert.assertEquals(ri.getPercentage(), 100d);
 
       ri.stop();
       log.info("STOP      " + ri);
@@ -126,7 +126,7 @@ public class RunInfoTest {
       Assert.assertEquals(ri.getIteration(), 100);
       Assert.assertFalse(ri.isStarted());
       Assert.assertFalse(ri.isRunning());
-      Assert.assertEquals(ri.getPercentage(), 101d);
+      Assert.assertEquals(ri.getPercentage(), 100d); // after stop, we cannot get over 100
    }
 
    @Test
@@ -216,8 +216,7 @@ public class RunInfoTest {
       Assert.assertEquals(ri.getIteration(), 100);
       Assert.assertTrue(ri.isStarted());
       Assert.assertFalse(ri.isRunning());
-      Assert.assertTrue(ri.getPercentage() > 100d); // for a time based runInfo, the world never dies
-      Assert.assertTrue(ri.getPercentage() < 110d); // but we should not be far behind 100%
+      Assert.assertEquals(ri.getPercentage(), 100d); // we cannot get over 100
 
       ri.stop();
       log.info("STOP      " + ri);
@@ -226,7 +225,6 @@ public class RunInfoTest {
       Assert.assertEquals(ri.getIteration(), 100);
       Assert.assertFalse(ri.isStarted());
       Assert.assertFalse(ri.isRunning());
-      Assert.assertTrue(ri.getPercentage() > 100d); // for a time based runInfo, the world never dies
-      Assert.assertTrue(ri.getPercentage() < 110d); // but we should not be far behind 100%
+      Assert.assertEquals(ri.getPercentage(), 100d); // we cannot get over 100
    }
 }

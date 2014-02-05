@@ -135,6 +135,7 @@ public class ReporterContractTest {
       Assert.assertEquals(dr.getLastMethod(), "doReport");
 
       rm.reset();
+      Assert.assertEquals((long) dr.maxIteration.getResult(), Long.MIN_VALUE);
       Assert.assertEquals(dr.getLastMethod(), "doReset");
 
       Thread.sleep(10);

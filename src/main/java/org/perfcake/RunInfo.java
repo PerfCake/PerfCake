@@ -154,6 +154,20 @@ public class RunInfo {
     * @return Completed percents of the current measurement
     */
    public double getPercentage() {
+      return getPercentage(getIteration());
+   }
+
+   /**
+    * Gets the theoretical measurement progress in percents based on the provided number of passed iterations.
+    * If the run is limited by time based period and the system clock changed during the measurement,
+    * the result value will be influenced.
+    *
+    * @param iteration
+    *             the iteration for which we want to know the progress % number compared to the configured period duration
+    *
+    * @return Completed percents of the theoretical measurement state. This cannot be more than 100% no matter what value is provided.
+    */
+   public double getPercentage(long iteration) {
       if (startTime == -1) {
          return 0d;
       }
@@ -162,10 +176,10 @@ public class RunInfo {
 
       switch (duration.getPeriodType()) {
          case ITERATION:
-            progress = getIteration() + 1; // at the beginning, iteration can be -1
+            progress = Math.min(iteration + 1, duration.getPeriod()); // at the beginning, iteration can be -1, and we do not want to report more than 100%
             break;
          case TIME:
-            progress = getRunTime();
+            progress = Math.min(getRunTime(), duration.getPeriod());
             break;
          default:
             throw new IllegalArgumentException("Detected unsupported ReportPeriod type.");
