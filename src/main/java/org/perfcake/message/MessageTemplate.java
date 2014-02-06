@@ -25,8 +25,10 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.perfcake.util.Utils;
 import org.perfcake.util.properties.DefaultPropertyGetter;
+import org.perfcake.util.properties.MixedPropertyGetter;
 import org.perfcake.validation.MessageValidator;
 
 /**
@@ -38,6 +40,8 @@ public class MessageTemplate implements Serializable {
    private static final long serialVersionUID = 6172258079690233417L;
 
    private static final String propertyPattern = "[^\\\\](#\\{([^#\\{:]+)(:[^#\\{:]*)?})";
+
+   private Logger log = Logger.getLogger(MessageTemplate.class);
 
    private final Message message;
    private final long multiplicity;
@@ -81,6 +85,9 @@ public class MessageTemplate implements Serializable {
          final String filteredString = (String) message.getPayload();
          final Matcher matcher = Pattern.compile(propertyPattern).matcher(filteredString);
          if (matcher.find()) {
+            if (log.isDebugEnabled()) {
+               log.debug("Created matcher for message payload with properties.");
+            }
             this.matcher = matcher;
          }
       }

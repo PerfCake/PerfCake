@@ -26,13 +26,8 @@ package org.perfcake;
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public final class PerfCakeConst {
-   public static final String PERFORMANCE_MESSAGE_PROPERTY = "PerfCake_Performance";
-
-   public static final String MESSAGE_NUMBER_PROPERTY = "PerfCake_Performance_Message_Number";
-
-   public static final String TIME_MESSAGE_PROPERTY = "PerfCake_Performance_Time";
-
-   public static final String COUNT_MESSAGE_PROPERTY = "PerfCake_Performance_Count";
+   public static final String MESSAGE_NUMBER_HEADER = "PerfCake_Performance_Message_Number";
+   public static final String MESSAGE_NUMBER_PROPERTY = "MessageNumber";
 
    public static final String SCENARIO_PROPERTY = "perfcake.scenario";
    public static final String DEFAULT_ENCODING_PROPERTY = "perfcake.encoding";
