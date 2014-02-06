@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Properties;
 
 import org.apache.commons.beanutils.BeanUtilsBean;
@@ -33,7 +35,6 @@ import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 
 /**
- * 
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class ObjectFactory {
@@ -80,25 +81,34 @@ public class ObjectFactory {
 
    protected static ClassLoader getPluginClassLoader() {
       if (pluginClassLoader == null) {
-         ClassLoader currentClassLoader = ObjectFactory.class.getClassLoader();
-         String pluginsDirProp = Utils.getProperty(PerfCakeConst.PLUGINS_DIR_PROPERTY);
-         if (pluginsDirProp == null)
+         final ClassLoader currentClassLoader = ObjectFactory.class.getClassLoader();
+         final String pluginsDirProp = Utils.getProperty(PerfCakeConst.PLUGINS_DIR_PROPERTY);
+         if (pluginsDirProp == null) {
             return currentClassLoader;
+         }
 
-         File pluginsDir = new File(pluginsDirProp);
-         File[] plugins = pluginsDir.listFiles(new FileExtensionFilter(".jar"));
+         final File pluginsDir = new File(pluginsDirProp);
+         final File[] plugins = pluginsDir.listFiles(new FileExtensionFilter(".jar"));
 
-         if ((plugins == null) || (plugins.length == 0))
+         if ((plugins == null) || (plugins.length == 0)) {
             return currentClassLoader;
+         }
 
-         URL[] pluginURLs = new URL[plugins.length];
-         for (int i = 0; i < plugins.length; i++)
+         final URL[] pluginURLs = new URL[plugins.length];
+         for (int i = 0; i < plugins.length; i++) {
             try {
                pluginURLs[i] = plugins[i].toURI().toURL();
             } catch (MalformedURLException e) {
                log.warn(String.format("Cannot resolve path to plugin '%s', skipping this file", plugins[i]));
             }
-         pluginClassLoader = new URLClassLoader(pluginURLs, currentClassLoader);
+         }
+
+         AccessController.doPrivileged(new PrivilegedAction<Void>() {
+            public Void run() {
+               pluginClassLoader = new URLClassLoader(pluginURLs, currentClassLoader);
+               return null;
+            }
+         });
       }
 
       return pluginClassLoader;
@@ -115,5 +125,5 @@ public class ObjectFactory {
          return name.endsWith(extension) ? true : false;
       }
    }
-   
+
 }

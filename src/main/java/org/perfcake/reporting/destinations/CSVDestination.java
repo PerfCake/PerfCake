@@ -85,15 +85,19 @@ public class CSVDestination implements Destination {
    }
 
    private void presetResultNames(final Measurement m) {
-      final StringBuilder sb = new StringBuilder();
       final Map<String, Object> results = m.getAll();
-      final Object defaultResult = m.get();
 
       for (String key : results.keySet()) {
          if (!key.equals(Measurement.DEFAULT_RESULT)) {
             resultNames.add(key);
          }
       }
+
+   }
+
+   private String getFileHeaders(final Measurement m) {
+      final StringBuilder sb = new StringBuilder();
+      final Object defaultResult = m.get();
 
       sb.append("Time");
       sb.append(delimiter);
@@ -107,7 +111,7 @@ public class CSVDestination implements Destination {
          sb.append(key);
       }
 
-      fileHeaders = sb.toString();
+      return sb.toString();
    }
 
    private String getResultsLine(final Measurement m) {
@@ -145,9 +149,10 @@ public class CSVDestination implements Destination {
    @Override
    public void report(final Measurement m) throws ReportingException {
       if (resultNames.isEmpty()) { // performance optimization before we enter the sync. block
-         synchronized (resultNames) {
+         synchronized (this) {
             if (resultNames.isEmpty()) { // make sure the array did not get initialized while we were entering the sync. block
                presetResultNames(m);
+               fileHeaders = getFileHeaders(m);
             }
          }
       }

@@ -21,6 +21,7 @@ package org.perfcake.reporting.reporters;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
@@ -81,14 +82,14 @@ public class WarmUpReporter extends AbstractReporter {
    /**
     * The index number of the checking period in which the current run is.
     *
-    * @see #checkingPeriod
+    * @see #CHECKING_PERIOD
     */
-   private long checkingPeriodIndex = 0;
+   private AtomicLong checkingPeriodIndex = new AtomicLong(0);
 
    /**
     * The period in milliseconds in which the checking if the tested system is warmed up.
     */
-   private final long checkingPeriod = 1000;
+   private final static long CHECKING_PERIOD = 1000;
 
    @Override
    public void start() {
@@ -116,18 +117,19 @@ public class WarmUpReporter extends AbstractReporter {
    }
 
    @Override
-   protected synchronized void doReport(final MeasurementUnit mu) throws ReportingException {
+   protected void doReport(final MeasurementUnit mu) throws ReportingException {
       if (!warmed) {
-         if (runInfo.getRunTime() / checkingPeriod > checkingPeriodIndex) {
-            checkingPeriodIndex++;
+         if (runInfo.getRunTime() / CHECKING_PERIOD > checkingPeriodIndex.get()) { // make sure we are in the next time interval and we should check for warm up end
+            checkingPeriodIndex.incrementAndGet();
+
             // The throughput unit is number of iterations per second
-            final double currentThoughput = 1000.0 * maxIteration.getResult() / runInfo.getRunTime();
+            final double currentThroughput = (double) CHECKING_PERIOD * maxIteration.getResult() / runInfo.getRunTime();
             final Double lastThroughput = (Double) getAccumulatedResult(Measurement.DEFAULT_RESULT);
             if (lastThroughput != null) {
-               final double relDelta = Math.abs(currentThoughput / lastThroughput - 1.0);
-               final double absDelta = Math.abs(currentThoughput - lastThroughput);
+               final double relDelta = Math.abs(currentThroughput / lastThroughput - 1.0);
+               final double absDelta = Math.abs(currentThroughput - lastThroughput);
                if (log.isTraceEnabled()) {
-                  log.trace("checkingPeriodIndex=" + checkingPeriodIndex + ", currentThroughput=" + currentThoughput + ", lastThroughput=" + lastThroughput + ", absDelta=" + absDelta + ", relDelta=" + relDelta);
+                  log.trace("checkingPeriodIndex=" + checkingPeriodIndex + ", currentThroughput=" + currentThroughput + ", lastThroughput=" + lastThroughput + ", absDelta=" + absDelta + ", relDelta=" + relDelta);
                }
                if ((runInfo.getRunTime() > minimalWarmUpDuration) && (maxIteration.getResult() > minimalWarmUpCount) && (absDelta < absoluteThreshold || relDelta < relativeThreshold)) {
                   if (log.isInfoEnabled()) {
@@ -139,7 +141,7 @@ public class WarmUpReporter extends AbstractReporter {
                }
             }
             final Map<String, Object> result = new HashMap<>();
-            result.put(Measurement.DEFAULT_RESULT, currentThoughput);
+            result.put(Measurement.DEFAULT_RESULT, currentThroughput);
             accumulateResults(result);
          }
       }
