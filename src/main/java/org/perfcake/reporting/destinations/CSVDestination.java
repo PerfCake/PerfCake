@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeConst;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
@@ -36,7 +37,7 @@ import org.perfcake.util.Utils;
 
 /**
  * The destination that appends the {@link Measurement} into a CSV file.
- *
+ * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class CSVDestination implements Destination {
@@ -44,7 +45,7 @@ public class CSVDestination implements Destination {
    /**
     * Output CSV file path.
     */
-   private String path = "";
+   private String path = "perfcake-results-" + System.getProperty(PerfCakeConst.TIMESTAMP_PROPERTY) + ".csv";
 
    /**
     * Output CSV file.
@@ -75,7 +76,7 @@ public class CSVDestination implements Destination {
    public void open() {
       csvFile = new File(path);
       if (log.isDebugEnabled()) {
-         log.debug("Output path: " + csvFile.getPath());
+         log.debug("Output path: " + csvFile.getAbsolutePath());
       }
    }
 
@@ -162,9 +163,7 @@ public class CSVDestination implements Destination {
       synchronized (this) {
          // make sure the order of columns is consistent
          final boolean csvFileExists = csvFile.exists();
-         try (FileOutputStream fos = new FileOutputStream(csvFile, true);
-               OutputStreamWriter osw = new OutputStreamWriter(fos, Utils.getDefaultEncoding());
-               BufferedWriter bw = new BufferedWriter(osw)) {
+         try (FileOutputStream fos = new FileOutputStream(csvFile, true); OutputStreamWriter osw = new OutputStreamWriter(fos, Utils.getDefaultEncoding()); BufferedWriter bw = new BufferedWriter(osw)) {
             if (!csvFileExists) {
                bw.append(fileHeaders);
                bw.newLine();
@@ -180,7 +179,7 @@ public class CSVDestination implements Destination {
 
    /**
     * Used to read the value of path.
-    *
+    * 
     * @return The path value.
     */
    public String getPath() {
@@ -189,9 +188,9 @@ public class CSVDestination implements Destination {
 
    /**
     * Used to set the value of path.
-    *
+    * 
     * @param path
-    *       The path value to set.
+    *           The path value to set.
     */
    public void setPath(final String path) {
       this.path = path;
@@ -200,7 +199,7 @@ public class CSVDestination implements Destination {
 
    /**
     * Used to read the value of delimiter.
-    *
+    * 
     * @return The delimiter value.
     */
    public String getDelimiter() {
@@ -209,9 +208,9 @@ public class CSVDestination implements Destination {
 
    /**
     * Used to set the value of delimiter.
-    *
+    * 
     * @param delimiter
-    *       The delimiter value to set.
+    *           The delimiter value to set.
     */
    public void setDelimiter(final String delimiter) {
       this.delimiter = delimiter;
