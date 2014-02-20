@@ -89,6 +89,13 @@ public class Scenario {
    }
 
    /**
+    * Stops the scenario execution.
+    **/
+   public void stop() {
+      reportManager.stop();
+   }
+
+   /**
     * Finalize the scenario.
     * 
     * @throws PerfCakeException
