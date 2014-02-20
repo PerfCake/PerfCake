@@ -59,6 +59,7 @@ public class MessageSenderManager {
    }
 
    public void init() throws Exception {
+      availableSenders.clear();
       for (int i = 0; i < senderPoolSize; i++) {
          MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
          addSenderInstance(sender);
