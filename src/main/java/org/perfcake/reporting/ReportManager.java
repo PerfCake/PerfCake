@@ -19,18 +19,20 @@
  */
 package org.perfcake.reporting;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import org.apache.log4j.Logger;
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * ReportManager that controls the reporting facilities.
@@ -43,6 +45,8 @@ public class ReportManager {
    private static final Logger log = Logger.getLogger(ReportManager.class);
 
    private volatile boolean resetLastTimes = false;
+
+   private CountDownLatch waitForReport = null;
 
    /**
     * Set of reporters registered for reporting.
@@ -94,6 +98,19 @@ public class ReportManager {
    }
 
    /**
+    * Waits for the specified number of measurement units to be reported. The waiting has its deadline specified.
+    * @param noOfMU Number of measurement units to wait for
+    * @param timeout Time limit to wait
+    * @param timeUnit Unit of the time limit
+    * @throws InterruptedException When the waiting has been interrupted
+    */
+   public void waitForReporting(int noOfMU, long timeout, TimeUnit timeUnit) throws InterruptedException {
+      waitForReport = new CountDownLatch(noOfMU);
+      waitForReport.await(timeout, timeUnit);
+      waitForReport = null;
+   }
+
+   /**
     * Report a newly measured {@link MeasurementUnit}. Each Measurement Unit must be reported exactly once.
     * 
     * @param mu
@@ -104,6 +121,10 @@ public class ReportManager {
    public void report(final MeasurementUnit mu) throws ReportingException {
       if (log.isTraceEnabled()) {
          log.trace("Reporting a new measurement unit " + mu);
+      }
+
+      if (waitForReport != null) {
+         waitForReport.countDown();
       }
 
       ReportingException e = null;

@@ -19,14 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.RunInfo;
@@ -41,6 +33,9 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Basic reporter that should be used to write any real reporter. This implementation makes sure that the contract defined as part of {@link Reporter} is held. The class is also well tested.

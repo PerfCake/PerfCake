@@ -19,13 +19,13 @@
  */
 package org.perfcake.message.generator;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.ReportManager;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p> Generator that is able to generate maximal load. </p>
@@ -111,6 +111,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
          adaptiveTermination();
          setStopTime();
       } else { // in case of time, we must stop measurement first
+         reportManager.waitForReporting(1, monitoringPeriod, TimeUnit.MILLISECONDS); // wait for at least one MU to be reported for 100% to be seen
          setStopTime();
          adaptiveTermination();
 
