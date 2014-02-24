@@ -24,6 +24,7 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.ReportManager;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -50,25 +51,26 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     */
    protected int threadQueueSize = 1000; // default
 
+   private Semaphore semaphore;
+
    @Override
    public void setReportManager(final ReportManager reportManager) {
       super.setReportManager(reportManager);
    }
 
    /**
-    * Place a specified number of {@link SenderTask} implementing the message sending task to internal thread queue.
+    * Place a new {@link SenderTask} implementing the message sending to an internal thread queue.
     *
-    * @param count
-    *       The number of {@link SenderTask};
+    * @throws java.lang.InterruptedException
+    *       When it was not possible to place another task because the queue was empty
     */
-   private void sendPack(final long count) {
-      if (log.isDebugEnabled()) {
-         log.debug("Submitting " + count + " sender tasks...");
+   private void prepareTask() throws InterruptedException {
+      if (log.isTraceEnabled()) {
+         log.trace("Preparing a sender task");
       }
-      for (long i = 0; i < count; i++) {
-         if (runInfo.isRunning()) { // didn't we run out of iterations or time?
-            executorService.submit(newSenderTask());
-         }
+
+      if (semaphore.tryAcquire(monitoringPeriod, TimeUnit.MILLISECONDS)) {
+         executorService.submit(newSenderTask(semaphore));
       }
    }
 
@@ -108,16 +110,14 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    @Override
    public void generate() throws Exception {
       log.info("Starting to generate...");
+      semaphore = new Semaphore(threadQueueSize);
       executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(threads);
       setStartTime();
-      sendPack(threadQueueSize);
 
       while (runInfo.isRunning()) {
-         sendPack(threadQueueSize - executorService.getQueue().size());
-         if (runInfo.isRunning()) { // we don't want to waste time here when the time is over, we must stop quickly
-            Thread.sleep(monitoringPeriod);
-         }
+         prepareTask();
       }
+      Thread.sleep(1000); // give chance to last report message
 
       log.info("Reached test end. Shutting down execution...");
       shutdown();

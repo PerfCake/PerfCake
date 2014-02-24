@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,9 +19,6 @@
  */
 package org.perfcake.message.generator;
 
-import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
-
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
@@ -30,14 +27,13 @@ import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidatorManager;
 
+import java.util.List;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadPoolExecutor;
+
 /**
- * <p>
- * This represents the common ancestor for all generators. It can generate messages using a specified number ({@link #threads}) of concurrent messages senders (see {@link MessageSender}).
- * </p>
- * <p>
- * The generator should also have the ability to tag messages by the sequence number that indicated the order of messages.
- * </p>
- * 
+ * <p> This represents the common ancestor for all generators. It can generate messages using a specified number ({@link #threads}) of concurrent messages senders (see {@link MessageSender}). </p> <p> The generator should also have the ability to tag messages by the sequence number that indicated the order of messages. </p>
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public abstract class AbstractMessageGenerator {
@@ -84,11 +80,11 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Initialize the generator. During the initialization the {@link #messageSenderManager} is initialized as well.
-    * 
+    *
     * @param messageSenderManager
-    *           Message sender manager.
+    *       Message sender manager.
     * @param messageStore
-    *           Message store where the messages are taken from.
+    *       Message store where the messages are taken from.
     * @throws Exception
     */
    public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception {
@@ -97,8 +93,8 @@ public abstract class AbstractMessageGenerator {
       this.messageSenderManager.init();
    }
 
-   protected SenderTask newSenderTask() {
-      final SenderTask task = new SenderTask();
+   protected SenderTask newSenderTask(Semaphore semaphore) {
+      final SenderTask task = new SenderTask(semaphore);
 
       task.setMessageStore(messageStore);
       task.setReportManager(reportManager);
@@ -111,9 +107,9 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Sets the message sender manager.
-    * 
+    *
     * @param messageSenderManager
-    *           The message sender manager to set.
+    *       The message sender manager to set.
     */
    public void setMessageSenderManager(final MessageSenderManager messageSenderManager) {
       this.messageSenderManager = messageSenderManager;
@@ -121,9 +117,9 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Sets the current run info
-    * 
+    *
     * @param runInfo
-    *           The current run info object
+    *       The current run info object
     */
    public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
@@ -137,9 +133,9 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Sets the report manager
-    * 
+    *
     * @param reportManager
-    *           The report manager to set.
+    *       The report manager to set.
     */
    public void setReportManager(final ReportManager reportManager) {
       this.reportManager = reportManager;
@@ -147,7 +143,7 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * It closes and finalize the generator. During the closing the {@link #messageSenderManager} is closed as well.
-    * 
+    *
     * @throws PerfCakeException
     */
    public void close() throws PerfCakeException {
@@ -172,9 +168,9 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Computes the current average speed the iterations are executed.
-    * 
-    * @param The
-    *           iteration count.
+    *
+    * @param cnt
+    *       The iteration count.
     * @return The current average iteration execution speed.
     */
    protected float getSpeed(final long cnt) {
@@ -183,14 +179,14 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Executes the actual implementation of a generator.
-    * 
+    *
     * @throws Exception
     */
    public abstract void generate() throws Exception;
 
    /**
     * Executes the steps needed after the moment the warm-up period ended.
-    * 
+    *
     * @throws Exception
     */
    protected void postWarmUp() throws Exception {
@@ -199,7 +195,7 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Used to read the value of threads.
-    * 
+    *
     * @return the threads
     */
    public int getThreads() {
@@ -208,9 +204,9 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Sets the number of threads.
-    * 
+    *
     * @param threads
-    *           The number of threads.
+    *       The number of threads.
     */
    public void setThreads(final int threads) {
       this.threads = threads;
@@ -218,7 +214,7 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Used to read the value of messageNumberingEnabled.
-    * 
+    *
     * @return The messageNumberingEnabled value.
     */
    public boolean isMessageNumberingEnabled() {
@@ -227,9 +223,9 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Sets the value of messageNumberingEnabled.
-    * 
+    *
     * @param messageNumberingEnabled
-    *           The messageNumberingEnabled to set.
+    *       The messageNumberingEnabled to set.
     */
    public void setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
       this.messageNumberingEnabled = messageNumberingEnabled;
