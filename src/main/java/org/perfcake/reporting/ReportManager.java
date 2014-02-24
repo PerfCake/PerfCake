@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,17 +36,15 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * ReportManager that controls the reporting facilities.
- * 
+ *
  * @author Martin Večera <marvenec@gmail.com>
- * 
+ *
  */
 public class ReportManager {
 
    private static final Logger log = Logger.getLogger(ReportManager.class);
 
    private volatile boolean resetLastTimes = false;
-
-   private CountDownLatch waitForReport = null;
 
    /**
     * Set of reporters registered for reporting.
@@ -65,7 +63,7 @@ public class ReportManager {
 
    /**
     * Create a new measurement unit with a unique iteration number.
-    * 
+    *
     * @return A new measurement unit with a unique iteration number, or null if a measurement is not running or is already finished.
     */
    public MeasurementUnit newMeasurementUnit() {
@@ -82,7 +80,7 @@ public class ReportManager {
 
    /**
     * Set {@link org.perfcake.RunInfo} for the current measurement run.
-    * 
+    *
     * @param runInfo
     *           The RunInfo that contains information about the current measurement.
     */
@@ -98,21 +96,8 @@ public class ReportManager {
    }
 
    /**
-    * Waits for the specified number of measurement units to be reported. The waiting has its deadline specified.
-    * @param noOfMU Number of measurement units to wait for
-    * @param timeout Time limit to wait
-    * @param timeUnit Unit of the time limit
-    * @throws InterruptedException When the waiting has been interrupted
-    */
-   public void waitForReporting(int noOfMU, long timeout, TimeUnit timeUnit) throws InterruptedException {
-      waitForReport = new CountDownLatch(noOfMU);
-      waitForReport.await(timeout, timeUnit);
-      waitForReport = null;
-   }
-
-   /**
     * Report a newly measured {@link MeasurementUnit}. Each Measurement Unit must be reported exactly once.
-    * 
+    *
     * @param mu
     *           A MeasurementUnit to be reported.
     * @throws ReportingException
@@ -138,10 +123,6 @@ public class ReportManager {
          log.debug("Skipping the measurement unit (" + mu + ") because the ReportManager is not started.");
       }
 
-      if (waitForReport != null) {
-         waitForReport.countDown();
-      }
-
       if (e != null) {
          throw e;
       }
@@ -164,7 +145,7 @@ public class ReportManager {
 
    /**
     * Registers a new {@link org.perfcake.reporting.reporters.Reporter}.
-    * 
+    *
     * @param reporter
     *           A reporter to be registered.
     */
@@ -180,7 +161,7 @@ public class ReportManager {
 
    /**
     * Removes a registered {@link org.perfcake.reporting.reporters.Reporter}.
-    * 
+    *
     * @param reporter
     *           A reporter to unregistered.
     */
@@ -196,7 +177,7 @@ public class ReportManager {
 
    /**
     * Gets an immutable set of current reporters.
-    * 
+    *
     * @return An immutable set of currently registered reporters.
     */
    public Set<Reporter> getReporters() {
@@ -222,12 +203,15 @@ public class ReportManager {
          public void run() {
             long now;
             Long lastTime;
+            boolean lastRun = true; // allows for one extra cycle after test finish to make sure that 100% is reported
             Destination d;
             Map<Reporter, Map<Destination, Long>> reportLastTimes = new HashMap<>();
             Map<Destination, Long> lastTimes;
 
             try {
-               while (runInfo.isRunning() && !periodicThread.isInterrupted()) {
+               while ((runInfo.isRunning() && !periodicThread.isInterrupted()) || lastRun) {
+                  lastRun = runInfo.isRunning();
+
                   if (resetLastTimes) {
                      reportLastTimes = new HashMap<>();
                      resetLastTimes = false;

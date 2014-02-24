@@ -111,7 +111,6 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
          adaptiveTermination();
          setStopTime();
       } else { // in case of time, we must stop measurement first
-         reportManager.waitForReporting(1, monitoringPeriod, TimeUnit.MILLISECONDS); // wait for at least one MU to be reported for 100% to be seen
          setStopTime();
          adaptiveTermination();
 

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,12 +19,6 @@
  */
 package org.perfcake;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.log4j.Logger;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
@@ -38,11 +32,16 @@ import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidatorManager;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Builder class for creating {@link Scenario} instance, which can be run by {@link ScenarioExecution}
- * 
+ * <p/>
  * Uses fluent API to setup builder.
- * 
+ *
  * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
 public class ScenarioBuilder {
@@ -66,8 +65,9 @@ public class ScenarioBuilder {
 
    /**
     * Sets message generator which will be used for {@link Scenario}
-    * 
-    * @param any message generator
+    *
+    * @param any
+    *       message generator
     * @return this
     */
    public ScenarioBuilder setGenerator(AbstractMessageGenerator g) {
@@ -77,7 +77,7 @@ public class ScenarioBuilder {
 
    /**
     * Sets {@link RunInfo} object, which will be used for {@link Scenario}
-    * 
+    *
     * @param RunInfo
     * @return this
     */
@@ -88,8 +88,9 @@ public class ScenarioBuilder {
 
    /**
     * Sets {@link AbstractSender} implementation object, which will be used as a template for preparing pool of senders
-    * 
-    * @param AbstractSender implementation
+    *
+    * @param AbstractSender
+    *       implementation
     * @return this
     */
    public ScenarioBuilder setSender(AbstractSender s) {
@@ -99,8 +100,9 @@ public class ScenarioBuilder {
 
    /**
     * Adds a {@link Reporter}, which will be used in {@link Scenario} for reporting results. More reporters can be added
-    * 
-    * @param Reporter implementation
+    *
+    * @param Reporter
+    *       implementation
     * @return this
     */
    public ScenarioBuilder addReporter(Reporter r) {
@@ -110,7 +112,7 @@ public class ScenarioBuilder {
 
    /**
     * Adds a {@link MessageTemplate}, which will be used in {@link Scenario}
-    * 
+    *
     * @param MessageTemplate
     * @return this
     */
@@ -121,10 +123,10 @@ public class ScenarioBuilder {
 
    /**
     * Put validator under the key validatorId
-    * 
+    *
     * @param validatorId
     * @param message
-    *           validator
+    *       validator
     * @return
     */
    public ScenarioBuilder putMessageValidator(String validatorId, MessageValidator mv) {
@@ -135,22 +137,25 @@ public class ScenarioBuilder {
 
    /**
     * Builds the usable {@link Scenario} object, which can be then used for executing the scenario.
-    * 
+    *
     * @return
     * @throws IllegalStateException
-    *            if {@link RunInfo} is not set
+    *       if {@link RunInfo} is not set
     * @throws IllegalStateException
-    *            if some generator is not set
+    *       if some generator is not set
     * @throws IllegalStateException
-    *            if some sender is not set or messageSenderManager was not loaded 
+    *       if some sender is not set or messageSenderManager was not loaded
     */
    public Scenario build() throws Exception {
-      if (runInfo == null)
+      if (runInfo == null) {
          throw new IllegalStateException("RunInfo is not set");
-      if (generator == null)
+      }
+      if (generator == null) {
          throw new IllegalStateException("Generator is not set");
-      if (messageSenderManager == null && senderTemplate == null)
+      }
+      if (messageSenderManager == null && senderTemplate == null) {
          throw new IllegalStateException("Sender is not set");
+      }
 
       Scenario sc = new Scenario();
       generator.setRunInfo(runInfo);
@@ -158,29 +163,29 @@ public class ScenarioBuilder {
 
       if (messageSenderManager == null) {
          MessageSenderManager msm = new MessageSenderManager();
+         msm.setSenderClass(senderTemplate.getClass().getName());
          msm.setSenderPoolSize(generator.getThreads());
-         for (int i = 0; i < generator.getThreads(); i++) {
+/*         for (int i = 0; i < generator.getThreads(); i++) {
             AbstractSender newInstance = senderTemplate.getClass().newInstance();
             BeanUtils.copyProperties(newInstance, senderTemplate);
             newInstance.init();
             msm.addSenderInstance(newInstance);
-         }
+         }*/
          sc.setMessageSenderManager(msm);
       } else {
          sc.setMessageSenderManager(messageSenderManager);
       }
 
-      if (reportManager == null) {// if report manager created programaticaly
-         ReportManager rm = new ReportManager();
-         rm.setRunInfo(runInfo);
-         for (Reporter r : reporters) {
-            rm.registerReporter(r);
-         }
-         sc.setReportManager(rm);
-      } else { // if report manager parsed directly
-         reportManager.setRunInfo(runInfo);
-         sc.setReportManager(reportManager);
+      if (reportManager == null) { // if report parsed directly
+         reportManager = new ReportManager();
       }
+
+      for (Reporter r : reporters) {
+         reportManager.registerReporter(r);
+      }
+
+      reportManager.setRunInfo(runInfo);
+      sc.setReportManager(reportManager);
 
       sc.setMessageStore(messages);
       sc.setValidatorManager(validatorManager);
@@ -190,7 +195,7 @@ public class ScenarioBuilder {
 
    /**
     * Loads all data needed for {@link Scenario} from JAXB model, build method may be called afterwards.
-    * 
+    *
     * @param model
     * @return
     * @throws PerfCakeException
@@ -210,11 +215,11 @@ public class ScenarioBuilder {
 
    /**
     * loads {@link Scenario} from system property <code>-Dscenario=<scenario name></code>
-    * 
+    *
     * @param scenario
     * @return
     * @throws PerfCakeException
-    *            if scenario property is not set or there is some problem with parsing the xml document describing the scenario
+    *       if scenario property is not set or there is some problem with parsing the xml document describing the scenario
     */
    public ScenarioBuilder load(String scenario) throws PerfCakeException {
       if (scenario == null) {
