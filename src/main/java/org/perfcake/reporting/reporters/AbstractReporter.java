@@ -281,6 +281,7 @@ public abstract class AbstractReporter implements Reporter {
    public final void reset() {
       lastPercentage = -1;
       maxIteration.reset();
+      maxIteration.add(0l);
       accumulatedResults = new HashMap<>();
       doReset();
    }
