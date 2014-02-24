@@ -95,7 +95,6 @@ public abstract class AbstractReporter implements Reporter {
       }
 
       reportIterationNumber(mu.getIteration(), mu);
-      maxIteration.add(mu.getIteration());
 
       doReport(mu);
 
