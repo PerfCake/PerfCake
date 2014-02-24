@@ -120,7 +120,7 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    private void reportIterationNumber(long iteration, final MeasurementUnit mu) {
-      if (mu.getTotalTime() < runInfo.getRunTime()) { // only MUs from the current run should be taken into account
+      if (mu.startedAfter(runInfo.getStartTime())) { // only MUs from the current run should be taken into account
          maxIteration.add(iteration);
       }
    }

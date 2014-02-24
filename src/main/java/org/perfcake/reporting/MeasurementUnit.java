@@ -61,6 +61,11 @@ public class MeasurementUnit implements Serializable {
    private final Map<String, Object> measurementResults = new HashMap<>();
 
    /**
+    * When the measurement was first started in real time (timestamp value from {@link System.currentTimeMillis()}).
+    */
+   private long timeStarted = -1;
+
+   /**
     * Constructor is protected. Use {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()} to obtain a new instance.
     *
     * @param iteration
@@ -106,6 +111,7 @@ public class MeasurementUnit implements Serializable {
     * Starts measuring. This is independent on current system time.
     */
    public void startMeasure() {
+      timeStarted = System.currentTimeMillis();
       startTime = System.nanoTime();
       stopTime = -1;
    }
@@ -138,6 +144,15 @@ public class MeasurementUnit implements Serializable {
       }
 
       return (stopTime - startTime) / 1_000_000;
+   }
+
+   /**
+    * Checks whether this measurement unit was first started after the specified time (Unix time in millis)
+    * @param ref The reference time to compare to the start of the measurement
+    * @return true if this measurement unit was first started after the specified reference time
+    */
+   public boolean startedAfter(long ref) {
+      return  timeStarted > ref;
    }
 
    /**
