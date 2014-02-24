@@ -19,10 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
@@ -36,6 +32,10 @@ import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.reporting.destinations.DummyDestination.ReportAssert;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReporterContractTest {
 
@@ -135,7 +135,7 @@ public class ReporterContractTest {
       Assert.assertEquals(dr.getLastMethod(), "doReport");
 
       rm.reset();
-      Assert.assertEquals((long) dr.maxIteration.getResult(), Long.MIN_VALUE);
+      Assert.assertEquals((long) dr.getMaxIteration(), Long.MIN_VALUE);
       Assert.assertEquals(dr.getLastMethod(), "doReset");
 
       Thread.sleep(10);
