@@ -123,10 +123,6 @@ public class ReportManager {
          log.trace("Reporting a new measurement unit " + mu);
       }
 
-      if (waitForReport != null) {
-         waitForReport.countDown();
-      }
-
       ReportingException e = null;
 
       if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
@@ -140,6 +136,10 @@ public class ReportManager {
          }
       } else {
          log.debug("Skipping the measurement unit (" + mu + ") because the ReportManager is not started.");
+      }
+
+      if (waitForReport != null) {
+         waitForReport.countDown();
       }
 
       if (e != null) {
