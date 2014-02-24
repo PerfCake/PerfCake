@@ -92,6 +92,19 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       }
    }
 
+   private void shutdown() throws InterruptedException {
+      if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // in case of iterations, we wait for the tasks to be finished first
+         adaptiveTermination();
+         setStopTime();
+      } else { // in case of time, we must stop measurement first
+         setStopTime();
+         adaptiveTermination();
+
+      }
+
+      executorService.shutdownNow();
+   }
+
    @Override
    public void generate() throws Exception {
       log.info("Starting to generate...");
@@ -105,18 +118,9 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
             Thread.sleep(monitoringPeriod);
          }
       }
+
       log.info("Reached test end. Shutting down execution...");
-
-      if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // in case of iterations, we wait for the tasks to be finished first
-         adaptiveTermination();
-         setStopTime();
-      } else { // in case of time, we must stop measurement first
-         setStopTime();
-         adaptiveTermination();
-
-      }
-
-      executorService.shutdownNow();
+      shutdown();
    }
 
    /**
