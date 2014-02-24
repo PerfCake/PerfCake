@@ -111,7 +111,7 @@ public class MeasurementUnit implements Serializable {
    }
 
    /**
-    * Stopts measuring.
+    * Stops measuring.
     */
    public void stopMeasure() {
       stopTime = System.nanoTime();

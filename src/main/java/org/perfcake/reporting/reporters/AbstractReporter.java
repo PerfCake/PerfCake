@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
@@ -61,7 +62,7 @@ public abstract class AbstractReporter implements Reporter {
    /**
     * Remembers the maximal value of observed MeasurementUnits.
     */
-   protected MaxLongValueAccumulator maxIteration = new MaxLongValueAccumulator();
+   private MaxLongValueAccumulator maxIteration = new MaxLongValueAccumulator();
 
    /**
     * Remembers the last observed percentage state of the measurement run. This is used to report change to this value only once.
@@ -93,6 +94,7 @@ public abstract class AbstractReporter implements Reporter {
          throw new ReportingException("RunInfo has not been set for this reporter.");
       }
 
+      reportIterationNumber(mu.getIteration(), mu);
       maxIteration.add(mu.getIteration());
 
       doReport(mu);
@@ -110,6 +112,16 @@ public abstract class AbstractReporter implements Reporter {
          }
          lastPercentage = percentage; // simply cover the last case (percentage = lastPercentage + 1), and or the case when percentage got lower after a reset
          reportPercentage(percentage);
+      }
+   }
+
+   protected Long getMaxIteration() {
+      return maxIteration.getResult();
+   }
+
+   private void reportIterationNumber(long iteration, final MeasurementUnit mu) {
+      if (mu.getTotalTime() < runInfo.getRunTime()) { // only MUs from the current run should be taken into account
+         maxIteration.add(iteration);
       }
    }
 

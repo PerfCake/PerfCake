@@ -123,7 +123,7 @@ public class WarmUpReporter extends AbstractReporter {
             checkingPeriodIndex.incrementAndGet();
 
             // The throughput unit is number of iterations per second
-            final double currentThroughput = (double) CHECKING_PERIOD * maxIteration.getResult() / runInfo.getRunTime();
+            final double currentThroughput = (double) CHECKING_PERIOD * getMaxIteration() / runInfo.getRunTime();
             final Double lastThroughput = (Double) getAccumulatedResult(Measurement.DEFAULT_RESULT);
             if (lastThroughput != null) {
                final double relDelta = Math.abs(currentThroughput / lastThroughput - 1.0);
@@ -131,7 +131,7 @@ public class WarmUpReporter extends AbstractReporter {
                if (log.isTraceEnabled()) {
                   log.trace("checkingPeriodIndex=" + checkingPeriodIndex + ", currentThroughput=" + currentThroughput + ", lastThroughput=" + lastThroughput + ", absDelta=" + absDelta + ", relDelta=" + relDelta);
                }
-               if ((runInfo.getRunTime() > minimalWarmUpDuration) && (maxIteration.getResult() > minimalWarmUpCount) && (absDelta < absoluteThreshold || relDelta < relativeThreshold)) {
+               if ((runInfo.getRunTime() > minimalWarmUpDuration) && (getMaxIteration() > minimalWarmUpCount) && (absDelta < absoluteThreshold || relDelta < relativeThreshold)) {
                   if (log.isInfoEnabled()) {
                      log.info("The tested system is warmed up.");
                   }
