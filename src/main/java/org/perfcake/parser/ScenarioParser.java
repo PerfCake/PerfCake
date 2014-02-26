@@ -22,6 +22,7 @@ package org.perfcake.parser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
@@ -77,10 +78,15 @@ public class ScenarioParser {
    public org.perfcake.model.Scenario parse() throws PerfCakeException {
       try {
          Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes(Utils.getDefaultEncoding())));
-         Source scenarioXSD = new StreamSource(getClass().getResourceAsStream("/schemas/perfcake-scenario-" + Scenario.VERSION + ".xsd"));
+         String schemaFileName = "perfcake-scenario-" + Scenario.VERSION + ".xsd";
+
+         URL scenarioXsdUrl = getClass().getResource("/schemas/" + schemaFileName);
+         if (scenarioXsdUrl == null) { // backup taken from web
+            scenarioXsdUrl = new URL("http://schema.perfcake.org/" + schemaFileName);
+         }
 
          SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-         Schema schema = schemaFactory.newSchema(scenarioXSD);
+         Schema schema = schemaFactory.newSchema(scenarioXsdUrl);
 
          JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
          Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -90,6 +96,8 @@ public class ScenarioParser {
          throw new PerfCakeException("Cannot validate scenario configuration: ", e);
       } catch (JAXBException e) {
          throw new PerfCakeException("Cannot parse scenario configuration: ", e);
+      } catch (MalformedURLException e) {
+         throw new PerfCakeException("Cannot read scenario schema to validate it: ", e);
       } catch (UnsupportedEncodingException e) {
          throw new PerfCakeException("set encoding is not supported: ", e);
       }
