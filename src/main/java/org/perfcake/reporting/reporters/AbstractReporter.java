@@ -36,6 +36,7 @@ import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Basic reporter that should be used to write any real reporter. This implementation makes sure that the contract defined as part of {@link Reporter} is held. The class is also well tested.
@@ -78,7 +79,7 @@ public abstract class AbstractReporter implements Reporter {
     * Accumulators to accumulate results from multiple {@link org.perfcake.reporting.MeasurementUnit Measurement Units}.
     */
    @SuppressWarnings("rawtypes")
-   private Map<String, Accumulator> accumulatedResults = new HashMap<>();
+   private Map<String, Accumulator> accumulatedResults = new ConcurrentHashMap<>();
 
    /**
     * Reports a single {@link org.perfcake.reporting.MeasurementUnit} to this reporter. This calls {@link #doReport(MeasurementUnit)} overridden by a child, accumulates results and reports iteration change and percentage change (if any).
