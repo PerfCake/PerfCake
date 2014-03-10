@@ -38,7 +38,6 @@ import java.util.concurrent.TimeUnit;
  * ReportManager that controls the reporting facilities.
  *
  * @author Martin Večera <marvenec@gmail.com>
- *
  */
 public class ReportManager {
 
@@ -82,7 +81,7 @@ public class ReportManager {
     * Set {@link org.perfcake.RunInfo} for the current measurement run.
     *
     * @param runInfo
-    *           The RunInfo that contains information about the current measurement.
+    *       The RunInfo that contains information about the current measurement.
     */
    public void setRunInfo(final RunInfo runInfo) {
       if (log.isDebugEnabled()) {
@@ -99,9 +98,9 @@ public class ReportManager {
     * Report a newly measured {@link MeasurementUnit}. Each Measurement Unit must be reported exactly once.
     *
     * @param mu
-    *           A MeasurementUnit to be reported.
+    *       A MeasurementUnit to be reported.
     * @throws ReportingException
-    *            If reporting could not be done properly.
+    *       If reporting could not be done properly.
     */
    public void report(final MeasurementUnit mu) throws ReportingException {
       if (log.isTraceEnabled()) {
@@ -147,7 +146,7 @@ public class ReportManager {
     * Registers a new {@link org.perfcake.reporting.reporters.Reporter}.
     *
     * @param reporter
-    *           A reporter to be registered.
+    *       A reporter to be registered.
     */
    public void registerReporter(final Reporter reporter) {
       if (log.isDebugEnabled()) {
@@ -163,7 +162,7 @@ public class ReportManager {
     * Removes a registered {@link org.perfcake.reporting.reporters.Reporter}.
     *
     * @param reporter
-    *           A reporter to unregistered.
+    *       A reporter to unregistered.
     */
    public void unregisterReporter(final Reporter reporter) {
       if (log.isDebugEnabled()) {
@@ -203,14 +202,12 @@ public class ReportManager {
          public void run() {
             long now;
             Long lastTime;
-            boolean lastRun = true; // allows for one extra cycle after test finish to make sure that 100% is reported
             Destination d;
             Map<Reporter, Map<Destination, Long>> reportLastTimes = new HashMap<>();
             Map<Destination, Long> lastTimes;
 
             try {
-               while ((runInfo.isRunning() && !periodicThread.isInterrupted()) || lastRun) {
-                  lastRun = runInfo.isRunning();
+               while ((runInfo.isRunning() && !periodicThread.isInterrupted())) {
 
                   if (resetLastTimes) {
                      reportLastTimes = new HashMap<>();
@@ -262,12 +259,35 @@ public class ReportManager {
    }
 
    /**
+    * After the end of the test make sure 100% is reported for time based destinations.
+    */
+   private void reportFinalTimeResults() {
+      log.info("Reporting final results:");
+      for (final Reporter r : reporters) {
+         for (final BoundPeriod<Destination> bp : r.getReportingPeriods()) {
+            try {
+               if (bp.getPeriodType() == PeriodType.TIME) {
+                  r.publishResult(bp.getPeriodType(), bp.getBinding());
+               }
+            } catch (ReportingException e) {
+               log.error(String.format("Could not report final result for reporter %s and destination %s.", r.toString(), bp.getBinding().toString()), e);
+            }
+         }
+      }
+      if (log.isDebugEnabled()) {
+         log.debug("End of final results.");
+      }
+   }
+
+   /**
     * Stops the reporting facility.
     */
    public void stop() {
       if (log.isDebugEnabled()) {
          log.debug("Stopping reporting and all reporters.");
       }
+
+      reportFinalTimeResults();
 
       for (final Reporter r : reporters) {
          r.stop();

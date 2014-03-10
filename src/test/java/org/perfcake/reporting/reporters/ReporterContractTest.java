@@ -193,21 +193,28 @@ public class ReporterContractTest {
 
       d2.setReportAssert(new ReportAssert() {
 
-         private boolean first = true;
+         private int run = 0;
 
          @Override
          public void report(final Measurement m) {
-            if (first) {
+            if (run == 0) {
                Assert.assertEquals(m.getPercentage(), 0);
                Assert.assertEquals(m.get(), 10d);
                Assert.assertEquals(m.get("avg"), 0d);
 
-               first = false;
-            } else {
+               run = 1;
+            } else if (run == 1) {
                Assert.assertEquals(m.getPercentage(), 8);
                Assert.assertEquals((double) m.get(), 10d);
                Assert.assertEquals(m.get("avg"), 39.5d);
                crc.incrementAndGet();
+               run = 2;
+            } else {
+               Assert.assertEquals(m.getPercentage(), 10);
+               Assert.assertEquals((double) m.get(), 10d);
+               Assert.assertEquals(m.get("avg"), 49.5d);
+               crc.incrementAndGet();
+               run = 3;
             }
          }
       });
@@ -245,7 +252,7 @@ public class ReporterContractTest {
 
       rm.stop();
 
-      Assert.assertEquals(crc.get(), 3);
+      Assert.assertEquals(crc.get(), 4);
 
       d1.setReportAssert(null);
       d2.setReportAssert(null);

@@ -37,6 +37,11 @@ import java.util.concurrent.TimeUnit;
 public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
+    * Shutdown log message.
+    */
+   private static final String SHUTDOWN_LOG = "Shutting down execution...";
+
+   /**
     * The generator's logger.
     */
    private static final Logger log = Logger.getLogger(DefaultMessageGenerator.class);
@@ -96,12 +101,13 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    private void shutdown() throws InterruptedException {
       if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // in case of iterations, we wait for the tasks to be finished first
+         log.info(SHUTDOWN_LOG);
          adaptiveTermination();
          setStopTime();
       } else { // in case of time, we must stop measurement first
          setStopTime();
+         log.info(SHUTDOWN_LOG);
          adaptiveTermination();
-
       }
 
       executorService.shutdownNow();
@@ -117,9 +123,8 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       while (runInfo.isRunning()) {
          prepareTask();
       }
-      Thread.sleep(1000); // give chance to last report message
 
-      log.info("Reached test end. Shutting down execution...");
+      log.info("Reached test end.");
       shutdown();
    }
 

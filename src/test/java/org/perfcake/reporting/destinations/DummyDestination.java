@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,10 +28,10 @@ import org.perfcake.reporting.ReportingException;
 
 /**
  * Testing destination.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
+ *
  */
 public class DummyDestination implements Destination {
 
@@ -81,7 +81,6 @@ public class DummyDestination implements Destination {
          } else if (sw.toString().contains("ReportManager$1.run")) {
             lastType = PeriodType.TIME;
          } else {
-            t.printStackTrace();
             lastType = null;
          }
       }
@@ -89,7 +88,7 @@ public class DummyDestination implements Destination {
 
    /**
     * Used to read the value of property.
-    * 
+    *
     * @return The property value.
     */
    public String getProperty() {
@@ -98,7 +97,7 @@ public class DummyDestination implements Destination {
 
    /**
     * Used to set the value of property.
-    * 
+    *
     * @param property
     *           The property value to set.
     */
@@ -108,7 +107,7 @@ public class DummyDestination implements Destination {
 
    /**
     * Used to read the value of property2.
-    * 
+    *
     * @return The property2 value.
     */
    public String getProperty2() {
@@ -117,7 +116,7 @@ public class DummyDestination implements Destination {
 
    /**
     * Used to set the value of property2.
-    * 
+    *
     * @param property2
     *           The property2 value to set.
     */
@@ -127,7 +126,7 @@ public class DummyDestination implements Destination {
 
    /**
     * Get the last method called on this object.
-    * 
+    *
     * @return The last method name.
     */
    public String getLastMethod() {
@@ -136,7 +135,7 @@ public class DummyDestination implements Destination {
 
    /**
     * Gets the last measurement seen by this destination.
-    * 
+    *
     * @return The last measurement observed.
     */
    public Measurement getLastMeasurement() {
@@ -145,7 +144,7 @@ public class DummyDestination implements Destination {
 
    /**
     * Gets the last type of report period observed by this destination.
-    * 
+    *
     * @return The last type of report period observed.
     */
    public PeriodType getLastType() {
@@ -154,7 +153,7 @@ public class DummyDestination implements Destination {
 
    /**
     * Gets the report assert registered.
-    * 
+    *
     * @return The report assert set to this destionation.
     */
    public ReportAssert getReportAssert() {
@@ -163,7 +162,7 @@ public class DummyDestination implements Destination {
 
    /**
     * Sets a new report assert to this destination.
-    * 
+    *
     * @param reportAssert
     *           The report assert to be registered.
     */
