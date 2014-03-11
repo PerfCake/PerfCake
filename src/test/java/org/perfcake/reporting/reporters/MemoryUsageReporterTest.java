@@ -64,7 +64,7 @@ public class MemoryUsageReporterTest {
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
       reporterProperties.put("memoryLeakSlopeThreshold", "1"); // 1 byte per second (that should cause positive memory leak detection)
-      reporterProperties.put("usedMemoryTimeWindowSize", "5");
+      reporterProperties.put("usedMemoryTimeWindowSize", "3");
       mur = (MemoryUsageReporter) ObjectFactory.summonInstance(MemoryUsageReporter.class.getName(), reporterProperties);
 
       final Properties destinationProperties = new Properties();
@@ -98,7 +98,7 @@ public class MemoryUsageReporterTest {
          for (int i = 0; i < ITERATION_COUNT; i++) {
             mu = rm.newMeasurementUnit();
             mu.startMeasure();
-            Thread.sleep(1);
+            Thread.sleep(2);
             mu.stopMeasure();
             rm.report(mu);
             if (!measurementList.contains(dest.getLastMeasurement())) {
