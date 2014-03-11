@@ -72,9 +72,58 @@ public class CSVDestination implements Destination {
     */
    private String fileHeaders = null;
 
+   /**
+    * Strategy that is used in case that the output file, that this destination represents
+    * was used by a different destination or scenario run before.
+    **/
+   private AppendStrategy appendStrategy = AppendStrategy.RENAME;
+
+   /**
+    * Strategy that is used in case that the output file exists. {@link AppendStrategy#OVERWRITE} means that the file
+    * is overwritten, {@link AppendStrategy#RENAME} means that the current output file is renamed by adding a number-based
+    * suffix and {@link AppendStrategy#FORCE_APPEND} is for appending new results to the original file.
+    **/
+   public enum AppendStrategy {
+      /**
+       * The original file is overwritten.
+       **/
+      OVERWRITE,
+
+      /**
+       * The original file is left alone but the output file is renamed according to a number-based pattern.
+       **/
+      RENAME,
+
+      /**
+       * The measurements are appended to the original file.
+       **/
+      FORCE_APPEND;
+   }
+
    @Override
    public void open() {
-      csvFile = new File(path);
+      synchronized (this) {
+         csvFile = new File(path);
+         if (csvFile.exists()) {
+            switch (appendStrategy) {
+               case RENAME:
+                  String name = csvFile.getAbsolutePath();
+                  File f = null;
+                  int ind = 1;
+                  do {
+                     f = new File(name + "." + (ind++));
+                  } while (f.exists());
+                  csvFile = f;
+                  break;
+               case OVERWRITE:
+                  csvFile.delete();
+                  break;
+               case FORCE_APPEND:
+               default:
+                  // nothing to do here
+            }
+         }
+      }
       if (log.isDebugEnabled()) {
          log.debug("Output path: " + csvFile.getAbsolutePath());
       }
@@ -93,7 +142,6 @@ public class CSVDestination implements Destination {
             resultNames.add(key);
          }
       }
-
    }
 
    private String getFileHeaders(final Measurement m) {
@@ -149,6 +197,7 @@ public class CSVDestination implements Destination {
 
    @Override
    public void report(final Measurement m) throws ReportingException {
+      // make sure the order of columns is consistent
       if (resultNames.isEmpty()) { // performance optimization before we enter the sync. block
          synchronized (this) {
             if (resultNames.isEmpty()) { // make sure the array did not get initialized while we were entering the sync. block
@@ -161,7 +210,6 @@ public class CSVDestination implements Destination {
       final String resultLine = getResultsLine(m);
 
       synchronized (this) {
-         // make sure the order of columns is consistent
          final boolean csvFileExists = csvFile.exists();
          try (FileOutputStream fos = new FileOutputStream(csvFile, true); OutputStreamWriter osw = new OutputStreamWriter(fos, Utils.getDefaultEncoding()); BufferedWriter bw = new BufferedWriter(osw)) {
             if (!csvFileExists) {
@@ -216,4 +264,22 @@ public class CSVDestination implements Destination {
       this.delimiter = delimiter;
    }
 
+   /**
+    * Used to read the value of appendStrategy.
+    * 
+    * @return The appendStrategy value.
+    */
+   public AppendStrategy getAppendStrategy() {
+      return appendStrategy;
+   }
+
+   /**
+    * Used to set the value of appendStrategy.
+    * 
+    * @param appendStrategy
+    *           The appendStrategy value to set.
+    */
+   public void setAppendStrategy(AppendStrategy appendStrategy) {
+      this.appendStrategy = appendStrategy;
+   }
 }
