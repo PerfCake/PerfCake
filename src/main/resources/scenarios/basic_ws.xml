@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:1.0">
-   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:200}">
-      <run type="iteration" value="${perfcake.performance.count:500000}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:200}">
+      <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:500000}"/>
    </generator>
    <sender class="HTTPSender">
       <property name="target" value="http://${server.host}:${server.port}//jaxws-benchmark-basic/EndpointImpl"/>

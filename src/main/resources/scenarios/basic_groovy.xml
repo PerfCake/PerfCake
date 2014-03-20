@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:1.0">
-   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:1}">
-      <run type="iteration" value="${perfcake.performance.count:10}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:1}">
+      <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:10}"/>
    </generator>
    <sender class="GroovySender">
       <property name="target" value="${perfcake.messages.dir}/readline.groovy"/>
