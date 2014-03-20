@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:1.0">
-   <properties>
-      <property name="quickstartName" value="http_gw"/>
-   </properties>
+   <!--properties/-->
    <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:100}">
       <run type="time" value="${perfcake.performance.duration:300000}"/>
-      <property name="threadQueueSize" value="50000"/>
+      <property name="threadQueueSize" value="500000"/>
    </generator>
-   <sender class="HTTPSender">
-      <property name="target" value="http://${server.host}:${server.port}/HTTPGateway/http/PerformanceTest/HTTPGateway"/>
+   <sender class="DummySender">
+      <property name="target" value="Out there!"/>
    </sender>
    <reporting>
-      <reporter class="ResponseTimeReporter">
+      <reporter class="WarmUpReporter"/>
+      <reporter class="AverageThroughputReporter">
          <destination class="CSVDestination">
             <period type="time" value="30000"/>
             <property name="path" value="${scenario}-response-time.csv"/>
@@ -30,7 +29,4 @@
          </destination>
       </reporter-->
    </reporting>
-   <messages>
-      <message uri="5kB_soap_reply.xml"/>
-   </messages>
 </scenario>

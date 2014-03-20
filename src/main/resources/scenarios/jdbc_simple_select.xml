@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:1.0">
-   <properties>
-      <property name="quickstartName" value="eds"/>
-   </properties>
    <generator class="ImmediateMessageGenerator" threads="${perfcake.performance.thread.count:500}">
       <run type="iteration" value="${perfcake.performance.count:500000}"/>
    </generator>
@@ -14,6 +11,18 @@
    </sender>
    <reporting>
       <reporter class="WarmUpReporter"/>
+      <reporter class="AverageThroughputReporter">
+         <destination class="CSVDestination">
+            <period type="time" value="30000"/>
+            <property name="path" value="${scenario}-response-time.csv"/>
+         </destination>
+         <destination class="ConsoleDestination">
+            <period type="time" value="1000"/>
+         </destination>
+         <!--destination class="ConsoleDestination">
+            <period type="time" value="30000" />
+         </destination-->
+      </reporter>
    </reporting>
    <messages>
       <message uri="jdbc-simple-select.sql"/>

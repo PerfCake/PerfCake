@@ -1,22 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:1.0">
-   <properties>
-      <property name="quickstartName" value="camel_gw_jms"/>
-   </properties>
-   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:25}">
+   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:100}">
       <run type="time" value="${perfcake.performance.duration:300000}"/>
       <property name="threadQueueSize" value="50000"/>
    </generator>
-   <sender class="RequestResponseJMSSender">
-      <property name="target" value="queue/camel_gw_jms_request"/>
-      <property name="messageType" value="OBJECT"/>
-      <property name="responseTarget" value="queue/camel_gw_jms_response"/>
-      <property name="receivingTimeout" value="10000"/>
-      <property name="receiveAttempts" value="1"/>
-      <property name="connectionFactory" value="XAConnectionFactory"/>
+   <sender class="HTTPSSender">
+      <property name="target" value="https://${server.host}:8443/HTTPGatewayHTTPS/http/PerformanceTest/HTTPGatewayHTTPS"/>
+      <property name="trustStore" value="${my.keystores}/cacerts.jks"/>
+      <property name="trustStorePassword" value="ts_password"/>
    </sender>
    <reporting>
-      <reporter class="ResponseTimeReporter">
+      <reporter class="AverageThroughputReporter">
          <destination class="CSVDestination">
             <period type="time" value="30000"/>
             <property name="path" value="${scenario}-response-time.csv"/>
@@ -36,6 +30,6 @@
       </reporter-->
    </reporting>
    <messages>
-      <message uri="1kB_message.xml"/>
+      <message uri="5kB_soap_reply.xml"/>
    </messages>
 </scenario>

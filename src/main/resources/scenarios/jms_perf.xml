@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:1.0">
-   <!--properties/-->
    <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:100}">
       <run type="time" value="${perfcake.performance.duration:300000}"/>
-      <property name="threadQueueSize" value="500000"/>
+      <property name="threadQueueSize" value="50000"/>
    </generator>
-   <sender class="DummySender">
-      <property name="target" value=""/>
+   <sender class="RequestResponseJMSSender">
+      <property name="target" value="queue/jms_perf_request_gw"/>
+      <property name="messageType" value="OBJECT"/>
+      <property name="responseTarget" value="queue/jms_perf_response"/>
+      <property name="receivingTimeout" value="10000"/>
+      <property name="receiveAttempts" value="1"/>
+      <property name="connectionFactory" value="XAConnectionFactory"/>
    </sender>
    <reporting>
-      <reporter class="WarmUpReporter"/>
-      <reporter class="ResponseTimeReporter">
+      <reporter class="AverageThroughputReporter">
          <destination class="CSVDestination">
             <period type="time" value="30000"/>
             <property name="path" value="${scenario}-response-time.csv"/>
@@ -29,4 +32,7 @@
          </destination>
       </reporter-->
    </reporting>
+   <messages>
+      <message uri="1kB_message.xml"/>
+   </messages>
 </scenario>

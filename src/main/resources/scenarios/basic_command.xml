@@ -1,17 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:1.0">
-   <properties>
-      <property name="quickstartName" value="basic_command"/>
-   </properties>
    <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:100}">
       <run type="iteration" value="${perfcake.performance.count:10}"/>
    </generator>
    <sender class="CommandSender">
    </sender>
    <reporting>
-      <property name="tags" value=""/>
-      <property name="uniqueId" value="${scenario}"/>
-      <reporter class="ResponseTimeReporter">
+      <reporter class="AverageThroughputReporter">
          <destination class="CSVDestination">
             <period type="iteration" value="1"/>
             <property name="path" value="${scenario}-response-time.csv"/>

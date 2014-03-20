@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:1.0">
-   <properties>
-      <property name="quickstartName" value="bpel_plain"/>
-   </properties>
-   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:50}">
+   <!--properties/-->
+   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:100}">
       <run type="time" value="${perfcake.performance.duration:300000}"/>
-      <property name="threadQueueSize" value="50000"/>
+      <property name="threadQueueSize" value="1000"/>
    </generator>
-   <sender class="HTTPSender">
-      <property name="target" value="http://${server.host}:${server.port}/BPELPlain"/>
+   <sender class="DummySender">
+      <property name="target" value="Out There!"/>
    </sender>
    <reporting>
-      <reporter class="ResponseTimeReporter">
+      <reporter class="AverageThroughputReporter">
          <destination class="CSVDestination">
             <period type="time" value="30000"/>
             <property name="path" value="${scenario}-response-time.csv"/>
@@ -30,10 +28,4 @@
          </destination>
       </reporter-->
    </reporting>
-   <messages>
-      <message uri="bpel_plain_request.xml">
-         <header name="Content-Type" value="text/xml"/>
-         <header name="SOAPAction" value="hello"/>
-      </message>
-   </messages>
 </scenario>
