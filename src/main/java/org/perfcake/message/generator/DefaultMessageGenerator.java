@@ -29,8 +29,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p> Generator that is able to generate maximal load. </p>
- *
+ * <p>
+ * Generator that is able to generate maximal load.
+ * </p>
+ * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
@@ -65,11 +67,11 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Place a new {@link SenderTask} implementing the message sending to an internal thread queue.
-    *
+    * 
     * @throws java.lang.InterruptedException
-    *       When it was not possible to place another task because the queue was empty
+    *            When it was not possible to place another task because the queue was empty
     */
-   private void prepareTask() throws InterruptedException {
+   protected void prepareTask() throws InterruptedException {
       if (log.isTraceEnabled()) {
          log.trace("Preparing a sender task");
       }
@@ -81,7 +83,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Adaptive termination of sender tasks. Waits for tasks to be finished. While they are some tasks remaining and some of them get terminated, keep waiting.
-    *
+    * 
     * @throws InterruptedException
     */
    private void adaptiveTermination() throws InterruptedException {
@@ -99,7 +101,13 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       }
    }
 
-   private void shutdown() throws InterruptedException {
+   /**
+    * Takes care of gentle shutdown of the generator based on the period type.
+    * 
+    * @throws java.lang.InterruptedException
+    *            When waiting for the termination was interrupted.
+    */
+   protected void shutdown() throws InterruptedException {
       if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // in case of iterations, we wait for the tasks to be finished first
          log.info(SHUTDOWN_LOG);
          adaptiveTermination();
@@ -130,7 +138,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Used to read the value of monitoringPeriod.
-    *
+    * 
     * @return The monitoringPeriod.
     */
    public long getMonitoringPeriod() {
@@ -139,9 +147,9 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Sets the value of monitoringPeriod.
-    *
+    * 
     * @param monitoringPeriod
-    *       The monitoringPeriod to set.
+    *           The monitoringPeriod to set.
     */
    public void setMonitoringPeriod(final long monitoringPeriod) {
       this.monitoringPeriod = monitoringPeriod;
@@ -149,7 +157,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Used to read the amount of time (in seconds) for which the generator will generate the measured load.
-    *
+    * 
     * @return The duration.
     */
    public long getDuration() {
@@ -158,7 +166,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Used to read the size of the internal thread queue.
-    *
+    * 
     * @return The thread queue size.
     */
    public int getThreadQueueSize() {
@@ -167,9 +175,9 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * Sets the the size of the internal thread queue.
-    *
+    * 
     * @param threadQueueSize
-    *       The thread queue size.
+    *           The thread queue size.
     */
    public void setThreadQueueSize(final int threadQueueSize) {
       this.threadQueueSize = threadQueueSize;
