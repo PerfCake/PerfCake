@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 
@@ -44,17 +45,16 @@ import org.perfcake.reporting.destinations.Destination;
  * some common functionality including proper results publishing. One should directly implement
  * this interface only when there is a serious reason.
  * Reporter must be thread safe as it can be called from multiple threads at the same time.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
+ *
  */
 public interface Reporter {
 
    /**
     * This method is called each time a new {@link org.perfcake.reporting.MeasurementUnit Measurement Unit} is obtained. Each unit is reported once and only once to each of the reporters. The reporter
-    * is
-    * not allowed to modify the Measurement Unit
-    * 
+    * is not allowed to modify the Measurement Unit. This method must be thread-safe.
+    *
     * @param mu
     *           Measurement Unit from a run iteration
     */
@@ -63,10 +63,10 @@ public interface Reporter {
    /**
     * Registers a destination to receive resulting {@link org.perfcake.reporting.Measurement Measurements} in
     * a given period.
-    * 
+    *
     * @param d
     *           The Destination to which the results should be published
-    * 
+    *
     * @param p
     *           The period interval in which the destination should publish results
     */
@@ -74,7 +74,7 @@ public interface Reporter {
 
    /**
     * Publishes results to the destination. This method is called only when the results should be published.
-    * 
+    *
     * @param periodType
     *           A period type that caused the invocation of this method.
     * @param d
@@ -91,10 +91,10 @@ public interface Reporter {
     * A destination cannot be registered with the same period type multiple times (i.e. one cannot register
     * a destination with a period of iteration type that reports every 10 iterations, and with a period of
     * iteration type that reports every 100 iterations at the same time).
-    * 
+    *
     * @param d
     *           The Destination to which the results should be published
-    * 
+    *
     * @param p
     *           The set of period intervals in which the destination should publish results
     */
@@ -103,7 +103,7 @@ public interface Reporter {
    /**
     * Removes a previously registered Destination. The method removes all occurrences of the destination
     * should it be registered with multiple periods. A Reporter should close the Destination if it is still open.
-    * 
+    *
     * @param d
     *           The Destination to be unregistered (and stopped)
     */
@@ -111,7 +111,7 @@ public interface Reporter {
 
    /**
     * Gets an unmodifiable list of all registered destinations.
-    * 
+    *
     * @return An unmodifiable list of all currently registered destinations.
     */
    public Set<Destination> getDestinations();
@@ -136,15 +136,25 @@ public interface Reporter {
    /**
     * Sets {@link org.perfcake.RunInfo Run Info} for the current measurement run. This must be set
     * prior to starting the reporter. Failed to do so can lead to an assertion error.
-    * 
+    *
     * @param runInfo
     *           RunInfo for the current measurement run
     */
    public void setRunInfo(RunInfo runInfo);
 
    /**
+    * Sets {@link org.perfcake.reporting.ReportManager Report Manager} for the report to be able to control and
+    * monitor the current status of reporting.
+    *
+    * @param reportManager
+    *           ReportManager that owns this Reporter
+    */
+   public void setReportManager(ReportManager reportManager);
+
+
+   /**
     * Gets an unmodifiable set of registered reporting periods.
-    * 
+    *
     * @return The unmodifiable set of registered reporting periods.
     */
    public Set<BoundPeriod<Destination>> getReportingPeriods();

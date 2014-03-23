@@ -78,8 +78,15 @@ public class ScenarioParser {
    public org.perfcake.model.Scenario parse() throws PerfCakeException {
       try {
          Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes(Utils.getDefaultEncoding())));
+         String schemaFileName = "perfcake-scenario-" + Scenario.VERSION + ".xsd";
+
+         URL scenarioXsdUrl = getClass().getResource("/schemas/" + schemaFileName);
+         if (scenarioXsdUrl == null) { // backup taken from web
+            scenarioXsdUrl = new URL("http://schema.perfcake.org/" + schemaFileName);
+         }
+
          SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-         Schema schema = schemaFactory.newSchema(new URL("http://schema.perfcake.org/perfcake-scenario-" + Scenario.VERSION + ".xsd"));
+         Schema schema = schemaFactory.newSchema(scenarioXsdUrl);
 
          JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
          Unmarshaller unmarshaller = context.createUnmarshaller();

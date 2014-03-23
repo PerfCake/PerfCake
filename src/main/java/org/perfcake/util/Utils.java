@@ -24,6 +24,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Properties;
@@ -32,9 +34,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
+import org.perfcake.common.TimeStampedRecord;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
@@ -44,8 +48,9 @@ import org.perfcake.util.properties.SystemPropertyGetter;
  */
 public class Utils {
 
-   public static final File resourcesDir = new File("resources");
-   public static final Logger log = Logger.getLogger(Utils.class);
+   public static final File DEFAULT_RESOURCES_DIR = new File("resources");
+   public static final File DEFAULT_PLUGINS_DIR = new File("lib/plugins");
+   private static final Logger log = Logger.getLogger(Utils.class);
 
    /**
     * It takes a string and replaces all ${&lt;property.name&gt;} placeholders
@@ -183,7 +188,7 @@ public class Utils {
     * @return the location based on the resourcesDir constant
     */
    public static String determineDefaultLocation(final String locationSuffix) {
-      return resourcesDir.getAbsolutePath() + "/" + (locationSuffix == null ? "" : locationSuffix);
+      return DEFAULT_RESOURCES_DIR.getAbsolutePath() + "/" + (locationSuffix == null ? "" : locationSuffix);
    }
 
    /**
@@ -227,4 +232,19 @@ public class Utils {
       return Utils.getProperty(PerfCakeConst.DEFAULT_ENCODING_PROPERTY, "UTF-8");
    }
 
+   /**
+    * Computes a linear regression trend of the data set povided.
+    * 
+    * @return Linear regression trend
+    **/
+   public static double computeRegressionTrend(Collection<TimeStampedRecord<Number>> data) {
+      final SimpleRegression simpleRegression = new SimpleRegression();
+      final Iterator<TimeStampedRecord<Number>> iterator = data.iterator();
+      TimeStampedRecord<Number> currentRecord;
+      while (iterator.hasNext()) {
+         currentRecord = iterator.next();
+         simpleRegression.addData(currentRecord.getTimeStamp(), currentRecord.getValue().doubleValue());
+      }
+      return simpleRegression.getSlope();
+   }
 }

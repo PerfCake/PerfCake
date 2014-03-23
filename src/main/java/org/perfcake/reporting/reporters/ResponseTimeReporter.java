@@ -42,7 +42,7 @@ public class ResponseTimeReporter extends AbstractReporter {
    @Override
    protected void doReport(final MeasurementUnit mu) throws ReportingException {
       final Map<String, Object> result = new HashMap<>();
-      result.put(Measurement.DEFAULT_RESULT, Double.valueOf(mu.getTotalTime()));
+      result.put(Measurement.DEFAULT_RESULT, (double) mu.getTotalTime());
       accumulateResults(result);
    }
 

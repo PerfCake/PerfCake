@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,10 +28,10 @@ import org.perfcake.reporting.destinations.Destination;
 
 /**
  * The reporter is able to report the current average throughput (in the means of the number of iterations per second)
- * from the beggining of the measuring to the moment when the results are published.
- * 
+ * from the beginning of the measuring to the moment when the results are published.
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
- * 
+ *
  */
 public class AverageThroughputReporter extends AbstractReporter {
 
@@ -43,7 +43,7 @@ public class AverageThroughputReporter extends AbstractReporter {
    @Override
    public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       final Measurement m = newMeasurement();
-      Quantity<Double> q = new Quantity<Double>(1000.0 * runInfo.getIteration() / runInfo.getRunTime(), "iterations/s");
+      Quantity<Double> q = new Quantity<>(1000d * getMaxIteration() / runInfo.getRunTime(), "iterations/s");
       m.set(q);
       d.report(m);
    }

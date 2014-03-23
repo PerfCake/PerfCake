@@ -26,25 +26,22 @@ package org.perfcake;
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public final class PerfCakeConst {
-   public static final String PERFORMANCE_MESSAGE_PROPERTY = "PerfCake_Performance";
-
-   public static final String MESSAGE_NUMBER_PROPERTY = "PerfCake_Performance_Message_Number";
-
-   public static final String TIME_MESSAGE_PROPERTY = "PerfCake_Performance_Time";
-
-   public static final String COUNT_MESSAGE_PROPERTY = "PerfCake_Performance_Count";
+   public static final String MESSAGE_NUMBER_HEADER = "PerfCake_Performance_Message_Number";
+   public static final String MESSAGE_NUMBER_PROPERTY = "MessageNumber";
 
    public static final String SCENARIO_PROPERTY = "perfcake.scenario";
    public static final String DEFAULT_ENCODING_PROPERTY = "perfcake.encoding";
    public static final String TIMESTAMP_PROPERTY = "perfcake.run.timestamp";
    public static final String SCENARIOS_DIR_PROPERTY = "perfcake.scenarios.dir";
    public static final String MESSAGES_DIR_PROPERTY = "perfcake.messages.dir";
+   public static final String PLUGINS_DIR_PROPERTY = "perfcake.plugins.dir";
    public static final String PROPERTIES_FILE_PROPERTY = "perfcake.properties.file";
 
    public static final String SCENARIO_OPT = "scenario";
    public static final String SCENARIOS_DIR_OPT = "scenarios-dir";
    public static final String MESSAGES_DIR_OPT = "messages-dir";
+   public static final String PLUGINS_DIR_OPT = "plugins-dir";
    public static final String PROPERTIES_FILE_OPT = "properties-file";
-
+   
    public static final String WARM_UP_TAG = "warmUp";
 }

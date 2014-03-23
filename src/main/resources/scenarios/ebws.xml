@@ -1,20 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:1.0">
-   <properties>
-      <property name="quickstartName" value="ebws"/>
-   </properties>
-   <generator class="DefaultMessageGenerator" threads="${perfcake.performance.thread.count:100}">
-      <run type="time" value="${perfcake.performance.duration:300000}"/>
-      <property name="threadQueueSize" value="50000"/>
+<scenario xmlns="urn:perfcake:scenario:2.0">
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}">
+      <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:300000}"/>
    </generator>
    <sender class="HTTPSender">
       <property name="target" value="http://${server.host}:${server.port}/Ebws/ebws/PerformanceTest/EBWS"/>
    </sender>
    <reporting>
-      <reporter class="ResponseTimeReporter">
+      <reporter class="AverageThroughputReporter">
          <destination class="CSVDestination">
             <period type="time" value="30000"/>
-            <property name="path" value="${scenario}-response-time.csv"/>
+            <property name="path" value="${perfcake.scenario}-response-time.csv"/>
          </destination>
          <!--destination class="ConsoleDestination">
             <period type="time" value="30000" />
@@ -23,7 +19,7 @@
       <!--reporter class="MemoryUsageReporter">
          <destination class="CSVDestination">
             <period type="time" value="30000"/>
-            <property name="path" value="${scenario}-memory-usage.csv" />
+            <property name="path" value="${perfcake.scenario}-memory-usage.csv" />
          </destination>
          <destination class="ConsoleDestination">
             <period type="time" value="30000" />

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,12 +19,6 @@
  */
 package org.perfcake.reporting;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-
 import org.apache.log4j.Logger;
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
@@ -32,15 +26,22 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 /**
  * ReportManager that controls the reporting facilities.
- * 
+ *
  * @author Martin Večera <marvenec@gmail.com>
- * 
  */
 public class ReportManager {
 
    private static final Logger log = Logger.getLogger(ReportManager.class);
+
+   private volatile boolean resetLastTimes = false;
 
    /**
     * Set of reporters registered for reporting.
@@ -59,7 +60,7 @@ public class ReportManager {
 
    /**
     * Create a new measurement unit with a unique iteration number.
-    * 
+    *
     * @return A new measurement unit with a unique iteration number, or null if a measurement is not running or is already finished.
     */
    public MeasurementUnit newMeasurementUnit() {
@@ -76,9 +77,9 @@ public class ReportManager {
 
    /**
     * Set {@link org.perfcake.RunInfo} for the current measurement run.
-    * 
+    *
     * @param runInfo
-    *           The RunInfo that contains information about the current measurement.
+    *       The RunInfo that contains information about the current measurement.
     */
    public void setRunInfo(final RunInfo runInfo) {
       if (log.isDebugEnabled()) {
@@ -93,11 +94,11 @@ public class ReportManager {
 
    /**
     * Report a newly measured {@link MeasurementUnit}. Each Measurement Unit must be reported exactly once.
-    * 
+    *
     * @param mu
-    *           A MeasurementUnit to be reported.
+    *       A MeasurementUnit to be reported.
     * @throws ReportingException
-    *            If reporting could not be done properly.
+    *       If reporting could not be done properly.
     */
    public void report(final MeasurementUnit mu) throws ReportingException {
       if (log.isTraceEnabled()) {
@@ -107,7 +108,7 @@ public class ReportManager {
       ReportingException e = null;
 
       if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
-         for (final Reporter r : reporters) {
+         for (final Reporter r : getReporters()) {
             try {
                r.report(mu);
             } catch (final ReportingException re) {
@@ -133,6 +134,7 @@ public class ReportManager {
       }
 
       runInfo.reset();
+      resetLastTimes = true;
       for (final Reporter r : reporters) {
          r.reset();
       }
@@ -140,36 +142,39 @@ public class ReportManager {
 
    /**
     * Registers a new {@link org.perfcake.reporting.reporters.Reporter}.
-    * 
+    *
     * @param reporter
-    *           A reporter to be registered.
+    *       A reporter to be registered.
     */
    public void registerReporter(final Reporter reporter) {
       if (log.isDebugEnabled()) {
          log.debug("Registering a new reporter " + reporter);
       }
 
+      reporter.setReportManager(this);
       reporter.setRunInfo(runInfo);
       reporters.add(reporter);
    }
 
    /**
     * Removes a registered {@link org.perfcake.reporting.reporters.Reporter}.
-    * 
+    *
     * @param reporter
-    *           A reporter to unregistered.
+    *       A reporter to unregistered.
     */
    public void unregisterReporter(final Reporter reporter) {
       if (log.isDebugEnabled()) {
          log.debug("Removing the reporter " + reporter);
       }
 
+      reporter.setReportManager(null);
+      reporter.setRunInfo(null);
       reporters.remove(reporter);
    }
 
    /**
     * Gets an immutable set of current reporters.
-    * 
+    *
     * @return An immutable set of currently registered reporters.
     */
    public Set<Reporter> getReporters() {
@@ -200,7 +205,13 @@ public class ReportManager {
             Map<Destination, Long> lastTimes;
 
             try {
-               while (runInfo.isRunning() && !periodicThread.isInterrupted()) {
+               while ((runInfo.isRunning() && !periodicThread.isInterrupted())) {
+
+                  if (resetLastTimes) {
+                     reportLastTimes = new HashMap<>();
+                     resetLastTimes = false;
+                  }
+
                   now = System.currentTimeMillis();
 
                   for (Reporter r : reporters) {
@@ -246,12 +257,35 @@ public class ReportManager {
    }
 
    /**
+    * After the end of the test make sure 100% is reported for time based destinations.
+    */
+   private void reportFinalTimeResults() {
+      log.info("Reporting final results:");
+      for (final Reporter r : reporters) {
+         for (final BoundPeriod<Destination> bp : r.getReportingPeriods()) {
+            try {
+               if (bp.getPeriodType() == PeriodType.TIME) {
+                  r.publishResult(bp.getPeriodType(), bp.getBinding());
+               }
+            } catch (ReportingException e) {
+               log.error(String.format("Could not report final result for reporter %s and destination %s.", r.toString(), bp.getBinding().toString()), e);
+            }
+         }
+      }
+      if (log.isDebugEnabled()) {
+         log.debug("End of final results.");
+      }
+   }
+
+   /**
     * Stops the reporting facility.
     */
    public void stop() {
       if (log.isDebugEnabled()) {
          log.debug("Stopping reporting and all reporters.");
       }
+
+      reportFinalTimeResults();
 
       for (final Reporter r : reporters) {
          r.stop();

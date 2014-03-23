@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,13 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.RunInfo;
@@ -34,17 +27,21 @@ import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
+import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
+
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Basic reporter that should be used to write any real reporter. This implementation makes sure
- * that the contract defined as part of {@link Reporter} is held. The class is also well tested.
- * 
+ * Basic reporter that should be used to write any real reporter. This implementation makes sure that the contract defined as part of {@link Reporter} is held. The class is also well tested.
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
 public abstract class AbstractReporter implements Reporter {
 
@@ -52,6 +49,16 @@ public abstract class AbstractReporter implements Reporter {
     * The reporter's logger.
     */
    private static final Logger log = Logger.getLogger(AbstractReporter.class);
+
+   /**
+    * ReportManager that owns this reporter.
+    */
+   protected ReportManager reportManager = null;
+
+   /**
+    * Remembers the maximal value of observed MeasurementUnits.
+    */
+   private MaxLongValueAccumulator maxIteration = new MaxLongValueAccumulator();
 
    /**
     * Remembers the last observed percentage state of the measurement run. This is used to report change to this value only once.
@@ -72,17 +79,18 @@ public abstract class AbstractReporter implements Reporter {
     * Accumulators to accumulate results from multiple {@link org.perfcake.reporting.MeasurementUnit Measurement Units}.
     */
    @SuppressWarnings("rawtypes")
-   private Map<String, Accumulator> accumulatedResults = new HashMap<>();
+   private Map<String, Accumulator> accumulatedResults = new ConcurrentHashMap<>();
 
    /**
-    * Reports a single {@link org.perfcake.reporting.MeasurementUnit} to this reporter. This calls {@link #doReport(MeasurementUnit)} overrided by a child,
-    * accumulates results and reports iteration change and percentage change (if any).
+    * Reports a single {@link org.perfcake.reporting.MeasurementUnit} to this reporter. This calls {@link #doReport(MeasurementUnit)} overridden by a child, accumulates results and reports iteration change and percentage change (if any).
     */
    @Override
    public final void report(final MeasurementUnit mu) throws ReportingException {
       if (runInfo == null) {
          throw new ReportingException("RunInfo has not been set for this reporter.");
       }
+
+      reportIterationNumber(mu.getIteration(), mu);
 
       doReport(mu);
 
@@ -93,38 +101,58 @@ public abstract class AbstractReporter implements Reporter {
       // report each percentage value just once
       final long percentage = (long) Math.floor(runInfo.getPercentage());
       if (percentage != lastPercentage) {
-         lastPercentage = percentage;
+         while (percentage > lastPercentage + 1) { // we do not want to skip any percentage between prev. reporting and now
+            lastPercentage = lastPercentage + 1;
+            reportPercentage(lastPercentage);
+         }
+         lastPercentage = percentage; // simply cover the last case (percentage = lastPercentage + 1), and or the case when percentage got lower after a reset
          reportPercentage(percentage);
+      }
+   }
+
+   protected Long getMaxIteration() {
+      return maxIteration.getResult();
+   }
+
+   private void reportIterationNumber(long iteration, final MeasurementUnit mu) {
+      if (mu.startedAfter(runInfo.getStartTime())) { // only MUs from the current run should be taken into account
+         maxIteration.add(iteration);
       }
    }
 
    /**
     * Gets a new measurement pre-filled with values from current run info.
-    * 
+    *
     * @return The new measurement with current values from run info.
     */
    public Measurement newMeasurement() {
-      Measurement m = new Measurement(Math.round(runInfo.getPercentage()), runInfo.getRunTime(), runInfo.getIteration());
+      Long iterations = maxIteration.getResult();
+      Measurement m = new Measurement(Math.round(runInfo.getPercentage(iterations)), runInfo.getRunTime(), iterations);
       m.set(PerfCakeConst.WARM_UP_TAG, runInfo.hasTag(PerfCakeConst.WARM_UP_TAG));
       return m;
    }
 
    /**
     * Gets a value of an accumulated result.
-    * 
+    *
     * @param key
-    *           Key in the results hash map.
+    *       Key in the results hash map.
     * @return The value associated with the given key.
     */
    protected Object getAccumulatedResult(final String key) {
       return accumulatedResults.get(key) == null ? null : accumulatedResults.get(key).getResult();
    }
 
+   @Override
+   public void setReportManager(ReportManager reportManager) {
+      this.reportManager = reportManager;
+   }
+
    /**
     * Copies current accumulated results to the provided {@link org.perfcake.reporting.Measurement}. This can be used in the child's {@link #doPublishResult(PeriodType, Destination)} method.
-    * 
+    *
     * @param m
-    *           The {@link org.perfcake.reporting.Measurement} to be filled with the results.
+    *       The {@link org.perfcake.reporting.Measurement} to be filled with the results.
     */
    protected void publishAccumulatedResult(final Measurement m) {
       for (final String key : accumulatedResults.keySet()) {
@@ -133,11 +161,10 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    /**
-    * For each key of the Mesurement Unit's results map, ask for an accumulator and accumulate the value with the previous values.
-    * Childs can use this method to accumulate the main result as well (be it a total response time or anything else).
-    * 
+    * For each key of the Measurement Unit's results map, ask for an accumulator and accumulate the value with the previous values. Childs can use this method to accumulate the main result as well (be it a total response time or anything else).
+    *
     * @param results
-    *           The hash map with results to be accumulated.
+    *       The hash map with results to be accumulated.
     */
    @SuppressWarnings({ "unchecked", "rawtypes" })
    protected void accumulateResults(final Map<String, Object> results) {
@@ -159,14 +186,12 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    /**
-    * Gets an appropriate accumulator for a given key from the Measuremen Unit's results map and its class.
-    * This should be overriden by the child classes. By default, last value accumulator is returned. This must
-    * remain at least for {@link org.perfcake.PerfCakeConst.WARM_UP_TAG}.
-    * 
+    * Gets an appropriate accumulator for a given key from the Measurement Unit's results map and its class. This should be overridden by the child classes. By default, last value accumulator is returned. This must remain at least for {@link org.perfcake.PerfCakeConst.WARM_UP_TAG}.
+    *
     * @param key
-    *           Name of the key from the results map.
+    *       Name of the key from the results map.
     * @param clazz
-    *           Class of the object in the results map.
+    *       Class of the object in the results map.
     * @return An appropriate accumulator instance.
     */
    @SuppressWarnings("rawtypes")
@@ -176,9 +201,9 @@ public abstract class AbstractReporter implements Reporter {
 
    /**
     * Reports iteration changes to registered destinations.
-    * 
+    *
     * @param iteration
-    *           Iteration number.
+    *       Iteration number.
     * @throws ReportingException
     */
    private void reportIterations(final long iteration) throws ReportingException {
@@ -195,9 +220,9 @@ public abstract class AbstractReporter implements Reporter {
 
    /**
     * Reports percentage changes to registered destinations.
-    * 
+    *
     * @param percentage
-    *           Percentage status of the run.
+    *       Percentage status of the run.
     * @throws ReportingException
     */
    private void reportPercentage(final long percentage) throws ReportingException {
@@ -250,6 +275,8 @@ public abstract class AbstractReporter implements Reporter {
    @Override
    public final void reset() {
       lastPercentage = -1;
+      maxIteration.reset();
+      maxIteration.add(0l);
       accumulatedResults = new HashMap<>();
       doReset();
    }
@@ -261,9 +288,9 @@ public abstract class AbstractReporter implements Reporter {
 
    /**
     * Process a new {@link org.perfcake.reporting.MeasurementUnit}.
-    * 
+    *
     * @param mu
-    *           A {@link org.perfcake.reporting.MeasurementUnit} to be processed.
+    *       A {@link org.perfcake.reporting.MeasurementUnit} to be processed.
     * @throws ReportingException
     */
    abstract protected void doReport(MeasurementUnit mu) throws ReportingException;
@@ -294,7 +321,7 @@ public abstract class AbstractReporter implements Reporter {
 
    /**
     * Checks if the reporter is ready to be started.
-    * 
+    *
     * @return <code>true</code> if the reporter is ready to be started.
     */
    protected boolean checkStart() {

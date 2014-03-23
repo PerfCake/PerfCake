@@ -147,5 +147,6 @@ cd "$PERFCAKE_HOME"
 
 # Run PerfCake
 exec "$JAVACMD" \
+  -Djava.ext.dirs="$PERFCAKE_HOME"/lib/ext \
   -jar "${PERFCAKE_HOME}"/lib/perfcake*.jar \
   "$@"

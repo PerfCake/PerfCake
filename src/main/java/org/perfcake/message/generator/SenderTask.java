@@ -7,13 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
-<<<<<<< HEAD
- * http://www.apache.org/licenses/LICENSE-2.0
-=======
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
->>>>>>> feature/refactor-reporting-#5
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,12 +18,6 @@
  * -----------------------------------------------------------------------/
  */
 package org.perfcake.message.generator;
-
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -41,15 +31,16 @@ import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidatorManager;
 
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.Semaphore;
+
 /**
- * <p>
- * The sender task is a runnable class that is executing a single task of sending the message(s) from the message store using instances of {@link MessageSender} provided by message sender manager (see
- * {@link MessageSenderManager}), receiving the message sender's response and handling the reporting and response message validation.
- * </p>
- * <p>
- * It is used by the generators.
- * </p>
- * 
+ * <p> The sender task is a runnable class that is executing a single task of sending the message(s) from the message store using instances of {@link MessageSender} provided by message sender manager (see {@link MessageSenderManager}), receiving the message sender's response and handling the reporting and response message validation. </p> <p> It is used by the generators. </p>
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 class SenderTask implements Runnable {
@@ -84,8 +75,14 @@ class SenderTask implements Runnable {
     */
    private ValidatorManager validatorManager;
 
-   protected SenderTask() {
-      // limit the possibilities to construct this class
+   /**
+    * Semaphore used from the outside of SenderTask, it controls the amount of prepared tasks in a buffer.
+    */
+   private Semaphore semaphore;
+
+   // limit the possibilities to construct this class
+   protected SenderTask(Semaphore semaphore) {
+      this.semaphore = semaphore;
    }
 
    private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) {
@@ -122,7 +119,8 @@ class SenderTask implements Runnable {
             // only set numbering to headers if it is enabled, later there is no change to
             // filter out the headers before sending
             if (messageNumberingEnabled) {
-               messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration()));
+               messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_HEADER, String.valueOf(mu.getIteration()));
+               messageAttributes.setProperty(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration()));
             }
 
             sender = senderManager.acquireSender();
@@ -158,6 +156,10 @@ class SenderTask implements Runnable {
       } catch (Exception e) {
          e.printStackTrace();
       } finally {
+         if (semaphore != null) {
+            semaphore.release();
+         }
+
          if (sender != null) {
             senderManager.releaseSender(sender);
          }

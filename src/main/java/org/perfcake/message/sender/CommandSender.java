@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -36,7 +37,7 @@ import org.perfcake.util.Utils;
  * The sender that can invoke external command (specified by {@link #target} property)
  * in a separate process to send the message payload passed to the standard input of
  * the process or as the command argument.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
@@ -88,7 +89,7 @@ public class CommandSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#init()
     */
    @Override
@@ -98,7 +99,7 @@ public class CommandSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#close()
     */
    @Override
@@ -108,7 +109,7 @@ public class CommandSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -127,7 +128,7 @@ public class CommandSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -157,7 +158,7 @@ public class CommandSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
     */
    @Override
@@ -169,7 +170,7 @@ public class CommandSender extends AbstractSender {
 
    /**
     * Used to read the value of messageFrom property.
-    * 
+    *
     * @return The messageFrom.
     */
    public MessageFrom getMessageFrom() {
@@ -178,7 +179,7 @@ public class CommandSender extends AbstractSender {
 
    /**
     * Sets the value of messageFrom property.
-    * 
+    *
     * @param messageFrom
     *           The messageFrom to set.
     */
@@ -188,7 +189,7 @@ public class CommandSender extends AbstractSender {
 
    /**
     * Used to read the value of commandPrefix.
-    * 
+    *
     * @return The commandPrefix.
     */
    protected String getCommandPrefix() {
@@ -197,7 +198,7 @@ public class CommandSender extends AbstractSender {
 
    /**
     * Sets the value of commandPrefix.
-    * 
+    *
     * @param commandPrefix
     *           The commandPrefix to set.
     */
@@ -209,7 +210,7 @@ public class CommandSender extends AbstractSender {
     * @return the environmentVariables
     */
    public String[] getEnvironmentVariables() {
-      return environmentVariables;
+      return Arrays.copyOf(environmentVariables, environmentVariables.length); // do not allow external modifications
    }
 
    /**
@@ -217,7 +218,7 @@ public class CommandSender extends AbstractSender {
     *           the environmentVariables to set
     */
    public void setEnvironmentVariables(String[] environmentVariables) {
-      this.environmentVariables = environmentVariables;
+      this.environmentVariables = Arrays.copyOf(environmentVariables, environmentVariables.length); // ignore any later external modifications
    }
 
 }

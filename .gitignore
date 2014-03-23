@@ -10,7 +10,14 @@ bin
 .settings
 .project
 .classpath
-bin
+
+# Lib
+lib/ext/*.jar
+lib/plugins/*.jar
+
+# IntelliJ Idea
+.idea
+*.iml
 
 # Package Files #
 *.jar

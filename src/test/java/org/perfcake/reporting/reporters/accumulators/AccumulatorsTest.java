@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package org.perfcake.reporting.reporters.accumulators;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.testng.Assert;
 import org.testng.Reporter;
@@ -28,12 +29,14 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 /**
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
- * 
+ *
  */
 public class AccumulatorsTest {
+
+   private static final int STRESS_THREADS = 500;
 
    @Test
    public void lastValueAccumulatorTest() {
@@ -110,13 +113,34 @@ public class AccumulatorsTest {
       Assert.assertEquals(aa.getResult(), 0d, "SlidingWindowAvgAccumulator must be 0 after reset.");
    }
 
+   @Test
+   public void maxLongValueAccumulatorTest() {
+      MaxLongValueAccumulator mlva = new MaxLongValueAccumulator();
+      Assert.assertEquals((long) mlva.getResult(), (long) Long.MIN_VALUE);
+
+      mlva.add(1l);
+      Assert.assertEquals((long) mlva.getResult(), 1l);
+
+      Random r = new Random();
+      for(int i = 0; i < 5000; i++) {
+         mlva.add(r.nextLong() >> 32);
+      }
+      Assert.assertTrue(mlva.getResult() <= Long.MAX_VALUE >> 32);
+
+      mlva.add(Long.MAX_VALUE);
+      Assert.assertEquals((long) mlva.getResult(), Long.MAX_VALUE);
+   }
+
    @DataProvider(name = "stressTest")
    public Object[][] createDataForStressTest() {
-      final Long START = new Long(1L), END = new Long(100_000L);
+      final Long START = 1L, END = 100_000L;
       int WINDOW = 1000;
 
       // accumulator, start, end, result, after reset
-      return new Object[][] { { new AvgAccumulator(), START, END, new Double((START + END) / 2d), new Double(0) }, { new SumAccumulator(), START, END, new Double(500L * (START + END) * (END - START + 1L) / 2d), new Double(0) }, { new LastValueAccumulator(), START, END, new Double(END), null }, { new SlidingWindowAvgAccumulator(WINDOW), START, END, new Double((END - WINDOW + 1 + END) / 2d), new Double(0) } };
+      return new Object[][] { { new AvgAccumulator(), START, END, (START + END) / 2d, 0d },
+            { new SumAccumulator(), START, END, STRESS_THREADS * (START + END) * (END - START + 1L) / 2d, 0d },
+            { new LastValueAccumulator(), START, END, (double) END, null },
+            { new SlidingWindowAvgAccumulator(WINDOW), START, END, (END - WINDOW + 1 + END) / 2d, 0d } };
    }
 
    @Test(dataProvider = "stressTest", groups = { "performance" })
@@ -124,7 +148,7 @@ public class AccumulatorsTest {
    public void accumulatorStressTest(final Accumulator a, final Long start, final Long end, final Double result, final Double zero) throws InterruptedException {
       List<Thread> stressors = new ArrayList<>();
 
-      for (int i = 0; i < 500; i++) {
+      for (int i = 0; i < STRESS_THREADS; i++) {
          stressors.add(new Thread(new AccumulatorStressor(a, start, end)));
       }
 
@@ -165,7 +189,7 @@ public class AccumulatorsTest {
       @Override
       public void run() {
          for (long i = start; i <= end; i = i + 1L) {
-            a.add(Double.valueOf(i));
+            a.add((double) i);
          }
       }
    }

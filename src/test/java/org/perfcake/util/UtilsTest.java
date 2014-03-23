@@ -24,7 +24,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.perfcake.util.properties.DefaultPropertyGetter;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -76,7 +80,16 @@ public class UtilsTest {
       String filtered = Utils.filterProperties(unfiltered);
       
       Assert.assertEquals(filtered, "text with test.value property");
-      
+
+      final String propertyPattern = "[^\\\\](#\\{([^#\\{:]+)(:[^#\\{:]*)?})";
+      final String filteredString = "Sound system in #{bar} test";
+      final Matcher matcher = Pattern.compile(propertyPattern).matcher(filteredString);
+      Assert.assertTrue(matcher.find());
+      final Properties testProperties = new Properties();
+      testProperties.setProperty("bar", "Blue Oyster");
+
+      filtered = Utils.filterProperties(filteredString, matcher, new DefaultPropertyGetter(testProperties));
+      Assert.assertEquals(filtered, "Sound system in Blue Oyster test");
    }
    
    @Test

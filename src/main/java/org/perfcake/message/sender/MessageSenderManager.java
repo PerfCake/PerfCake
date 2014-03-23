@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,36 +19,25 @@
  */
 package org.perfcake.message.sender;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Queue;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
-
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.ObjectFactory;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 /**
- * 
+ * Manages concurrent friendly pool of senders.
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class MessageSenderManager {
 
-   private static final Object syncLock = new Object();
    private int senderPoolSize = 100;
    private String senderClass;
-   private final Map<MessageSender, Boolean> messageSendersMap;
-   private final Properties messageSenderProperties;
-   private Queue<MessageSender> availableSenders;
-
-   public MessageSenderManager() {
-      super();
-      messageSenderProperties = new Properties();
-      availableSenders = new LinkedBlockingQueue<MessageSender>(senderPoolSize);
-      messageSendersMap = new ConcurrentHashMap<MessageSender, Boolean>();
-   }
+   private final Properties messageSenderProperties = new Properties();
+   private Queue<MessageSender> availableSenders = new ConcurrentLinkedQueue<>();
+   private List<MessageSender> allSenders = new ArrayList<>();
 
    public void setMessageSenderProperty(final String property, final String value) {
       messageSenderProperties.put(property, value);
@@ -59,6 +48,7 @@ public class MessageSenderManager {
    }
 
    public void init() throws Exception {
+      availableSenders.clear();
       for (int i = 0; i < senderPoolSize; i++) {
          MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
          addSenderInstance(sender);
@@ -67,41 +57,34 @@ public class MessageSenderManager {
 
    /**
     * adds {@link MessageSender} into available senders and initializes it
-    * 
+    *
     * @param sender
     * @throws Exception
-    *            if initialization of sender fails
+    *       if initialization of sender fails
     */
    public void addSenderInstance(MessageSender sender) throws Exception {
       sender.init();
-      messageSendersMap.put(sender, false);
       availableSenders.add(sender);
+      allSenders.add(sender);
    }
 
-   public synchronized MessageSender acquireSender() throws Exception {
-      if (availableSenders.size() > 0) {
-         final MessageSender messageSender = availableSenders.poll();
-         messageSendersMap.put(messageSender, true);
-         return messageSender;
+   public MessageSender acquireSender() throws Exception {
+      MessageSender ms = availableSenders.poll();
+      if (ms != null) {
+         return ms;
       } else {
          throw new PerfCakeException("MessageSender pool is empty.");
       }
    }
 
    public void releaseSender(final MessageSender messageSender) {
-      synchronized (syncLock) {
-         if (messageSendersMap.get(messageSender)) {
-            availableSenders.add(messageSender);
-            messageSendersMap.put(messageSender, false);
-         }
-      }
+      availableSenders.offer(messageSender);
    }
 
    public void releaseAllSenders() {
-      synchronized (syncLock) {
-         final Set<MessageSender> senderSet = messageSendersMap.keySet();
-         for (final MessageSender sender : senderSet) {
-            releaseSender(sender);
+      for (MessageSender ms : allSenders) {
+         if (!availableSenders.contains(ms)) {
+            availableSenders.offer(ms);
          }
       }
    }
@@ -111,9 +94,8 @@ public class MessageSenderManager {
    }
 
    public void close() throws PerfCakeException {
-      final Iterator<MessageSender> iterator = messageSendersMap.keySet().iterator();
-      while (iterator.hasNext()) {
-         iterator.next().close();
+      for (MessageSender ms: allSenders) {
+         ms.close();
       }
    }
 
@@ -123,7 +105,6 @@ public class MessageSenderManager {
 
    public void setSenderPoolSize(final int senderPoolSize) {
       this.senderPoolSize = senderPoolSize;
-      availableSenders = new LinkedBlockingQueue<MessageSender>(senderPoolSize);
    }
 
    public String getSenderClass() {
@@ -134,7 +115,4 @@ public class MessageSenderManager {
       this.senderClass = senderClass;
    }
 
-   public Map<MessageSender, Boolean> getMessageSendersMap() {
-      return messageSendersMap;
-   }
 }

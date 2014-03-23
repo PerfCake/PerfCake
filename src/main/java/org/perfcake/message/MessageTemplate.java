@@ -25,6 +25,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.perfcake.util.Utils;
 import org.perfcake.util.properties.DefaultPropertyGetter;
 import org.perfcake.validation.MessageValidator;
@@ -39,18 +40,20 @@ public class MessageTemplate implements Serializable {
 
    private static final String propertyPattern = "[^\\\\](#\\{([^#\\{:]+)(:[^#\\{:]*)?})";
 
+   private Logger log = Logger.getLogger(MessageTemplate.class);
+
    private final Message message;
    private final long multiplicity;
    private final List<MessageValidator> validators;// may be empty
-   private transient Matcher matcher;
+   private transient Pattern pattern;
 
-   public Matcher getMatcher() {
-      return matcher;
+   public Matcher getMatcher(String text) {
+      return pattern != null ? pattern.matcher(text) : null;
    }
 
    public MessageTemplate(final Message message, final long multiplicity, final List<MessageValidator> validators) {
       this.message = message;
-      prepareMatcher();
+      preparePattern();
       this.multiplicity = multiplicity;
       this.validators = validators;
    }
@@ -60,10 +63,10 @@ public class MessageTemplate implements Serializable {
    }
 
    public Message getFilteredMessage(final Properties props) {
-      if (getMatcher() != null) {
+      if (pattern != null) {
          final Message m = MessageFactory.getMessage();
          String text = this.getMessage().getPayload().toString();
-         text = Utils.filterProperties(text, getMatcher(), new DefaultPropertyGetter(props));
+         text = Utils.filterProperties(text, getMatcher(text), new DefaultPropertyGetter(props));
 
          m.setPayload(text);
 
@@ -73,15 +76,19 @@ public class MessageTemplate implements Serializable {
       }
    }
 
-   private void prepareMatcher() {
-      this.matcher = null;
+   private void preparePattern() {
+      this.pattern = null;
 
       // find out if there are any attributes in the text message to be replaced
       if (message.getPayload() instanceof String) {
          final String filteredString = (String) message.getPayload();
-         final Matcher matcher = Pattern.compile(propertyPattern).matcher(filteredString);
+         final Pattern pattern = Pattern.compile(propertyPattern);
+         final Matcher matcher = pattern.matcher(filteredString);
          if (matcher.find()) {
-            this.matcher = matcher;
+            if (log.isDebugEnabled()) {
+               log.debug("Created matching pattern for the message payload with properties.");
+            }
+            this.pattern = pattern;
          }
       }
 

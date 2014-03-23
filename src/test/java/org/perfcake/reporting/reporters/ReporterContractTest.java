@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,10 +18,6 @@
  * -----------------------------------------------------------------------/
  */
 package org.perfcake.reporting.reporters;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
@@ -36,6 +32,10 @@ import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.reporting.destinations.DummyDestination.ReportAssert;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReporterContractTest {
 
@@ -135,6 +135,7 @@ public class ReporterContractTest {
       Assert.assertEquals(dr.getLastMethod(), "doReport");
 
       rm.reset();
+      Assert.assertEquals((long) dr.getMaxIteration(), 0l);
       Assert.assertEquals(dr.getLastMethod(), "doReset");
 
       Thread.sleep(10);
@@ -192,21 +193,28 @@ public class ReporterContractTest {
 
       d2.setReportAssert(new ReportAssert() {
 
-         private boolean first = true;
+         private int run = 0;
 
          @Override
          public void report(final Measurement m) {
-            if (first) {
+            if (run == 0) {
                Assert.assertEquals(m.getPercentage(), 0);
                Assert.assertEquals(m.get(), 10d);
                Assert.assertEquals(m.get("avg"), 0d);
 
-               first = false;
-            } else {
+               run = 1;
+            } else if (run == 1) {
                Assert.assertEquals(m.getPercentage(), 8);
                Assert.assertEquals((double) m.get(), 10d);
                Assert.assertEquals(m.get("avg"), 39.5d);
                crc.incrementAndGet();
+               run = 2;
+            } else {
+               Assert.assertEquals(m.getPercentage(), 10);
+               Assert.assertEquals((double) m.get(), 10d);
+               Assert.assertEquals(m.get("avg"), 49.5d);
+               crc.incrementAndGet();
+               run = 3;
             }
          }
       });
@@ -244,7 +252,7 @@ public class ReporterContractTest {
 
       rm.stop();
 
-      Assert.assertEquals(crc.get(), 3);
+      Assert.assertEquals(crc.get(), 4);
 
       d1.setReportAssert(null);
       d2.setReportAssert(null);
@@ -283,8 +291,8 @@ public class ReporterContractTest {
       Assert.assertEquals(lastPercentage, 100d);
       rm.stop();
 
-      Assert.assertEquals(ri.getPercentage(), 0d);
-      Assert.assertEquals(ri.getIteration(), -1L);
+      Assert.assertEquals(ri.getPercentage(), 100d);
+      Assert.assertEquals(ri.getIteration(), 999L);
    }
    // what happens if last iteration is reached
 }
