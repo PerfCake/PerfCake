@@ -97,8 +97,6 @@ public class ScenarioFactory {
    /**
     * Parse the <code>sender</code> element into a {@link AbstractMessageGenerator} instance.
     *
-    * @param scenarioNode DOM representation of the <code>performance</code> element of
-    *                     the scenario's definition.
     * @return A message generator.
     * @throws InstantiationException
     * @throws IllegalAccessException
@@ -134,8 +132,6 @@ public class ScenarioFactory {
     * Parse the <code>sender</code> element into a {@link MessageSenderManager} instance.
     *
     * @param senderPoolSize Size of the message sender pool.
-    * @param scenarioNode   DOM representation of the <code>performance</code> element of
-    *                       the scenario's definition.
     * @return A message sender manager.
     */
    public MessageSenderManager parseSender(final int senderPoolSize) throws PerfCakeException {
@@ -163,8 +159,7 @@ public class ScenarioFactory {
    /**
     * Parse the <code>messages</code> element into a message store.
     *
-    * @param scenarioNode DOM representation of the <code>performance</code> element of
-    *                     the scenario's definition.
+    * @param validatorManager ValidatorManager carrying all parsed validators, these will be associated with the message templates.
     * @return Message store in a form of {@link Map}&lt;{@link Message}, {@link Long}&gt; where the keys are stored messages and the values
     * are multiplicity of how many times the message is sent in a single
     * iteration.
@@ -206,18 +201,18 @@ public class ScenarioFactory {
                   currentMessageMultiplicity = Long.valueOf(m.getMultiplicity());
                }
 
-               final List<MessageValidator> currentMessageValidators = new LinkedList<>();
+               final List<String> currentMessageValidatorIds = new ArrayList<>();
                for (ValidatorRef ref : m.getValidatorRef()) {
                   MessageValidator validator = validatorManager.getValidator(ref.getId());
                   if (validator == null) {
                      throw new PerfCakeException(String.format("Validator with id %s not found.", ref.getId()));
                   }
 
-                  currentMessageValidators.add(validator);
+                  currentMessageValidatorIds.add(ref.getId());
                }
 
                // create message to be send
-               MessageTemplate currentMessageToSend = new MessageTemplate(currentMessage, currentMessageMultiplicity, currentMessageValidators);
+               MessageTemplate currentMessageToSend = new MessageTemplate(currentMessage, currentMessageMultiplicity, currentMessageValidatorIds);
 
                log.info("'- Message (" + (messageUrl != null ? messageUrl.toString() : "") + "), " + currentMessageMultiplicity + "x");
                if (log.isDebugEnabled()) {
@@ -239,8 +234,6 @@ public class ScenarioFactory {
    /**
     * Parse the <code>reporting</code> element into a {@link ReportManager} instance.
     *
-    * @param scenarioNode DOM representation of the <code>performance</code> element of
-    *                     the scenario's definition.
     * @return Report manager.
     * @throws InstantiationException
     * @throws IllegalAccessException
@@ -315,8 +308,7 @@ public class ScenarioFactory {
                }
 
                MessageValidator messageValidator = (MessageValidator) Class.forName(validatorClass, false, ScenarioExecution.class.getClassLoader()).newInstance();
-               messageValidator.setAssertions(v.getValue(), "1");
-               // TODO messageValidator.setAssertions(validatorNodes.item(i), "1");// add validator to validator mgr coll
+               messageValidator.setAssertions(v.getValue());
 
                validatorManager.addValidator(v.getId(), messageValidator);
                validatorManager.setEnabled(true);

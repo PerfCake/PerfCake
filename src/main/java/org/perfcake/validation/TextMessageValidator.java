@@ -28,25 +28,25 @@ import org.perfcake.message.Message;
 /**
  * 
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class TextMessageValidator implements MessageValidator {
 
    private static final Logger log = Logger.getLogger(TextMessageValidator.class);
 
-   private final HashMap<String, String> expectedOutputs = new HashMap<>();// 1, expected output
-
-   // ext: more possible expectedOutputs
+   private String expectedOutput = "";
 
    @Override
    public boolean isValid(final Message message) {
       final String trimmedLinesOfPayload = StringUtil.trimLines(message.getPayload().toString());
       final String resultPayload = StringUtil.trim(trimmedLinesOfPayload);
-      final String expectedPayload = expectedOutputs.get("1");
 
-      if (!resultPayload.matches(expectedPayload)) {
+      if (!resultPayload.matches(expectedOutput)) {
          if (log.isEnabledFor(Level.ERROR)) {
             // TODO log more verbose description at levels like warn/info/debug
-            log.error("Message is not valid.");
+            if (log.isInfoEnabled()) {
+               log.info(String.format("Message payload '%s' is not equal to the expected payload '%s'.", message.getPayload().toString(), expectedOutput));
+            }
             return false;
          }
       }
@@ -55,9 +55,8 @@ public class TextMessageValidator implements MessageValidator {
    }
 
    @Override
-   public void setAssertions(final String validationRule, final String msgId) {
-      final String trimmedLinesOfExpected = StringUtil.trimLines(validationRule);
-      expectedOutputs.put("1", StringUtil.trim(trimmedLinesOfExpected));
+   public void setAssertions(final String validationRule) {
+      expectedOutput = StringUtil.trim(StringUtil.trimLines(validationRule));
    }
 
 }

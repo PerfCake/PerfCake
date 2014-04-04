@@ -46,8 +46,6 @@ public interface MessageValidator {
     * @param validationRule
     *           A part of the XML configuration file specifying the assertion. It is the responsibility of the validator to
     *           understand this.
-    * @param msgId
-    *           Messages with this message id should be validated using this validator.
     */
-   public void setAssertions(String validationRule, String msgId);
+   public void setAssertions(String validationRule);
 }

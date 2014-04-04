@@ -26,8 +26,7 @@ import org.perfcake.message.ReceivedMessage;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Queue;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * A manager of validator that should validate message responses.
@@ -40,7 +39,7 @@ public class ValidatorManager {
    /**
     * A map of validators: validator id => validator instance
     */
-   private final TreeMap<String, MessageValidator> validators = new TreeMap<>();
+   private final Map<String, MessageValidator> validators = new TreeMap<>();
    /**
     * A logger.
     */
@@ -121,6 +120,21 @@ public class ValidatorManager {
    }
 
    /**
+    * Get all the validators requested in the list of ids.
+    * @param validatorIds A list of ids of validators to be returned.
+    * @return The list of requested validators.
+    */
+   public List<MessageValidator> getValidators(final List<String> validatorIds) {
+      List<MessageValidator> _validators = new ArrayList<>();
+
+      for(String id: validatorIds) {
+         _validators.add(getValidator(id));
+      }
+
+      return _validators;
+   }
+
+   /**
     * Starts the validation process. This mainly means starting a new validator thread.
     */
    public void startValidation() {
@@ -181,12 +195,12 @@ public class ValidatorManager {
    }
 
    /**
-    * Enables/disables validation. This only takes effect before the validation is started.
+    * Enables/disables validation. This only takes effect before the validation is started and or finished.
     *
-    * @param enabled
+    * @param enabled specifies whether we want the validation to be enabled.
     */
    public void setEnabled(final boolean enabled) {
-      if (enabled == true || finished == true) {
+      if (enabled || finished) {
          this.enabled = enabled;
       } else {
          log.error("Validation cannot be disabled while the validation is in progress.");
@@ -224,7 +238,7 @@ public class ValidatorManager {
 
          try {
             while (!validationThread.isInterrupted() && (receivedMessage = resultMessages.poll()) != null) {
-               for (final MessageValidator validator : receivedMessage.getSentMessage().getValidators()) {
+               for (final MessageValidator validator : getValidators(receivedMessage.getSentMessage().getValidatorIds())) {
                   isMessageValid = validator.isValid(new Message(receivedMessage.getPayload()));
                   if (log.isTraceEnabled()) {
                      log.trace(String.format("Message response %s validated with %s returns %s.", receivedMessage.getPayload().toString(), validator.toString(), String.valueOf(isMessageValid)));
@@ -241,7 +255,7 @@ public class ValidatorManager {
          }
 
          if (log.isInfoEnabled()) {
-            log.info("The validator thread finished with result " + (allMessagesValid ? "all messages are valid." : "there were validation errors."));
+            log.info("The validator thread finished with the result: " + (allMessagesValid ? "all messages are valid." : "there were validation errors."));
          }
 
          finished = true;

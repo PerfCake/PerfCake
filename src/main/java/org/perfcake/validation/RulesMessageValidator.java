@@ -19,14 +19,6 @@
  */
 package org.perfcake.validation;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.drools.RuleBase;
 import org.drools.RuleBaseFactory;
@@ -34,30 +26,29 @@ import org.drools.StatefulSession;
 import org.drools.rule.Package;
 import org.perfcake.message.Message;
 
+import java.io.BufferedReader;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 /**
- * 
  * @author Marek Baluch <baluchw@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class RulesMessageValidator implements MessageValidator {
 
-   private Package pkg;
-
    private static final Logger log = Logger.getLogger(RulesMessageValidator.class);
-
-   private final HashMap<String, HashMap<Integer, String>> assertionsMap = new HashMap<>();// 1, <lineNo, rule>
-
-   private final HashMap<String, Package> packagesMap = new HashMap<>();// 1, pkg --> ext: more pkgs to one message
-
-   private static String validatorDSL = "messageValidator.dsl";
+   private static final String validatorDSL = "messageValidator.dsl";
+   private Package pkg;
+   private HashMap<Integer, String> assertions = new HashMap<>();// <lineNo, rule>
+   private Package pack;
 
    @Override
    public boolean isValid(final Message message) {
-      HashMap<Integer, String> assertions;
       final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
-      assertions = assertionsMap.get("1");
-      pkg = packagesMap.get("1");
 
-      ruleBase.addPackage(pkg);
+      ruleBase.addPackage(pack);
       final StatefulSession session = ruleBase.newStatefulSession();
 
       final Map<Integer, String> assertionsCopy = new HashMap<>();
@@ -70,15 +61,14 @@ public class RulesMessageValidator implements MessageValidator {
       session.dispose();
 
       for (final Entry<Integer, String> entry : assertionsCopy.entrySet()) {
-         if (log.isEnabledFor(Level.ERROR)) {
-            log.error("failed assertion: " + entry.getValue());
+         if (log.isInfoEnabled()) {
+            log.info(String.format("Drools message validation failed with message '%s' and rule '%s'.", message.toString(), entry.getValue()));
          }
       }
 
       if (!assertionsCopy.isEmpty()) {
-         if (log.isEnabledFor(Level.ERROR)) {
-            // TODO log more verbose message at warn/info/debug levels
-            log.error("Message is not valid");
+         if (log.isInfoEnabled()) {
+            log.info(String.format("Drools message validation failed with message '%s' - some rules failed, see previous log for more details.", message.toString()));
          }
          return false;
       }
@@ -87,8 +77,8 @@ public class RulesMessageValidator implements MessageValidator {
    }
 
    @Override
-   public void setAssertions(final String validationRule, final String msgId) {
-      final HashMap<Integer, String> assertions = new HashMap<>();
+   public void setAssertions(final String validationRule) {
+      assertions = new HashMap<>();
       try {
          final BufferedReader br = new BufferedReader(new StringReader(validationRule));
          int lineNo = 0;
@@ -101,23 +91,10 @@ public class RulesMessageValidator implements MessageValidator {
                lineNo++;
             }
          }
-         if (this.assertionsMap != null) {
-            this.assertionsMap.put(msgId, assertions);
-         }
-         if (this.packagesMap != null) {
-            // build rules - assertions -> pkg
-            try {
-               pkg = RulesBuilder.build(assertions, validatorDSL);
-               this.packagesMap.put("1", pkg);
-            } catch (final Exception ex) {
-               if (log.isEnabledFor(Level.ERROR)) {
-                  log.error("Rule building exception, " + ex.getMessage());
-               }
-            }
-         }
+         pack = RulesBuilder.build(assertions, validatorDSL);
 
-      } catch (final IOException ex) {
-         java.util.logging.Logger.getLogger(RulesMessageValidator.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+      } catch (final Exception ex) {
+         log.error("Error creating Drools base message validator.", ex);
       }
    }
 }

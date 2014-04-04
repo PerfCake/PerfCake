@@ -138,7 +138,7 @@ public class ScenarioParserTest {
          Assert.assertEquals(properties1.get("m_property2"), "m_p_value2", "message1 property2");
          Assert.assertEquals(properties1.get("m_property3"), "m_p_value3", "message1 property3");
          // Message 1 validatorIds
-         final List<MessageValidator> validatorsList1 = mts1.getValidators();
+         final List<MessageValidator> validatorsList1 = validatorManager.getValidators(mts1.getValidatorIds());
          Assert.assertEquals(validatorsList1.size(), 2, "message1 validatorIdList size");
          Assert.assertTrue(validatorsList1.get(0).isValid(new Message("Hello, this is Stupid validator")));
          Assert.assertFalse(validatorsList1.get(0).isValid(new Message("Hello, this is Smart validator")));
@@ -158,7 +158,7 @@ public class ScenarioParserTest {
          final Properties properties2 = m2.getProperties();
          Assert.assertEquals(properties2.size(), 0, "message2 properties count");
          // Message 2 validatorIds
-         final List<MessageValidator> validatorsList2 = mts2.getValidators();
+         final List<MessageValidator> validatorsList2 = validatorManager.getValidators(mts2.getValidatorIds());
          Assert.assertEquals(validatorsList2.size(), 1, "message2 validatorIdList size");
          Assert.assertTrue(validatorsList2.get(0).isValid(new Message("Go for fishing!")));
          Assert.assertFalse(validatorsList2.get(0).isValid(new Message("Go for mushroom picking! There are no Fish.")));
