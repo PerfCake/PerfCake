@@ -19,19 +19,6 @@
  */
 package org.perfcake.model;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
@@ -44,12 +31,8 @@ import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.model.Scenario.Generator;
-import org.perfcake.model.Scenario.Messages;
+import org.perfcake.model.Scenario.*;
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
-import org.perfcake.model.Scenario.Reporting;
-import org.perfcake.model.Scenario.Sender;
-import org.perfcake.model.Scenario.Validation;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
@@ -58,36 +41,50 @@ import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidatorManager;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.Properties;
+
 /**
  * TODO review logging
- * 
+ *
  * @author Jiří Sedláček <jiri@sedlackovi.cz>
- * 
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class ScenarioFactory {
 
+   public static final Logger log = Logger.getLogger(ScenarioFactory.class);
    private static final String DEFAULT_GENERATOR_PACKAGE = "org.perfcake.message.generator";
    private static final String DEFAULT_SENDER_PACKAGE = "org.perfcake.message.sender";
    private static final String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
    private static final String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
    private static final String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
-
-   public static final Logger log = Logger.getLogger(ScenarioFactory.class);
-
    private org.perfcake.model.Scenario scenario;
 
    public ScenarioFactory(org.perfcake.model.Scenario model) {
-      if (model == null)
+      if (model == null) {
          throw new NullPointerException("model has to be passed and cannot be null");
+      }
       this.scenario = model;
+   }
+
+   private static Properties getPropertiesFromList(List<Property> properties) {
+      Properties props = new Properties();
+      for (Property p : properties) {
+         props.setProperty(p.getName(), p.getValue());
+      }
+      return props;
    }
 
    /**
     * Parses RunInfo from generator configuration.
-    * 
+    *
     * @return RunInfo object representing the configuration
-    * @throws PerfCakeException
-    *            when there is a parse exception
+    * @throws PerfCakeException when there is a parse exception
     */
    public RunInfo parseRunInfo() throws PerfCakeException {
       Generator gen = scenario.getGenerator();
@@ -99,12 +96,10 @@ public class ScenarioFactory {
 
    /**
     * Parse the <code>sender</code> element into a {@link AbstractMessageGenerator} instance.
-    * 
-    * @param scenarioNode
-    *           DOM representation of the <code>performance</code> element of
-    *           the scenario's definition.
+    *
+    * @param scenarioNode DOM representation of the <code>performance</code> element of
+    *                     the scenario's definition.
     * @return A message generator.
-    * 
     * @throws InstantiationException
     * @throws IllegalAccessException
     * @throws ClassNotFoundException
@@ -115,7 +110,7 @@ public class ScenarioFactory {
       try {
          Generator gen = scenario.getGenerator();
          String generatorClass = gen.getClazz();
-         if (generatorClass.indexOf(".") < 0) {
+         if (!generatorClass.contains(".")) {
             generatorClass = DEFAULT_GENERATOR_PACKAGE + "." + generatorClass;
          }
          log.info("--- Generator (" + generatorClass + ") ---");
@@ -137,12 +132,10 @@ public class ScenarioFactory {
 
    /**
     * Parse the <code>sender</code> element into a {@link MessageSenderManager} instance.
-    * 
-    * @param senderPoolSize
-    *           Size of the message sender pool.
-    * @param scenarioNode
-    *           DOM representation of the <code>performance</code> element of
-    *           the scenario's definition.
+    *
+    * @param senderPoolSize Size of the message sender pool.
+    * @param scenarioNode   DOM representation of the <code>performance</code> element of
+    *                       the scenario's definition.
     * @return A message sender manager.
     */
    public MessageSenderManager parseSender(final int senderPoolSize) throws PerfCakeException {
@@ -150,7 +143,7 @@ public class ScenarioFactory {
 
       Sender sen = scenario.getSender();
       String senderClass = sen.getClazz();
-      if (senderClass.indexOf(".") < 0) {
+      if (!senderClass.contains(".")) {
          senderClass = DEFAULT_SENDER_PACKAGE + "." + senderClass;
       }
       log.info("--- Sender (" + senderClass + ") ---");
@@ -169,13 +162,12 @@ public class ScenarioFactory {
 
    /**
     * Parse the <code>messages</code> element into a message store.
-    * 
-    * @param scenarioNode
-    *           DOM representation of the <code>performance</code> element of
-    *           the scenario's definition.
+    *
+    * @param scenarioNode DOM representation of the <code>performance</code> element of
+    *                     the scenario's definition.
     * @return Message store in a form of {@link Map}&lt;{@link Message}, {@link Long}&gt; where the keys are stored messages and the values
-    *         are multiplicity of how many times the message is sent in a single
-    *         iteration.
+    * are multiplicity of how many times the message is sent in a single
+    * iteration.
     * @throws IOException
     * @throws FileNotFoundException
     */
@@ -246,10 +238,9 @@ public class ScenarioFactory {
 
    /**
     * Parse the <code>reporting</code> element into a {@link ReportManager} instance.
-    * 
-    * @param scenarioNode
-    *           DOM representation of the <code>performance</code> element of
-    *           the scenario's definition.
+    *
+    * @param scenarioNode DOM representation of the <code>performance</code> element of
+    *                     the scenario's definition.
     * @return Report manager.
     * @throws InstantiationException
     * @throws IllegalAccessException
@@ -271,7 +262,7 @@ public class ScenarioFactory {
                if (r.isEnabled()) {
                   Properties currentReporterProperties = getPropertiesFromList(r.getProperty());
                   String reportClass = r.getClazz();
-                  if (reportClass.indexOf(".") < 0) {
+                  if (!reportClass.contains(".")) {
                      reportClass = DEFAULT_REPORTER_PACKAGE + "." + reportClass;
                   }
                   Reporter currentReporter = (Reporter) ObjectFactory.summonInstance(reportClass, currentReporterProperties);
@@ -281,7 +272,7 @@ public class ScenarioFactory {
                   for (Reporting.Reporter.Destination d : r.getDestination()) {
                      if (d.isEnabled()) {
                         String destClass = d.getClazz();
-                        if (destClass.indexOf(".") < 0) {
+                        if (!destClass.contains(".")) {
                            destClass = DEFAULT_DESTINATION_PACKAGE + "." + destClass;
                         }
                         log.info(" '- Destination (" + destClass + ")");
@@ -319,7 +310,7 @@ public class ScenarioFactory {
             for (Validation.Validator v : validation.getValidator()) {
 
                String validatorClass = v.getClazz();
-               if (validatorClass.indexOf(".") < 0) {
+               if (!validatorClass.contains(".")) {
                   validatorClass = DEFAULT_VALIDATION_PACKAGE + "." + validatorClass;
                }
 
@@ -341,13 +332,5 @@ public class ScenarioFactory {
    public Properties parseScenarioProperties() throws PerfCakeException {
       log.info("--- Scenario properties ---");
       return getPropertiesFromList(scenario.getProperties().getProperty());
-   }
-
-   private static Properties getPropertiesFromList(List<Property> properties) {
-      Properties props = new Properties();
-      for (Property p : properties) {
-         props.setProperty(p.getName(), p.getValue());
-      }
-      return props;
    }
 }
