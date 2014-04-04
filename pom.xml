@@ -70,6 +70,7 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <maven.exec.plugin.version>1.2</maven.exec.plugin.version>
+      <pit.version>0.33</pit.version>
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
       <server.port>8080</server.port>
@@ -200,6 +201,19 @@
                </execution>
             </executions>
          </plugin>
+         <plugin>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-maven</artifactId>
+            <version>${pit.version}</version>
+            <configuration>
+               <targetClasses>
+                  <param>org.perfcake.*</param>
+               </targetClasses>
+               <targetTests>
+                  <param>org.perfcake.*</param>
+               </targetTests>
+            </configuration>
+         </plugin>
       </plugins>
       <pluginManagement>
          <plugins>
@@ -249,7 +263,7 @@
                      <argument>-Dlog4j.configuration=file://${basedir}/src/main/resources/log4j.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath />
+                     <classpath/>
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
@@ -329,7 +343,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <ignore />
+                              <ignore/>
                            </action>
                         </pluginExecution>
                      </pluginExecutions>
