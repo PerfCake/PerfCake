@@ -45,7 +45,9 @@ public class CSVDestinationTest {
    private Measurement measurementWithoutDefault;
    private Measurement measurementStringResult;
    private static final long ITERATION = 12345;
-   private static final String PATH = "test-output/out.csv";
+   private static final String testOutputDir = "test-output";
+   private File csvOutputPath = new File(testOutputDir);
+   private static final String PATH = testOutputDir + "/out.csv";
    private static final String TIMESTAMP = String.valueOf(Calendar.getInstance().getTimeInMillis());
    private static final String DEFAULT_PATH = "perfcake-results-" + TIMESTAMP + ".csv";
 
@@ -68,7 +70,6 @@ public class CSVDestinationTest {
       measurementStringResult.set("StringValue");
       measurementStringResult.set("StringResult", "StringValue2");
 
-      File csvOutputPath = new File("test-output");
       if (!csvOutputPath.exists()) {
          csvOutputPath.mkdir();
       }
@@ -120,10 +121,13 @@ public class CSVDestinationTest {
          destination.report(measurement);
          destination.close();
 
-         assertCSVFileContent(new File(DEFAULT_PATH), "Time;Iterations;" + Measurement.DEFAULT_RESULT + ";another\n34:17:36;" + ITERATION + ";1111.11;222.22");
+
+         assertCSVFileContent(defaultCSVFile, "Time;Iterations;" + Measurement.DEFAULT_RESULT + ";another\n34:17:36;" + ITERATION + ";1111.11;222.22");
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
+      } finally {
+         defaultCSVFile.delete();
       }
    }
 
@@ -227,7 +231,7 @@ public class CSVDestinationTest {
 
    @Test
    public void testReadOnlyFile() throws ReportingException {
-      File readOnlyFile = new File("read-only.file");
+      File readOnlyFile = new File(csvOutputPath, "read-only.file");
       readOnlyFile.setReadOnly();
       readOnlyFile.deleteOnExit();
       destinationProperties.setProperty("path", readOnlyFile.getPath());
@@ -242,6 +246,8 @@ public class CSVDestinationTest {
          Assert.fail(e.getMessage());
       } catch (ReportingException re) {
          Assert.assertEquals(re.getMessage(), "Could not append a report to the file: " + readOnlyFile.getPath());
+      } finally {
+         readOnlyFile.delete();
       }
    }
 
