@@ -40,7 +40,7 @@ public class MessageTemplate implements Serializable {
 
    private static final String propertyPattern = "[^\\\\](#\\{([^#\\{:]+)(:[^#\\{:]*)?})";
 
-   private Logger log = Logger.getLogger(MessageTemplate.class);
+   private transient Logger log = Logger.getLogger(MessageTemplate.class);
 
    private final Message message;
    private final long multiplicity;
