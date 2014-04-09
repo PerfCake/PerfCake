@@ -27,9 +27,9 @@ import java.util.Map;
 /**
  * A result of the smallest measurement unit - an iteration.
  * One should obtain a new instance of a MeasurementUnit using {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()}.
- *
+ * 
  * @author Martin Večeřa <marvenec@gmail.com>
- *
+ * 
  */
 public class MeasurementUnit implements Serializable {
 
@@ -53,7 +53,7 @@ public class MeasurementUnit implements Serializable {
    /**
     * Total measured time.
     */
-   private long totalTime = 0;
+   private double totalTime = 0;
 
    /**
     * Custom results reported by a sender.
@@ -67,7 +67,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Constructor is protected. Use {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()} to obtain a new instance.
-    *
+    * 
     * @param iteration
     *           Current iteration number.
     */
@@ -77,7 +77,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Append a custom result.
-    *
+    * 
     * @param label
     *           The label of the result.
     * @param value
@@ -89,7 +89,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Get immutable map with all the custom results.
-    *
+    * 
     * @return An immutable copy of the custom results map.
     */
    public Map<String, Object> getResults() {
@@ -98,7 +98,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Get a custom result for the given label.
-    *
+    * 
     * @param label
     *           The label of the custom result.
     * @return The value for the given custom result.
@@ -126,38 +126,40 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Gets total time measured during all measurements done by this Measurement Unit (all time periods between calls to {@link #startMeasure()} and {@link #stopMeasure()} in milliseconds.
-    *
+    * 
     * @return The total time measured by this unit in milliseconds.
     */
-   public long getTotalTime() {
+   public double getTotalTime() {
       return totalTime;
    }
 
    /**
     * Gets time of the last measurement (time period between calls to {@link #startMeasure()} and {@link #stopMeasure()} in milliseconds.
-    *
+    * 
     * @return Time of the last measurement in milliseconds.
     */
-   public long getLastTime() {
+   public double getLastTime() {
       if (startTime == -1 || stopTime == -1) {
          return -1;
       }
 
-      return (stopTime - startTime) / 1_000_000;
+      return (stopTime - startTime) / 1_000_000.0;
    }
 
    /**
     * Checks whether this measurement unit was first started after the specified time (Unix time in millis)
-    * @param ref The reference time to compare to the start of the measurement
+    * 
+    * @param ref
+    *           The reference time to compare to the start of the measurement
     * @return true if this measurement unit was first started after the specified reference time
     */
    public boolean startedAfter(long ref) {
-      return  timeStarted > ref;
+      return timeStarted > ref;
    }
 
    /**
     * Gets the number of current iteration of this Measurement Unit.
-    *
+    * 
     * @return The number of iteration.
     */
    public long getIteration() {
@@ -166,38 +168,49 @@ public class MeasurementUnit implements Serializable {
 
    @Override
    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + (int) (iteration ^ (iteration >>> 32));
-      result = prime * result + ((measurementResults == null) ? 0 : measurementResults.hashCode());
-      result = prime * result + (int) (startTime ^ (startTime >>> 32));
-      result = prime * result + (int) (stopTime ^ (stopTime >>> 32));
-      result = prime * result + (int) (totalTime ^ (totalTime >>> 32));
+      int result;
+      long temp;
+      result = (int) (iteration ^ (iteration >>> 32));
+      result = 31 * result + (int) (startTime ^ (startTime >>> 32));
+      result = 31 * result + (int) (stopTime ^ (stopTime >>> 32));
+      temp = Double.doubleToLongBits(totalTime);
+      result = 31 * result + (int) (temp ^ (temp >>> 32));
+      result = 31 * result + measurementResults.hashCode();
+      result = 31 * result + (int) (timeStarted ^ (timeStarted >>> 32));
       return result;
    }
 
    @Override
-   public boolean equals(final Object obj) {
-      if (this == obj)
+   public boolean equals(Object obj) {
+      if (this == obj) {
          return true;
-      if (obj == null)
+      }
+      if (obj == null || getClass() != obj.getClass()) {
          return false;
-      if (getClass() != obj.getClass())
+      }
+
+      MeasurementUnit that = (MeasurementUnit) obj;
+
+      if (iteration != that.iteration) {
          return false;
-      MeasurementUnit other = (MeasurementUnit) obj;
-      if (iteration != other.iteration)
+      }
+      if (startTime != that.startTime) {
          return false;
-      if (measurementResults == null) {
-         if (other.measurementResults != null)
-            return false;
-      } else if (!measurementResults.equals(other.measurementResults))
+      }
+      if (stopTime != that.stopTime) {
          return false;
-      if (startTime != other.startTime)
+      }
+      if (timeStarted != that.timeStarted) {
          return false;
-      if (stopTime != other.stopTime)
+      }
+      if (Double.compare(that.totalTime, totalTime) != 0) {
          return false;
-      if (totalTime != other.totalTime)
+      }
+      if (!measurementResults.equals(that.measurementResults)) {
          return false;
+      }
+
       return true;
    }
+
 }

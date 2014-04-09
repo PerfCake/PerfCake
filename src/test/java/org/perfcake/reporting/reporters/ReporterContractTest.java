@@ -19,6 +19,10 @@
  */
 package org.perfcake.reporting.reporters;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
@@ -32,10 +36,6 @@ import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.reporting.destinations.DummyDestination.ReportAssert;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReporterContractTest {
 
@@ -96,20 +96,20 @@ public class ReporterContractTest {
       rm.stop();
       rm.reset();
       Assert.assertEquals(mu.getIteration(), 499);
-      Assert.assertEquals(mu.getLastTime(), -1);
-      Assert.assertEquals(mu.getTotalTime(), 0);
+      Assert.assertEquals(mu.getLastTime(), -1.0);
+      Assert.assertEquals(mu.getTotalTime(), 0.0);
 
       mu.startMeasure();
       Thread.sleep(500);
       mu.stopMeasure();
-      Assert.assertTrue(mu.getTotalTime() < 600); // we slept only for 500ms
-      Assert.assertTrue(mu.getLastTime() < 600);
+      Assert.assertTrue(mu.getTotalTime() < 600.0); // we slept only for 500ms
+      Assert.assertTrue(mu.getLastTime() < 600.0);
 
       mu.startMeasure();
       Thread.sleep(500);
       mu.stopMeasure();
-      Assert.assertTrue(mu.getTotalTime() < 1200); // we slept only for 2x500ms
-      Assert.assertTrue(mu.getLastTime() < 600);
+      Assert.assertTrue(mu.getTotalTime() < 1200.0); // we slept only for 2x500ms
+      Assert.assertTrue(mu.getLastTime() < 600.0);
    }
 
    @Test(priority = 3)
@@ -176,14 +176,14 @@ public class ReporterContractTest {
          public void report(final Measurement m) {
             if (first) {
                Assert.assertEquals(m.getIteration(), 0L);
-               Assert.assertEquals(m.get(), 10d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 10);
                Assert.assertEquals(m.get("avg"), 0d);
                Assert.assertEquals(m.get("it"), "1");
 
                first = false;
             } else {
                Assert.assertEquals(m.getIteration(), 99L);
-               Assert.assertEquals(m.get(), 10d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 10);
                Assert.assertEquals(m.get("avg"), 49.5d);
                Assert.assertEquals(m.get("it"), "100");
                crc.incrementAndGet(); // this block will be executed twice, first for iteration, second for time
@@ -199,19 +199,19 @@ public class ReporterContractTest {
          public void report(final Measurement m) {
             if (run == 0) {
                Assert.assertEquals(m.getPercentage(), 0);
-               Assert.assertEquals(m.get(), 10d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 10);
                Assert.assertEquals(m.get("avg"), 0d);
 
                run = 1;
             } else if (run == 1) {
                Assert.assertEquals(m.getPercentage(), 8);
-               Assert.assertEquals((double) m.get(), 10d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 10);
                Assert.assertEquals(m.get("avg"), 39.5d);
                crc.incrementAndGet();
                run = 2;
             } else {
                Assert.assertEquals(m.getPercentage(), 10);
-               Assert.assertEquals((double) m.get(), 10d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 10);
                Assert.assertEquals(m.get("avg"), 49.5d);
                crc.incrementAndGet();
                run = 3;
@@ -235,13 +235,12 @@ public class ReporterContractTest {
          mu.stopMeasure();
          mu.appendResult("avg", (double) i - 1); // AvgAccumulator should be used
          mu.appendResult("it", String.valueOf(i)); // LastValueAccumulator should be used
-         // 15 is the tolarance according to Puškvorec's constant
-         Assert.assertTrue(mu.getTotalTime() < 15L && mu.getTotalTime() >= 10L, "Measurement run for 10ms, so the value should not be much different.");
+         Assert.assertEquals(((Double) mu.getTotalTime()).longValue(), 10, "Measurement runs for 10ms, so the value should not be much different.");
          rm.report(mu);
       }
       Assert.assertEquals(mu.getIteration(), 99);
-      Assert.assertEquals(mu.getLastTime(), 10);
-      Assert.assertEquals(mu.getTotalTime(), 10);
+      Assert.assertEquals(((Double) mu.getLastTime()).longValue(), 10);
+      Assert.assertEquals(((Double) mu.getTotalTime()).longValue(), 10);
       Assert.assertEquals(d1.getLastType(), PeriodType.ITERATION);
       Assert.assertEquals(d2.getLastType(), PeriodType.PERCENTAGE);
 
