@@ -37,7 +37,7 @@ import org.perfcake.util.Utils;
 
 /**
  * The destination that appends the {@link Measurement} into a CSV file.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class CSVDestination implements Destination {
@@ -104,6 +104,7 @@ public class CSVDestination implements Destination {
    public void open() {
       synchronized (this) {
          csvFile = new File(path);
+
          if (csvFile.exists()) {
             switch (appendStrategy) {
                case RENAME:
@@ -116,7 +117,9 @@ public class CSVDestination implements Destination {
                   csvFile = f;
                   break;
                case OVERWRITE:
-                  csvFile.delete();
+                  if (!csvFile.delete()) {
+                     log.warn(String.format("Unable to delete the file %s, forcing append.", csvFile.getAbsolutePath()));
+                  }
                   break;
                case FORCE_APPEND:
                default:
@@ -125,13 +128,15 @@ public class CSVDestination implements Destination {
          }
       }
       if (log.isDebugEnabled()) {
-         log.debug("Output path: " + csvFile.getAbsolutePath());
+         log.debug(String.format("Opened CSV destination to the file %s.", path));
       }
    }
 
    @Override
    public void close() {
-      // nothing to do
+      synchronized (this) {
+         csvFile = null;
+      }
    }
 
    private void presetResultNames(final Measurement m) {
@@ -219,7 +224,7 @@ public class CSVDestination implements Destination {
             bw.append(resultLine);
             bw.newLine();
          } catch (IOException ioe) {
-            throw new ReportingException("Could not append a report to the file: " + csvFile.getPath(), ioe);
+            throw new ReportingException(String.format("Could not append a report to the file %s.", csvFile.getPath()), ioe);
          }
       }
 
@@ -227,7 +232,7 @@ public class CSVDestination implements Destination {
 
    /**
     * Used to read the value of path.
-    * 
+    *
     * @return The path value.
     */
    public String getPath() {
@@ -235,19 +240,24 @@ public class CSVDestination implements Destination {
    }
 
    /**
-    * Used to set the value of path.
-    * 
+    * Used to set the value of path. Once the destination opens the target file, the changes to this property are ignored.
+    *
     * @param path
     *           The path value to set.
     */
    public void setPath(final String path) {
+      synchronized (this) {
+         if (csvFile != null) {
+            throw new UnsupportedOperationException("Changing the value of path after opening the destination is not allowed.");
+         }
+      }
+
       this.path = path;
-      this.csvFile = new File(this.path);
    }
 
    /**
     * Used to read the value of delimiter.
-    * 
+    *
     * @return The delimiter value.
     */
    public String getDelimiter() {
@@ -256,7 +266,7 @@ public class CSVDestination implements Destination {
 
    /**
     * Used to set the value of delimiter.
-    * 
+    *
     * @param delimiter
     *           The delimiter value to set.
     */
@@ -266,7 +276,7 @@ public class CSVDestination implements Destination {
 
    /**
     * Used to read the value of appendStrategy.
-    * 
+    *
     * @return The appendStrategy value.
     */
    public AppendStrategy getAppendStrategy() {
@@ -275,7 +285,7 @@ public class CSVDestination implements Destination {
 
    /**
     * Used to set the value of appendStrategy.
-    * 
+    *
     * @param appendStrategy
     *           The appendStrategy value to set.
     */
