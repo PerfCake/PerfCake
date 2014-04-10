@@ -39,6 +39,7 @@ import org.perfcake.util.Utils;
  * The destination that appends the {@link Measurement} into a CSV file.
  *
  * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class CSVDestination implements Destination {
 
@@ -53,12 +54,12 @@ public class CSVDestination implements Destination {
    private File csvFile = null;
 
    /**
-    * CSV delimiter.
+    * CSV data elements delimiter.
     */
    private String delimiter = ";";
 
    /**
-    * The destination's logger.
+    * Logger.
     */
    private static final Logger log = Logger.getLogger(CSVDestination.class);
 
@@ -68,9 +69,29 @@ public class CSVDestination implements Destination {
    private final List<String> resultNames = new ArrayList<>();
 
    /**
-    * Cached headers in the CSV file
+    * Cached headers in the CSV file.
     */
    private String fileHeaders = null;
+
+   /**
+    * Each line in the output will be prefixed with this string.
+    */
+   private String linePrefix = "";
+
+   /**
+    * Each line in the output will be suffixed with this string.
+    */
+   private String lineSuffix = "";
+
+   /**
+    * New output line delimiter.
+    */
+   private String lineBreak = "\n";
+
+   /**
+    * Skip writing header to the file.
+    */
+   private boolean skipHeader = false;
 
    /**
     * Strategy that is used in case that the output file, that this destination represents
@@ -97,7 +118,7 @@ public class CSVDestination implements Destination {
       /**
        * The measurements are appended to the original file.
        **/
-      FORCE_APPEND;
+      FORCE_APPEND
    }
 
    @Override
@@ -217,12 +238,22 @@ public class CSVDestination implements Destination {
       synchronized (this) {
          final boolean csvFileExists = csvFile.exists();
          try (FileOutputStream fos = new FileOutputStream(csvFile, true); OutputStreamWriter osw = new OutputStreamWriter(fos, Utils.getDefaultEncoding()); BufferedWriter bw = new BufferedWriter(osw)) {
-            if (!csvFileExists) {
+            if (!csvFileExists && !skipHeader) {
                bw.append(fileHeaders);
-               bw.newLine();
+               bw.append(lineBreak);
             }
+
+            if (linePrefix != null && !linePrefix.isEmpty()) {
+               bw.append(linePrefix);
+            }
+
             bw.append(resultLine);
-            bw.newLine();
+
+            if (lineSuffix != null && !lineSuffix.isEmpty()) {
+               bw.append(lineSuffix);
+            }
+
+            bw.append(lineBreak);
          } catch (IOException ioe) {
             throw new ReportingException(String.format("Could not append a report to the file %s.", csvFile.getPath()), ioe);
          }
@@ -231,19 +262,20 @@ public class CSVDestination implements Destination {
    }
 
    /**
-    * Used to read the value of path.
+    * Gets the currently used output file path.
     *
-    * @return The path value.
+    * @return The current output file path.
     */
    public String getPath() {
       return path;
    }
 
    /**
-    * Used to set the value of path. Once the destination opens the target file, the changes to this property are ignored.
+    * Sets the output file path.
+    * Once the destination opens the target file, the changes to this property are ignored.
     *
     * @param path
-    *           The path value to set.
+    *           The output file path to be set.
     */
    public void setPath(final String path) {
       synchronized (this) {
@@ -256,40 +288,111 @@ public class CSVDestination implements Destination {
    }
 
    /**
-    * Used to read the value of delimiter.
+    * Gets the line data elements delimiter.
     *
-    * @return The delimiter value.
+    * @return The data elements delimiter.
     */
    public String getDelimiter() {
       return delimiter;
    }
 
    /**
-    * Used to set the value of delimiter.
+    * Sets the delimiter used in a line between individual data elements.
     *
     * @param delimiter
-    *           The delimiter value to set.
+    *           The delimiter to be used between data elements in an output line.
     */
    public void setDelimiter(final String delimiter) {
       this.delimiter = delimiter;
    }
 
    /**
-    * Used to read the value of appendStrategy.
+    * Gets the current append strategy used to write results to the CSV file.
     *
-    * @return The appendStrategy value.
+    * @return The currently used append strategy
     */
    public AppendStrategy getAppendStrategy() {
       return appendStrategy;
    }
 
    /**
-    * Used to set the value of appendStrategy.
+    * Sets the append strategy to be used when writing to the CSV file.
     *
     * @param appendStrategy
     *           The appendStrategy value to set.
     */
    public void setAppendStrategy(AppendStrategy appendStrategy) {
       this.appendStrategy = appendStrategy;
+   }
+
+   /**
+    * Gets the data line prefix.
+    * @return The data line prefix.
+    */
+   public String getLinePrefix() {
+      return linePrefix;
+   }
+
+   /**
+    * Sets the data line prefix.
+    * This string is written to the output file at the beginning of each line containing data (i.e. not to headers line).
+    * @param linePrefix
+    *           The data lines prefix.
+    */
+   public void setLinePrefix(String linePrefix) {
+      this.linePrefix = linePrefix;
+   }
+
+   /**
+    * Gets the data line suffix.
+    * @return The data line suffix.
+    */
+   public String getLineSuffix() {
+      return lineSuffix;
+   }
+
+   /**
+    * Sets the data line suffix.
+    * This string is written to the output file at the end of each line containing data (i.e. not to headers line).
+    * @param lineSuffix
+    *           The data lines suffix.
+    */
+   public void setLineSuffix(String lineSuffix) {
+      this.lineSuffix = lineSuffix;
+   }
+
+   /**
+    * Gets the delimiter used to separate individual lines in the output files.
+    * @return The delimiter used to separate output lines.
+    */
+   public String getLineBreak() {
+      return lineBreak;
+   }
+
+   /**
+    * Sets the delimiter used to separate individual lines in the output files.
+    * @param lineBreak
+    *           The delimiter used to separate output lines.
+    *
+    */
+   public void setLineBreak(String lineBreak) {
+      this.lineBreak = lineBreak;
+   }
+
+   /**
+    * When true, headers are not written to the output file.
+    * @return True when headers should be written to the output file, false otherwise.
+    */
+   public boolean isSkipHeader() {
+      return skipHeader;
+   }
+
+   /**
+    * Specifies whether headers should be ommited from the output file.
+    * @param skipHeader
+    *           When set to true, headers are not written.
+    */
+   public void setSkipHeader(boolean skipHeader) {
+      this.skipHeader = skipHeader;
    }
 }

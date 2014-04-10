@@ -19,13 +19,7 @@
  */
 package org.perfcake.reporting.destinations;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Calendar;
-import java.util.Properties;
-import java.util.Scanner;
-
+import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
@@ -36,6 +30,20 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Calendar;
+import java.util.Properties;
+import java.util.Scanner;
+
+/**
+ * The CSVDestination test class.
+ *
+ * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
+ */
 public class CSVDestinationTest {
 
    private File csvFile, defaultCSVFile;
@@ -50,6 +58,7 @@ public class CSVDestinationTest {
    private static final String PATH = testOutputDir + "/out.csv";
    private static final String TIMESTAMP = String.valueOf(Calendar.getInstance().getTimeInMillis());
    private static final String DEFAULT_PATH = "perfcake-results-" + TIMESTAMP + ".csv";
+   private static final Logger log = Logger.getLogger(CSVDestinationTest.class);
 
    @BeforeClass
    public void beforeClass() {
@@ -271,5 +280,80 @@ public class CSVDestinationTest {
          fnfe.printStackTrace();
          Assert.fail(fnfe.getMessage());
       }
+   }
+
+   @Test
+   public void testPrefixAndSuffix() throws IOException, ReportingException {
+      CSVDestination dest = new CSVDestination();
+      File outf = File.createTempFile("perfcake", "csvdestination-prefixsuffix");
+      outf.deleteOnExit();
+
+      dest.setPath(outf.getAbsolutePath());
+      dest.setLinePrefix("[ ");
+      dest.setLineSuffix("],");
+      dest.setAppendStrategy(CSVDestination.AppendStrategy.OVERWRITE);
+
+      Measurement m = new Measurement(90, 1000, 20);
+      m.set("hello");
+
+      dest.open();
+      dest.report(m);
+      dest.close();
+
+      assertCSVFileContent(outf, "Time;Iterations;Result\n[ 0:00:01;21;hello],");
+
+      if (!outf.delete()) {
+         log.warn(String.format("Temporary file %s could not be deleted.", outf.getAbsolutePath()));
+      }
+   }
+
+   @Test
+   public void testSkipHeaders() throws IOException, ReportingException {
+      CSVDestination dest = new CSVDestination();
+      File outf = File.createTempFile("perfcake", "csvdestination-skipheaders");
+      outf.deleteOnExit();
+
+      dest.setPath(outf.getAbsolutePath());
+      dest.setSkipHeader(true);
+      dest.setAppendStrategy(CSVDestination.AppendStrategy.OVERWRITE);
+
+      Measurement m = new Measurement(90, 1000, 20);
+      m.set("hello");
+
+      dest.open();
+      dest.report(m);
+      dest.close();
+
+      assertCSVFileContent(outf, "0:00:01;21;hello");
+
+      if (!outf.delete()) {
+         log.warn(String.format("Temporary file %s could not be deleted.", outf.getAbsolutePath()));
+      }
+   }
+
+   @Test
+   public void testCustomDelimiterAndLineBreak() throws IOException, ReportingException {
+      CSVDestination dest = new CSVDestination();
+      File outf = File.createTempFile("perfcake", "csvdestination-delimbreak");
+      outf.deleteOnExit();
+
+      dest.setPath(outf.getAbsolutePath());
+      dest.setDelimiter("-_-");
+      dest.setLineBreak("#*#");
+      dest.setAppendStrategy(CSVDestination.AppendStrategy.OVERWRITE);
+
+      Measurement m = new Measurement(90, 1000, 20);
+      m.set("hello");
+
+      dest.open();
+      dest.report(m);
+      dest.close();
+
+      assertCSVFileContent(outf, "Time-_-Iterations-_-Result#*#0:00:01-_-21-_-hello#*#");
+
+      if (!outf.delete()) {
+         log.warn(String.format("Temporary file %s could not be deleted.", outf.getAbsolutePath()));
+      }
+
    }
 }
