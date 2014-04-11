@@ -30,13 +30,13 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.AvgAccumulator;
-import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MinAccumulator;
 
 /**
  * This abstract reporter is able to report the minimal, maximal and average value from the beginning
- * of the measuring to the moment when the results are published including a current value at the moment of publishing.
+ * of the measuring to the moment when the results are published including a current value at the moment of publishing
+ * as the default result.
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
@@ -45,7 +45,6 @@ public abstract class StatsReporter extends AbstractReporter {
    private boolean maximumEnabled = true;
    private boolean minimumEnabled = true;
    private boolean averageEnabled = true;
-   private boolean currentEnabled = true;
 
    /**
     * A String representation of a metric of a maximal value.
@@ -62,26 +61,21 @@ public abstract class StatsReporter extends AbstractReporter {
     */
    public static final String AVERAGE = "Average";
 
-   /**
-    * A String representation of a metric of a current value.
-    */
-   public static final String CURRENT = "Current";
-
    @SuppressWarnings("rawtypes")
    @Override
    protected Accumulator getAccumulator(String key, Class clazz) {
-      switch (key) {
-         case AVERAGE:
-            return new AvgAccumulator();
-         case MAXIMUM:
-            return new MaxAccumulator();
-         case MINIMUM:
-            return new MinAccumulator();
-         case CURRENT:
-            return new LastValueAccumulator();
-         default:
-            return super.getAccumulator(key, clazz);
+      if (Double.class.equals(clazz)) {
+         switch (key) {
+            case MAXIMUM:
+               return new MaxAccumulator();
+            case MINIMUM:
+               return new MinAccumulator();
+            case AVERAGE:
+            default:
+               return new AvgAccumulator();
+         }
       }
+      return super.getAccumulator(key, clazz);
    }
 
    /**
@@ -98,6 +92,8 @@ public abstract class StatsReporter extends AbstractReporter {
          results.put(entry.getKey(), entry.getValue());
       }
 
+      results.put(Measurement.DEFAULT_RESULT, result);
+
       if (averageEnabled) {
          results.put(AVERAGE, result);
       }
@@ -109,11 +105,6 @@ public abstract class StatsReporter extends AbstractReporter {
       if (maximumEnabled) {
          results.put(MAXIMUM, result);
       }
-
-      if (currentEnabled) {
-         results.put(CURRENT, result);
-      }
-
       accumulateResults(results);
    }
 
@@ -185,24 +176,4 @@ public abstract class StatsReporter extends AbstractReporter {
    public void setAverageEnabled(boolean averageEnabled) {
       this.averageEnabled = averageEnabled;
    }
-
-   /**
-    * Used to read the value of currentEnabled.
-    * 
-    * @return The currentEnabled value.
-    */
-   public boolean isCurrentEnabled() {
-      return currentEnabled;
-   }
-
-   /**
-    * Used to set the value of currentEnabled.
-    * 
-    * @param currentEnabled
-    *           The currentEnabled value to set.
-    */
-   public void setCurrentEnabled(boolean currentEnabled) {
-      this.currentEnabled = currentEnabled;
-   }
-
 }
