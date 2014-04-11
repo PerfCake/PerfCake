@@ -125,7 +125,8 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    public void generate() throws Exception {
       log.info("Starting to generate...");
       semaphore = new Semaphore(threadQueueSize);
-      executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(threads);
+      executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(getThreads());
+      runInfo.setThreads(getThreads());
       setStartTime();
 
       while (runInfo.isRunning()) {
