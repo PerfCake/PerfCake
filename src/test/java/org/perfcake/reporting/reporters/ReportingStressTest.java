@@ -45,9 +45,9 @@ public class ReportingStressTest {
    public void f() throws InterruptedException {
       final ReportManager rm = new ReportManager();
       final RunInfo ri = new RunInfo(new Period(PeriodType.TIME, 10000));
-      final ResponseTimeReporter r1 = new ResponseTimeReporter();
-      final ResponseTimeReporter r2 = new ResponseTimeReporter();
-      final ResponseTimeReporter r3 = new ResponseTimeReporter();
+      final ResponseTimeStatsReporter r1 = new ResponseTimeStatsReporter();
+      final ResponseTimeStatsReporter r2 = new ResponseTimeStatsReporter();
+      final ResponseTimeStatsReporter r3 = new ResponseTimeStatsReporter();
       final DummyDestination d11 = new DummyDestination();
       final DummyDestination d12 = new DummyDestination();
       final DummyDestination d13 = new DummyDestination();

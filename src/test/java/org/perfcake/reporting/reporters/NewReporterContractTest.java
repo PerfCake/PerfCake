@@ -58,7 +58,7 @@ public class NewReporterContractTest {
     */
    @Test
    public void noRunInfoTest() throws ReportingException {
-      final ResponseTimeReporter r = new ResponseTimeReporter();
+      final ResponseTimeStatsReporter r = new ResponseTimeStatsReporter();
 
       Exception e = null;
       try {
@@ -73,8 +73,8 @@ public class NewReporterContractTest {
    public void reportersRegistrationTest() {
       final ReportManager rm = new ReportManager();
       final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, 1000));
-      final ResponseTimeReporter r1 = new ResponseTimeReporter();
-      final WindowResponseTimeReporter r2 = new WindowResponseTimeReporter();
+      final ResponseTimeStatsReporter r1 = new ResponseTimeStatsReporter();
+      final ResponseTimeStatsReporter r2 = new ResponseTimeStatsReporter();
 
       rm.registerReporter(r1);
       rm.setRunInfo(ri);

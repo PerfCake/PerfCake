@@ -41,8 +41,10 @@ public class ReporterContractTest {
 
    private final ReportManager rm = new ReportManager();
    private final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, 1000));
-   private final ResponseTimeReporter r1 = new ResponseTimeReporter();
-   private final WindowResponseTimeReporter r2 = new WindowResponseTimeReporter();
+   private final ResponseTimeStatsReporter r1 = new ResponseTimeStatsReporter();
+   /** TODO: use window feature of ResponseTimeStatsReporter once implemented */
+   // private final WindowResponseTimeReporter r2 = new WindowResponseTimeReporter();
+   private final ResponseTimeStatsReporter r2 = new ResponseTimeStatsReporter();
    private final DummyReporter dr = new DummyReporter();
    private final DummyDestination d1 = new DummyDestination();
    private final DummyDestination d2 = new DummyDestination();
@@ -51,7 +53,7 @@ public class ReporterContractTest {
 
    @Test
    public void noRunInfoTest() throws ReportingException {
-      final ResponseTimeReporter r = new ResponseTimeReporter();
+      final ResponseTimeStatsReporter r = new ResponseTimeStatsReporter();
 
       Exception e = null;
       try {
@@ -162,7 +164,9 @@ public class ReporterContractTest {
       Assert.assertTrue(r1.getReportingPeriods().containsAll(bp));
 
       r2.registerDestination(d3, new Period(PeriodType.TIME, 1500));
-      r2.setWindowSize(4);
+
+      /** TODO: use window feature of ResponseTimeStatsReporter once implemented */
+      // r2.setWindowSize(4);
 
       rm.start();
 
@@ -223,7 +227,7 @@ public class ReporterContractTest {
 
          @Override
          public void report(final Measurement m) {
-            Assert.assertEquals(m.get("avg"), 97.5d);
+            Assert.assertEquals(m.get("avg"), 49.5d);
          }
       });
 
