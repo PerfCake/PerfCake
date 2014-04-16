@@ -19,9 +19,9 @@
  */
 package org.perfcake.reporting.destinations;
 
+import org.apache.log4j.Logger;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
-import org.testng.log4testng.Logger;
 
 /**
  * The destination that appends the measurements to Log4j to category org.perfcake.reporting.destinations.Log4jDestination.

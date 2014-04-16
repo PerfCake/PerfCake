@@ -19,20 +19,15 @@
  */
 package org.perfcake.message.sender;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Serializable;
-import java.net.Socket;
-import java.util.Map;
-
+import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.util.Utils;
-import org.testng.log4testng.Logger;
+
+import java.io.*;
+import java.net.Socket;
+import java.util.Map;
 
 /**
  * The common ancestor for all senders that are able to send messages through a socket.
