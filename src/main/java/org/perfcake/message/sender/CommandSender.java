@@ -87,31 +87,16 @@ public class CommandSender extends AbstractSender {
       STDIN, ARGUMENTS;
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#init()
-    */
    @Override
    public void init() throws Exception {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#close()
-    */
    @Override
    public void close() {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
@@ -119,18 +104,19 @@ public class CommandSender extends AbstractSender {
       command = (commandPrefix + " " + target + (messageFrom == MessageFrom.ARGUMENTS ? " " + message.getPayload() : "")).trim();
 
       Set<Entry<String, String>> propertiesEntrySet = properties.entrySet();
-      String[] environmentVariables = new String[propertiesEntrySet.size()];
+      environmentVariables = new String[propertiesEntrySet.size() + message.getHeaders().size() + message.getProperties().size()];
       int i = 0;
       for (Entry<String, String> entry : propertiesEntrySet) {
          environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
       }
+      for (Entry<Object, Object> entry : message.getHeaders().entrySet()) {
+         environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
+      }
+      for (Entry<Object, Object> entry : message.getProperties().entrySet()) {
+         environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
+      }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       process = Runtime.getRuntime().exec(command, environmentVariables);
@@ -156,11 +142,6 @@ public class CommandSender extends AbstractSender {
       return result;
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
-    */
    @Override
    public void postSend(final Message message) throws Exception {
       super.postSend(message);
