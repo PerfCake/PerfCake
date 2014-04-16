@@ -5,5 +5,5 @@
 // Generated on: 2013.08.30 at 01:04:03 AM CEST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "urn:perfcake:scenario:2.0", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(namespace = "urn:perfcake:scenario:3.0", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package org.perfcake.model;

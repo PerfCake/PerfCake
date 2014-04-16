@@ -34,7 +34,7 @@ import javax.xml.bind.annotation.XmlValue;
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
- *                   &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+ *                   &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
  *                 &lt;/sequence>
  *               &lt;/restriction>
  *             &lt;/complexContent>
@@ -56,7 +56,7 @@ import javax.xml.bind.annotation.XmlValue;
  *                     &lt;/complexType>
  *                   &lt;/element>
  *                   &lt;sequence>
- *                     &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+ *                     &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
  *                   &lt;/sequence>
  *                 &lt;/sequence>
  *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -70,7 +70,7 @@ import javax.xml.bind.annotation.XmlValue;
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
- *                   &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+ *                   &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
  *                 &lt;/sequence>
  *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
  *               &lt;/restriction>
@@ -83,14 +83,14 @@ import javax.xml.bind.annotation.XmlValue;
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
  *                   &lt;sequence>
- *                     &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+ *                     &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
  *                   &lt;/sequence>
  *                   &lt;element name="reporter" maxOccurs="unbounded">
  *                     &lt;complexType>
  *                       &lt;complexContent>
  *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                           &lt;sequence>
- *                             &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+ *                             &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
  *                             &lt;element name="destination" maxOccurs="unbounded" minOccurs="0">
  *                               &lt;complexType>
  *                                 &lt;complexContent>
@@ -106,7 +106,7 @@ import javax.xml.bind.annotation.XmlValue;
  *                                           &lt;/complexContent>
  *                                         &lt;/complexType>
  *                                       &lt;/element>
- *                                       &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+ *                                       &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
  *                                     &lt;/sequence>
  *                                     &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
  *                                     &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
@@ -136,8 +136,8 @@ import javax.xml.bind.annotation.XmlValue;
  *                       &lt;complexContent>
  *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                           &lt;sequence>
- *                             &lt;element ref="{urn:perfcake:scenario:2.0}header" maxOccurs="unbounded" minOccurs="0"/>
- *                             &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+ *                             &lt;element ref="{urn:perfcake:scenario:3.0}header" maxOccurs="unbounded" minOccurs="0"/>
+ *                             &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
  *                             &lt;element name="validatorRef" maxOccurs="unbounded" minOccurs="0">
  *                               &lt;complexType>
  *                                 &lt;complexContent>
@@ -374,7 +374,7 @@ public class Scenario {
      *           &lt;/complexType>
      *         &lt;/element>
      *         &lt;sequence>
-     *           &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+     *           &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
      *         &lt;/sequence>
      *       &lt;/sequence>
      *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -598,8 +598,8 @@ public class Scenario {
      *             &lt;complexContent>
      *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *                 &lt;sequence>
-     *                   &lt;element ref="{urn:perfcake:scenario:2.0}header" maxOccurs="unbounded" minOccurs="0"/>
-     *                   &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+     *                   &lt;element ref="{urn:perfcake:scenario:3.0}header" maxOccurs="unbounded" minOccurs="0"/>
+     *                   &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
      *                   &lt;element name="validatorRef" maxOccurs="unbounded" minOccurs="0">
      *                     &lt;complexType>
      *                       &lt;complexContent>
@@ -673,8 +673,8 @@ public class Scenario {
          *   &lt;complexContent>
          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
          *       &lt;sequence>
-         *         &lt;element ref="{urn:perfcake:scenario:2.0}header" maxOccurs="unbounded" minOccurs="0"/>
-         *         &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+         *         &lt;element ref="{urn:perfcake:scenario:3.0}header" maxOccurs="unbounded" minOccurs="0"/>
+         *         &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
          *         &lt;element name="validatorRef" maxOccurs="unbounded" minOccurs="0">
          *           &lt;complexType>
          *             &lt;complexContent>
@@ -686,6 +686,7 @@ public class Scenario {
          *         &lt;/element>
          *       &lt;/sequence>
          *       &lt;attribute name="uri" type="{http://www.w3.org/2001/XMLSchema}string" />
+         *       &lt;attribute name="content" type="{http://www.w3.org/2001/XMLSchema}string" />
          *       &lt;attribute name="multiplicity" type="{http://www.w3.org/2001/XMLSchema}string" />
          *     &lt;/restriction>
          *   &lt;/complexContent>
@@ -707,6 +708,8 @@ public class Scenario {
             protected List<Scenario.Messages.Message.ValidatorRef> validatorRef;
             @XmlAttribute(name = "uri")
             protected String uri;
+            @XmlAttribute(name = "content")
+            protected String content;
             @XmlAttribute(name = "multiplicity")
             protected String multiplicity;
 
@@ -822,6 +825,30 @@ public class Scenario {
             }
 
             /**
+             * Gets the value of the content property.
+             *
+             * @return
+             *     possible object is
+             *     {@link String }
+             *
+             */
+            public String getContent() {
+                return content;
+            }
+
+            /**
+             * Sets the value of the content property.
+             *
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *
+             */
+            public void setContent(String value) {
+                this.content = value;
+            }
+
+            /**
              * Gets the value of the multiplicity property.
              * 
              * @return
@@ -911,7 +938,7 @@ public class Scenario {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
-     *         &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+     *         &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
      *       &lt;/sequence>
      *     &lt;/restriction>
      *   &lt;/complexContent>
@@ -971,14 +998,14 @@ public class Scenario {
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
      *         &lt;sequence>
-     *           &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+     *           &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
      *         &lt;/sequence>
      *         &lt;element name="reporter" maxOccurs="unbounded">
      *           &lt;complexType>
      *             &lt;complexContent>
      *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *                 &lt;sequence>
-     *                   &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+     *                   &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
      *                   &lt;element name="destination" maxOccurs="unbounded" minOccurs="0">
      *                     &lt;complexType>
      *                       &lt;complexContent>
@@ -994,7 +1021,7 @@ public class Scenario {
      *                                 &lt;/complexContent>
      *                               &lt;/complexType>
      *                             &lt;/element>
-     *                             &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+     *                             &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
      *                           &lt;/sequence>
      *                           &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
      *                           &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
@@ -1097,7 +1124,7 @@ public class Scenario {
          *   &lt;complexContent>
          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
          *       &lt;sequence>
-         *         &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+         *         &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
          *         &lt;element name="destination" maxOccurs="unbounded" minOccurs="0">
          *           &lt;complexType>
          *             &lt;complexContent>
@@ -1113,7 +1140,7 @@ public class Scenario {
          *                       &lt;/complexContent>
          *                     &lt;/complexType>
          *                   &lt;/element>
-         *                   &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+         *                   &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
          *                 &lt;/sequence>
          *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
          *                 &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
@@ -1276,7 +1303,7 @@ public class Scenario {
              *             &lt;/complexContent>
              *           &lt;/complexType>
              *         &lt;/element>
-             *         &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+             *         &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
              *       &lt;/sequence>
              *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
              *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
@@ -1506,7 +1533,7 @@ public class Scenario {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
-     *         &lt;element ref="{urn:perfcake:scenario:2.0}property" maxOccurs="unbounded" minOccurs="0"/>
+     *         &lt;element ref="{urn:perfcake:scenario:3.0}property" maxOccurs="unbounded" minOccurs="0"/>
      *       &lt;/sequence>
      *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
      *     &lt;/restriction>

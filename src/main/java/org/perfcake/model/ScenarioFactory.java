@@ -84,7 +84,8 @@ public class ScenarioFactory {
     * Parses RunInfo from generator configuration.
     *
     * @return RunInfo object representing the configuration
-    * @throws PerfCakeException when there is a parse exception
+    * @throws PerfCakeException
+    *            when there is a parse exception
     */
    public RunInfo parseRunInfo() throws PerfCakeException {
       Generator gen = scenario.getGenerator();
@@ -131,7 +132,8 @@ public class ScenarioFactory {
    /**
     * Parse the <code>sender</code> element into a {@link MessageSenderManager} instance.
     *
-    * @param senderPoolSize Size of the message sender pool.
+    * @param senderPoolSize
+    *           Size of the message sender pool.
     * @return A message sender manager.
     */
    public MessageSenderManager parseSender(final int senderPoolSize) throws PerfCakeException {
@@ -159,10 +161,11 @@ public class ScenarioFactory {
    /**
     * Parse the <code>messages</code> element into a message store.
     *
-    * @param validatorManager ValidatorManager carrying all parsed validators, these will be associated with the message templates.
+    * @param validatorManager
+    *           ValidatorManager carrying all parsed validators, these will be associated with the message templates.
     * @return Message store in a form of {@link Map}&lt;{@link Message}, {@link Long}&gt; where the keys are stored messages and the values
-    * are multiplicity of how many times the message is sent in a single
-    * iteration.
+    *         are multiplicity of how many times the message is sent in a single
+    *         iteration.
     * @throws IOException
     * @throws FileNotFoundException
     */
@@ -175,14 +178,21 @@ public class ScenarioFactory {
 
             log.info("--- Messages ---");
             for (Messages.Message m : messages.getMessage()) {
-               URL messageUrl;
+               URL messageUrl = null;
                String currentMessagePayload;
-               if (m.getUri() != null) {
-                  messageUrl = Utils.locationToUrl(m.getUri(), PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"), "");
-                  currentMessagePayload = Utils.readFilteredContent(messageUrl);
+               if (m.getContent() != null) {
+                  if (m.getUri() != null) {
+                     log.warn("Both 'content' and 'uri' attributes of a message element are set. 'uri' will be will be ignored");
+                  }
+                  currentMessagePayload = m.getContent();
                } else {
-                  messageUrl = null;
-                  currentMessagePayload = null;
+                  if (m.getUri() != null) {
+                     messageUrl = Utils.locationToUrl(m.getUri(), PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"), "");
+                     currentMessagePayload = Utils.readFilteredContent(messageUrl);
+                  } else {
+                     messageUrl = null;
+                     currentMessagePayload = null;
+                  }
                }
                Properties currentMessageProperties = getPropertiesFromList(m.getProperty());
                Properties currentMessageHeaders = new Properties();
