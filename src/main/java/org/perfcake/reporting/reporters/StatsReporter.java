@@ -36,15 +36,26 @@ import org.perfcake.reporting.reporters.accumulators.MinAccumulator;
 
 /**
  * This abstract reporter is able to report the minimal, maximal and average value from the beginning
- * of the measuring to the moment when the results are published including a current value at the moment of publishing
- * as the default result.
+ * of the measuring to the moment when the results are published including.
+ * The default value is a current value at the moment of publishing.
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public abstract class StatsReporter extends AbstractReporter {
 
+   /**
+    * A property that determines if the metric of a maximal value is enabled or disabled.
+    */
    private boolean maximumEnabled = true;
+
+   /**
+    * A property that determines if the metric of a minimal value is enabled or disabled.
+    */
    private boolean minimumEnabled = true;
+
+   /**
+    * A property that determines if the metric of an average value is enabled or disabled.
+    */
    private boolean averageEnabled = true;
 
    /**
@@ -124,57 +135,57 @@ public abstract class StatsReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of maximumEnabled.
+    * Gets the status of the metric of a maximal value
     * 
-    * @return The maximumEnabled value.
+    * @return Returns <code>true</code> if the metric of a maximal is enabled or <code>false</code> otherwise.
     */
    public boolean isMaximumEnabled() {
       return maximumEnabled;
    }
 
    /**
-    * Used to set the value of maximumEnabled.
+    * Enables or disables the metric of a maximal value.
     * 
     * @param maximumEnabled
-    *           The maximumEnabled value to set.
+    *           Set <code>true</code> to enable the metric of a maximal value or <code>false</code> to disable it.
     */
    public void setMaximumEnabled(boolean maximumEnabled) {
       this.maximumEnabled = maximumEnabled;
    }
 
    /**
-    * Used to read the value of minimumEnabled.
+    * Gets the status of the metric of a minimal value.
     * 
-    * @return The minimumEnabled value.
+    * @return Returns <code>true</code> if the metric of a minimal value is enabled or <code>false</code> otherwise.
     */
    public boolean isMinimumEnabled() {
       return minimumEnabled;
    }
 
    /**
-    * Used to set the value of minimumEnabled.
+    * Enables or disables the metric of a minimal value.
     * 
     * @param minimumEnabled
-    *           The minimumEnabled value to set.
+    *           Set <code>true</code> to enable the metric of a minimal value or <code>false</code> to disable it.
     */
    public void setMinimumEnabled(boolean minimumEnabled) {
       this.minimumEnabled = minimumEnabled;
    }
 
    /**
-    * Used to read the value of averageEnabled.
+    * Gets the status of the metric of an average value.
     * 
-    * @return The averageEnabled value.
+    * @return Returns <code>true</code> if the metric of an average value is enabled or <code>false</code> otherwise.
     */
    public boolean isAverageEnabled() {
       return averageEnabled;
    }
 
    /**
-    * Used to set the value of averageEnabled.
+    * Enables or disables the metric of a average value.
     * 
     * @param averageEnabled
-    *           The averageEnabled value to set.
+    *           Set <code>true</code> to enable the metric of a average value or <code>false</code> to disable it.
     */
    public void setAverageEnabled(boolean averageEnabled) {
       this.averageEnabled = averageEnabled;
