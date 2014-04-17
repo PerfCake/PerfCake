@@ -122,7 +122,7 @@ public class AccumulatorsTest {
       Assert.assertEquals((long) mlva.getResult(), 1l);
 
       Random r = new Random();
-      for(int i = 0; i < 5000; i++) {
+      for (int i = 0; i < 5000; i++) {
          mlva.add(r.nextLong() >> 32);
       }
       Assert.assertTrue(mlva.getResult() <= Long.MAX_VALUE >> 32);
@@ -134,7 +134,7 @@ public class AccumulatorsTest {
    @DataProvider(name = "stressTest")
    public Object[][] createDataForStressTest() {
       final Long START = 1L, END = 100_000L;
-      int WINDOW = 1000;
+      final int WINDOW = 1000;
 
       // accumulator, start, end, result, after reset
       return new Object[][] { { new AvgAccumulator(), START, END, (START + END) / 2d, 0d },

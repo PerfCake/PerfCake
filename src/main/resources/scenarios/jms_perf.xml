@@ -12,10 +12,10 @@
       <property name="connectionFactory" value="XAConnectionFactory"/>
    </sender>
    <reporting>
-      <reporter class="AverageThroughputReporter">
+      <reporter class="ThroughputStatsReporter">
          <destination class="CSVDestination">
             <period type="time" value="30000"/>
-            <property name="path" value="${perfcake.scenario}-response-time.csv"/>
+            <property name="path" value="${perfcake.scenario}-throughput-stats.csv"/>
          </destination>
          <!--destination class="ConsoleDestination">
             <period type="time" value="30000" />

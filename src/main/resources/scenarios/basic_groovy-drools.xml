@@ -7,10 +7,10 @@
       <property name="target" value="./src/main/resources/messages/readline.groovy"/>
    </sender>
    <reporting>
-      <reporter class="AverageThroughputReporter">
+      <reporter class="ThroughputStatsReporter">
          <destination class="CSVDestination">
             <period type="iteration" value="1"/>
-            <property name="path" value="${perfcake.scenario}-response-time.csv"/>
+            <property name="path" value="${perfcake.scenario}-throughput-stats.csv"/>
          </destination>
          <destination class="ConsoleDestination">
             <period type="time" value="1000"/>

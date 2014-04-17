@@ -55,6 +55,11 @@ public class RunInfo {
    private long endTime = -1;
 
    /**
+    * Number of threads that is currently used to generate the load.
+    */
+   private volatile int threads = 1;
+
+   /**
     * Number of the last iteration.
     */
    private final AtomicLong iterations = new AtomicLong(0);
@@ -294,6 +299,24 @@ public class RunInfo {
    @Override
    public String toString() {
       return String.format("RunInfo [duration=%s, startTime=%d, endTime=%d, iterations=%d, tags=%s, started=%d, running=%d, percentage=%.3f]", duration, startTime, endTime, getIteration(), tags, isStarted() ? 1 : 0, isRunning() ? 1 : 0, getPercentage());
+   }
+
+   /**
+    * Returns number of threads that is currently used to generate the load.
+    *
+    * @return The number of threads.
+    */
+   public int getThreads(){
+      return threads;
+   }
+
+   /**
+    * Sets the information about the number of threads that is currently used to generate the load.
+    *
+    * @param threads The number of threads.
+    */
+   public void setThreads(int threads){
+      this.threads = threads;
    }
 
 }

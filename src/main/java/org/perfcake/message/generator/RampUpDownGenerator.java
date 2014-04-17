@@ -29,12 +29,17 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    /**
     * An initial number of threads.
     */
-   private int preThreadCount = super.threads; // default value taken from parent's threads
+   private int preThreadCount = super.getThreads(); // default value taken from parent's threads
 
    /**
     * An final number of threads.
     */
-   private int postThreadCount = super.threads; // default value taken from parent's threads
+   private int postThreadCount = super.getThreads(); // default value taken from parent's threads
+
+   /**
+    * A maximal number of threads.
+    */
+   private int mainThreadCount = super.getThreads();
 
    /**
     * A duration period after the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP} phase starts.
@@ -84,7 +89,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
       log.info("Starting to generate...");
       executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(preThreadCount);
       currentPhase = Phase.PRE;
-      int currentThreadCount = preThreadCount;
+      setThreads(preThreadCount);
       setStartTime();
       long last = 0;
       PeriodType runTimeType = runInfo.getDuration().getPeriodType();
@@ -107,46 +112,49 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
             case PRE:
                if (runTime >= preDuration) {
                   currentPhase = Phase.RAMP_UP;
-                  currentThreadCount = currentThreadCount + rampUpStep;
-                  resizeExecutorService(currentThreadCount);
+                  setThreads(getThreads() + rampUpStep);
+                  resizeExecutorService(getThreads());
                   last = runTime;
                }
                break;
             case RAMP_UP:
                if (runTime - last >= rampUpStepPeriod) {
-                  currentThreadCount = currentThreadCount + rampUpStep;
-                  if (currentThreadCount > threads) {
-                     currentThreadCount = threads;
+                  int newThreadCount = getThreads() + rampUpStep;
+                  if (newThreadCount >= mainThreadCount) {
+                     setThreads(mainThreadCount);
                      currentPhase = Phase.MAIN;
+                  } else {
+                     setThreads(newThreadCount);
                   }
                   last = runTime;
-                  resizeExecutorService(currentThreadCount);
+                  resizeExecutorService(getThreads());
                }
                break;
             case MAIN:
                if (runTime - last >= mainDuration) {
                   currentPhase = Phase.RAMP_DOWN;
-                  currentThreadCount = currentThreadCount - rampDownStep;
-                  resizeExecutorService(currentThreadCount);
+                  setThreads(getThreads() - rampDownStep);
+                  resizeExecutorService(getThreads());
                   last = runTime;
                }
                break;
             case RAMP_DOWN:
                if (runTime - last >= rampDownStepPeriod) {
-                  currentThreadCount = currentThreadCount - rampDownStep;
-                  if (currentThreadCount < postThreadCount) {
-                     if (currentThreadCount <= 1) {
+                  int newThreadCount = getThreads() - rampDownStep;
+                  if (newThreadCount < postThreadCount) {
+                     if (newThreadCount <= 1) {
                         if (log.isEnabledFor(Level.WARN)) {
                            log.warn("There was an attempt to decrease the thread count below 1 in RAMP_DOWN phase. Setting number of threads to 1.");
                         }
-                        currentThreadCount = 1;
+                        newThreadCount = 1;
                      } else {
-                        currentThreadCount = postThreadCount;
+                        newThreadCount = postThreadCount;
                      }
                      currentPhase = Phase.POST;
                   }
                   last = runTime;
-                  resizeExecutorService(currentThreadCount);
+                  setThreads(newThreadCount);
+                  resizeExecutorService(getThreads());
                }
                break;
             case POST:
@@ -154,7 +162,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
                break;
          }
 
-         logCurrentPhase(currentThreadCount);
+         logCurrentPhase(getThreads());
          super.prepareTask();
       }
       log.info("Reached test end. Shutting down execution...");
@@ -235,5 +243,13 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
 
    public void setMainDuration(long mainDuration) {
       this.mainDuration = mainDuration;
+   }
+
+   public int getMaxThreadCount() {
+      return mainThreadCount;
+   }
+
+   public void setMaxThreadCount(int maxThreadCount) {
+      this.mainThreadCount = maxThreadCount;
    }
 }

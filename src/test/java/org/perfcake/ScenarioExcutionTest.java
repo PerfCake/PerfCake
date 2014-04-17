@@ -39,7 +39,7 @@ public class ScenarioExcutionTest {
       scenario.run();
       final long post = System.currentTimeMillis();
       final long diff = post - pre;
-      Assert.assertTrue(diff > 10000 && diff < 11000);
+      Assert.assertTrue(diff > 10000 && diff < 12000);
    }
 
    private class ScenarioExecutorStopper implements Runnable {

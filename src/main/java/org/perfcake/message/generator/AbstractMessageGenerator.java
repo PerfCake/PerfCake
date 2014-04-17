@@ -32,8 +32,13 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * <p> This represents the common ancestor for all generators. It can generate messages using a specified number ({@link #threads}) of concurrent messages senders (see {@link MessageSender}). </p> <p> The generator should also have the ability to tag messages by the sequence number that indicated the order of messages. </p>
- *
+ * <p>
+ * This represents the common ancestor for all generators. It can generate messages using a specified number ({@link #threads}) of concurrent messages senders (see {@link MessageSender}).
+ * </p>
+ * <p>
+ * The generator should also have the ability to tag messages by the sequence number that indicated the order of messages.
+ * </p>
+ * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public abstract class AbstractMessageGenerator {
@@ -61,7 +66,7 @@ public abstract class AbstractMessageGenerator {
    /**
     * Number of concurrent threads the generator will use to send the messages.
     */
-   protected int threads = 1;
+   private int threads = 1;
 
    /**
     * The executor service used to run the threads.
@@ -80,11 +85,11 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Initialize the generator. During the initialization the {@link #messageSenderManager} is initialized as well.
-    *
+    * 
     * @param messageSenderManager
-    *       Message sender manager.
+    *           Message sender manager.
     * @param messageStore
-    *       Message store where the messages are taken from.
+    *           Message store where the messages are taken from.
     * @throws Exception
     */
    public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception {
@@ -107,9 +112,9 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Sets the message sender manager.
-    *
+    * 
     * @param messageSenderManager
-    *       The message sender manager to set.
+    *           The message sender manager to set.
     */
    public void setMessageSenderManager(final MessageSenderManager messageSenderManager) {
       this.messageSenderManager = messageSenderManager;
@@ -117,12 +122,13 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Sets the current run info
-    *
+    * 
     * @param runInfo
-    *       The current run info object
+    *           The current run info object
     */
    public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
+      this.runInfo.setThreads(threads);
       validateRunInfo();
    }
 
@@ -133,9 +139,9 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Sets the report manager
-    *
+    * 
     * @param reportManager
-    *       The report manager to set.
+    *           The report manager to set.
     */
    public void setReportManager(final ReportManager reportManager) {
       this.reportManager = reportManager;
@@ -143,7 +149,7 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * It closes and finalize the generator. During the closing the {@link #messageSenderManager} is closed as well.
-    *
+    * 
     * @throws PerfCakeException
     */
    public void close() throws PerfCakeException {
@@ -168,9 +174,9 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Computes the current average speed the iterations are executed.
-    *
+    * 
     * @param cnt
-    *       The iteration count.
+    *           The iteration count.
     * @return The current average iteration execution speed.
     */
    protected float getSpeed(final long cnt) {
@@ -179,14 +185,14 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Executes the actual implementation of a generator.
-    *
+    * 
     * @throws Exception
     */
    public abstract void generate() throws Exception;
 
    /**
     * Executes the steps needed after the moment the warm-up period ended.
-    *
+    * 
     * @throws Exception
     */
    protected void postWarmUp() throws Exception {
@@ -195,7 +201,7 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Used to read the value of threads.
-    *
+    * 
     * @return the threads
     */
    public int getThreads() {
@@ -204,17 +210,20 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Sets the number of threads.
-    *
+    * 
     * @param threads
-    *       The number of threads.
+    *           The number of threads.
     */
    public void setThreads(final int threads) {
       this.threads = threads;
+      if (runInfo != null) {
+         runInfo.setThreads(threads);
+      }
    }
 
    /**
     * Used to read the value of messageNumberingEnabled.
-    *
+    * 
     * @return The messageNumberingEnabled value.
     */
    public boolean isMessageNumberingEnabled() {
@@ -223,9 +232,9 @@ public abstract class AbstractMessageGenerator {
 
    /**
     * Sets the value of messageNumberingEnabled.
-    *
+    * 
     * @param messageNumberingEnabled
-    *       The messageNumberingEnabled to set.
+    *           The messageNumberingEnabled to set.
     */
    public void setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
       this.messageNumberingEnabled = messageNumberingEnabled;

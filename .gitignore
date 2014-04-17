@@ -4,6 +4,7 @@ target
 logs
 *.log
 test-output
+*.csv
 
 # Eclipse stuff
 bin

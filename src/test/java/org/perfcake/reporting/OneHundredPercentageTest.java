@@ -29,7 +29,7 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.DefaultMessageGenerator;
 import org.perfcake.message.sender.DummySender;
 import org.perfcake.reporting.destinations.DummyDestination;
-import org.perfcake.reporting.reporters.AverageThroughputReporter;
+import org.perfcake.reporting.reporters.ThroughputStatsReporter;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -57,7 +57,7 @@ public class OneHundredPercentageTest {
 
       sb.setSender(new DummySender());
 
-      AverageThroughputReporter atr = new AverageThroughputReporter();
+      ThroughputStatsReporter atr = new ThroughputStatsReporter();
       atr.setRunInfo(ri);
 
       atr.registerDestination(dd, new Period(PeriodType.TIME, 500));
