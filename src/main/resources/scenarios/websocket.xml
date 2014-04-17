@@ -11,7 +11,7 @@
       <property name="payloadType" value="${payloadType:text}"/>
    </sender>
    <reporting>
-      <reporter class="AverageThroughputReporter">
+      <reporter class="ThroughputStatsReporter">
          <destination class="ConsoleDestination">
             <period type="time" value="1000" />
          </destination>
