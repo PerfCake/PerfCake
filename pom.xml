@@ -71,10 +71,22 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <maven.exec.plugin.version>1.2</maven.exec.plugin.version>
       <pit.version>0.33</pit.version>
+      <wildfly.version>8.0.0.Final</wildfly.version>
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
       <server.port>8080</server.port>
    </properties>
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>org.jboss.arquillian</groupId>
+            <artifactId>arquillian-bom</artifactId>
+            <version>1.1.4.Final</version>
+            <scope>import</scope>
+            <type>pom</type>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
    <dependencies>
       <!-- JMS 1.1 API -->
       <dependency>
@@ -143,6 +155,25 @@
          <groupId>javax.websocket</groupId>
          <artifactId>javax.websocket-api</artifactId>
          <version>1.0</version>
+      </dependency>
+      <!-- Test of senders in an JEE Container -->
+      <dependency>
+         <groupId>org.jboss.arquillian.testng</groupId>
+         <artifactId>arquillian-testng-container</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.wildfly</groupId>
+         <artifactId>wildfly-arquillian-container-managed</artifactId>
+         <version>${wildfly.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.wildfly</groupId>
+         <artifactId>wildfly-dist</artifactId>
+         <version>${wildfly.version}</version>
+         <type>zip</type>
+         <scope>test</scope>
       </dependency>
    </dependencies>
    <build>
@@ -215,6 +246,41 @@
                </targetTests>
             </configuration>
          </plugin>
+         <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.16</version>
+            <configuration>
+               <systemPropertyVariables>
+                  <arquillian.launch>wildfly-as-managed</arquillian.launch>
+               </systemPropertyVariables>
+            </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.8</version>
+            <executions>
+               <execution>
+                  <id>unpack</id>
+                  <phase>process-test-classes</phase>
+                  <goals>
+                     <goal>unpack</goal>
+                  </goals>
+                  <configuration>
+                     <artifactItems>
+                        <artifactItem>
+                           <groupId>org.wildfly</groupId>
+                           <artifactId>wildfly-dist</artifactId>
+                           <version>${wildfly.version}</version>
+                           <type>zip</type>
+                           <overWrite>false</overWrite>
+                           <outputDirectory>target</outputDirectory>
+                        </artifactItem>
+                     </artifactItems>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
       </plugins>
       <pluginManagement>
          <plugins>
@@ -264,7 +330,7 @@
                      <argument>-Dlog4j.configuration=file://${basedir}/src/main/resources/log4j.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath/>
+                     <classpath />
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
@@ -311,11 +377,8 @@
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-javadoc-plugin</artifactId>
                <configuration>
-                  <windowtitle>${project.name} API Documentation
-                     (version
-                     ${project.version})</windowtitle>
-                  <doctitle>${project.name} API Documentation (version
-                     ${project.version})</doctitle>
+                  <windowtitle>${project.name} API Documentation (version ${project.version})</windowtitle>
+                  <doctitle>${project.name} API Documentation (version ${project.version})</doctitle>
                </configuration>
             </plugin>
             <plugin>
@@ -326,7 +389,7 @@
                   <useAgent>true</useAgent>
                </configuration>
             </plugin>
-            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
             <plugin>
                <groupId>org.eclipse.m2e</groupId>
                <artifactId>lifecycle-mapping</artifactId>
@@ -344,7 +407,20 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <ignore/>
+                              <ignore />
+                           </action>
+                        </pluginExecution>
+                        <pluginExecution>
+                           <pluginExecutionFilter>
+                              <groupId>org.apache.maven.plugins</groupId>
+                              <artifactId>maven-dependency-plugin</artifactId>
+                              <versionRange>[1.0.0,)</versionRange>
+                              <goals>
+                                 <goal>unpack</goal>
+                              </goals>
+                           </pluginExecutionFilter>
+                           <action>
+                              <execute />
                            </action>
                         </pluginExecution>
                      </pluginExecutions>
