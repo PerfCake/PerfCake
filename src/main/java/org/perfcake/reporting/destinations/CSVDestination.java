@@ -233,7 +233,15 @@ public class CSVDestination implements Destination {
          }
       }
 
-      final String resultLine = getResultsLine(m);
+      final StringBuilder sb = new StringBuilder();
+      if (linePrefix != null && !linePrefix.isEmpty()) {
+         sb.append(linePrefix);
+      }
+      sb.append(getResultsLine(m));
+      if (lineSuffix != null && !lineSuffix.isEmpty()) {
+         sb.append(lineSuffix);
+      }
+      sb.append(lineBreak);
 
       synchronized (this) {
          final boolean csvFileExists = csvFile.exists();
@@ -243,17 +251,7 @@ public class CSVDestination implements Destination {
                bw.append(lineBreak);
             }
 
-            if (linePrefix != null && !linePrefix.isEmpty()) {
-               bw.append(linePrefix);
-            }
-
-            bw.append(resultLine);
-
-            if (lineSuffix != null && !lineSuffix.isEmpty()) {
-               bw.append(lineSuffix);
-            }
-
-            bw.append(lineBreak);
+            bw.append(sb.toString());
          } catch (IOException ioe) {
             throw new ReportingException(String.format("Could not append a report to the file %s.", csvFile.getPath()), ioe);
          }
