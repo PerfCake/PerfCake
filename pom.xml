@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE htmlEntities [
-<!ENTITY nbsp "&#xa0;">
-]>
+      <!ENTITY nbsp "&#xa0;">
+      ]>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
@@ -50,6 +50,10 @@
          <name>Pavel Drozd</name>
          <email>ravliv7@gmail.com</email>
       </contributor>
+      <contributor>
+         <name>Lenka Vašková</name>
+         <email>vaskova.lenka@gmail.com</email>
+      </contributor>
    </contributors>
    <ciManagement>
       <system>Jenkins</system>
@@ -71,7 +75,7 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <maven.exec.plugin.version>1.2</maven.exec.plugin.version>
       <pit.version>0.33</pit.version>
-      <wildfly.version>8.0.0.Final</wildfly.version>
+      <jboss-as.version>7.1.1.Final</jboss-as.version>
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
       <server.port>8080</server.port>
@@ -163,15 +167,20 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.wildfly</groupId>
-         <artifactId>wildfly-arquillian-container-managed</artifactId>
-         <version>${wildfly.version}</version>
+         <groupId>org.jboss.arquillian.protocol</groupId>
+         <artifactId>arquillian-protocol-servlet</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.wildfly</groupId>
-         <artifactId>wildfly-dist</artifactId>
-         <version>${wildfly.version}</version>
+         <groupId>org.jboss.as</groupId>
+         <artifactId>jboss-as-arquillian-container-managed</artifactId>
+         <version>${jboss-as.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.as</groupId>
+         <artifactId>jboss-as-dist</artifactId>
+         <version>${jboss-as.version}</version>
          <type>zip</type>
          <scope>test</scope>
       </dependency>
@@ -251,7 +260,7 @@
             <version>2.16</version>
             <configuration>
                <systemPropertyVariables>
-                  <arquillian.launch>wildfly-as-managed</arquillian.launch>
+                  <arquillian.launch>jboss-as-managed</arquillian.launch>
                </systemPropertyVariables>
             </configuration>
          </plugin>
@@ -269,10 +278,10 @@
                   <configuration>
                      <artifactItems>
                         <artifactItem>
-                           <groupId>org.wildfly</groupId>
-                           <artifactId>wildfly-dist</artifactId>
-                           <version>${wildfly.version}</version>
-                           <type>zip</type>
+                              <groupId>org.jboss.as</groupId>
+                              <artifactId>jboss-as-dist</artifactId>
+                              <version>${jboss-as.version}</version>
+                              <type>zip</type>
                            <overWrite>false</overWrite>
                            <outputDirectory>target</outputDirectory>
                         </artifactItem>
@@ -330,7 +339,7 @@
                      <argument>-Dlog4j.configuration=file://${basedir}/src/main/resources/log4j.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath />
+                     <classpath/>
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
@@ -407,7 +416,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <ignore />
+                              <ignore/>
                            </action>
                         </pluginExecution>
                         <pluginExecution>
@@ -420,7 +429,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <execute />
+                              <execute/>
                            </action>
                         </pluginExecution>
                      </pluginExecutions>
