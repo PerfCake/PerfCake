@@ -10,7 +10,7 @@
       <configuration>
          <property name="jbossHome">target/jboss-as-7.1.1.Final</property>
          <property name="javaVmArguments">-Xmx128m -XX:MaxPermSize=128m</property>
-         <property name="serverConfig">standalone-full.xml</property>
+         <property name="serverConfig">../../../../src/test/resources/standalone-min.xml</property>
          <!--property name="managementPort">9090</property -->
       </configuration>
    </container>
