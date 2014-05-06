@@ -16,9 +16,6 @@
 
 package org.perfcake.util.agent;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 /**
  * PerfCake agent that can be used to monitor tested system's JVM.
  *
@@ -49,10 +46,8 @@ public class PerfCakeAgent {
     *           Agent arguments.
     */
    public static void premain(String agentArgs) {
-      ExecutorService es = Executors.newSingleThreadExecutor();
       Thread agentThread = new Thread(new AgentThread(agentArgs));
       agentThread.setDaemon(true);
-
-      es.submit(agentThread);
+      agentThread.start();
    }
 }
