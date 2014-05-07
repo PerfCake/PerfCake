@@ -19,14 +19,27 @@
  */
 package org.perfcake.message.sender;
 
+import java.util.Properties;
+
 import javax.annotation.Resource;
+import javax.jms.BytesMessage;
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
+import javax.jms.DeliveryMode;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.ObjectMessage;
 import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.perfcake.util.ObjectFactory;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -42,15 +55,132 @@ public class JMSSenderTest extends Arquillian {
 
    @Deployment
    public static JavaArchive createDeployment() {
-      return ShrinkWrap.create(JavaArchive.class); // Arquillian needs this to deploy the test
+      return ShrinkWrap.create(JavaArchive.class).addPackages(true, "org.perfcake",
+            "org.apache.commons.beanutils",
+            "org.apache.log4j",
+            "org.apache.commons.collections");
+   }
+
+   private Message readMessage(long timeout) throws JMSException {
+      Connection connection = null;
+      Session session = null;
+      Message message = null;
+
+      try {
+         connection = factory.createConnection();
+         connection.start();
+         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+         MessageConsumer messageConsumer = session.createConsumer(queue);
+         message = messageConsumer.receive(timeout);
+      } finally {
+         try {
+            if (session != null) {
+               session.close();
+            }
+         } finally {
+            if (connection != null) {
+               connection.close();
+            }
+         }
+      }
+
+      return message;
+   }
+
+   @Test(priority = 0)
+   public void testSanityCheck() throws Exception {
+      Assert.assertNotNull(factory, "Unable to inject connection factory.");
+      Assert.assertNotNull(queue, "Unable to inject queue queue/test.");
    }
 
    @Test
-   public void testJMS() throws Exception {
+   public void testBasicSend() throws Exception {
+      Properties props = new Properties();
+      props.setProperty("messagetType", "STRING");
+      props.setProperty("target", "queue/test");
 
-      System.out.println("************************ Connection factory value: " + factory);
-      System.out.println("************************ Queue value: " + queue);
+      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
+      
+      try {
+         sender.init();
 
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500));
+
+         // STRING Type
+         org.perfcake.message.Message message = new org.perfcake.message.Message();
+         String payload1 = "Hello World!";
+         message.setPayload(payload1);
+         sender.preSend(message, null);
+         sender.send(message, null);
+         sender.postSend(message);
+
+         Message response = readMessage(500);
+         Assert.assertEquals(response.getJMSDeliveryMode(), DeliveryMode.PERSISTENT);
+         Assert.assertTrue(response instanceof TextMessage);
+         Assert.assertEquals(((TextMessage) response).getText(), payload1);
+
+         // OBJECT Type
+         sender.setMessageType(JMSSender.MessageType.OBJECT);
+         Long payload2 = 42L;
+         message.setPayload(payload2);
+         sender.preSend(message, null);
+         sender.send(message, null);
+         sender.postSend(message);
+
+         response = readMessage(500);
+         Assert.assertTrue(response instanceof ObjectMessage);
+         Assert.assertTrue(((ObjectMessage) response).getObject() instanceof Long);
+         Assert.assertEquals((Long) ((ObjectMessage) response).getObject(), payload2);
+
+         // BYTEARRAY Type
+         sender.setMessageType(JMSSender.MessageType.BYTEARRAY);
+         message.setPayload(payload1);
+         sender.preSend(message, null);
+         sender.send(message, null);
+         sender.postSend(message);
+
+         response = readMessage(500);
+         Assert.assertTrue(response instanceof BytesMessage);
+         Assert.assertEquals(((BytesMessage) response).readUTF(), payload1);
+         
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500));
+
+      } finally {
+         sender.close();
+      }
    }
 
+   public void testNonPersistentDelivery() throws Exception {
+      Properties props = new Properties();
+      props.setProperty("messagetType", "STRING");
+      props.setProperty("target", "queue/test");
+      props.setProperty("deliveryMode", "NON_PERSISTENT");
+
+      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
+      try {
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500));
+         
+         // NON-PERSISTENT delivery
+         org.perfcake.message.Message message = new org.perfcake.message.Message();
+         String payload1 = "Hello World!";
+         message.setPayload(payload1);
+         sender.preSend(message, null);
+         sender.send(message, null);
+         sender.postSend(message);
+
+         Message response = readMessage(500);
+         Assert.assertEquals(response.getJMSDeliveryMode(), DeliveryMode.NON_PERSISTENT);
+         Assert.assertTrue(response instanceof TextMessage);
+         Assert.assertEquals(((TextMessage) response).getText(), payload1);
+
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500));
+      } finally {
+         sender.close();
+      }
+   }
+   
 }

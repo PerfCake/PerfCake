@@ -52,7 +52,7 @@ import org.perfcake.reporting.MeasurementUnit;
  * @author Marek Baluch <baluch.git@gmail.com>
  * 
  */
-public abstract class JMSSender extends AbstractSender {
+public class JMSSender extends AbstractSender {
 
    /**
     * JMS message type.
