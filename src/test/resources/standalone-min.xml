@@ -89,6 +89,7 @@
         <subsystem xmlns="urn:jboss:domain:messaging:1.1">
             <hornetq-server>
                 <persistence-enabled>false</persistence-enabled>
+                <security-domain>simple</security-domain>
                 <journal-file-size>102400</journal-file-size>
                 <journal-min-files>2</journal-min-files>
 
@@ -115,6 +116,12 @@
                         <permission type="consume" roles="guest"/>
                         <permission type="createNonDurableQueue" roles="guest"/>
                         <permission type="deleteNonDurableQueue" roles="guest"/>
+                    </security-setting>
+                    <security-setting match="secured.#">
+                        <permission type="send" roles="user"/>
+                        <permission type="consume" roles="user"/>
+                        <permission type="createNonDurableQueue" roles="user"/>
+                        <permission type="deleteNonDurableQueue" roles="user"/>
                     </security-setting>
                 </security-settings>
 
@@ -154,6 +161,10 @@
                         <entry name="queue/test"/>
                         <entry name="java:jboss/exported/jms/queue/test"/>
                     </jms-queue>
+                    <jms-queue name="secured.testQueue">
+                        <entry name="queue/secured_test"/>
+                        <entry name="java:jboss/exported/jms/queue/secured_test"/>
+                    </jms-queue>
                     <jms-topic name="testTopic">
                         <entry name="topic/test"/>
                         <entry name="java:jboss/exported/jms/topic/test"/>
@@ -189,6 +200,11 @@
                     <authorization>
                         <policy-module code="Delegating" flag="required"/>
                     </authorization>
+                </security-domain>
+                <security-domain name="simple" cache-type="default">
+                    <authentication>
+                        <login-module code="Simple" flag="required"/>
+                    </authentication>
                 </security-domain>
             </security-domains>
         </subsystem>

@@ -50,18 +50,18 @@ public class JMSSenderTest extends Arquillian {
    @Resource(mappedName = "queue/test")
    private Queue queue;
 
+   @Resource(mappedName = "queue/secured_test")
+   private Queue securedQueue;
+
    @Resource(mappedName = "java:/ConnectionFactory")
    private ConnectionFactory factory;
 
    @Deployment
    public static JavaArchive createDeployment() {
-      return ShrinkWrap.create(JavaArchive.class).addPackages(true, "org.perfcake",
-            "org.apache.commons.beanutils",
-            "org.apache.log4j",
-            "org.apache.commons.collections");
+      return ShrinkWrap.create(JavaArchive.class).addPackages(true, "org.perfcake", "org.apache.commons.beanutils", "org.apache.log4j", "org.apache.commons.collections");
    }
 
-   private Message readMessage(long timeout) throws JMSException {
+   private Message readMessage(long timeout, Queue queue) throws JMSException {
       Connection connection = null;
       Session session = null;
       Message message = null;
@@ -100,12 +100,15 @@ public class JMSSenderTest extends Arquillian {
       props.setProperty("target", "queue/test");
 
       JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
-      
+
+      Assert.assertEquals(sender.getMessageType(), JMSSender.MessageType.STRING);
+      Assert.assertEquals(sender.getTarget(), "queue/test");
+
       try {
          sender.init();
 
          // make sure the queue is empty
-         Assert.assertNull(readMessage(500));
+         Assert.assertNull(readMessage(500, queue));
 
          // STRING Type
          org.perfcake.message.Message message = new org.perfcake.message.Message();
@@ -115,7 +118,7 @@ public class JMSSenderTest extends Arquillian {
          sender.send(message, null);
          sender.postSend(message);
 
-         Message response = readMessage(500);
+         Message response = readMessage(500, queue);
          Assert.assertEquals(response.getJMSDeliveryMode(), DeliveryMode.PERSISTENT);
          Assert.assertTrue(response instanceof TextMessage);
          Assert.assertEquals(((TextMessage) response).getText(), payload1);
@@ -128,7 +131,7 @@ public class JMSSenderTest extends Arquillian {
          sender.send(message, null);
          sender.postSend(message);
 
-         response = readMessage(500);
+         response = readMessage(500, queue);
          Assert.assertTrue(response instanceof ObjectMessage);
          Assert.assertTrue(((ObjectMessage) response).getObject() instanceof Long);
          Assert.assertEquals((Long) ((ObjectMessage) response).getObject(), payload2);
@@ -140,29 +143,76 @@ public class JMSSenderTest extends Arquillian {
          sender.send(message, null);
          sender.postSend(message);
 
-         response = readMessage(500);
+         response = readMessage(500, queue);
          Assert.assertTrue(response instanceof BytesMessage);
          Assert.assertEquals(((BytesMessage) response).readUTF(), payload1);
-         
+
          // make sure the queue is empty
-         Assert.assertNull(readMessage(500));
+         Assert.assertNull(readMessage(500, queue));
 
       } finally {
          sender.close();
       }
    }
 
+   @Test
+   public void testTransactedSecuredSend() throws Exception {
+      String payload = "Hello my secret World!";
+
+      Properties props = new Properties();
+      props.setProperty("messagetType", "STRING");
+      props.setProperty("target", "queue/secured_test");
+
+      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
+      sender.setUsername("frank");
+      sender.setPassword("frank");
+      sender.setTransacted(true);
+
+      try {
+         sender.init();
+
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500, securedQueue));
+
+         // STRING Type
+         org.perfcake.message.Message message = new org.perfcake.message.Message();
+         message.setPayload(payload);
+         sender.preSend(message, null);
+         sender.send(message, null);
+         sender.postSend(message);
+
+         // make sure the queue is empty because the message is not yet commited (done in close())
+         Assert.assertNull(readMessage(500, securedQueue));
+      } finally {
+         sender.close();
+      }
+
+      Message response = readMessage(500, securedQueue);
+      Assert.assertEquals(response.getJMSDeliveryMode(), DeliveryMode.PERSISTENT);
+      Assert.assertTrue(response instanceof TextMessage);
+      Assert.assertEquals(((TextMessage) response).getText(), payload);
+
+      // make sure the queue is empty
+      Assert.assertNull(readMessage(500, securedQueue));
+   }
+
+   @Test
    public void testNonPersistentDelivery() throws Exception {
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
       props.setProperty("target", "queue/test");
-      props.setProperty("deliveryMode", "NON_PERSISTENT");
+      props.setProperty("persistent", "false");
 
       JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
+
+      Assert.assertEquals(sender.isPersistent(), false);
+
       try {
+         sender.init();
+
          // make sure the queue is empty
-         Assert.assertNull(readMessage(500));
-         
+         Assert.assertNull(readMessage(500, queue));
+
          // NON-PERSISTENT delivery
          org.perfcake.message.Message message = new org.perfcake.message.Message();
          String payload1 = "Hello World!";
@@ -171,16 +221,16 @@ public class JMSSenderTest extends Arquillian {
          sender.send(message, null);
          sender.postSend(message);
 
-         Message response = readMessage(500);
+         Message response = readMessage(500, queue);
          Assert.assertEquals(response.getJMSDeliveryMode(), DeliveryMode.NON_PERSISTENT);
          Assert.assertTrue(response instanceof TextMessage);
          Assert.assertEquals(((TextMessage) response).getText(), payload1);
 
          // make sure the queue is empty
-         Assert.assertNull(readMessage(500));
+         Assert.assertNull(readMessage(500, queue));
       } finally {
          sender.close();
       }
    }
-   
+
 }

@@ -192,10 +192,10 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-            <groupId>org.jacoco</groupId>
-            <artifactId>org.jacoco.core</artifactId>
-            <version>${jacoco.version}</version>     
-            <scope>test</scope>    
+         <groupId>org.jacoco</groupId>
+         <artifactId>org.jacoco.core</artifactId>
+         <version>${jacoco.version}</version>
+         <scope>test</scope>
       </dependency>
    </dependencies>
    <build>
@@ -291,10 +291,10 @@
                   <configuration>
                      <artifactItems>
                         <artifactItem>
-                              <groupId>org.jboss.as</groupId>
-                              <artifactId>jboss-as-dist</artifactId>
-                              <version>${jboss-as.version}</version>
-                              <type>zip</type>
+                           <groupId>org.jboss.as</groupId>
+                           <artifactId>jboss-as-dist</artifactId>
+                           <version>${jboss-as.version}</version>
+                           <type>zip</type>
                            <overWrite>false</overWrite>
                            <outputDirectory>target</outputDirectory>
                         </artifactItem>
@@ -352,7 +352,7 @@
                      <argument>-Dlog4j.configuration=file://${basedir}/src/main/resources/log4j.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath/>
+                     <classpath />
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
@@ -429,7 +429,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <ignore/>
+                              <ignore />
                            </action>
                         </pluginExecution>
                         <pluginExecution>
@@ -442,7 +442,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <execute/>
+                              <execute />
                            </action>
                         </pluginExecution>
                      </pluginExecutions>
