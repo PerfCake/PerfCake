@@ -58,8 +58,7 @@ public class JMSSenderTest extends Arquillian {
       return ShrinkWrap.create(JavaArchive.class).addPackages(true, "org.perfcake",
             "org.apache.commons.beanutils",
             "org.apache.log4j",
-            "org.apache.commons.collections",
-            "org.jacoco");
+            "org.apache.commons.collections");
    }
 
    private Message readMessage(long timeout) throws JMSException {

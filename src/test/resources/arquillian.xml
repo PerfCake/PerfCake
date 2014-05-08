@@ -6,7 +6,9 @@
       <property name="deploymentExportPath">target/deployments</property>
    </engine>
 
-   <extension qualifier="jacoco" />
+   <extension qualifier="jacoco">
+      <property name="excludes">org.jboss.*,org.jacoco.*</property>
+   </extension>
 
    <container qualifier="jboss-as-managed" default="true">
       <configuration>
