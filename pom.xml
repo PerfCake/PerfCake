@@ -76,6 +76,7 @@
       <maven.exec.plugin.version>1.2</maven.exec.plugin.version>
       <pit.version>0.33</pit.version>
       <jboss-as.version>7.1.1.Final</jboss-as.version>
+      <jacoco.version>0.6.4.201312101107</jacoco.version>
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
       <server.port>8080</server.port>
@@ -184,6 +185,18 @@
          <type>zip</type>
          <scope>test</scope>
       </dependency>
+      <dependency>
+         <groupId>org.jboss.arquillian.extension</groupId>
+         <artifactId>arquillian-jacoco</artifactId>
+         <version>1.0.0.Final-SNAPSHOT</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.core</artifactId>
+            <version>${jacoco.version}</version>     
+            <scope>test</scope>    
+      </dependency>
    </dependencies>
    <build>
       <resources>
@@ -221,7 +234,7 @@
          <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.6.3.201306030806</version>
+            <version>${jacoco.version}</version>
             <configuration>
                <destfile>${basedir}/target/coverage-reports/jacoco-unit.exec</destfile>
                <datafile>${basedir}/target/coverage-reports/jacoco-unit.exec</datafile>
@@ -449,7 +462,7 @@
          <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.6.3.201306030806</version>
+            <version>${jacoco.version}</version>
          </plugin>
       </plugins>
    </reporting>

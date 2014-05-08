@@ -6,6 +6,8 @@
       <property name="deploymentExportPath">target/deployments</property>
    </engine>
 
+   <extension qualifier="jacoco" />
+
    <container qualifier="jboss-as-managed" default="true">
       <configuration>
          <property name="jbossHome">target/jboss-as-7.1.1.Final</property>
