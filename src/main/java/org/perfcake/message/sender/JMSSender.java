@@ -224,7 +224,7 @@ public class JMSSender extends AbstractSender {
          connection.start();
          sender = session.createSender(queue);
          sender.setDeliveryMode(persistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
-      } catch (JMSException | NamingException | RuntimeException | PerfCakeException e) {
+      } catch (JMSException | NamingException | RuntimeException e) {
          throw new PerfCakeException(e);
       }
    }
@@ -337,7 +337,7 @@ public class JMSSender extends AbstractSender {
    protected boolean checkCredentials() throws PerfCakeException {
       if (username == null && password == null) {
          return false;
-      } else if ((username == null && password != null) || (username != null && password == null)) {
+      } else if (username == null || password == null) {
          throw new PerfCakeException("For Secured JMS message, both username and password must be set.");
       } else {
          return true;

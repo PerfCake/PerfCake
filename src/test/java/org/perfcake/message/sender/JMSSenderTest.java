@@ -19,6 +19,7 @@
  */
 package org.perfcake.message.sender;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 import javax.annotation.Resource;
@@ -27,6 +28,7 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
 import javax.jms.JMSException;
+import javax.jms.JMSSecurityException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.ObjectMessage;
@@ -38,6 +40,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.perfcake.PerfCakeException;
 import org.perfcake.util.ObjectFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -103,6 +106,8 @@ public class JMSSenderTest extends Arquillian {
 
       Assert.assertEquals(sender.getMessageType(), JMSSender.MessageType.STRING);
       Assert.assertEquals(sender.getTarget(), "queue/test");
+      Assert.assertEquals(sender.isPersistent(), true);
+      Assert.assertEquals(sender.isTransacted(), false);
 
       try {
          sender.init();
@@ -162,10 +167,14 @@ public class JMSSenderTest extends Arquillian {
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
       props.setProperty("target", "queue/secured_test");
+      props.setProperty("username", "frank");
+      props.setProperty("password", "frank");
 
       JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
-      sender.setUsername("frank");
-      sender.setPassword("frank");
+
+      Assert.assertEquals(sender.getUsername(), "frank");
+      Assert.assertEquals(sender.getPassword(), "frank");
+
       sender.setTransacted(true);
 
       try {
@@ -231,6 +240,128 @@ public class JMSSenderTest extends Arquillian {
       } finally {
          sender.close();
       }
+   }
+
+   @Test
+   public void testClientAck() throws Exception {
+      Properties props = new Properties();
+      props.setProperty("messagetType", "STRING");
+      props.setProperty("target", "queue/test");
+      props.setProperty("autoAck", "false");
+
+      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
+
+      Assert.assertEquals(sender.isAutoAck(), false);
+
+      try {
+         sender.init();
+
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500, queue));
+
+         // CLIENT-ACK
+         org.perfcake.message.Message message = new org.perfcake.message.Message();
+         String payload = "Hello World!";
+         message.setPayload(payload);
+         sender.preSend(message, null);
+         sender.send(message, null);
+         sender.postSend(message);
+
+         Message response = readMessage(500, queue);
+         Assert.assertTrue(response instanceof TextMessage);
+         Assert.assertEquals(((TextMessage) response).getText(), payload);
+
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500, queue));
+      } finally {
+         sender.close();
+      }
+
+   }
+
+   @Test
+   public void testSecuredNegativMissingCredentials() throws Exception {
+      String payload = "Hello my secret World!";
+
+      Properties props = new Properties();
+      props.setProperty("messagetType", "STRING");
+      props.setProperty("target", "queue/secured_test");
+
+      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
+      sender.setUsername("frank");
+      sender.setPassword(null);
+
+      try {
+         sender.init();
+         Assert.assertFalse(true, "The expected exception was not thrown.");
+      } catch (PerfCakeException perfEx) {
+         Assert.assertTrue(perfEx.getMessage().contains("both"));
+      }
+
+      sender.setUsername(null);
+      sender.setPassword("frank");
+      
+      try {
+         sender.init();
+         Assert.assertFalse(true, "The expected exception was not thrown.");
+      } catch (PerfCakeException perfEx) {
+         Assert.assertTrue(perfEx.getMessage().contains("both"));
+      }
+
+   }
+
+   @Test
+   public void testSecuredNegativWrongPassword() throws Exception {
+      String payload = "Hello my secret World!";
+
+      Properties props = new Properties();
+      props.setProperty("messagetType", "STRING");
+      props.setProperty("target", "queue/secured_test");
+
+      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
+      sender.setUsername("frank");
+      sender.setPassword("wrongPassword");
+
+      try {
+         sender.init();
+         Assert.assertFalse(true, "The expected exception was not thrown.");
+      } catch (PerfCakeException perfEx) {
+         Assert.assertTrue(perfEx.getMessage().contains("validate"));
+      }
+
+   }
+   
+   @Test 
+   public void testProperties() throws Exception{
+      
+      String payload = "Hello World!";
+      
+      Properties props = new Properties();
+      props.setProperty("messagetType", "STRING");
+      props.setProperty("target", "queue/test");
+
+      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);  
+      
+      try {
+         sender.init();
+
+         // STRING Type
+         org.perfcake.message.Message message = new org.perfcake.message.Message();
+         message.setPayload(payload);
+         message.setProperty("kulíšek", "kulíšek nejmenší");      
+         sender.preSend(message, null);
+         sender.send(message, null);
+         sender.postSend(message);
+
+      } finally {
+         sender.close();
+      }
+
+      Message response = readMessage(500, queue);
+      Assert.assertTrue(response instanceof TextMessage);
+      Assert.assertEquals(((TextMessage) response).getText(), payload);
+      Assert.assertEquals(response.getStringProperty("kulíšek"), "kulíšek nejmenší");
+      
    }
 
 }
