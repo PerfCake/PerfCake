@@ -26,7 +26,7 @@
             </security-realm>
             <security-realm name="ApplicationRealm">
                 <authentication>
-                    <properties path="application-users.properties" relative-to="jboss.server.config.dir"/>
+                    <properties path="../../../../src/test/resources/application-users.properties" relative-to="jboss.server.config.dir"/>
                 </authentication>
             </security-realm>
         </security-realms>
@@ -164,6 +164,10 @@
                     <jms-queue name="secured.testQueue">
                         <entry name="queue/secured_test"/>
                         <entry name="java:jboss/exported/jms/queue/secured_test"/>
+                    </jms-queue>
+                    <jms-queue name="testQueueReply">
+                        <entry name="queue/test_reply"/>
+                        <entry name="java:jboss/exported/jms/queue/test_reply"/>
                     </jms-queue>
                     <jms-topic name="testTopic">
                         <entry name="topic/test"/>

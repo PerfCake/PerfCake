@@ -19,24 +19,8 @@
  */
 package org.perfcake.message.sender;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Properties;
-
-import javax.annotation.Resource;
-import javax.jms.BytesMessage;
-import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
-import javax.jms.JMSException;
-import javax.jms.JMSSecurityException;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-
 import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -44,6 +28,26 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.util.ObjectFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import javax.annotation.Resource;
+import javax.jms.BytesMessage;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.ObjectMessage;
+import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.TextMessage;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Lenka Vašková <vaskova.lenka@gmail.com>
@@ -55,6 +59,9 @@ public class JMSSenderTest extends Arquillian {
 
    @Resource(mappedName = "queue/secured_test")
    private Queue securedQueue;
+
+   @Resource(mappedName = "queue/test_reply")
+   private Queue queueReply;
 
    @Resource(mappedName = "java:/ConnectionFactory")
    private ConnectionFactory factory;
@@ -85,6 +92,46 @@ public class JMSSenderTest extends Arquillian {
                connection.close();
             }
          }
+      }
+
+      return message;
+   }
+
+   private Message clientReadMessage(long timeout, String queueName) throws Exception {
+      Properties env = new Properties();
+      env.put(Context.INITIAL_CONTEXT_FACTORY, org.jboss.naming.remote.client.InitialContextFactory.class.getName());
+      env.put(Context.PROVIDER_URL, "remote://localhost:4447");
+      env.put(Context.SECURITY_PRINCIPAL, "zappa");
+      env.put(Context.SECURITY_CREDENTIALS, "frank");
+
+      Message message = null;
+      Context context = new InitialContext(env);
+      try {
+         ConnectionFactory cf = (ConnectionFactory) context.lookup("jms/RemoteConnectionFactory");
+         Destination destination = (Destination) context.lookup("jms/queue/test");
+
+         Connection connection = null;
+         Session session = null;
+
+         try {
+            connection = cf.createConnection();
+            connection.start();
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            MessageConsumer messageConsumer = session.createConsumer(destination);
+            message = messageConsumer.receive(timeout);
+         } finally {
+            try {
+               if (session != null) {
+                  session.close();
+               }
+            } finally {
+               if (connection != null) {
+                  connection.close();
+               }
+            }
+         }
+      } finally {
+         context.close();
       }
 
       return message;
@@ -252,7 +299,7 @@ public class JMSSenderTest extends Arquillian {
       JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
 
       Assert.assertEquals(sender.isAutoAck(), false);
-
+      Assert.assertNull(readMessage(500, queue));
       try {
          sender.init();
 
@@ -261,7 +308,7 @@ public class JMSSenderTest extends Arquillian {
 
          // CLIENT-ACK
          org.perfcake.message.Message message = new org.perfcake.message.Message();
-         String payload = "Hello World!";
+         String payload = "Hello World Client Ack!";
          message.setPayload(payload);
          sender.preSend(message, null);
          sender.send(message, null);
@@ -281,8 +328,6 @@ public class JMSSenderTest extends Arquillian {
 
    @Test
    public void testSecuredNegativMissingCredentials() throws Exception {
-      String payload = "Hello my secret World!";
-
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
       props.setProperty("target", "queue/secured_test");
@@ -300,7 +345,7 @@ public class JMSSenderTest extends Arquillian {
 
       sender.setUsername(null);
       sender.setPassword("frank");
-      
+
       try {
          sender.init();
          Assert.assertFalse(true, "The expected exception was not thrown.");
@@ -312,8 +357,6 @@ public class JMSSenderTest extends Arquillian {
 
    @Test
    public void testSecuredNegativWrongPassword() throws Exception {
-      String payload = "Hello my secret World!";
-
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
       props.setProperty("target", "queue/secured_test");
@@ -330,38 +373,162 @@ public class JMSSenderTest extends Arquillian {
       }
 
    }
-   
-   @Test 
-   public void testProperties() throws Exception{
-      
-      String payload = "Hello World!";
-      
+
+   @Test
+   public void testProperties() throws Exception {
+
+      String payload = "Hello World with Properties!";
+
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
       props.setProperty("target", "queue/test");
 
-      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);  
-      
+      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
+
       try {
          sender.init();
+
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500, queue));
 
          // STRING Type
          org.perfcake.message.Message message = new org.perfcake.message.Message();
          message.setPayload(payload);
-         message.setProperty("kulíšek", "kulíšek nejmenší");      
+         message.setProperty("kulíšek", "kulíšek nejmenší");
          sender.preSend(message, null);
          sender.send(message, null);
          sender.postSend(message);
 
+         Message response = readMessage(500, queue);
+         Assert.assertTrue(response instanceof TextMessage);
+         Assert.assertEquals(((TextMessage) response).getText(), payload);
+         Assert.assertEquals(response.getStringProperty("kulíšek"), "kulíšek nejmenší");
+
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500, queue));
       } finally {
          sender.close();
       }
+   }
 
-      Message response = readMessage(500, queue);
-      Assert.assertTrue(response instanceof TextMessage);
-      Assert.assertEquals(((TextMessage) response).getText(), payload);
-      Assert.assertEquals(response.getStringProperty("kulíšek"), "kulíšek nejmenší");
-      
+   @Test
+   @RunAsClient
+   public void testClientMode() throws Exception {
+      String jndiFactory = org.jboss.naming.remote.client.InitialContextFactory.class.getName();
+      String jndiUrl = "remote://localhost:4447";
+      String queueName = "jms/queue/test";
+
+      Properties props = new Properties();
+      props.setProperty("messagetType", "STRING");
+      props.setProperty("target", queueName);
+      props.setProperty("jndiContextFactory", jndiFactory);
+      props.setProperty("jndiUrl", jndiUrl);
+      props.setProperty("jndiSecurityPrincipal", "zappa");
+      props.setProperty("jndiSecurityCredentials", "frank");
+      props.setProperty("connectionFactory", "jms/RemoteConnectionFactory");
+
+      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
+      Assert.assertEquals(sender.getJndiContextFactory(), jndiFactory);
+      Assert.assertEquals(sender.getJndiUrl(), jndiUrl);
+      Assert.assertEquals(sender.getJndiSecurityPrincipal(), "zappa");
+      Assert.assertEquals(sender.getJndiSecurityCredentials(), "frank");
+      Assert.assertEquals(sender.getConnectionFactory(), "jms/RemoteConnectionFactory");
+
+      try {
+         sender.init();
+
+         // make sure the queue is empty
+         Assert.assertNull(clientReadMessage(500, queueName));
+
+         org.perfcake.message.Message message = new org.perfcake.message.Message();
+         String payload = "Hello from Client!";
+         message.setPayload(payload);
+         sender.preSend(message, null);
+         sender.send(message, null);
+         sender.postSend(message);
+
+         Message response = clientReadMessage(500, queueName);
+         Assert.assertTrue(response instanceof TextMessage);
+         Assert.assertEquals(((TextMessage) response).getText(), payload);
+
+         // make sure the queue is empty
+         Assert.assertNull(clientReadMessage(500, queueName));
+      } finally {
+         sender.close();
+      }
+   }
+
+   @Test
+   public void testAdditionalProperties() throws Exception {
+      String payload = "Hello World with  additional Properties!";
+
+      Properties props = new Properties();
+      props.setProperty("messagetType", "STRING");
+      props.setProperty("target", "queue/test");
+
+      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
+
+      try {
+         sender.init();
+
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500, queue));
+
+         // STRING Type
+         org.perfcake.message.Message message = new org.perfcake.message.Message();
+         message.setPayload(payload);
+         Map<String, String> mapProps = new HashMap<>();
+         mapProps.put("kulisek", "kulisek nejmensi");
+         sender.preSend(message, mapProps);
+         sender.send(message, null);
+         sender.postSend(message);
+
+         Message response = readMessage(500, queue);
+         Assert.assertTrue(response instanceof TextMessage);
+         Assert.assertEquals(((TextMessage) response).getText(), payload);
+         Assert.assertEquals(response.getStringProperty("kulisek"), "kulisek nejmensi");
+
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500, queue));
+      } finally {
+         sender.close();
+      }
+   }
+
+   @Test
+   public void testReplyTo() throws Exception {
+      String payload = "Hello World from Reply to!";
+
+      Properties props = new Properties();
+      props.setProperty("messagetType", "STRING");
+      props.setProperty("target", "queue/test");
+      props.setProperty("replyTo", "queue/test_reply");
+
+      JMSSender sender = (JMSSender) ObjectFactory.summonInstance(JMSSender.class.getName(), props);
+
+      try {
+         sender.init();
+
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500, queue));
+
+         // STRING Type
+         org.perfcake.message.Message message = new org.perfcake.message.Message();
+         message.setPayload(payload);
+         sender.preSend(message, null);
+         sender.send(message, null);
+         sender.postSend(message);
+
+         Message response = readMessage(500, queue);
+         Assert.assertTrue(response instanceof TextMessage);
+         Assert.assertEquals(((TextMessage) response).getText(), payload);
+         Assert.assertEquals(sender.getReplyTo(), "queue/test_reply");
+
+         // make sure the queue is empty
+         Assert.assertNull(readMessage(500, queue));
+      } finally {
+         sender.close();
+      }
    }
 
 }

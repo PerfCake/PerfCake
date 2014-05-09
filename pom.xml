@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE htmlEntities [
       <!ENTITY nbsp "&#xa0;">
-      ]>
+]>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
@@ -87,6 +87,13 @@
             <groupId>org.jboss.arquillian</groupId>
             <artifactId>arquillian-bom</artifactId>
             <version>1.1.4.Final</version>
+            <scope>import</scope>
+            <type>pom</type>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.as</groupId>
+            <artifactId>jboss-as-jms-client-bom</artifactId>
+            <version>${jboss-as.version}</version>
             <scope>import</scope>
             <type>pom</type>
          </dependency>
@@ -197,6 +204,22 @@
          <version>${jacoco.version}</version>
          <scope>test</scope>
       </dependency>
+      <!-- HornetQ remote client for testing BEGIN/ -->
+      <dependency>
+         <groupId>org.hornetq</groupId>
+         <artifactId>hornetq-jms-client</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.hornetq</groupId>
+         <artifactId>hornetq-core-client</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.netty</groupId>
+         <artifactId>netty</artifactId>
+      </dependency>
+      <!-- /END OF HornetQ remote client -->
    </dependencies>
    <build>
       <resources>
@@ -352,7 +375,7 @@
                      <argument>-Dlog4j.configuration=file://${basedir}/src/main/resources/log4j.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath />
+                     <classpath/>
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
@@ -429,7 +452,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <ignore />
+                              <ignore/>
                            </action>
                         </pluginExecution>
                         <pluginExecution>
@@ -442,7 +465,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <execute />
+                              <execute/>
                            </action>
                         </pluginExecution>
                      </pluginExecutions>

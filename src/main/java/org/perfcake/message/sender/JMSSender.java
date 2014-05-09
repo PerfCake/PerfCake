@@ -256,14 +256,18 @@ public class JMSSender extends AbstractSender {
                      session.close();
                   }
                } finally {
-                  if (connection != null) {
-                     connection.close();
+                  try {
+                     if (connection != null) {
+                        connection.close();
+                     }
+                  } finally {
+                     ctx.close();
                   }
                }
             }
          }
 
-      } catch (JMSException e) {
+      } catch (JMSException | NamingException e) {
          throw new PerfCakeException(e);
       }
    }
@@ -288,8 +292,6 @@ public class JMSSender extends AbstractSender {
          case OBJECT:
             mess = session.createObjectMessage(message.getPayload());
             break;
-         default:
-            throw new UnsupportedOperationException();
       }
       Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
       for (String property : propertyNameSet) {
@@ -299,7 +301,7 @@ public class JMSSender extends AbstractSender {
       if (properties != null) {
          propertyNameSet = properties.keySet();
          for (String property : propertyNameSet) {
-            mess.setStringProperty(property, message.getProperty(property));
+            mess.setStringProperty(property, properties.get(property));
          }
       }
       if (replyToDestination != null) {
