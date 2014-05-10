@@ -205,8 +205,7 @@ public class JMSSender extends AbstractSender {
             ctx = new InitialContext(ctxProps);
          }
 
-         Object tmp = ctx.lookup(connectionFactory);
-         qcf = (QueueConnectionFactory) tmp;
+         qcf = (QueueConnectionFactory) ctx.lookup(connectionFactory);
          if (checkCredentials()) {
             connection = qcf.createQueueConnection(username, password);
          } else {
@@ -261,7 +260,9 @@ public class JMSSender extends AbstractSender {
                         connection.close();
                      }
                   } finally {
-                     ctx.close();
+                     if (ctx != null) {
+                        ctx.close();
+                     }
                   }
                }
             }
