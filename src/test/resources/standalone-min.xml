@@ -92,6 +92,7 @@
                 <security-domain>simple</security-domain>
                 <journal-file-size>102400</journal-file-size>
                 <journal-min-files>2</journal-min-files>
+                <journal-type>NIO</journal-type>
 
                 <connectors>
                     <netty-connector name="netty" socket-binding="messaging"/>

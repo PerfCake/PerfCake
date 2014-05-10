@@ -89,7 +89,7 @@ public class RequestResponseJMSSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the queue is empty
+         // make sure the queues are empty
          Assert.assertNull(JMSHelper.readMessage(factory, 500, queue));
          Assert.assertNull(JMSHelper.readMessage(factory, 500, queueReply));
 
