@@ -15,9 +15,9 @@ import org.perfcake.util.agent.PerfCakeAgent.Memory;
 
 /**
  * The actuall implementation of the PerfCake agent.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
- * 
+ *
  */
 public class AgentThread implements Runnable {
    /**
@@ -67,7 +67,7 @@ public class AgentThread implements Runnable {
          }
 
          ssocket = new ServerSocket(port, 1, host);
-         while (true) {
+         while (!Thread.currentThread().isInterrupted()) {
             log("Listening at " + ssocket.getInetAddress().getHostAddress() + " on port " + ssocket.getLocalPort());
             socket = ssocket.accept();
             log("Client connected from " + socket.getInetAddress().getHostAddress());
@@ -116,7 +116,7 @@ public class AgentThread implements Runnable {
 
    /**
     * Logs a message.
-    * 
+    *
     * @param msg
     *           Message to be logged.
     */
@@ -126,7 +126,7 @@ public class AgentThread implements Runnable {
 
    /**
     * Logs an error message.
-    * 
+    *
     * @param msg
     *           Message to be logged.
     */
