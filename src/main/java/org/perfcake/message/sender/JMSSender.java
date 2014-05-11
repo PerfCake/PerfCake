@@ -52,7 +52,7 @@ import org.perfcake.reporting.MeasurementUnit;
  * @author Marek Baluch <baluch.git@gmail.com>
  * 
  */
-public abstract class JMSSender extends AbstractSender {
+public class JMSSender extends AbstractSender {
 
    /**
     * JMS message type.
@@ -205,8 +205,7 @@ public abstract class JMSSender extends AbstractSender {
             ctx = new InitialContext(ctxProps);
          }
 
-         Object tmp = ctx.lookup(connectionFactory);
-         qcf = (QueueConnectionFactory) tmp;
+         qcf = (QueueConnectionFactory) ctx.lookup(connectionFactory);
          if (checkCredentials()) {
             connection = qcf.createQueueConnection(username, password);
          } else {
@@ -224,7 +223,7 @@ public abstract class JMSSender extends AbstractSender {
          connection.start();
          sender = session.createSender(queue);
          sender.setDeliveryMode(persistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
-      } catch (JMSException | NamingException | RuntimeException | PerfCakeException e) {
+      } catch (JMSException | NamingException | RuntimeException e) {
          throw new PerfCakeException(e);
       }
    }
@@ -256,14 +255,20 @@ public abstract class JMSSender extends AbstractSender {
                      session.close();
                   }
                } finally {
-                  if (connection != null) {
-                     connection.close();
+                  try {
+                     if (connection != null) {
+                        connection.close();
+                     }
+                  } finally {
+                     if (ctx != null) {
+                        ctx.close();
+                     }
                   }
                }
             }
          }
 
-      } catch (JMSException e) {
+      } catch (JMSException | NamingException e) {
          throw new PerfCakeException(e);
       }
    }
@@ -288,8 +293,6 @@ public abstract class JMSSender extends AbstractSender {
          case OBJECT:
             mess = session.createObjectMessage(message.getPayload());
             break;
-         default:
-            throw new UnsupportedOperationException();
       }
       Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
       for (String property : propertyNameSet) {
@@ -299,7 +302,7 @@ public abstract class JMSSender extends AbstractSender {
       if (properties != null) {
          propertyNameSet = properties.keySet();
          for (String property : propertyNameSet) {
-            mess.setStringProperty(property, message.getProperty(property));
+            mess.setStringProperty(property, properties.get(property));
          }
       }
       if (replyToDestination != null) {
@@ -337,7 +340,7 @@ public abstract class JMSSender extends AbstractSender {
    protected boolean checkCredentials() throws PerfCakeException {
       if (username == null && password == null) {
          return false;
-      } else if ((username == null && password != null) || (username != null && password == null)) {
+      } else if (username == null || password == null) {
          throw new PerfCakeException("For Secured JMS message, both username and password must be set.");
       } else {
          return true;

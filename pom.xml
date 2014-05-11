@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE htmlEntities [
-<!ENTITY nbsp "&#xa0;">
+      <!ENTITY nbsp "&#xa0;">
 ]>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
@@ -50,6 +50,10 @@
          <name>Pavel Drozd</name>
          <email>ravliv7@gmail.com</email>
       </contributor>
+      <contributor>
+         <name>Lenka Vašková</name>
+         <email>vaskova.lenka@gmail.com</email>
+      </contributor>
    </contributors>
    <ciManagement>
       <system>Jenkins</system>
@@ -71,10 +75,30 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <maven.exec.plugin.version>1.2</maven.exec.plugin.version>
       <pit.version>0.33</pit.version>
+      <jboss-as.version>7.1.1.Final</jboss-as.version>
+      <jacoco.version>0.6.4.201312101107</jacoco.version>
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
       <server.port>8080</server.port>
    </properties>
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>org.jboss.arquillian</groupId>
+            <artifactId>arquillian-bom</artifactId>
+            <version>1.1.4.Final</version>
+            <scope>import</scope>
+            <type>pom</type>
+         </dependency>
+         <dependency>
+            <groupId>org.jboss.as</groupId>
+            <artifactId>jboss-as-jms-client-bom</artifactId>
+            <version>${jboss-as.version}</version>
+            <scope>import</scope>
+            <type>pom</type>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
    <dependencies>
       <!-- JMS 1.1 API -->
       <dependency>
@@ -144,6 +168,58 @@
          <artifactId>javax.websocket-api</artifactId>
          <version>1.0</version>
       </dependency>
+      <!-- Test of senders in an JEE Container -->
+      <dependency>
+         <groupId>org.jboss.arquillian.testng</groupId>
+         <artifactId>arquillian-testng-container</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.arquillian.protocol</groupId>
+         <artifactId>arquillian-protocol-servlet</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.as</groupId>
+         <artifactId>jboss-as-arquillian-container-managed</artifactId>
+         <version>${jboss-as.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.as</groupId>
+         <artifactId>jboss-as-dist</artifactId>
+         <version>${jboss-as.version}</version>
+         <type>zip</type>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.arquillian.extension</groupId>
+         <artifactId>arquillian-jacoco</artifactId>
+         <version>1.0.0.Alpha6</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jacoco</groupId>
+         <artifactId>org.jacoco.core</artifactId>
+         <version>${jacoco.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <!-- HornetQ remote client for testing BEGIN/ -->
+      <dependency>
+         <groupId>org.hornetq</groupId>
+         <artifactId>hornetq-jms-client</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.hornetq</groupId>
+         <artifactId>hornetq-core-client</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.netty</groupId>
+         <artifactId>netty</artifactId>
+      </dependency>
+      <!-- /END OF HornetQ remote client -->
    </dependencies>
    <build>
       <resources>
@@ -181,7 +257,7 @@
          <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.6.3.201306030806</version>
+            <version>${jacoco.version}</version>
             <configuration>
                <destfile>${basedir}/target/coverage-reports/jacoco-unit.exec</destfile>
                <datafile>${basedir}/target/coverage-reports/jacoco-unit.exec</datafile>
@@ -214,6 +290,41 @@
                   <param>org.perfcake.*</param>
                </targetTests>
             </configuration>
+         </plugin>
+         <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.16</version>
+            <configuration>
+               <systemPropertyVariables>
+                  <arquillian.launch>jboss-as-managed</arquillian.launch>
+               </systemPropertyVariables>
+            </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <version>2.8</version>
+            <executions>
+               <execution>
+                  <id>unpack</id>
+                  <phase>process-test-classes</phase>
+                  <goals>
+                     <goal>unpack</goal>
+                  </goals>
+                  <configuration>
+                     <artifactItems>
+                        <artifactItem>
+                           <groupId>org.jboss.as</groupId>
+                           <artifactId>jboss-as-dist</artifactId>
+                           <version>${jboss-as.version}</version>
+                           <type>zip</type>
+                           <overWrite>false</overWrite>
+                           <outputDirectory>target</outputDirectory>
+                        </artifactItem>
+                     </artifactItems>
+                  </configuration>
+               </execution>
+            </executions>
          </plugin>
       </plugins>
       <pluginManagement>
@@ -311,11 +422,8 @@
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-javadoc-plugin</artifactId>
                <configuration>
-                  <windowtitle>${project.name} API Documentation
-                     (version
-                     ${project.version})</windowtitle>
-                  <doctitle>${project.name} API Documentation (version
-                     ${project.version})</doctitle>
+                  <windowtitle>${project.name} API Documentation (version ${project.version})</windowtitle>
+                  <doctitle>${project.name} API Documentation (version ${project.version})</doctitle>
                </configuration>
             </plugin>
             <plugin>
@@ -326,7 +434,7 @@
                   <useAgent>true</useAgent>
                </configuration>
             </plugin>
-            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
             <plugin>
                <groupId>org.eclipse.m2e</groupId>
                <artifactId>lifecycle-mapping</artifactId>
@@ -347,6 +455,19 @@
                               <ignore/>
                            </action>
                         </pluginExecution>
+                        <pluginExecution>
+                           <pluginExecutionFilter>
+                              <groupId>org.apache.maven.plugins</groupId>
+                              <artifactId>maven-dependency-plugin</artifactId>
+                              <versionRange>[1.0.0,)</versionRange>
+                              <goals>
+                                 <goal>unpack</goal>
+                              </goals>
+                           </pluginExecutionFilter>
+                           <action>
+                              <execute/>
+                           </action>
+                        </pluginExecution>
                      </pluginExecutions>
                   </lifecycleMappingMetadata>
                </configuration>
@@ -364,7 +485,7 @@
          <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
-            <version>0.6.3.201306030806</version>
+            <version>${jacoco.version}</version>
          </plugin>
       </plugins>
    </reporting>
