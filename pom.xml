@@ -237,6 +237,7 @@
                <exclude>keystores/*</exclude>
                <exclude>messages/*</exclude>
                <exclude>scenarios/*</exclude>
+               <exclude>google-charts/*</exclude>
                <exclude>log4j.xml</exclude>
             </excludes>
          </resource>
