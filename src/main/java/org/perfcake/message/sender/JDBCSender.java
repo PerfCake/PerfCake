@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,25 +19,19 @@
  */
 package org.perfcake.message.sender;
 
-import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Map;
-
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
+import java.io.Serializable;
+import java.sql.*;
+import java.util.Map;
+
 /**
  * The sender that is able to send SQL queries via JDBC.
- * 
+ * <p/>
  * TODO: Report individual result lines to result validator
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
@@ -50,7 +44,7 @@ public class JDBCSender extends AbstractSender {
    /**
     * JDBC URL string.
     */
-   private String jdbcURL = "";
+   private String jdbcUrl = "";
 
    /**
     * JDBC driver class.
@@ -79,19 +73,19 @@ public class JDBCSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#init()
     */
    @Override
    public void init() throws Exception {
-      this.jdbcURL = target;
+      this.jdbcUrl = target;
       Class.forName(driverClass);
-      connection = DriverManager.getConnection(jdbcURL, username, password);
+      connection = DriverManager.getConnection(jdbcUrl, username, password);
    }
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#close()
     */
    @Override
@@ -99,15 +93,13 @@ public class JDBCSender extends AbstractSender {
       try {
          connection.close();
       } catch (SQLException ex) {
-         if (log.isEnabledFor(Level.ERROR)) {
-            log.error(ex.getMessage());
-         }
+         log.error(ex.getMessage());
       }
    }
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -118,7 +110,7 @@ public class JDBCSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -164,7 +156,7 @@ public class JDBCSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
     */
    @Override
@@ -174,27 +166,27 @@ public class JDBCSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of jdbcURL.
-    * 
-    * @return The jdbcURL.
+    * Used to read the value of jdbcUrl.
+    *
+    * @return The jdbcUrl.
     */
-   public String getJdbcURL() {
-      return jdbcURL;
+   public String getJdbcUrl() {
+      return jdbcUrl;
    }
 
    /**
-    * Sets the value of jdbcURL.
-    * 
-    * @param jdbcURL
-    *           The jdbcURL to set.
+    * Sets the value of jdbcUrl.
+    *
+    * @param jdbcUrl
+    *       The jdbcUrl to set.
     */
-   public void setJdbcURL(final String jdbcURL) {
-      this.jdbcURL = jdbcURL;
+   public void setJdbcUrl(final String jdbcUrl) {
+      this.jdbcUrl = jdbcUrl;
    }
 
    /**
     * Used to read the value of driverClass.
-    * 
+    *
     * @return The driverClass.
     */
    public String getDriverClass() {
@@ -203,9 +195,9 @@ public class JDBCSender extends AbstractSender {
 
    /**
     * Sets the value of driverClass.
-    * 
+    *
     * @param driverClass
-    *           The driverClass to set.
+    *       The driverClass to set.
     */
    public void setDriverClass(final String driverClass) {
       this.driverClass = driverClass;
@@ -213,7 +205,7 @@ public class JDBCSender extends AbstractSender {
 
    /**
     * Used to read the value of username.
-    * 
+    *
     * @return The username.
     */
    public String getUsername() {
@@ -222,9 +214,9 @@ public class JDBCSender extends AbstractSender {
 
    /**
     * Sets the value of username.
-    * 
+    *
     * @param username
-    *           The username to set.
+    *       The username to set.
     */
    public void setUsername(final String username) {
       this.username = username;
@@ -232,7 +224,7 @@ public class JDBCSender extends AbstractSender {
 
    /**
     * Used to read the value of password.
-    * 
+    *
     * @return The password.
     */
    public String getPassword() {
@@ -241,9 +233,9 @@ public class JDBCSender extends AbstractSender {
 
    /**
     * Sets the value of password.
-    * 
+    *
     * @param password
-    *           The password to set.
+    *       The password to set.
     */
    public void setPassword(final String password) {
       this.password = password;

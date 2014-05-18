@@ -220,6 +220,14 @@
          <artifactId>netty</artifactId>
       </dependency>
       <!-- /END OF HornetQ remote client -->
+      <!-- Mockito -->
+      <dependency>
+         <groupId>org.mockito</groupId>
+         <artifactId>mockito-all</artifactId>
+         <version>1.9.5</version>
+         <scope>test</scope>
+      </dependency>
+
    </dependencies>
    <build>
       <resources>
@@ -375,7 +383,7 @@
                      <argument>-Dlog4j.configuration=file://${basedir}/src/main/resources/log4j.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath/>
+                     <classpath />
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
@@ -452,7 +460,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <ignore/>
+                              <ignore />
                            </action>
                         </pluginExecution>
                         <pluginExecution>
@@ -465,7 +473,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <execute/>
+                              <execute />
                            </action>
                         </pluginExecution>
                      </pluginExecutions>

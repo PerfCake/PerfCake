@@ -127,7 +127,7 @@ public class JMSSender extends AbstractSender {
    protected boolean persistent = true;
 
    /**
-    * Indicates whether the JMS message is auto-acknowledged by the reciever (true) or by client (false).
+    * Indicates whether the JMS message is auto-acknowledged by the receiver (true) or by client (false).
     */
    protected boolean autoAck = true;
 
