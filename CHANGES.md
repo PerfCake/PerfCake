@@ -19,6 +19,16 @@ Bug Fixes
 ---------
 * Bugs fixed
 
+Release 2.1
+===========
+
+Features
+--------
+
+Bug Fixes
+---------
+* #119 - Message properties and headers are ignored
+
 Release 2.0
 ===========
 
