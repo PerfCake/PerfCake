@@ -17,17 +17,15 @@ Features
 
 Bug Fixes
 ---------
-* Bugs fixed
+* https://github.com/PerfCake/PerfCake/issues/104 - Fix CSVDestination synchronization problem.
+* https://github.com/PerfCake/PerfCake/issues/111 - PerfCakeAgent hangs when configured to monitor local JVM process.
 
 Release 2.1
 ===========
 
-Features
---------
-
 Bug Fixes
 ---------
-* #119 - Message properties and headers are ignored
+* https://github.com/PerfCake/PerfCake/issues/119 - Message properties and headers are ignored.
 
 Release 2.0
 ===========
@@ -38,16 +36,28 @@ Features
 * Added **-pf** parameter to CLI for specifying a property file.
 * Added a possibility to add extra jars to the classpath (lib/ext directory).
 * Added a mechanism for extending PerfCake via plugins (lib/plugins directory).
-* Added **appendStrategy** property to CSVDestination.
+* Added **appendStrategy** property to **CSVDestination**.
 * Added a new generator - **RampUpDownGenerator**.
 * Added a new sender - **WebSocketSender**.
 * Implemented a memory leak detection feature into **MemoryUsageReporter**.
+* Improved sender pool implementation.
 * Improved performance.
 * Increased test coverage.
 
 Bug Fixes
 ---------
-* Bugs fixed
+* https://github.com/PerfCake/PerfCake/issues/77 - Exceptions thrown by senders are not processed by the logging subsystem.
+* https://github.com/PerfCake/PerfCake/issues/84 - CSVDestination appends new records into the output file if the one exists and losts the warmUp column.
+* https://github.com/PerfCake/PerfCake/issues/86 - MemoryUsageReporter collects data for memory leak detection analysis incorrectly.
+* https://github.com/PerfCake/PerfCake/issues/87 - Bad maxIterations handling after warm up.
+
+Release 1.0.1
+=============
+
+Bug Fixes
+---------
+* https://github.com/PerfCake/PerfCake/issues/82 - GroovySender resolves default groovy path wrong.
+* https://github.com/PerfCake/PerfCake/issues/83 - Default scenarios and messages directories are resolved wrong in binary distribution
 
 Release 1.0
 ===========
