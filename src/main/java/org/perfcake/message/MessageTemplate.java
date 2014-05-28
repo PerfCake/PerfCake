@@ -69,6 +69,8 @@ public class MessageTemplate implements Serializable {
          text = Utils.filterProperties(text, getMatcher(text), new DefaultPropertyGetter(props));
 
          m.setPayload(text);
+         m.setHeaders(message.getHeaders());
+         m.setProperties(message.getProperties());
 
          return m;
       } else {
