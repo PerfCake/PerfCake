@@ -50,6 +50,7 @@ Bug Fixes
 * https://github.com/PerfCake/PerfCake/issues/84 - CSVDestination appends new records into the output file if the one exists and losts the warmUp column.
 * https://github.com/PerfCake/PerfCake/issues/86 - MemoryUsageReporter collects data for memory leak detection analysis incorrectly.
 * https://github.com/PerfCake/PerfCake/issues/87 - Bad maxIterations handling after warm up.
+* https://github.com/PerfCake/PerfCake/issues/97 - Accumulating the results leads to NPE because of concurrency.
 
 Release 1.0.1
 =============
@@ -57,7 +58,7 @@ Release 1.0.1
 Bug Fixes
 ---------
 * https://github.com/PerfCake/PerfCake/issues/82 - GroovySender resolves default groovy path wrong.
-* https://github.com/PerfCake/PerfCake/issues/83 - Default scenarios and messages directories are resolved wrong in binary distribution
+* https://github.com/PerfCake/PerfCake/issues/83 - Default scenarios and messages directories are resolved wrong in binary distribution.
 
 Release 1.0
 ===========
