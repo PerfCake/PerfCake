@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
-import org.perfcake.ScenarioExecution;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
@@ -39,7 +38,8 @@ import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
-import org.perfcake.validation.ValidatorManager;
+import org.perfcake.validation.ValidationManager;
+import org.w3c.dom.Element;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -72,11 +72,22 @@ public class ScenarioFactory {
       this.scenario = model;
    }
 
-   private static Properties getPropertiesFromList(List<Property> properties) {
+   private static Properties getPropertiesFromList(List<Property> properties) throws PerfCakeException {
       Properties props = new Properties();
+
       for (Property p : properties) {
-         props.setProperty(p.getName(), p.getValue());
+         Element valueElement = p.getAny();
+         String valueString = p.getValue();
+
+         if (valueElement != null && valueString != null) {
+            throw new PerfCakeException(String.format("A property tag can either have an attribute value (%s) or the body (%s) set, not both at the same time.", valueString, valueElement.toString()));
+         } else if (valueElement == null && valueString == null) {
+            throw new PerfCakeException("A property tag must either have an attribute value or the body set.");
+         }
+
+         props.put(p.getName(), valueString == null ? valueElement : valueString);
       }
+
       return props;
    }
 
@@ -90,13 +101,12 @@ public class ScenarioFactory {
    public RunInfo parseRunInfo() throws PerfCakeException {
       Generator gen = scenario.getGenerator();
       Generator.Run run = gen.getRun();
-      RunInfo runInfo = new RunInfo(new Period(PeriodType.valueOf(run.getType().toUpperCase()), Long.valueOf(run.getValue())));
 
-      return runInfo;
+      return new RunInfo(new Period(PeriodType.valueOf(run.getType().toUpperCase()), Long.valueOf(run.getValue())));
    }
 
    /**
-    * Parse the <code>sender</code> element into a {@link AbstractMessageGenerator} instance.
+    * Parse the <code>generator</code> element into a {@link AbstractMessageGenerator} instance.
     *
     * @return A message generator.
     * @throws InstantiationException
@@ -161,15 +171,15 @@ public class ScenarioFactory {
    /**
     * Parse the <code>messages</code> element into a message store.
     *
-    * @param validatorManager
-    *           ValidatorManager carrying all parsed validators, these will be associated with the message templates.
+    * @param validationManager
+    *           ValidationManager carrying all parsed validators, these will be associated with the message templates.
     * @return Message store in a form of {@link Map}&lt;{@link Message}, {@link Long}&gt; where the keys are stored messages and the values
     *         are multiplicity of how many times the message is sent in a single
     *         iteration.
     * @throws IOException
     * @throws FileNotFoundException
     */
-   public List<MessageTemplate> parseMessages(ValidatorManager validatorManager) throws PerfCakeException {
+   public List<MessageTemplate> parseMessages(ValidationManager validationManager) throws PerfCakeException {
       List<MessageTemplate> messageStore = new ArrayList<>();
 
       try {
@@ -213,7 +223,7 @@ public class ScenarioFactory {
 
                final List<String> currentMessageValidatorIds = new ArrayList<>();
                for (ValidatorRef ref : m.getValidatorRef()) {
-                  MessageValidator validator = validatorManager.getValidator(ref.getId());
+                  MessageValidator validator = validationManager.getValidator(ref.getId());
                   if (validator == null) {
                      throw new PerfCakeException(String.format("Validator with id %s not found.", ref.getId()));
                   }
@@ -301,8 +311,8 @@ public class ScenarioFactory {
       return reportManager;
    }
 
-   public ValidatorManager parseValidation() throws PerfCakeException {
-      final ValidatorManager validatorManager = new ValidatorManager();
+   public ValidationManager parseValidation() throws PerfCakeException {
+      final ValidationManager validationManager = new ValidationManager();
 
       log.info("--- Validation ---");
       try {
@@ -317,18 +327,21 @@ public class ScenarioFactory {
                   validatorClass = DEFAULT_VALIDATION_PACKAGE + "." + validatorClass;
                }
 
-               MessageValidator messageValidator = (MessageValidator) Class.forName(validatorClass, false, ScenarioExecution.class.getClassLoader()).newInstance();
-               messageValidator.setAssertions(v.getValue());
+               log.info(" '- Validation (" + validatorClass + ")");
+               Properties currentValidationProperties = getPropertiesFromList(v.getProperty());
+               Utils.logProperties(log, Level.DEBUG, currentValidationProperties, "  '- ");
 
-               validatorManager.addValidator(v.getId(), messageValidator);
-               validatorManager.setEnabled(true);
+               MessageValidator messageValidator = (MessageValidator) ObjectFactory.summonInstance(validatorClass, currentValidationProperties);
+
+               validationManager.addValidator(v.getId(), messageValidator);
+               validationManager.setEnabled(true);
             }
          }
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
          throw new PerfCakeException("Cannot parse validation configuration: ", e);
       }
 
-      return validatorManager;
+      return validationManager;
    }
 
    public Properties parseScenarioProperties() throws PerfCakeException {

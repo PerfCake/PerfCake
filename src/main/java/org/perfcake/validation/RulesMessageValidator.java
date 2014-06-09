@@ -25,8 +25,10 @@ import org.drools.RuleBaseFactory;
 import org.drools.StatefulSession;
 import org.drools.rule.Package;
 import org.perfcake.message.Message;
+import org.w3c.dom.Element;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +42,6 @@ public class RulesMessageValidator implements MessageValidator {
 
    private static final Logger log = Logger.getLogger(RulesMessageValidator.class);
    private static final String validatorDSL = "messageValidator.dsl";
-   private Package pkg;
    private HashMap<Integer, String> assertions = new HashMap<>();// <lineNo, rule>
    private Package pack;
 
@@ -76,25 +77,36 @@ public class RulesMessageValidator implements MessageValidator {
       return true;
    }
 
-   @Override
-   public void setAssertions(final String validationRule) {
+   private void processAssertions(BufferedReader assertionsReader) throws Exception {
       assertions = new HashMap<>();
-      try {
-         final BufferedReader br = new BufferedReader(new StringReader(validationRule));
-         int lineNo = 0;
-         String line;
+      int lineNo = 0;
+      String line;
 
-         while ((line = br.readLine()) != null) {
-            line = StringUtil.trim(line);
-            if (!"".equals(line) && !line.startsWith("#")) {
-               assertions.put(lineNo, line);
-               lineNo++;
-            }
+      while ((line = assertionsReader.readLine()) != null) {
+         line = StringUtil.trim(line);
+         if (!"".equals(line) && !line.startsWith("#")) {
+            assertions.put(lineNo, line);
+            lineNo++;
          }
-         pack = RulesBuilder.build(assertions, validatorDSL);
+      }
+      pack = RulesBuilder.build(assertions, validatorDSL);
+   }
 
+   public void setRules(final String validationRuleFile) {
+      try (final FileReader fr = new FileReader(validationRuleFile);
+            final BufferedReader br = new BufferedReader(fr)) {
+         processAssertions(br);
       } catch (final Exception ex) {
          log.error("Error creating Drools base message validator.", ex);
       }
    }
+
+   public void setRules(final Element validationRule) {
+      try (final BufferedReader br = new BufferedReader(new StringReader(validationRule.getTextContent()))) {
+         processAssertions(br);
+      } catch (final Exception ex) {
+         log.error("Error creating Drools base message validator.", ex);
+      }
+   }
+
 }

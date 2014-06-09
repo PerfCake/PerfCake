@@ -34,7 +34,7 @@ import java.util.*;
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  */
-public class ValidatorManager {
+public class ValidationManager {
 
    /**
     * A map of validators: validator id => validator instance
@@ -43,7 +43,7 @@ public class ValidatorManager {
    /**
     * A logger.
     */
-   private final Logger log = Logger.getLogger(ValidatorManager.class);
+   private final Logger log = Logger.getLogger(ValidationManager.class);
    /**
     * An internal thread that takes one response after another and validates them.
     */
@@ -75,7 +75,7 @@ public class ValidatorManager {
     *
     * @throws PerfCakeException When it was not possible to initialize the message store.
     */
-   public ValidatorManager() throws PerfCakeException {
+   public ValidationManager() throws PerfCakeException {
       try {
          final File tmpFile = File.createTempFile("perfcake", "queue");
          tmpFile.deleteOnExit();

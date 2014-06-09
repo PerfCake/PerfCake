@@ -19,11 +19,10 @@
  */
 package org.perfcake.validation;
 
-import java.util.HashMap;
-
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
+import org.w3c.dom.Element;
 
 /**
  * 
@@ -54,9 +53,15 @@ public class TextMessageValidator implements MessageValidator {
       return true;
    }
 
-   @Override
-   public void setAssertions(final String validationRule) {
-      expectedOutput = StringUtil.trim(StringUtil.trimLines(validationRule));
+   public String getExpectedOutput() {
+      return expectedOutput;
    }
 
+   public void setExpectedOutput(String expectedOutput) {
+      this.expectedOutput = expectedOutput;
+   }
+
+   public void setExpectedOutput(Element expectedOutput) {
+      this.expectedOutput = expectedOutput.getTextContent();
+   }
 }

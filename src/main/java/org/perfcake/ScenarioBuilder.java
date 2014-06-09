@@ -30,7 +30,7 @@ import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
-import org.perfcake.validation.ValidatorManager;
+import org.perfcake.validation.ValidationManager;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -53,7 +53,7 @@ public class ScenarioBuilder {
    private List<Reporter> reporters = new ArrayList<>();
    private List<MessageTemplate> messages = new ArrayList<>();
    private AbstractMessageGenerator generator;
-   private ValidatorManager validatorManager = new ValidatorManager();
+   private ValidationManager validationManager = new ValidationManager();
 
    private ReportManager reportManager;
 
@@ -130,8 +130,8 @@ public class ScenarioBuilder {
     * @return
     */
    public ScenarioBuilder putMessageValidator(String validatorId, MessageValidator mv) {
-      validatorManager.addValidator(validatorId, mv);
-      validatorManager.setEnabled(true);
+      validationManager.addValidator(validatorId, mv);
+      validationManager.setEnabled(true);
       return this;
    }
 
@@ -188,7 +188,7 @@ public class ScenarioBuilder {
       sc.setReportManager(reportManager);
 
       sc.setMessageStore(messages);
-      sc.setValidatorManager(validatorManager);
+      sc.setValidationManager(validationManager);
 
       return sc;
    }
@@ -207,8 +207,8 @@ public class ScenarioBuilder {
       generator = sf.parseGenerator();
       messageSenderManager = sf.parseSender(generator.getThreads());
       reportManager = sf.parseReporting();
-      validatorManager = sf.parseValidation();
-      messages = sf.parseMessages(validatorManager);
+      validationManager = sf.parseValidation();
+      messages = sf.parseMessages(validationManager);
 
       return this;
    }

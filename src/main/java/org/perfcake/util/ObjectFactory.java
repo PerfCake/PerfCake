@@ -19,20 +19,22 @@
  */
 package org.perfcake.util;
 
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.ConvertUtilsBean;
+import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeConst;
+import org.w3c.dom.Element;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Properties;
-
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.ConvertUtilsBean;
-import org.apache.log4j.Logger;
-import org.perfcake.PerfCakeConst;
 
 /**
  * @author Martin Večeřa <marvenec@gmail.com>
@@ -52,7 +54,17 @@ public class ObjectFactory {
             return super.convert(value, clazz);
          }
       }
+   }
 
+   private static boolean setElementProperty(final Object object, final String propertyName, final Element value) throws InvocationTargetException, IllegalAccessException {
+      try {
+         Method setter = object.getClass().getDeclaredMethod("set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1), Element.class);
+         setter.invoke(object, value);
+
+         return true;
+      } catch (NoSuchMethodException e) {
+         return false;
+      }
    }
 
    /**
@@ -63,12 +75,20 @@ public class ObjectFactory {
     */
    public static void setPropertiesOnObject(final Object object, final Properties properties) throws IllegalAccessException, InvocationTargetException {
       BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumConvertUtilsBean());
-      for (String key : properties.stringPropertyNames()) {
+      for (Object key : properties.keySet()) {
          if (log.isTraceEnabled()) {
-            log.trace("Setting property: '" + key + "'='" + properties.getProperty(key) + "'");
+            log.trace("Setting property: '" + key.toString() + "'='" + properties.get(key) + "'");
          }
-         beanUtilsBean.setProperty(object, key, properties.getProperty(key));
-         // BeanUtils.setProperty(object, key, properties.getProperty(key));
+
+         boolean successSet = false; // did we manage to set the property value?
+
+         if (properties.get(key) instanceof Element) { // first, is it an XML element? try to set it...
+            successSet = setElementProperty(object, key.toString(), (Element) properties.get(key));
+         }
+
+         if (!successSet) { // not yet set - either it was not an XML element or it failed with it
+            beanUtilsBean.setProperty(object, key.toString(), properties.get(key));
+         }
       }
    }
 
@@ -122,7 +142,7 @@ public class ObjectFactory {
       }
 
       public boolean accept(File dir, String name) {
-         return name.endsWith(extension) ? true : false;
+         return name.endsWith(extension);
       }
    }
 

@@ -2,8 +2,11 @@
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:perfcake:scenario:3.0" xmlns:pc="urn:perfcake:scenario:3.0" version="1.0" targetNamespace="urn:perfcake:scenario:3.0" elementFormDefault="qualified">
    <xsd:element name="property">
       <xsd:complexType>
+         <xsd:sequence>
+            <xsd:any processContents="skip" minOccurs="0"/>
+         </xsd:sequence>
          <xsd:attribute name="name" type="xsd:string"/>
-         <xsd:attribute name="value" type="xsd:string"/>
+         <xsd:attribute name="value" type="xsd:string" use="optional"/>
       </xsd:complexType>
    </xsd:element>
    <xsd:element name="header">
@@ -107,12 +110,11 @@
                   <xsd:sequence>
                      <xsd:element name="validator" maxOccurs="unbounded" minOccurs="0">
                         <xsd:complexType>
-                           <xsd:simpleContent>
-                              <xsd:extension base="xsd:string">
-                                 <xsd:attribute name="id" type="xsd:string"/>
-                                 <xsd:attribute name="class" type="xsd:string"/>
-                              </xsd:extension>
-                           </xsd:simpleContent>
+                           <xsd:sequence>
+                              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pc:property"/>
+                           </xsd:sequence>
+                           <xsd:attribute name="id" type="xsd:string"/>
+                           <xsd:attribute name="class" type="xsd:string"/>
                         </xsd:complexType>
                      </xsd:element>
                   </xsd:sequence>

@@ -25,7 +25,7 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.validation.ValidatorManager;
+import org.perfcake.validation.ValidationManager;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -56,7 +56,7 @@ public abstract class AbstractMessageGenerator {
    /**
     * A reference to the current message validator manager.
     */
-   protected ValidatorManager validatorManager;
+   protected ValidationManager validationManager;
 
    /**
     * Message store where the messages for senders to be send are taken from.
@@ -104,7 +104,7 @@ public abstract class AbstractMessageGenerator {
       task.setMessageStore(messageStore);
       task.setReportManager(reportManager);
       task.setSenderManager(messageSenderManager);
-      task.setValidatorManager(validatorManager);
+      task.setValidationManager(validationManager);
       task.setMessageNumberingEnabled(isMessageNumberingEnabled());
 
       return task;
@@ -240,7 +240,7 @@ public abstract class AbstractMessageGenerator {
       this.messageNumberingEnabled = messageNumberingEnabled;
    }
 
-   public void setValidatorManager(final ValidatorManager validatorManager) {
-      this.validatorManager = validatorManager;
+   public void setValidationManager(final ValidationManager validationManager) {
+      this.validationManager = validationManager;
    }
 }

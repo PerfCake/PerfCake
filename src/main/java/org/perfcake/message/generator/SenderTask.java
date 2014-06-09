@@ -29,7 +29,7 @@ import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.validation.ValidatorManager;
+import org.perfcake.validation.ValidationManager;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -73,7 +73,7 @@ class SenderTask implements Runnable {
    /**
     * A reference to the current validator manager. It is used to validate message responses.
     */
-   private ValidatorManager validatorManager;
+   private ValidationManager validationManager;
 
    /**
     * Semaphore used from the outside of SenderTask, it controls the amount of prepared tasks in a buffer.
@@ -106,7 +106,7 @@ class SenderTask implements Runnable {
 
    @Override
    public void run() {
-      assert messageStore != null && reportManager != null && validatorManager != null && senderManager != null : "SenderTask was not properly initialized.";
+      assert messageStore != null && reportManager != null && validationManager != null && senderManager != null : "SenderTask was not properly initialized.";
 
       final Properties messageAttributes = new Properties();
       final HashMap<String, String> messageHeaders = new HashMap<>();
@@ -135,16 +135,16 @@ class SenderTask implements Runnable {
 
                   for (int i = 0; i < multiplicity; i++) {
                      receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend);
-                     if (validatorManager.isEnabled()) {
-                        validatorManager.addToResultMessages(receivedMessage);
+                     if (validationManager.isEnabled()) {
+                        validationManager.addToResultMessages(receivedMessage);
                      }
                   }
 
                }
             } else {
                receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null);
-               if (validatorManager.isEnabled()) {
-                  validatorManager.addToResultMessages(receivedMessage);
+               if (validationManager.isEnabled()) {
+                  validationManager.addToResultMessages(receivedMessage);
                }
             }
 
@@ -182,7 +182,7 @@ class SenderTask implements Runnable {
       this.reportManager = reportManager;
    }
 
-   protected void setValidatorManager(final ValidatorManager validatorManager) {
-      this.validatorManager = validatorManager;
+   protected void setValidationManager(final ValidationManager validationManager) {
+      this.validationManager = validationManager;
    }
 }

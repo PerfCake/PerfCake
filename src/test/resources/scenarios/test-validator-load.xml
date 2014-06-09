@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:3.0">
+   <generator class="DefaultMessageGenerator" threads="10">
+      <run type="iteration" value="1"/>
+   </generator>
+   <sender class="DummySender">
+      <property name="target" value="Out there!"/>
+   </sender>
+   <reporting>
+      <reporter class="DummyReporter">
+         <destination class="DummyDestination">
+            <period type="time" value="1000"/>
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message uri="message2.txt">
+         <validatorRef id="text1"/>
+         <validatorRef id="text2"/>
+      </message>
+   </messages>
+   <validation>
+      <validator id="text1" class="TextMessageValidator">
+         <property name="expectedOutput" value="I'm the fish!" />
+      </validator>
+      <validator id="text2" class="TextMessageValidator">
+         <property name="expectedOutput">
+               <text>I'm the fish!</text>
+         </property>
+      </validator>
+   </validation>
+</scenario>

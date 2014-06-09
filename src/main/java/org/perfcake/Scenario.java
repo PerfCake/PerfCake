@@ -26,7 +26,7 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.validation.ValidatorManager;
+import org.perfcake.validation.ValidationManager;
 
 /**
  * 
@@ -43,7 +43,7 @@ public class Scenario {
    private MessageSenderManager messageSenderManager;
    private ReportManager reportManager;
    private List<MessageTemplate> messageStore;
-   private ValidatorManager validatorManager;
+   private ValidationManager validationManager;
 
    public static final String VERSION = "3.0";
 
@@ -58,7 +58,7 @@ public class Scenario {
       }
 
       generator.setReportManager(reportManager);
-      generator.setValidatorManager(validatorManager);
+      generator.setValidationManager(validationManager);
 
       try {
          generator.init(messageSenderManager, messageStore);
@@ -77,8 +77,8 @@ public class Scenario {
          log.trace("Running scenario...");
       }
 
-      if (validatorManager.isEnabled()) {
-         validatorManager.startValidation();
+      if (validationManager.isEnabled()) {
+         validationManager.startValidation();
       }
 
       try {
@@ -106,7 +106,7 @@ public class Scenario {
       }
 
       try {
-         validatorManager.waitForValidation();
+         validationManager.waitForValidation();
       } catch (final InterruptedException ie) {
          throw new PerfCakeException("Could not finish messages response validation properly: ", ie);
       }
@@ -149,13 +149,13 @@ public class Scenario {
    }
 
    /**
-    * Sets the value of validatorManager.
+    * Sets the value of validationManager.
     * 
-    * @param validatorManager
-    *           The value of validatorManager to set.
+    * @param validationManager
+    *           The value of validationManager to set.
     */
-   void setValidatorManager(ValidatorManager validatorManager) {
-      this.validatorManager = validatorManager;
+   void setValidationManager(ValidationManager validationManager) {
+      this.validationManager = validationManager;
    }
 
 }

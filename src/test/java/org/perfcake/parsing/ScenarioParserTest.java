@@ -19,13 +19,6 @@
  */
 package org.perfcake.parsing;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
@@ -46,10 +39,15 @@ import org.perfcake.reporting.reporters.DummyReporter;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.reporting.reporters.WarmUpReporter;
 import org.perfcake.validation.MessageValidator;
-import org.perfcake.validation.ValidatorManager;
+import org.perfcake.validation.TextMessageValidator;
+import org.perfcake.validation.ValidationManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.*;
 
 public class ScenarioParserTest {
    private ScenarioFactory scenarioFactory, noValidationScenarioFactory, noMessagesScenarioFactory;
@@ -73,7 +71,7 @@ public class ScenarioParserTest {
    @Test
    public void parseScenarioPropertiesTest() {
       try {
-         final Properties scenarioProperties = scenarioFactory.parseScenarioProperties();
+         final Hashtable<Object, Object> scenarioProperties = scenarioFactory.parseScenarioProperties();
          Assert.assertEquals(scenarioProperties.get("quickstartName"), "testQS", "quickstartName property");
          Assert.assertEquals(scenarioProperties.get("filteredProperty"), FILTERED_PROPERTY_VALUE, "filteredProperty property");
          Assert.assertEquals(scenarioProperties.get("defaultProperty"), DEFAULT_PROPERTY_VALUE, "defaultProperty property");
@@ -115,8 +113,8 @@ public class ScenarioParserTest {
    public void parseMessagesTest() {
       try {
          // Message store
-         ValidatorManager validatorManager = scenarioFactory.parseValidation();
-         List<MessageTemplate> messageStore = scenarioFactory.parseMessages(validatorManager);
+         ValidationManager validationManager = scenarioFactory.parseValidation();
+         List<MessageTemplate> messageStore = scenarioFactory.parseMessages(validationManager);
          Assert.assertEquals(messageStore.size(), 5);
 
          // Message 1
@@ -138,7 +136,7 @@ public class ScenarioParserTest {
          Assert.assertEquals(properties1.get("m_property2"), "m_p_value2", "message1 property2");
          Assert.assertEquals(properties1.get("m_property3"), "m_p_value3", "message1 property3");
          // Message 1 validatorIds
-         final List<MessageValidator> validatorsList1 = validatorManager.getValidators(mts1.getValidatorIds());
+         final List<MessageValidator> validatorsList1 = validationManager.getValidators(mts1.getValidatorIds());
          Assert.assertEquals(validatorsList1.size(), 2, "message1 validatorIdList size");
          Assert.assertTrue(validatorsList1.get(0).isValid(new Message("Hello, this is Stupid validator")));
          Assert.assertFalse(validatorsList1.get(0).isValid(new Message("Hello, this is Smart validator")));
@@ -158,7 +156,7 @@ public class ScenarioParserTest {
          final Properties properties2 = m2.getProperties();
          Assert.assertEquals(properties2.size(), 0, "message2 properties count");
          // Message 2 validatorIds
-         final List<MessageValidator> validatorsList2 = validatorManager.getValidators(mts2.getValidatorIds());
+         final List<MessageValidator> validatorsList2 = validationManager.getValidators(mts2.getValidatorIds());
          Assert.assertEquals(validatorsList2.size(), 1, "message2 validatorIdList size");
          Assert.assertTrue(validatorsList2.get(0).isValid(new Message("Go for fishing!")));
          Assert.assertFalse(validatorsList2.get(0).isValid(new Message("Go for mushroom picking! There are no Fish.")));
@@ -184,8 +182,8 @@ public class ScenarioParserTest {
          Assert.assertEquals(m5.getPayload(), "message-content-5");
 
          // Messages section is optional
-         validatorManager = noMessagesScenarioFactory.parseValidation();
-         final List<MessageTemplate> emptyMessageStore = noMessagesScenarioFactory.parseMessages(validatorManager);
+         validationManager = noMessagesScenarioFactory.parseValidation();
+         final List<MessageTemplate> emptyMessageStore = noMessagesScenarioFactory.parseMessages(validationManager);
          Assert.assertTrue(emptyMessageStore.isEmpty(), "empty message store with no messages in scenario");
 
       } catch (final PerfCakeException e) {
@@ -255,13 +253,24 @@ public class ScenarioParserTest {
    }
 
    @Test
-   public void parseValidationTest() {
+   public void parseValidationTest() throws Exception {
+      ScenarioFactory validationScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-validator-load.xml")).parse());
       try {
-         scenarioFactory.parseValidation();
+         ValidationManager vm = validationScenarioFactory.parseValidation();
+         List<MessageTemplate> mts = validationScenarioFactory.parseMessages(vm);
+
+         Assert.assertEquals(mts.size(), 1);
+         Assert.assertEquals(mts.get(0).getValidatorIds().size(), 2);
+         Assert.assertTrue(mts.get(0).getValidatorIds().contains("text1"));
+         Assert.assertTrue(mts.get(0).getValidatorIds().contains("text2"));
+
+         Assert.assertEquals(((TextMessageValidator) vm.getValidator("text1")).getExpectedOutput(), MESSAGE2_CONTENT);
+         Assert.assertEquals(((TextMessageValidator) vm.getValidator("text2")).getExpectedOutput(), MESSAGE2_CONTENT);
+
          // TODO: add assertions on validation
 
          // validation is optional
-         noValidationScenarioFactory.parseValidation();
+         //noValidationScenarioFactory.parseValidation();
       } catch (final PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
