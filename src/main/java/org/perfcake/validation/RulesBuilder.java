@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,44 +19,43 @@
  */
 package org.perfcake.validation;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.kie.api.KieServices;
+import org.kie.api.builder.KieBuilder;
+import org.kie.api.builder.KieFileSystem;
+import org.kie.api.builder.KieRepository;
+import org.kie.api.builder.Message;
+import org.kie.api.io.KieResources;
+import org.kie.api.io.Resource;
+import org.kie.api.runtime.KieContainer;
+import org.perfcake.util.Utils;
+
 import java.io.StringReader;
 import java.util.Map;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.drools.compiler.PackageBuilder;
-import org.drools.rule.Package;
-import org.perfcake.util.Utils;
-
 /**
- * 
- * @author Marek Baluch <baluchw@gmail.com>
- * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
+ * Helper to build KieContainer based on the Drools rules provided. Used by RulesValidator.
+ *
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class RulesBuilder {
+class RulesBuilder {
 
    static final Logger log = Logger.getLogger(RulesBuilder.class);
-
-   private static final String resourcesDir = "src/main/resources/";
+   private static final String DSL = "messageValidator.dsl";
 
    /**
-    * Build scenario assertions into a Drools package.
-    * 
+    * Build KieContainer from the assertions.
+    *
+    * @param kieServices
+    *             Existing KieServices instance which should be used to build KieContainer
     * @param assertions
-    *           User assertions (usually defined in a PerfCake scenario file
-    * @param dsl
-    *           DSL file on java class-path
-    * @return compiled Drools package
-    * @throws Exception
+    *             Assertions that should be added to the rules
+    * @return created KieContainer
     */
-   public static Package build(final Map<Integer, String> assertions, final String dsl) throws Exception {
-      System.out.println("BUILDING RULES");
-
+   public static KieContainer build(final KieServices kieServices, final Map<Integer, String> assertions) throws ValidationException {
       if (log.isDebugEnabled()) {
-         log.debug("Building rules.");
+         log.debug("Building rules...");
       }
 
       final StringBuilder sBuilder = new StringBuilder();
@@ -69,7 +68,7 @@ public class RulesBuilder {
       sBuilder.append("import org.perfcake.validation.ValidatorUtil.Operator\n");
       sBuilder.append("import org.perfcake.validation.ValidatorUtil.Occurance\n");
 
-      sBuilder.append("expander ").append(dsl).append("\n");
+      sBuilder.append("expander ").append(DSL).append("\n");
 
       for (int i = 0; i < assertions.size(); i++) {
          String assertion = assertions.get(i);
@@ -83,25 +82,30 @@ public class RulesBuilder {
             sBuilder.append(rule);
          }
       }
+
       if (log.isDebugEnabled()) {
          log.debug("Built rules:\n" + sBuilder.toString());
       }
 
-      final InputStream dslis = new FileInputStream(resourcesDir + dsl);
-      final PackageBuilder pBuilder = new PackageBuilder();
-      pBuilder.addPackageFromDrl(new StringReader(sBuilder.toString()), new InputStreamReader(dslis, Utils.getDefaultEncoding()));
+      final KieRepository krp = kieServices.getRepository();
+      final KieFileSystem kfs = kieServices.newKieFileSystem();
+      final KieResources krs = kieServices.getResources();
+      final Resource dslResource = krs.newClassPathResource(DSL);
+      final Resource rulesResource = krs.newReaderResource(new StringReader(sBuilder.toString()), Utils.getDefaultEncoding());
+      kfs.write("src/main/resources/" + DSL, dslResource);
+      kfs.write("src/main/resources/org/perfcake/validation/rules.dslr", rulesResource);
+      final KieBuilder kb = kieServices.newKieBuilder(kfs);
+      kb.buildAll();
 
       // Check the builder for errors
-      if (pBuilder.hasErrors()) {
+      if (kb.getResults().hasMessages(Message.Level.ERROR)) {
          if (log.isEnabledFor(Level.ERROR)) {
-            log.error(pBuilder.getErrors().toString());
+            log.error(kb.getResults().getMessages().toString());
          }
-         throw new RuntimeException("Unable to compile rules.");
+         throw new ValidationException("Unable to compile rules.");
       }
 
-      // get the compiled package (which is serializable)
-      final Package pkg = pBuilder.getPackage();
-      return pkg;
+      return kieServices.newKieContainer(krp.getDefaultReleaseId());
    }
 
 }

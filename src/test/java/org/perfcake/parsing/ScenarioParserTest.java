@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,7 +39,7 @@ import org.perfcake.reporting.reporters.DummyReporter;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.reporting.reporters.WarmUpReporter;
 import org.perfcake.validation.MessageValidator;
-import org.perfcake.validation.TextMessageValidator;
+import org.perfcake.validation.TextValidator;
 import org.perfcake.validation.ValidationManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -50,14 +50,13 @@ import java.net.URISyntaxException;
 import java.util.*;
 
 public class ScenarioParserTest {
-   private ScenarioFactory scenarioFactory, noValidationScenarioFactory, noMessagesScenarioFactory;
-
    private static final int THREADS = 10;
    private static final String MESSAGE1_CONTENT = "Stupid is as supid does! :)";
    private static final String MESSAGE2_CONTENT = "I'm the fish!";
    private static final String SENDER_CLASS = "org.perfcake.message.sender.HTTPSender";
    private static final String FILTERED_PROPERTY_VALUE = "filtered-property-value";
    private static final String DEFAULT_PROPERTY_VALUE = "default-property-value";
+   private ScenarioFactory scenarioFactory, noValidationScenarioFactory, noMessagesScenarioFactory;
 
    @BeforeClass
    public void prepareScenarioParser() throws PerfCakeException, URISyntaxException, IOException {
@@ -255,25 +254,21 @@ public class ScenarioParserTest {
    @Test
    public void parseValidationTest() throws Exception {
       ScenarioFactory validationScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-validator-load.xml")).parse());
-      try {
-         ValidationManager vm = validationScenarioFactory.parseValidation();
-         List<MessageTemplate> mts = validationScenarioFactory.parseMessages(vm);
+      ValidationManager vm = validationScenarioFactory.parseValidation();
+      List<MessageTemplate> mts = validationScenarioFactory.parseMessages(vm);
 
-         Assert.assertEquals(mts.size(), 1);
-         Assert.assertEquals(mts.get(0).getValidatorIds().size(), 2);
-         Assert.assertTrue(mts.get(0).getValidatorIds().contains("text1"));
-         Assert.assertTrue(mts.get(0).getValidatorIds().contains("text2"));
+      Assert.assertEquals(mts.size(), 1);
+      Assert.assertEquals(mts.get(0).getValidatorIds().size(), 2);
+      Assert.assertTrue(mts.get(0).getValidatorIds().contains("text1"));
+      Assert.assertTrue(mts.get(0).getValidatorIds().contains("text2"));
 
-         Assert.assertEquals(((TextMessageValidator) vm.getValidator("text1")).getExpectedOutput(), MESSAGE2_CONTENT);
-         Assert.assertEquals(((TextMessageValidator) vm.getValidator("text2")).getExpectedOutput(), MESSAGE2_CONTENT);
+      Assert.assertEquals(((TextValidator) vm.getValidator("text1")).getPattern(), MESSAGE2_CONTENT);
+      Assert.assertEquals(((TextValidator) vm.getValidator("text2")).getPattern(), MESSAGE2_CONTENT);
 
-         // TODO: add assertions on validation
+      // TODO: add assertions on validation
 
-         // validation is optional
-         //noValidationScenarioFactory.parseValidation();
-      } catch (final PerfCakeException e) {
-         e.printStackTrace();
-         Assert.fail(e.getMessage());
-      }
+      // validation is optional
+      vm = noValidationScenarioFactory.parseValidation();
+      Assert.assertEquals(vm.getSize(), 0);
    }
 }

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,10 +20,9 @@
 package org.perfcake.validation;
 
 import org.apache.log4j.Logger;
-import org.drools.RuleBase;
-import org.drools.RuleBaseFactory;
-import org.drools.StatefulSession;
-import org.drools.rule.Package;
+import org.kie.api.KieServices;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.perfcake.message.Message;
 import org.w3c.dom.Element;
 
@@ -35,31 +34,33 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
+ * Validates the message with the defined Drools rules. There is a custom DSL file making the rules specification easier.
+ *
  * @author Marek Baluch <baluchw@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class RulesMessageValidator implements MessageValidator {
+public class RulesValidator implements MessageValidator {
 
-   private static final Logger log = Logger.getLogger(RulesMessageValidator.class);
-   private static final String validatorDSL = "messageValidator.dsl";
+   private static final Logger log = Logger.getLogger(RulesValidator.class);
    private HashMap<Integer, String> assertions = new HashMap<>();// <lineNo, rule>
-   private Package pack;
+   private KieServices ks;
+   private KieContainer kc;
 
    @Override
    public boolean isValid(final Message message) {
-      final RuleBase ruleBase = RuleBaseFactory.newRuleBase();
+      if (ks == null || kc == null) {
+         log.error("Rules were not properly loaded.");
+         return false;
+      }
 
-      ruleBase.addPackage(pack);
-      final StatefulSession session = ruleBase.newStatefulSession();
-
+      KieSession ksess = kc.newKieSession();
       final Map<Integer, String> assertionsCopy = new HashMap<>();
       assertionsCopy.putAll(assertions);
 
-      session.setGlobal("rulesUsed", assertionsCopy);
-
-      session.insert(message);
-      session.fireAllRules();
-      session.dispose();
+      ksess.setGlobal("rulesUsed", assertionsCopy);
+      ksess.insert(message);
+      ksess.fireAllRules();
+      ksess.dispose();
 
       for (final Entry<Integer, String> entry : assertionsCopy.entrySet()) {
          if (log.isInfoEnabled()) {
@@ -89,7 +90,9 @@ public class RulesMessageValidator implements MessageValidator {
             lineNo++;
          }
       }
-      pack = RulesBuilder.build(assertions, validatorDSL);
+
+      ks = KieServices.Factory.get();
+      kc = RulesBuilder.build(ks, assertions);
    }
 
    public void setRules(final String validationRuleFile) {

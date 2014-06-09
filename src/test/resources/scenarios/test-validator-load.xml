@@ -20,11 +20,11 @@
       </message>
    </messages>
    <validation>
-      <validator id="text1" class="TextMessageValidator">
-         <property name="expectedOutput" value="I'm the fish!" />
+      <validator id="text1" class="TextValidator">
+         <property name="pattern" value="I'm the fish!" />
       </validator>
-      <validator id="text2" class="TextMessageValidator">
-         <property name="expectedOutput">
+      <validator id="text2" class="TextValidator">
+         <property name="pattern">
                <text>I'm the fish!</text>
          </property>
       </validator>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO: create a scenario with GroovySender and with TextMessageValidator -->
+<!-- TODO: create a scenario with GroovySender and with TextValidator -->
 <scenario xmlns="urn:perfcake:scenario:3.0">
    <!--properties/-->
    <generator/>

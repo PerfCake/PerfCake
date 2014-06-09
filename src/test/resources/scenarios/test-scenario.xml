@@ -56,14 +56,14 @@
       <message content="message-content-5"/>
    </messages>
    <validation>
-      <validator id="fishValidator" class="TextMessageValidator">
-         <property name="expectedOutput" value=".*fish.*"/>
+      <validator id="fishValidator" class="TextValidator">
+         <property name="pattern" value=".*fish.*"/>
       </validator>
-      <validator id="stupidValidator" class="TextMessageValidator">
-         <property name="expectedOutput" value=".*[Ss]tupid.*"/>
+      <validator id="stupidValidator" class="TextValidator">
+         <property name="pattern" value=".*[Ss]tupid.*"/>
       </validator>
-      <validator id="smileValidator" class="TextMessageValidator">
-         <property name="expectedOutput" value=".*:\).*"/>
+      <validator id="smileValidator" class="TextValidator">
+         <property name="pattern" value=".*:\).*"/>
       </validator>
    </validation>
 </scenario>
