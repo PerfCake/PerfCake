@@ -61,8 +61,8 @@ public class ValidationManager {
     */
    private boolean enabled = false;
    /**
-    * At the end, when there is nothing else to do, we can go through the remaining responses faster. Otherwise, the validation
-    * thread has some sleep for it not to influence measurement.
+    * Unless specified in the scenario, the validation thread has some sleep for it not to influence measurement.
+    * At the end, when there is nothing else to do, we can go through the remaining responses faster.
     */
    private boolean fastForward = false;
    /**
@@ -238,10 +238,10 @@ public class ValidationManager {
 
          try {
             while (!validationThread.isInterrupted() && (receivedMessage = resultMessages.poll()) != null) {
-               for (final MessageValidator validator : getValidators(receivedMessage.getSentMessage().getValidatorIds())) {
-                  isMessageValid = validator.isValid(new Message(receivedMessage.getPayload()));
+               for (final MessageValidator validator : getValidators(receivedMessage.getSentMessageTemplate().getValidatorIds())) {
+                  isMessageValid = validator.isValid(receivedMessage.getSentMessage(), new Message(receivedMessage.getResponse()));
                   if (log.isTraceEnabled()) {
-                     log.trace(String.format("Message response %s validated with %s returns %s.", receivedMessage.getPayload().toString(), validator.toString(), String.valueOf(isMessageValid)));
+                     log.trace(String.format("Message response %s validated with %s returns %s.", receivedMessage.getResponse().toString(), validator.toString(), String.valueOf(isMessageValid)));
                   }
 
                   allMessagesValid &= isMessageValid;
@@ -262,4 +262,11 @@ public class ValidationManager {
       }
    }
 
+   public boolean isFastForward() {
+      return fastForward;
+   }
+
+   public void setFastForward(boolean fastForward) {
+      this.fastForward = fastForward;
+   }
 }

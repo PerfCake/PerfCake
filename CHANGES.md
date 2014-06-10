@@ -14,9 +14,14 @@ Features
 * Added a PIT (http://pitest.org/) plugin for mutation testing.
 * Improved performance.
 * Increased test coverage.
+* Improved validators - renamed some classes, simplified Validator interface, updated RulesValidator (KIE 6.1.0.Beta3), created ScriptValidator (JSR-223), both original and response messages
+     are passed to the validator, validation can run fast from the very beginning (fastForward in scenario), validation can be disabled in scenario.
+* Compatibility with JDK 8.
+* Properties in Scenario can have arbitrary XML elements in it, components can declare setter that accepts org.w3c.dom.Element
 
 Bug Fixes
 ---------
+* https://github.com/PerfCake/PerfCake/issues/60  - Refactor validators
 * https://github.com/PerfCake/PerfCake/issues/104 - Fix CSVDestination synchronization problem.
 * https://github.com/PerfCake/PerfCake/issues/111 - PerfCakeAgent hangs when configured to monitor local JVM process.
 

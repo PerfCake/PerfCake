@@ -30,8 +30,9 @@ import java.io.IOException;
 
 /**
  * Validates messages using Java Script Engine and the provided script.
- * The script engine must be installed in the extensions directory. The messages is inserted into bindings
- * under the key 'message'. Script return value is evaluated for validation success (true = passed, false = failed).
+ * The script engine must be installed in the extensions directory. The original message is passed
+ * to the script in the 'originalMessage' property and the response is inserted as 'message', both using
+ * script bindings. Script return value is evaluated for validation success (true = passed, false = failed).
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
@@ -66,13 +67,14 @@ public class ScriptValidator implements MessageValidator {
    }
 
    @Override
-   public boolean isValid(Message message) {
+   public boolean isValid(final Message originalMessage, Message response) {
       boolean result = false;
 
       try {
          CompiledScript script = getCompiledScript();
          Bindings b = script.getEngine().createBindings();
-         b.put("message", message);
+         b.put("originalMessage", originalMessage);
+         b.put("message", response);
          b.put("log", log);
          Object ret = script.eval(b);
          if (ret instanceof Boolean) {
@@ -84,7 +86,7 @@ public class ScriptValidator implements MessageValidator {
       }
 
       if (!result) {
-         log.info(String.format("Script validating failed with the message '%s' using script validator.", message.toString()));
+         log.info(String.format("Script validating failed with the message '%s' using script validator.", response.toString()));
       }
       return result;
    }

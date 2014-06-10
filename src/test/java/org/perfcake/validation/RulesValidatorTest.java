@@ -27,8 +27,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import static org.testng.Assert.*;
-
 public class RulesValidatorTest {
 
    @Test
@@ -49,10 +47,11 @@ public class RulesValidatorTest {
          fw.close();
 
          rv.setRules(f.getAbsolutePath());
-         Assert.assertTrue(rv.isValid(m));
-         Assert.assertTrue(rv.isValid(m)); // the validation is repeatable
+         Assert.assertTrue(rv.isValid(null, m));
+         Assert.assertTrue(rv.isValid(null, m)); // the validation is repeatable
+         Assert.assertTrue(rv.isValid(mFail, m)); // we check for the response, not the original message
 
-         Assert.assertFalse(rv.isValid(mFail));
+         Assert.assertFalse(rv.isValid(null, mFail));
       } finally {
          f.delete();
       }

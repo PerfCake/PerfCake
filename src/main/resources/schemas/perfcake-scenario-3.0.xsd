@@ -118,6 +118,8 @@
                         </xsd:complexType>
                      </xsd:element>
                   </xsd:sequence>
+                  <xsd:attribute name="enabled" type="xsd:boolean" use="optional" default="true"/>
+                  <xsd:attribute name="fastForward" type="xsd:boolean" use="optional" default="false"/>
                </xsd:complexType>
             </xsd:element>
          </xsd:sequence>

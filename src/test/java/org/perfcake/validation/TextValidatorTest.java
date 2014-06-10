@@ -32,9 +32,9 @@ public class TextValidatorTest {
 
       m.setPayload("né pětku");
       tv.setPattern(".*pět[^k].");
-      Assert.assertFalse(tv.isValid(m));
+      Assert.assertFalse(tv.isValid(null, m));
 
       m.setPayload("zpětné");
-      Assert.assertTrue(tv.isValid(m));
+      Assert.assertTrue(tv.isValid(null, m));
    }
 }

@@ -42,6 +42,7 @@ import java.util.concurrent.Semaphore;
  * <p> The sender task is a runnable class that is executing a single task of sending the message(s) from the message store using instances of {@link MessageSender} provided by message sender manager (see {@link MessageSenderManager}), receiving the message sender's response and handling the reporting and response message validation. </p> <p> It is used by the generators. </p>
  *
  * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 class SenderTask implements Runnable {
 
@@ -98,7 +99,7 @@ class SenderTask implements Runnable {
          return result;
       } catch (Exception e) {
          if (log.isEnabledFor(Level.ERROR)) {
-            log.error("Exception occured!", e);
+            log.error("Exception occurred!", e);
          }
       }
       return null;
@@ -134,7 +135,7 @@ class SenderTask implements Runnable {
                   long multiplicity = messageToSend.getMultiplicity();
 
                   for (int i = 0; i < multiplicity; i++) {
-                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend);
+                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend, currentMessage);
                      if (validationManager.isEnabled()) {
                         validationManager.addToResultMessages(receivedMessage);
                      }
@@ -142,7 +143,7 @@ class SenderTask implements Runnable {
 
                }
             } else {
-               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null);
+               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null, null);
                if (validationManager.isEnabled()) {
                   validationManager.addToResultMessages(receivedMessage);
                }

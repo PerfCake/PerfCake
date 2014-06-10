@@ -36,13 +36,13 @@ public class TextValidator implements MessageValidator {
    private String pattern = "";
 
    @Override
-   public boolean isValid(final Message message) {
-      final String trimmedLinesOfPayload = StringUtil.trimLines(message.getPayload().toString());
+   public boolean isValid(final Message originalMessage, final Message response) {
+      final String trimmedLinesOfPayload = StringUtil.trimLines(response.getPayload().toString());
       final String resultPayload = StringUtil.trim(trimmedLinesOfPayload);
 
       if (!resultPayload.matches(pattern)) {
          if (log.isInfoEnabled()) {
-            log.info(String.format("Message payload '%s' does not match the pattern '%s'.", message.getPayload().toString(), pattern));
+            log.info(String.format("Message payload '%s' does not match the pattern '%s'.", response.getPayload().toString(), pattern));
          }
          return false;
       }

@@ -67,9 +67,9 @@ public final class ValidatorUtil {
 
    /**
     * TODO comment values' meaning
-    * Message occurance operator.
+    * Message occurrence operator.
     */
-   public enum Occurance {
+   public enum Occurrence {
       NONE, AT_LEAST, AT_MOST, EXACTLY
    }
 
@@ -253,15 +253,15 @@ public final class ValidatorUtil {
     *           Operator for validation.
     * @param value
     *           Valid value of validated message part.
-    * @param occurance
-    *           Type of message occurance in the <code>list</code>.
+    * @param occurrence
+    *           Type of message occurrence in the <code>list</code>.
     * @param treshold
-    *           Treshold for the <code>occurance</code> metrics.
+    *           Treshold for the <code>occurrence</code> metrics.
     * @return A boolean value indicating, if validation of the message passed
-    *         (<code>true</code>) or not (<code>false</code>) with actual <code>occurance</code>.
+    *         (<code>true</code>) or not (<code>false</code>) with actual <code>occurrence</code>.
     */
-   public static boolean validateMessageOccurance(final List<Message> list, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value, final ValidatorUtil.Occurance occurance, final int treshold) {
-      switch (occurance) {
+   public static boolean validateMessageOccurance(final List<Message> list, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value, final Occurrence occurrence, final int treshold) {
+      switch (occurrence) {
          case NONE:
             for (int i = 0; i < list.size(); i++) {
                if (validateMessage(list, i, part, partName, operator, value)) {
@@ -298,14 +298,14 @@ public final class ValidatorUtil {
     *           Operator for validation.
     * @param value
     *           Valid value of validated message part.
-    * @param occurance
-    *           Type of message occurance in the <code>list</code>.
+    * @param occurrence
+    *           Type of message occurrence in the <code>list</code>.
     * @param treshold
-    *           Treshold for the <code>occurance</code> metrics.
+    *           Treshold for the <code>occurrence</code> metrics.
     * @return A boolean value indicating, if validation of the message passed
-    *         (<code>true</code>) or not (<code>false</code>) with actual <code>occurance</code>.
+    *         (<code>true</code>) or not (<code>false</code>) with actual <code>occurrence</code>.
     */
-   public static boolean validateMessageOccuranceOnInterval(final List<Message> list, final int from, final int to, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value, final ValidatorUtil.Occurance occurance, final int treshold) {
+   public static boolean validateMessageOccuranceOnInterval(final List<Message> list, final int from, final int to, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value, final Occurrence occurrence, final int treshold) {
       final int count = list.size();
       if (to <= from) {
          if (log.isEnabledFor(Level.ERROR)) {
@@ -322,7 +322,7 @@ public final class ValidatorUtil {
       for (int i = from; i <= to; i++) {
          subList.add(list.get(i));
       }
-      return validateMessageOccurance(subList, part, partName, operator, value, occurance, treshold);
+      return validateMessageOccurance(subList, part, partName, operator, value, occurrence, treshold);
    }
 
    /**

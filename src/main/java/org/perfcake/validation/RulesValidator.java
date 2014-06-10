@@ -41,13 +41,15 @@ import java.util.Map.Entry;
  */
 public class RulesValidator implements MessageValidator {
 
+   public static final String RULES_ORIGINAL_MESSAGE = "rulesValidator-originalMessage";
+
    private static final Logger log = Logger.getLogger(RulesValidator.class);
    private HashMap<Integer, String> assertions = new HashMap<>();// <lineNo, rule>
    private KieServices ks;
    private KieContainer kc;
 
    @Override
-   public boolean isValid(final Message message) {
+   public boolean isValid(final Message originalMessage, final Message response) {
       if (ks == null || kc == null) {
          log.error("Rules were not properly loaded.");
          return false;
@@ -58,19 +60,25 @@ public class RulesValidator implements MessageValidator {
       assertionsCopy.putAll(assertions);
 
       ksess.setGlobal("rulesUsed", assertionsCopy);
-      ksess.insert(message);
+      if (originalMessage != null) {
+         originalMessage.setProperty(RULES_ORIGINAL_MESSAGE, "true");
+         ksess.insert(originalMessage);
+      }
+      if (response != null) {
+         ksess.insert(response);
+      }
       ksess.fireAllRules();
       ksess.dispose();
 
       for (final Entry<Integer, String> entry : assertionsCopy.entrySet()) {
          if (log.isInfoEnabled()) {
-            log.info(String.format("Drools message validation failed with message '%s' and rule '%s'.", message.toString(), entry.getValue()));
+            log.info(String.format("Drools message validation failed with message '%s' and rule '%s'.", response.toString(), entry.getValue()));
          }
       }
 
       if (!assertionsCopy.isEmpty()) {
          if (log.isInfoEnabled()) {
-            log.info(String.format("Drools message validation failed with message '%s' - some rules failed, see previous log for more details.", message.toString()));
+            log.info(String.format("Drools message validation failed with message '%s' - some rules failed, see previous log for more details.", response.toString()));
          }
          return false;
       }

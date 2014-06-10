@@ -29,30 +29,34 @@ public class ReceivedMessage implements Serializable {
 
    private static final long serialVersionUID = 8426248937516343968L;
 
-   // payload, id
-   private Serializable payload;
+   /**
+    * Received response payload
+    */
+   private Serializable response;
+   /**
+    * Original message template
+    */
+   private MessageTemplate sentMessageTemplate;
+   /**
+    * Particular message that has been send (placeholders filled with values)
+    */
+   private Message sentMessage;
 
-   private MessageTemplate sentMessage;
-
-   public ReceivedMessage(final Serializable payload, final MessageTemplate sentMessage) {
-      this.payload = payload;
+   public ReceivedMessage(final Serializable response, final MessageTemplate sentMessageTemplate, final Message sentMessage) {
+      this.response = response;
       this.sentMessage = sentMessage;
+      this.sentMessageTemplate = sentMessageTemplate;
    }
 
-   public Serializable getPayload() {
-      return payload;
+   public Serializable getResponse() {
+      return response;
    }
 
-   public void setPayload(final Serializable payload) {
-      this.payload = payload;
+   public MessageTemplate getSentMessageTemplate() {
+      return sentMessageTemplate;
    }
 
-   public MessageTemplate getSentMessage() {
+   public Message getSentMessage() {
       return sentMessage;
    }
-
-   public void setSentMessage(final MessageTemplate sentMessage) {
-      this.sentMessage = sentMessage;
-   }
-
 }

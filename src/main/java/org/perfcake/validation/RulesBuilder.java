@@ -63,10 +63,11 @@ class RulesBuilder {
       sBuilder.append("global java.util.Map rulesUsed\n");
       sBuilder.append("import java.util.Map\n");
       sBuilder.append("import org.perfcake.message.Message\n");
+      sBuilder.append("import org.perfcake.validation.RulesValidator\n");
       sBuilder.append("import org.perfcake.validation.ValidatorUtil\n");
       sBuilder.append("import org.perfcake.validation.ValidatorUtil.MessagePart\n");
       sBuilder.append("import org.perfcake.validation.ValidatorUtil.Operator\n");
-      sBuilder.append("import org.perfcake.validation.ValidatorUtil.Occurance\n");
+      sBuilder.append("import org.perfcake.validation.ValidatorUtil.Occurrence\n");
 
       sBuilder.append("expander ").append(DSL).append("\n");
 

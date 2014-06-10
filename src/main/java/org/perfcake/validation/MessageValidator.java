@@ -31,9 +31,11 @@ public interface MessageValidator {
    /**
     * Makes sure the provided message is valid.
     * 
-    * @param message
-    *           A message to be validated.
+    * @param originalMessage
+    *          The message that has been sent.
+    * @param response
+    *          A response for the original message.
     * @return True if the message passes all validations.
     */
-   public boolean isValid(Message message);
+   public boolean isValid(Message originalMessage, Message response);
 }

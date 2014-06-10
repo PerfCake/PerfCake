@@ -40,9 +40,9 @@ public class ScriptValidatorTest {
       sv.setEngine("groovy");
       sv.setScript("log.info('Be groovy!')\nreturn message.payload.toString().contains('Pepa')");
 
-      Assert.assertTrue(sv.isValid(m));
-      Assert.assertTrue(sv.isValid(m)); // make sure the validator is reusable
-      Assert.assertFalse(sv.isValid(mFail));
+      Assert.assertTrue(sv.isValid(null, m));
+      Assert.assertTrue(sv.isValid(null, m)); // make sure the validator is reusable
+      Assert.assertFalse(sv.isValid(null, mFail));
    }
 
 }

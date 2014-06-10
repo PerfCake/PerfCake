@@ -334,8 +334,10 @@ public class ScenarioFactory {
                MessageValidator messageValidator = (MessageValidator) ObjectFactory.summonInstance(validatorClass, currentValidationProperties);
 
                validationManager.addValidator(v.getId(), messageValidator);
-               validationManager.setEnabled(true);
             }
+
+            validationManager.setEnabled(validation.isEnabled());
+            validationManager.setFastForward(validation.isFastForward());
          }
       } catch (InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
          throw new PerfCakeException("Cannot parse validation configuration: ", e);
