@@ -39,7 +39,7 @@ import org.perfcake.reporting.reporters.DummyReporter;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.reporting.reporters.WarmUpReporter;
 import org.perfcake.validation.MessageValidator;
-import org.perfcake.validation.TextValidator;
+import org.perfcake.validation.RegExpValidator;
 import org.perfcake.validation.ValidationManager;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -262,8 +262,8 @@ public class ScenarioParserTest {
       Assert.assertTrue(mts.get(0).getValidatorIds().contains("text1"));
       Assert.assertTrue(mts.get(0).getValidatorIds().contains("text2"));
 
-      Assert.assertEquals(((TextValidator) vm.getValidator("text1")).getPattern(), MESSAGE2_CONTENT);
-      Assert.assertEquals(((TextValidator) vm.getValidator("text2")).getPattern(), MESSAGE2_CONTENT);
+      Assert.assertEquals(((RegExpValidator) vm.getValidator("text1")).getPattern(), MESSAGE2_CONTENT);
+      Assert.assertEquals(((RegExpValidator) vm.getValidator("text2")).getPattern(), MESSAGE2_CONTENT);
 
       // TODO: add assertions on validation
 

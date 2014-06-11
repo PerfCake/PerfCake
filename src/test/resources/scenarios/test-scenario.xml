@@ -56,13 +56,13 @@
       <message content="message-content-5"/>
    </messages>
    <validation>
-      <validator id="fishValidator" class="TextValidator">
+      <validator id="fishValidator" class="RegExpValidator">
          <property name="pattern" value=".*fish.*"/>
       </validator>
-      <validator id="stupidValidator" class="TextValidator">
+      <validator id="stupidValidator" class="RegExpValidator">
          <property name="pattern" value=".*[Ss]tupid.*"/>
       </validator>
-      <validator id="smileValidator" class="TextValidator">
+      <validator id="smileValidator" class="RegExpValidator">
          <property name="pattern" value=".*:\).*"/>
       </validator>
    </validation>

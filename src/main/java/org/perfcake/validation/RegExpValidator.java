@@ -29,9 +29,9 @@ import org.w3c.dom.Element;
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class TextValidator implements MessageValidator {
+public class RegExpValidator implements MessageValidator {
 
-   private static final Logger log = Logger.getLogger(TextValidator.class);
+   private static final Logger log = Logger.getLogger(RegExpValidator.class);
 
    private String pattern = "";
 

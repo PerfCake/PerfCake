@@ -40,6 +40,8 @@ import java.util.Properties;
  * the original messages. Empty, null or equal messages will overwrite the file but this is not the intended use
  * of this validator. Index file is never overwritten, if you really insist on recreating it, please rename or
  * delete the file manually (this is for safety reasons).
+ * It is not sufficient to store just the index as it is likely that the correct messages will be manually
+ * modified after they are recorded.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
@@ -60,7 +62,7 @@ public class DictionaryValidator implements MessageValidator {
     * @return Escaped payload.
     */
    private String escapePayload(String payload) {
-      return payload.replaceAll("=", "\\=").replaceAll(":", "\\:");
+      return payload.replaceAll("\\\\", "\\").replaceAll("=", "\\=").replaceAll(":", "\\:").replaceAll("[\\n\\r]", "_");
    }
 
    /**

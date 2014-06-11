@@ -23,11 +23,11 @@ import org.perfcake.message.Message;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-public class TextValidatorTest {
+public class RegExpValidatorTest {
 
    @Test
    public void validationTest() {
-      TextValidator tv = new TextValidator();
+      RegExpValidator tv = new RegExpValidator();
       Message m = new Message();
 
       m.setPayload("né pětku");

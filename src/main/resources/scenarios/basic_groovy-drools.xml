@@ -32,22 +32,46 @@
       </message>
    </messages>
    <validation>
-      <validator id="1" class="TextMessageValidator"><![CDATA[
-        ^you entered: Hello groovy world 1
-        you entered: Hello groovy world 2
-        you entered: Hello groovy world 3$
-        ]]></validator>
-      <validator id="2" class="TextMessageValidator"><![CDATA[
-        ^you entered: Hello groovy world 16
-        you entered: Hello groovy world 2
-        you entered: Hello groovy world 3$
-        ]]></validator>
-      <validator id="3" class="RulesMessageValidator"><![CDATA[
-        Message body contains "Hello".
-        #Message body contains "HelloXY".
-        ]]></validator>
-      <validator id="4" class="RulesMessageValidator"><![CDATA[
-        Message body contains "HelloXY".
-        ]]></validator>
+      <validator id="1" class="RegExpMessageValidator">
+         <property value="pattern">
+            <text>
+<![CDATA[
+^you entered: Hello groovy world 1
+you entered: Hello groovy world 2
+you entered: Hello groovy world 3$
+]]>
+            </text>
+         </property>
+      </validator>
+      <validator id="2" class="RegExpMessageValidator">
+         <property value="pattern">
+            <text>
+               <![CDATA[
+^you entered: Hello groovy world 16
+you entered: Hello groovy world 2
+you entered: Hello groovy world 3$
+]]>
+            </text>
+         </property>
+      </validator>
+      <validator id="3" class="RulesMessageValidator">
+         <property value="pattern">
+            <text>
+               <![CDATA[
+                  Message body contains "Hello".
+                  #Message body contains "HelloXY".
+               ]]>
+            </text>
+         </property>
+      </validator>
+      <validator id="4" class="RulesMessageValidator">
+         <property value="pattern">
+            <text>
+               <![CDATA[
+                  Message body contains "HelloXY".
+               ]]>
+            </text>
+         </property>
+      </validator>
    </validation>
 </scenario>
