@@ -19,10 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
@@ -30,7 +26,6 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.AvgAccumulator;
-import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MinAccumulator;
 
@@ -78,8 +73,6 @@ public abstract class StatsReporter extends AbstractReporter {
    protected Accumulator getAccumulator(String key, Class clazz) {
       if (Double.class.equals(clazz)) {
          switch (key) {
-            case Measurement.DEFAULT_RESULT:
-               return new LastValueAccumulator();
             case MAXIMUM:
                return new MaxAccumulator();
             case MINIMUM:
@@ -95,31 +88,25 @@ public abstract class StatsReporter extends AbstractReporter {
    /**
     * Computes the actual result value about what the reporter will collect the statistics.
     */
-   protected abstract Object computeResult(final MeasurementUnit mu);
+   protected abstract Double computeResult(final MeasurementUnit mu);
 
    @Override
    protected void doReport(final MeasurementUnit mu) throws ReportingException {
-      final Map<String, Object> results = new HashMap<>();
-      final Object result = computeResult(mu);
+      final Double result = computeResult(mu);
 
-      for (Entry<String, Object> entry : mu.getResults().entrySet()) {
-         results.put(entry.getKey(), entry.getValue());
-      }
-
-      results.put(Measurement.DEFAULT_RESULT, result);
+      mu.appendResult(Measurement.DEFAULT_RESULT, result);
 
       if (averageEnabled) {
-         results.put(AVERAGE, result);
+         mu.appendResult(AVERAGE, result);
       }
 
       if (minimumEnabled) {
-         results.put(MINIMUM, result);
+         mu.appendResult(MINIMUM, result);
       }
 
       if (maximumEnabled) {
-         results.put(MAXIMUM, result);
+         mu.appendResult(MAXIMUM, result);
       }
-      accumulateResults(results);
    }
 
    @Override

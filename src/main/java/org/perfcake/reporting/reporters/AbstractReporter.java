@@ -167,7 +167,7 @@ public abstract class AbstractReporter implements Reporter {
     *       The hash map with results to be accumulated.
     */
    @SuppressWarnings({ "unchecked", "rawtypes" })
-   protected void accumulateResults(final Map<String, Object> results) {
+   private void accumulateResults(final Map<String, Object> results) {
       for (final Entry<String, Object> entry : results.entrySet()) {
          // make sure we have an accumulator set to be able to accumulate the result
          if (accumulatedResults.get(entry.getKey()) == null) {

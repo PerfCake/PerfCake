@@ -31,7 +31,7 @@ import org.perfcake.reporting.MeasurementUnit;
 public class ResponseTimeStatsReporter extends StatsReporter {
 
    @Override
-   protected Object computeResult(MeasurementUnit mu) {
+   protected Double computeResult(MeasurementUnit mu) {
       return mu.getLastTime();
    }
 }

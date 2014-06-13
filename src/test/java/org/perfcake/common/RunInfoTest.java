@@ -119,6 +119,7 @@ public class RunInfoTest {
       Assert.assertFalse(ri.isRunning());
       Assert.assertEquals(ri.getPercentage(), 100d);
 
+      Thread.sleep(10);
       ri.stop();
       log.info("STOP      " + ri);
       Assert.assertEquals(ri.getStartTime(), startTime);

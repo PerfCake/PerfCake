@@ -61,7 +61,6 @@ public class DummyReporter extends AbstractReporter {
    @SuppressWarnings("rawtypes")
    @Override
    protected Accumulator getAccumulator(final String key, final Class clazz) {
-      lastMethod = "getAccumulator";
       return new LastValueAccumulator();
    }
 
