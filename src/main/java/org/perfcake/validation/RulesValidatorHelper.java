@@ -25,35 +25,91 @@ import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
 import org.kie.api.builder.KieRepository;
-import org.kie.api.builder.Message;
 import org.kie.api.io.KieResources;
 import org.kie.api.io.Resource;
 import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
+import org.perfcake.message.Message;
 import org.perfcake.util.Utils;
 
 import java.io.StringReader;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Helper to build KieContainer based on the Drools rules provided. Used by RulesValidator.
+ * Helper to build KieContainer based on the Drools rules provided. Used by {@link org.perfcake.validation.RulesValidator}.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-class RulesBuilder {
+class RulesValidatorHelper {
 
-   static final Logger log = Logger.getLogger(RulesBuilder.class);
+   /**
+    * A logger for this class.
+    */
+   static final Logger log = Logger.getLogger(RulesValidatorHelper.class);
+
+   /**
+    * Constant to hold the DSL language file name in the virtual Drools file system.
+    */
    private static final String DSL = "messageValidator.dsl";
 
    /**
-    * Build KieContainer from the assertions.
+    * Assertions checked by the helper.
+    */
+   private Map<Integer, String> assertions;
+
+   /**
+    * KIE container that holds all Drools related data.
+    */
+   private KieContainer kieContainer;
+
+   /**
+    * Gets a new helper based on the assertions.
+    * @param assertions Assertions that should be added to the rules.
+    * @throws ValidationException When the KIE container construction fails.
+    */
+   public RulesValidatorHelper(final Map<Integer, String> assertions) throws ValidationException {
+      this.assertions = assertions;
+
+      KieServices kieServices = KieServices.Factory.get();
+      kieContainer = build(kieServices, assertions);
+   }
+
+   /**
+    * Validates the response given the original message and the previously configured assertions.
+    * @param originalMessage The original message.
+    * @param response The response message.
+    * @return Map with unused/invalid assertions.
+    */
+   public Map<Integer, String> validate(final Message originalMessage, final Message response) {
+      KieSession kieSession = kieContainer.newKieSession();
+      final Map<Integer, String> unusedAssertions = new HashMap<>();
+      unusedAssertions.putAll(assertions);
+
+      kieSession.setGlobal("rulesUsed", unusedAssertions);
+      if (originalMessage != null) {
+         originalMessage.setProperty(RulesValidator.RULES_ORIGINAL_MESSAGE, "true");
+         kieSession.insert(originalMessage);
+      }
+      if (response != null) {
+         kieSession.insert(response);
+      }
+      kieSession.fireAllRules();
+      kieSession.dispose();
+
+      return unusedAssertions;
+   }
+
+   /**
+    * Build a KIE container from the assertions.
     *
     * @param kieServices
-    *             Existing KieServices instance which should be used to build KieContainer
+    *             Existing KieServices instance which should be used to build the KIE container.
     * @param assertions
-    *             Assertions that should be added to the rules
-    * @return created KieContainer
+    *             Assertions that represent the rules.
+    * @return The new KIE container.
     */
-   public static KieContainer build(final KieServices kieServices, final Map<Integer, String> assertions) throws ValidationException {
+   private KieContainer build(final KieServices kieServices, final Map<Integer, String> assertions) throws ValidationException {
       if (log.isDebugEnabled()) {
          log.debug("Building rules...");
       }
@@ -99,7 +155,7 @@ class RulesBuilder {
       kb.buildAll();
 
       // Check the builder for errors
-      if (kb.getResults().hasMessages(Message.Level.ERROR)) {
+      if (kb.getResults().hasMessages(org.kie.api.builder.Message.Level.ERROR)) {
          if (log.isEnabledFor(Level.ERROR)) {
             log.error(kb.getResults().getMessages().toString());
          }

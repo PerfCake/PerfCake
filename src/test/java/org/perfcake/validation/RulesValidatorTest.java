@@ -27,6 +27,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+/**
+ * Tests the rules validator.
+ *
+ * @author Martin Večeřa <marvenec@gmail.com>
+ */
 public class RulesValidatorTest {
 
    @Test

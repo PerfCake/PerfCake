@@ -47,12 +47,34 @@ import java.util.Properties;
  */
 public class DictionaryValidator implements MessageValidator {
 
+   /**
+    * A logger for this class.
+    */
    private final Logger log = Logger.getLogger(ValidationManager.class);
 
+   /**
+    * The directory where the dictionary is/will be store.
+    */
    private String dictionaryDirectory;
+
+   /**
+    * The file name of the dictionary index.
+    */
    private String dictionaryIndex = "index";
+
+   /**
+    * Is the record mode active?
+    */
    private boolean record = false;
+
+   /**
+    * Did we check the existence of the directory index? We never ever allow its overwrite in the record mode.
+    */
    private boolean indexChecked = false;
+
+   /**
+    * Cached directory index.
+    */
    private Properties indexCache;
 
    /**
@@ -62,7 +84,7 @@ public class DictionaryValidator implements MessageValidator {
     * @return Escaped payload.
     */
    private String escapePayload(String payload) {
-      return payload.replaceAll("\\\\", "\\").replaceAll("=", "\\=").replaceAll(":", "\\:").replaceAll("[\\n\\r]", "_");
+      return payload.replaceAll("[\\n\\r\\\\:= ]", "_");
    }
 
    /**
@@ -74,11 +96,16 @@ public class DictionaryValidator implements MessageValidator {
     */
    private void recordResponse(final Message originalMessage, final Message response) throws ValidationException {
       String responseHashCode = Integer.toString(response.getPayload().toString().hashCode());
+      File targetFile = new File(dictionaryDirectory, responseHashCode);
+      if (targetFile.exists()) {
+         throw new ValidationException(String.format("Target file for the message hash code '%s' already exists. Probably a duplicate original message.", responseHashCode));
+      }
 
-      try (FileWriter indexWriter = new FileWriter(getIndexFile()); FileWriter responseWriter = new FileWriter(new File(dictionaryDirectory, responseHashCode))) {
+      try (FileWriter indexWriter = new FileWriter(getIndexFile(), true); FileWriter responseWriter = new FileWriter(targetFile)) {
          indexWriter.append(escapePayload(originalMessage.getPayload().toString()));
          indexWriter.append("=");
          indexWriter.append(responseHashCode);
+         indexWriter.append("\n");
 
          responseWriter.write(response.getPayload().toString());
       } catch (IOException e) {
@@ -89,7 +116,7 @@ public class DictionaryValidator implements MessageValidator {
    /**
     * Reads the index into memory, or return the previously read index.
     *
-    * @return the response index
+    * @return the response index.
     * @throws ValidationException If any of the disk operations fails.
     */
    private Properties getIndexCache() throws ValidationException {
@@ -115,6 +142,10 @@ public class DictionaryValidator implements MessageValidator {
     */
    private boolean validateResponse(Message originalMessage, Message response) throws ValidationException {
       String responseHashCode = getIndexCache().getProperty(escapePayload(originalMessage.getPayload().toString()));
+      if (responseHashCode == null) { // we do not have any such message
+         return false;
+      }
+
       try {
          String newResponse = response != null && response.getPayload() != null ? response.getPayload().toString() : "";
          String responseString = new String(Files.readAllBytes(Paths.get(dictionaryDirectory, responseHashCode)), StandardCharsets.UTF_8);
@@ -172,26 +203,50 @@ public class DictionaryValidator implements MessageValidator {
       return false;
    }
 
+   /**
+    * Gets the dictionary directory name.
+    * @return The dictionary directory name.
+    */
    public String getDictionaryDirectory() {
       return dictionaryDirectory;
    }
 
+   /**
+    * Sets Gets the dictionary directory name.
+    * @param dictionaryDirectory The name of the dictionary directory.
+    */
    public void setDictionaryDirectory(String dictionaryDirectory) {
       this.dictionaryDirectory = dictionaryDirectory;
    }
 
+   /**
+    * Gets the file name of the dictionary index.
+    * @return The file name of the dictionary index.
+    */
    public String getDictionaryIndex() {
       return dictionaryIndex;
    }
 
+   /**
+    * Sets the file name of the dictionary index.
+    * @param dictionaryIndexThe file name of the dictionary index.
+    */
    public void setDictionaryIndex(String dictionaryIndex) {
       this.dictionaryIndex = dictionaryIndex;
    }
 
+   /**
+    * Checks whether we are in the record mode.
+    * @return True if and only if the record mode is active.
+    */
    public boolean isRecord() {
       return record;
    }
 
+   /**
+    * Sets the record mode
+    * @param record True to activate the record mode.
+    */
    public void setRecord(boolean record) {
       this.record = record;
    }

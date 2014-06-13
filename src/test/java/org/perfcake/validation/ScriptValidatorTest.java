@@ -24,6 +24,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
+ * Tests the script validator.
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class ScriptValidatorTest {
@@ -38,7 +40,7 @@ public class ScriptValidatorTest {
 
       ScriptValidator sv = new ScriptValidator();
       sv.setEngine("groovy");
-      sv.setScript("log.info('Be groovy!')\nreturn message.payload.toString().contains('Pepa')");
+      sv.setScript("log.info('Be groovy!.....')\nreturn message.payload.toString().contains('Pepa')");
 
       Assert.assertTrue(sv.isValid(null, m));
       Assert.assertTrue(sv.isValid(null, m)); // make sure the validator is reusable
