@@ -22,7 +22,7 @@ package org.perfcake.reporting.reporters.accumulators;
 /**
  * Accumulates the minimum of double values.
  * Atomic types are not used because both values must be set at the same time. Hence the methods are synchronized.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
@@ -30,11 +30,11 @@ public class MinAccumulator implements Accumulator<Double> {
    /**
     * Mininum of the reported values
     */
-   private Double min = Double.MAX_VALUE;
+   private Double min = Double.POSITIVE_INFINITY;
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.reporting.reporters.accumulators.Accumulator#add(java.lang.Object)
     */
    @Override
@@ -46,7 +46,7 @@ public class MinAccumulator implements Accumulator<Double> {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.reporting.reporters.accumulators.Accumulator#getResult()
     */
    @Override
@@ -56,7 +56,7 @@ public class MinAccumulator implements Accumulator<Double> {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.reporting.reporters.accumulators.Accumulator#reset()
     */
    @Override
