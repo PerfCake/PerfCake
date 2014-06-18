@@ -19,12 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
-import java.util.concurrent.Executors;
-
 import org.perfcake.RunInfo;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
@@ -39,61 +33,65 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+
 /**
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class MemoryUsageReporterTest {
-   private AgentThread agentThread;
-   private MemoryUsageReporter mur;
-   private final ReportManager rm = new ReportManager();
    private static final long ITERATION_COUNT = 1000l;
-   private final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, ITERATION_COUNT));
-   private DummyDestination dest;
-
-   private MeasurementUnit mu;
-
    private static final String AGENT_HOSTNAME = "localhost";
    private static final String AGENT_PORT = "19266";
 
    @BeforeClass
-   private void startPerfCakeAgent() throws InvocationTargetException, ClassNotFoundException, IllegalAccessException, InstantiationException {
-      agentThread = new AgentThread("hostname=" + AGENT_HOSTNAME + ",port=" + AGENT_PORT);
-      Executors.newSingleThreadExecutor().submit(agentThread);
+   public void startPerfCakeAgent() {
+      final Thread agentThread = new Thread(new AgentThread("hostname=" + AGENT_HOSTNAME + ",port=" + AGENT_PORT));
+      agentThread.start();
+   }
 
+   @Test
+   public void testMemoryUsageReporterWithMemoryLeakDetection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+      testMemoryUsageReporter(true);
+   }
+
+   @Test
+   public void testMemoryUsageReporterWithoutMemoryLeakDetection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+      testMemoryUsageReporter(false);
+   }
+
+   private void testMemoryUsageReporter(boolean memoryLeakDetectionEnabled) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
       reporterProperties.put("memoryLeakSlopeThreshold", "1"); // 1 byte per second (that should cause positive memory leak detection)
       reporterProperties.put("usedMemoryTimeWindowSize", "3");
-      mur = (MemoryUsageReporter) ObjectFactory.summonInstance(MemoryUsageReporter.class.getName(), reporterProperties);
 
-      final Properties destinationProperties = new Properties();
-      dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), destinationProperties);
-   }
+      final MemoryUsageReporter mur = (MemoryUsageReporter) ObjectFactory.summonInstance(MemoryUsageReporter.class.getName(), reporterProperties);
 
-   @Test
-   public void testMemoryUsageReporterWithMemoryLeakDetection() {
-      testMemoryUsageReporter(true);
-   }
-
-   @Test
-   public void testMemoryUsageReporterWithoutMemoryLeakDetection() {
-      testMemoryUsageReporter(false);
-   }
-
-   private void testMemoryUsageReporter(boolean memoryLeakDetectionEnabled) {
       Assert.assertNotNull(mur, "Reporter's instance");
       Assert.assertEquals(mur.getAgentHostname(), AGENT_HOSTNAME, "Agent hostname");
       Assert.assertEquals(mur.getAgentPort(), AGENT_PORT, "Agent port");
 
       final List<Measurement> measurementList = new LinkedList<>();
 
+      final Properties destinationProperties = new Properties();
+      DummyDestination dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), destinationProperties);
+
       mur.setMemoryLeakDetectionEnabled(memoryLeakDetectionEnabled);
       mur.registerDestination(dest, new Period(PeriodType.ITERATION, 100));
+
+      final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, ITERATION_COUNT));
+
+      final ReportManager rm = new ReportManager();
       rm.registerReporter(mur);
       rm.setRunInfo(ri);
 
       rm.start();
+
+      MeasurementUnit mu = null;
       try {
          for (int i = 0; i < ITERATION_COUNT; i++) {
             mu = rm.newMeasurementUnit();
@@ -132,5 +130,4 @@ public class MemoryUsageReporterTest {
          Assert.assertNull(lastM.get("MemoryLeak"), "No memory leak detection (last measurement)");
       }
    }
-
 }
