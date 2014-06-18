@@ -47,7 +47,11 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class ScenarioParserTest {
    private static final int THREADS = 10;
@@ -56,20 +60,17 @@ public class ScenarioParserTest {
    private static final String SENDER_CLASS = "org.perfcake.message.sender.HTTPSender";
    private static final String FILTERED_PROPERTY_VALUE = "filtered-property-value";
    private static final String DEFAULT_PROPERTY_VALUE = "default-property-value";
-   private ScenarioFactory scenarioFactory, noValidationScenarioFactory, noMessagesScenarioFactory;
 
    @BeforeClass
    public void prepareScenarioParser() throws PerfCakeException, URISyntaxException, IOException {
       System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
       System.setProperty("test.filtered.property", FILTERED_PROPERTY_VALUE);
-      scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
-      noValidationScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-validation.xml")).parse());
-      noMessagesScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-messages.xml")).parse());
    }
 
    @Test
    public void parseScenarioPropertiesTest() {
       try {
+         final ScenarioFactory scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
          final Hashtable<Object, Object> scenarioProperties = scenarioFactory.parseScenarioProperties();
          Assert.assertEquals(scenarioProperties.get("quickstartName"), "testQS", "quickstartName property");
          Assert.assertEquals(scenarioProperties.get("filteredProperty"), FILTERED_PROPERTY_VALUE, "filteredProperty property");
@@ -83,6 +84,7 @@ public class ScenarioParserTest {
    @Test
    public void parseSenderTest() {
       try {
+         final ScenarioFactory scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
          final MessageSenderManager senderManager = scenarioFactory.parseSender(THREADS);
          Assert.assertEquals(senderManager.getSenderClass(), SENDER_CLASS, "senderClass");
          Assert.assertEquals(senderManager.getSenderPoolSize(), THREADS, "senderPoolSize");
@@ -96,9 +98,10 @@ public class ScenarioParserTest {
    @Test
    public void parseGeneratorTest() {
       try {
+         final ScenarioFactory scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
          AbstractMessageGenerator generator = scenarioFactory.parseGenerator();
          Assert.assertTrue(generator instanceof DefaultMessageGenerator, "The generator is not an instance of " + DefaultMessageGenerator.class.getName());
-         DefaultMessageGenerator dmg = (DefaultMessageGenerator) generator;
+         final DefaultMessageGenerator dmg = (DefaultMessageGenerator) generator;
          dmg.setRunInfo(new RunInfo(new Period(PeriodType.TIME, 30L)));
          Assert.assertEquals(dmg.getThreads(), THREADS, "threads");
          Assert.assertEquals(dmg.getThreadQueueSize(), 5000);
@@ -111,9 +114,10 @@ public class ScenarioParserTest {
    @Test
    public void parseMessagesTest() {
       try {
+         final ScenarioFactory scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
          // Message store
          ValidationManager validationManager = scenarioFactory.parseValidation();
-         List<MessageTemplate> messageStore = scenarioFactory.parseMessages(validationManager);
+         final List<MessageTemplate> messageStore = scenarioFactory.parseMessages(validationManager);
          Assert.assertEquals(messageStore.size(), 5);
 
          // Message 1
@@ -181,6 +185,7 @@ public class ScenarioParserTest {
          Assert.assertEquals(m5.getPayload(), "message-content-5");
 
          // Messages section is optional
+         final ScenarioFactory noMessagesScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-messages.xml")).parse());
          validationManager = noMessagesScenarioFactory.parseValidation();
          final List<MessageTemplate> emptyMessageStore = noMessagesScenarioFactory.parseMessages(validationManager);
          Assert.assertTrue(emptyMessageStore.isEmpty(), "empty message store with no messages in scenario");
@@ -194,13 +199,14 @@ public class ScenarioParserTest {
    @Test
    public void parseReportingTest() {
       try {
+         final ScenarioFactory scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
          final ReportManager reportManager = scenarioFactory.parseReporting();
          Assert.assertNotNull(reportManager);
          Assert.assertEquals(reportManager.getReporters().size(), 2, "reportManager's number of reporters");
          final String DUMMY_REPORTER_KEY = "dummy";
          final String WARM_UP_REPORTER_KEY = "warmup";
 
-         Map<String, Reporter> reportersMap = new HashMap<>();
+         final Map<String, Reporter> reportersMap = new HashMap<>();
          for (Reporter reporter : reportManager.getReporters()) {
             if (reporter instanceof DummyReporter) {
                reportersMap.put(DUMMY_REPORTER_KEY, reporter);
@@ -211,9 +217,9 @@ public class ScenarioParserTest {
             }
          }
 
-         Reporter reporter = reportersMap.get(DUMMY_REPORTER_KEY);
+         final Reporter reporter = reportersMap.get(DUMMY_REPORTER_KEY);
          Assert.assertEquals(reporter.getDestinations().size(), 1, "reporter's number of destinations");
-         Destination destination = reporter.getDestinations().iterator().next();
+         final Destination destination = reporter.getDestinations().iterator().next();
          Assert.assertTrue(destination instanceof DummyDestination, "destination's class");
          Assert.assertEquals(((DummyDestination) destination).getProperty(), "dummy_p_value", "destination's property value");
          Assert.assertEquals(((DummyDestination) destination).getProperty2(), "dummy_p2_value", "destination's property2 value");
@@ -237,7 +243,7 @@ public class ScenarioParserTest {
          }
          Assert.assertEquals(assertedPeriodCount, 3, "number of period asserted");
 
-         Reporter warmUpReporter = reportersMap.get(WARM_UP_REPORTER_KEY);
+         final Reporter warmUpReporter = reportersMap.get(WARM_UP_REPORTER_KEY);
          Assert.assertTrue(warmUpReporter instanceof WarmUpReporter, "reporter's class");
          Assert.assertEquals(warmUpReporter.getDestinations().size(), 0, "reporter's number of destinations");
          Assert.assertEquals(((WarmUpReporter) warmUpReporter).getMinimalWarmUpCount(), 12345, "reporter's minimal warmup count");
@@ -253,7 +259,7 @@ public class ScenarioParserTest {
 
    @Test
    public void parseValidationTest() throws Exception {
-      ScenarioFactory validationScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-validator-load.xml")).parse());
+      final ScenarioFactory validationScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-validator-load.xml")).parse());
       ValidationManager vm = validationScenarioFactory.parseValidation();
       List<MessageTemplate> mts = validationScenarioFactory.parseMessages(vm);
 
@@ -268,6 +274,7 @@ public class ScenarioParserTest {
       // TODO: add assertions on validation
 
       // validation is optional
+      final ScenarioFactory noValidationScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-validation.xml")).parse());
       vm = noValidationScenarioFactory.parseValidation();
       Assert.assertEquals(vm.getSize(), 0);
    }
