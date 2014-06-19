@@ -22,10 +22,7 @@ package org.perfcake.validation;
 import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -95,13 +92,14 @@ public class DictionaryValidator implements MessageValidator {
     * @throws ValidationException If any of the disk operations fails.
     */
    private void recordResponse(final Message originalMessage, final Message response) throws ValidationException {
-      String responseHashCode = Integer.toString(response.getPayload().toString().hashCode());
-      File targetFile = new File(dictionaryDirectory, responseHashCode);
+      final String responseHashCode = Integer.toString(response.getPayload().toString().hashCode());
+      final File targetFile = new File(dictionaryDirectory, responseHashCode);
       if (targetFile.exists()) {
          throw new ValidationException(String.format("Target file for the message hash code '%s' already exists. Probably a duplicate original message.", responseHashCode));
       }
 
-      try (FileWriter indexWriter = new FileWriter(getIndexFile(), true); FileWriter responseWriter = new FileWriter(targetFile)) {
+      try (final Writer indexWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getIndexFile(), true), StandardCharsets.UTF_8));
+            final Writer responseWriter = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(targetFile), StandardCharsets.UTF_8))) {
          indexWriter.append(escapePayload(originalMessage.getPayload().toString()));
          indexWriter.append("=");
          indexWriter.append(responseHashCode);
@@ -122,7 +120,7 @@ public class DictionaryValidator implements MessageValidator {
    private Properties getIndexCache() throws ValidationException {
       if (indexCache == null) {
          indexCache = new Properties();
-         try (FileReader indexReader = new FileReader(getIndexFile())) {
+         try (final Reader indexReader = new BufferedReader(new InputStreamReader(new FileInputStream(getIndexFile()), StandardCharsets.UTF_8))) {
             indexCache.load(indexReader);
          } catch (IOException e) {
             throw new ValidationException(String.format("Unable to load index file '%s': ", getIndexFile().getAbsolutePath()), e);
@@ -141,14 +139,14 @@ public class DictionaryValidator implements MessageValidator {
     * @throws ValidationException If any of the disk operations fails.
     */
    private boolean validateResponse(Message originalMessage, Message response) throws ValidationException {
-      String responseHashCode = getIndexCache().getProperty(escapePayload(originalMessage.getPayload().toString()));
+      final String responseHashCode = getIndexCache().getProperty(escapePayload(originalMessage.getPayload().toString()));
       if (responseHashCode == null) { // we do not have any such message
          return false;
       }
 
       try {
-         String newResponse = response != null && response.getPayload() != null ? response.getPayload().toString() : "";
-         String responseString = new String(Files.readAllBytes(Paths.get(dictionaryDirectory, responseHashCode)), StandardCharsets.UTF_8);
+         final String newResponse = response != null && response.getPayload() != null ? response.getPayload().toString() : "";
+         final String responseString = new String(Files.readAllBytes(Paths.get(dictionaryDirectory, responseHashCode)), StandardCharsets.UTF_8);
 
          return newResponse.equals(responseString);
       } catch (IOException e) {
@@ -229,7 +227,7 @@ public class DictionaryValidator implements MessageValidator {
 
    /**
     * Sets the file name of the dictionary index.
-    * @param dictionaryIndexThe file name of the dictionary index.
+    * @param dictionaryIndex The file name of the dictionary index.
     */
    public void setDictionaryIndex(String dictionaryIndex) {
       this.dictionaryIndex = dictionaryIndex;

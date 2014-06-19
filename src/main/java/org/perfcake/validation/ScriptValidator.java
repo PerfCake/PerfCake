@@ -24,9 +24,8 @@ import org.perfcake.message.Message;
 import org.w3c.dom.Element;
 
 import javax.script.*;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Validates messages using Java Script Engine and the provided script.
@@ -53,7 +52,7 @@ public class ScriptValidator implements MessageValidator {
          if (script != null) {
             compiledScript = ((Compilable) engine).compile(script);
          } else if (scriptFile != null) {
-            try (FileReader fr = new FileReader(new File(scriptFile))) {
+            try (Reader fr = new BufferedReader(new InputStreamReader(new FileInputStream(new File(scriptFile)), StandardCharsets.UTF_8))) {
                compiledScript = ((Compilable) engine).compile(fr);
             } catch (IOException e) {
                throw new ValidationException("Error loading script file: ", e);

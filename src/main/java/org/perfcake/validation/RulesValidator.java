@@ -23,9 +23,8 @@ import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
 import org.w3c.dom.Element;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.StringReader;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -104,8 +103,7 @@ public class RulesValidator implements MessageValidator {
     * @param validationRuleFile The file name of the assertions file.
     */
    public void setRules(final String validationRuleFile) {
-      try (final FileReader fr = new FileReader(validationRuleFile);
-            final BufferedReader br = new BufferedReader(fr)) {
+      try (final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(validationRuleFile), StandardCharsets.UTF_8))) {
          processAssertions(br);
       } catch (final Exception ex) {
          log.error("Error creating Drools base message validator.", ex);

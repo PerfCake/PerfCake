@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,12 +45,12 @@ import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The sender that is able to send messages via JMS.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Jiří Sedláček <jiri@sedlackovi.cz>
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Marek Baluch <baluch.git@gmail.com>
- * 
+ *
  */
 public class JMSSender extends AbstractSender {
 
@@ -60,7 +60,7 @@ public class JMSSender extends AbstractSender {
    public static enum MessageType {
 	   OBJECT, STRING, BYTEARRAY
    }
-	
+
    /**
     * The logger's logger.
     */
@@ -176,7 +176,7 @@ public class JMSSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#init()
     */
    @Override
@@ -230,7 +230,7 @@ public class JMSSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#close()
     */
    @Override
@@ -275,7 +275,7 @@ public class JMSSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -300,9 +300,8 @@ public class JMSSender extends AbstractSender {
       }
       // set additional properties
       if (properties != null) {
-         propertyNameSet = properties.keySet();
-         for (String property : propertyNameSet) {
-            mess.setStringProperty(property, properties.get(property));
+         for (Map.Entry<String, String> entry : properties.entrySet()) {
+            mess.setStringProperty(entry.getKey(), entry.getValue());
          }
       }
       if (replyToDestination != null) {
@@ -312,7 +311,7 @@ public class JMSSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -331,7 +330,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Checks if JMS credentials ({@link #username} and {@link #password}) are set.
-    * 
+    *
     * @return <code>true</code> if both JMS credentials ({@link #username} and {@link #password})
     *         are set and <code>false</code> if neither of them is set.
     * @throws PerfCakeException
@@ -349,7 +348,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Used to read the value of username.
-    * 
+    *
     * @return The username.
     */
    public String getUsername() {
@@ -358,7 +357,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Sets the value of username.
-    * 
+    *
     * @param username
     *           The username to set.
     */
@@ -368,7 +367,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Used to read the value of password.
-    * 
+    *
     * @return The password.
     */
    public String getPassword() {
@@ -377,7 +376,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Sets the value of password.
-    * 
+    *
     * @param password
     *           The password to set.
     */
@@ -387,7 +386,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Used to read the value of transacted.
-    * 
+    *
     * @return The transacted.
     */
    public boolean isTransacted() {
@@ -396,7 +395,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Sets the value of transacted.
-    * 
+    *
     * @param transacted
     *           The transacted to set.
     */
@@ -406,7 +405,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Used to read the value of persistent.
-    * 
+    *
     * @return The persistent.
     */
    public boolean isPersistent() {
@@ -415,7 +414,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Sets the value of persistent.
-    * 
+    *
     * @param persistent
     *           The persistent to set.
     */
@@ -425,7 +424,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Used to read the value of autoAck.
-    * 
+    *
     * @return The autoAck.
     */
    public boolean isAutoAck() {
@@ -434,7 +433,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Sets the value of autoAck.
-    * 
+    *
     * @param autoAck
     *           The autoAck to set.
     */
@@ -444,7 +443,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Set the value of messageType.
-    * 
+    *
     * @param messageType
     */
    public void setMessageType(MessageType messageType) {
@@ -453,7 +452,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Get the value of messageType.
-    * 
+    *
     * @return
     */
    public MessageType getMessageType() {
@@ -462,7 +461,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Used to read the value of connectionFactory.
-    * 
+    *
     * @return The connectionFactory.
     */
    public String getConnectionFactory() {
@@ -471,7 +470,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Sets the value of connectionFactory.
-    * 
+    *
     * @param connectionFactory
     *           The connectionFactory to set.
     */
@@ -481,7 +480,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Used to read the value of jndiContextFactory.
-    * 
+    *
     * @return The jndiContextFactory.
     */
    public String getJndiContextFactory() {
@@ -490,7 +489,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Sets the value of jndiContextFactory.
-    * 
+    *
     * @param jndiContextFactory
     *           The jndiContextFactory to set.
     */
@@ -500,7 +499,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Used to read the value of jndiUrl.
-    * 
+    *
     * @return The jndiUrl.
     */
    public String getJndiUrl() {
@@ -509,7 +508,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Sets the value of jndiUrl.
-    * 
+    *
     * @param jndiUrl
     *           The jndiUrl to set.
     */
@@ -519,7 +518,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Used to read the value of jndiSecurityPrincipal.
-    * 
+    *
     * @return The jndiSecurityPrincipal.
     */
    public String getJndiSecurityPrincipal() {
@@ -528,7 +527,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Sets the value of jndiSecurityPrincipal.
-    * 
+    *
     * @param jndiSecurityPrincipal
     *           The jndiSecurityPrincipal to set.
     */
@@ -538,7 +537,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Used to read the value of jndiSecurityCredentials.
-    * 
+    *
     * @return The jndiSecurityCredentials.
     */
    public String getJndiSecurityCredentials() {
@@ -547,7 +546,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Sets the value of jndiSecurityCredentials.
-    * 
+    *
     * @param jndiSecurityCredentials
     *           The jndiSecurityCredentials to set.
     */
@@ -557,7 +556,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Used to read the value of replyTo.
-    * 
+    *
     * @return The replyTo.
     */
    public String getReplyTo() {
@@ -566,7 +565,7 @@ public class JMSSender extends AbstractSender {
 
    /**
     * Sets the value of replyTo.
-    * 
+    *
     * @param replyTo
     *           The replyTo to set.
     */

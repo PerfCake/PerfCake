@@ -34,9 +34,12 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Map;
 import java.util.Properties;
 
 /**
+ * This class can create POJOs according to the given class name and a map of attributes and their values.
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class ObjectFactory {
@@ -75,19 +78,19 @@ public class ObjectFactory {
     */
    public static void setPropertiesOnObject(final Object object, final Properties properties) throws IllegalAccessException, InvocationTargetException {
       BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumConvertUtilsBean());
-      for (Object key : properties.keySet()) {
+      for (Map.Entry<Object, Object> entry : properties.entrySet()) {
          if (log.isTraceEnabled()) {
-            log.trace("Setting property: '" + key.toString() + "'='" + properties.get(key) + "'");
+            log.trace("Setting property: '" + entry.getKey().toString() + "'='" + entry.getValue().toString() + "'");
          }
 
          boolean successSet = false; // did we manage to set the property value?
 
-         if (properties.get(key) instanceof Element) { // first, is it an XML element? try to set it...
-            successSet = setElementProperty(object, key.toString(), (Element) properties.get(key));
+         if (entry.getValue() instanceof Element) { // first, is it an XML element? try to set it...
+            successSet = setElementProperty(object, entry.getKey().toString(), (Element) entry.getValue());
          }
 
          if (!successSet) { // not yet set - either it was not an XML element or it failed with it
-            beanUtilsBean.setProperty(object, key.toString(), properties.get(key));
+            beanUtilsBean.setProperty(object, entry.getKey().toString(), entry.getValue());
          }
       }
    }
