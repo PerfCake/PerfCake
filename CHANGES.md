@@ -28,6 +28,10 @@ Bug Fixes
 Release 2.1
 ===========
 
+Features
+--------
+* Added site.xml making use of Maven Fluido Skin.
+
 Bug Fixes
 ---------
 * https://github.com/PerfCake/PerfCake/issues/119 - Message properties and headers are ignored.
