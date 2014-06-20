@@ -6,7 +6,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake</artifactId>
-   <version>2.0</version>
+   <version>2.1</version>
    <parent>
       <groupId>org.sonatype.oss</groupId>
       <artifactId>oss-parent</artifactId>
@@ -25,7 +25,7 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-      <tag>v2.0</tag>
+      <tag>v2.1</tag>
    </scm>
    <developers>
       <developer>
@@ -249,7 +249,7 @@
                      <argument>-Dlog4j.configuration=file://${basedir}/src/main/resources/log4j.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath/>
+                     <classpath />
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
