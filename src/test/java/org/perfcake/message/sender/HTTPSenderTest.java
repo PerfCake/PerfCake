@@ -19,27 +19,23 @@
  */
 package org.perfcake.message.sender;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.message.sender.HTTPSender.Method;
 import org.perfcake.util.ObjectFactory;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class HTTPSenderTest {
-   private final Properties senderProperties = new Properties();
-   private final Map<String, String> additionalMessageProperties = new HashMap<>();
 
    private static final String URL_GET = "http://httpbin.org/get";
    private static final String URL_POST = "http://httpbin.org/post";
@@ -53,37 +49,25 @@ public class HTTPSenderTest {
    private static final String TEST_ADDITIONAL_PROPERTY_VALUE = "test-Additional_property-value...";
    private static final String POST_PAYLOAD = "I'm the fish!";
 
-   private Message payloadMessage, noPayloadMessage;
-
-   @BeforeClass
-   public void prepare() {
-      noPayloadMessage = new Message();
-      noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
-      noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
-
-      payloadMessage = new Message();
-      payloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
-      payloadMessage.setPayload(POST_PAYLOAD);
-
-      additionalMessageProperties.put(TEST_ADDITIONAL_PROPERTY_NAME, TEST_ADDITIONAL_PROPERTY_VALUE);
-   }
-
-   @BeforeTest
-   public void clearProperties() {
-      senderProperties.clear();
-   }
-
    @Test
    public void testGetMethod() {
+      final Properties senderProperties = new Properties();
       senderProperties.setProperty("method", "GET");
       senderProperties.setProperty("target", URL_GET);
 
       String response = null;
       try {
-         HTTPSender sender = (HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties);
+         final HTTPSender sender = (HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties);
          Assert.assertEquals(sender.getTarget(), URL_GET);
          Assert.assertEquals(sender.getMethod(), Method.GET);
          Assert.assertNull(sender.getExpectedResponseCodes());
+
+         final Map<String, String> additionalMessageProperties = new HashMap<>();
+         additionalMessageProperties.put(TEST_ADDITIONAL_PROPERTY_NAME, TEST_ADDITIONAL_PROPERTY_VALUE);
+
+         final Message noPayloadMessage = new Message();
+         noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
+         noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
          response = _sendMessage(sender, noPayloadMessage, additionalMessageProperties);
       } catch (Exception e) {
@@ -99,6 +83,7 @@ public class HTTPSenderTest {
 
    @Test
    public void testNullMessage() {
+      final Properties senderProperties = new Properties();
       senderProperties.setProperty("method", "GET");
       senderProperties.setProperty("target", URL_GET);
       String response = null;
@@ -115,10 +100,15 @@ public class HTTPSenderTest {
 
    @Test
    public void testPostMethod() {
+      final Properties senderProperties = new Properties();
       senderProperties.setProperty("method", "POST");
       senderProperties.setProperty("target", URL_POST);
       String response = null;
       try {
+         final Message payloadMessage = new Message();
+         payloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
+         payloadMessage.setPayload(POST_PAYLOAD);
+
          response = _sendMessage((HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties), payloadMessage, null);
       } catch (Exception e) {
          e.printStackTrace();
@@ -131,11 +121,16 @@ public class HTTPSenderTest {
 
    @Test
    public void testResponseCode() {
+      final Properties senderProperties = new Properties();
       senderProperties.setProperty("method", "GET");
       senderProperties.setProperty("target", URL_STATUS_500);
       senderProperties.setProperty("expectedResponseCodes", "500");
       String response = null;
       try {
+         final Message noPayloadMessage = new Message();
+         noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
+         noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
+
          response = _sendMessage((HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties), noPayloadMessage, null);
       } catch (Exception e) {
          e.printStackTrace();
@@ -146,6 +141,7 @@ public class HTTPSenderTest {
 
    @Test
    public void testMultipleResponseCodes() {
+      final Properties senderProperties = new Properties();
       senderProperties.setProperty("method", "GET");
       senderProperties.setProperty("target", URL_STATUS_500);
       senderProperties.setProperty("expectedResponseCodes", "500,200");
@@ -157,6 +153,11 @@ public class HTTPSenderTest {
          Assert.assertEquals(responseCodeList.size(), 2);
          Assert.assertTrue(responseCodeList.contains(500));
          Assert.assertTrue(responseCodeList.contains(200));
+
+         final Message noPayloadMessage = new Message();
+         noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
+         noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
+
          response = _sendMessage(sender, noPayloadMessage, null);
       } catch (Exception e) {
          e.printStackTrace();
@@ -166,6 +167,10 @@ public class HTTPSenderTest {
 
       senderProperties.setProperty("target", URL_GET);
       try {
+         final Message noPayloadMessage = new Message();
+         noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
+         noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
+
          response = _sendMessage((HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties), noPayloadMessage, null);
       } catch (Exception e) {
          e.printStackTrace();
@@ -176,11 +181,16 @@ public class HTTPSenderTest {
 
    @Test
    public void testInvalidResponseCode() {
+      final Properties senderProperties = new Properties();
       senderProperties.setProperty("method", "GET");
       senderProperties.setProperty("target", URL_STATUS_500);
       senderProperties.setProperty("expectedResponseCodes", "200");
       String response = null;
       try {
+         final Message noPayloadMessage = new Message();
+         noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
+         noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
+
          response = _sendMessage((HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties), noPayloadMessage, null);
       } catch (Exception e) {
          if (e instanceof PerfCakeException) {
@@ -195,10 +205,15 @@ public class HTTPSenderTest {
 
    @Test
    public void testDefaultResponseCodesHandlingError() {
+      final Properties senderProperties = new Properties();
       senderProperties.setProperty("method", "GET");
       senderProperties.setProperty("target", URL_STATUS_500);
       String response = null;
       try {
+         final Message noPayloadMessage = new Message();
+         noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
+         noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
+
          response = _sendMessage((HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties), noPayloadMessage, null);
       } catch (Exception e) {
          e.printStackTrace();

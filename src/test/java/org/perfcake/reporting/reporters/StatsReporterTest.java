@@ -1,9 +1,23 @@
+/*
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -----------------------------------------------------------------------/
+ */
 package org.perfcake.reporting.reporters;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
 
 import org.perfcake.RunInfo;
 import org.perfcake.common.Period;
@@ -15,9 +29,13 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.util.ObjectFactory;
 import org.testng.Assert;
-import org.testng.annotations.BeforeClass;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Pavel Macík <pavel.macik@gmail.com>
@@ -26,16 +44,9 @@ public class StatsReporterTest {
 
    private static final long ITERATION_COUNT = 10L;
 
-   private DummyDestination dest;
-
-   @BeforeClass
-   public void prepare() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
-      dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), new Properties());
-   }
-
    @Test
    public void testDefaults() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
-      ThroughputStatsReporter tsr = (ThroughputStatsReporter) ObjectFactory.summonInstance(ThroughputStatsReporter.class.getName(), new Properties());
+      final ThroughputStatsReporter tsr = (ThroughputStatsReporter) ObjectFactory.summonInstance(ThroughputStatsReporter.class.getName(), new Properties());
       Assert.assertTrue(tsr.isAverageEnabled());
       Assert.assertTrue(tsr.isMinimumEnabled());
       Assert.assertTrue(tsr.isMaximumEnabled());
@@ -44,7 +55,7 @@ public class StatsReporterTest {
       Assert.assertNull(tsr.getAccumulatedResult(StatsReporter.MAXIMUM));
       Assert.assertNull(tsr.getAccumulatedResult(Measurement.DEFAULT_RESULT));
 
-      ResponseTimeStatsReporter rtsr = (ResponseTimeStatsReporter) ObjectFactory.summonInstance(ResponseTimeStatsReporter.class.getName(), new Properties());
+      final ResponseTimeStatsReporter rtsr = (ResponseTimeStatsReporter) ObjectFactory.summonInstance(ResponseTimeStatsReporter.class.getName(), new Properties());
       Assert.assertTrue(rtsr.isAverageEnabled());
       Assert.assertTrue(rtsr.isMinimumEnabled());
       Assert.assertTrue(rtsr.isMaximumEnabled());
@@ -82,15 +93,16 @@ public class StatsReporterTest {
    public void testReporters(StatsReporter reporter, boolean averageEnabled, boolean minimumEnabled, boolean maximumEnabled) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
       final String reporterName = reporter.getClass().getName();
 
-      Properties reporterProperties = new Properties();
+      final Properties reporterProperties = new Properties();
       reporterProperties.put("averageEnabled", String.valueOf(averageEnabled));
       reporterProperties.put("minimumEnabled", String.valueOf(minimumEnabled));
       reporterProperties.put("maximumEnabled", String.valueOf(maximumEnabled));
 
-      ThroughputStatsReporter tsr = (ThroughputStatsReporter) ObjectFactory.summonInstance(ThroughputStatsReporter.class.getName(), reporterProperties);
+      final ThroughputStatsReporter tsr = (ThroughputStatsReporter) ObjectFactory.summonInstance(ThroughputStatsReporter.class.getName(), reporterProperties);
 
       final List<Measurement> measurementList = new LinkedList<>();
       final ReportManager rm = new ReportManager();
+      final DummyDestination dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), new Properties());
       tsr.registerDestination(dest, new Period(PeriodType.ITERATION, 1));
       rm.registerReporter(tsr);
       final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, ITERATION_COUNT));
