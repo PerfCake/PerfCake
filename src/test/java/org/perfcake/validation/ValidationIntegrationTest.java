@@ -23,7 +23,6 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.Scenario;
 import org.perfcake.ScenarioBuilder;
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;
