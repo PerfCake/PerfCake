@@ -25,6 +25,7 @@ Bug Fixes
 * https://github.com/PerfCake/PerfCake/issues/104 - Fix CSVDestination synchronization problem.
 * https://github.com/PerfCake/PerfCake/issues/111 - PerfCakeAgent hangs when configured to monitor local JVM process.
 * https://github.com/PerfCake/PerfCake/issues/123 - Review and update tests to become independent to each other.
+* https://github.com/PerfCake/PerfCake/issues/127 - CommandSender throws NullPointerException when message is not used.
 
 Release 2.1
 ===========
