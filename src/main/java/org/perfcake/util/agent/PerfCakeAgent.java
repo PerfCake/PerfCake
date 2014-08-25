@@ -30,6 +30,11 @@ public class PerfCakeAgent {
    public static final String DEFAULT_ENCODING = "UTF-8";
 
    /**
+    * Default agent port.
+    */
+   public static final int DEFAULT_PORT = 8850;
+
+   /**
     * The memory type.
     *
     * @author Pavel Macík <pavel.macik@gmail.com>

@@ -68,7 +68,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    /**
     * Port number where {@link PerfCakeAgent} is listening on.
     */
-   private String agentPort = "8849";
+   private String agentPort = "8850";
 
    /**
     * IP address of the {@link PerfCakeAgent}.

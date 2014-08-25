@@ -54,7 +54,7 @@ public class AgentThread implements Runnable {
    @Override
    public void run() {
       InetAddress host = null;
-      int port = 8849; // default
+      int port = PerfCakeAgent.DEFAULT_PORT;
       ServerSocket ssocket = null;
       Socket socket = null;
       InputStream is = null;
