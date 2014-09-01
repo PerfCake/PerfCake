@@ -38,23 +38,19 @@ import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
 /**
- * 
  * The sender which queries LDAP server.
  * 
  * @author vjuranek
- * 
  */
 public class LDAPSender extends AbstractSender {
 
    private static final Logger logger = Logger.getLogger(LDAPSender.class);
-   private static final String SEARCH_BASE_PROP_NAME = "searchBase";
-   private static final String FILTER_PROP_NAME = "filter";
 
    private LdapContext ctx = null;
    private String ldapUsername = null;
    private String ldapPassword = null;
    private SearchControls searchControls = new SearchControls();
-   
+
    private String searchBase = null;
    private String filter = null;
 
@@ -74,6 +70,22 @@ public class LDAPSender extends AbstractSender {
       this.ldapPassword = ldapPassword;
    }
 
+   public String getSearchBase() {
+      return searchBase;
+   }
+
+   public void setSearchBase(String searchBase) {
+      this.searchBase = searchBase;
+   }
+
+   public String getFilter() {
+      return filter;
+   }
+
+   public void setFilter(String filter) {
+      this.filter = filter;
+   }
+
    @Override
    public void init() throws Exception {
       Hashtable<String, Object> env = new Hashtable<String, Object>();
@@ -87,7 +99,9 @@ public class LDAPSender extends AbstractSender {
       env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
       env.put(Context.PROVIDER_URL, target);
 
-      logger.debug("Connecting to " + target);
+      if (logger.isDebugEnabled()) {
+         logger.debug("Connecting to " + target);
+      }
       ctx = new InitialLdapContext(env, null);
 
       searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
@@ -103,14 +117,13 @@ public class LDAPSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws PerfCakeException {
-      searchBase = message.getProperty(SEARCH_BASE_PROP_NAME);
-      filter = message.getProperty(FILTER_PROP_NAME);
-      if(searchBase == null || filter == null) {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
+      if (searchBase == null || filter == null) {
          throw new PerfCakeException("LDAP search base or filter is not set. Both properties have to be set up");
       }
    }
-   
+
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       NamingEnumeration<SearchResult> results = ctx.search(searchBase, filter, searchControls);
