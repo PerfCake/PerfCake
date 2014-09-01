@@ -422,7 +422,7 @@
                <configuration>
                   <executable>java</executable>
                   <arguments>
-                     <argument>-Djava.ext.dirs=${basedir}/lib/ext</argument>
+                     <argument>-Djava.ext.dirs=${java.home}/lib/ext:${java.home}/jre/lib/ext:${basedir}/lib/ext</argument>
                      <argument>-Dlog4j.configuration=file://${basedir}/src/main/resources/log4j.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>

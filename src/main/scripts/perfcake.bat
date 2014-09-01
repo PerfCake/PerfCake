@@ -136,7 +136,7 @@ echo ERROR: could not find PerfCake jar file (%PERFCAKE_HOME%\lib\perfcake*.jar)
 goto error
 
 :execPerfCake
-%PERFCAKE_JAVA_EXE% -Djava.ext.dirs=%PERFCAKE_HOME%\lib\ext -jar %PERFCAKE_JAR% %PERFCAKE_CMD_LINE_ARGS%
+%PERFCAKE_JAVA_EXE% -Djava.ext.dirs=%JAVA_HOME%\lib\ext;%JAVA_HOME%\jre\lib\ext;%PERFCAKE_HOME%\lib\ext -jar %PERFCAKE_JAR% %PERFCAKE_CMD_LINE_ARGS%
 if ERRORLEVEL 1 goto error
 goto end
 
