@@ -18,6 +18,7 @@ Features
      are passed to the validator, validation can run fast from the very beginning (fastForward in scenario), validation can be disabled in scenario.
 * Compatibility with JDK 8.
 * Properties in Scenario can have arbitrary XML elements in it, components can declare setter that accepts org.w3c.dom.Element
+* Implemented **LDAPSender**.
 
 Bug Fixes
 ---------
