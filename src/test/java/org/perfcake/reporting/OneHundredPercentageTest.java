@@ -20,8 +20,8 @@
 package org.perfcake.reporting;
 
 import org.perfcake.RunInfo;
-import org.perfcake.Scenario;
-import org.perfcake.ScenarioBuilder;
+import org.perfcake.scenario.Scenario;
+import org.perfcake.scenario.ScenarioBuilder;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;

@@ -17,16 +17,17 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake;
-
-import java.util.List;
+package org.perfcake.scenario;
 
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
+
+import java.util.List;
 
 /**
  * 
@@ -50,7 +51,7 @@ public class Scenario {
    /**
     * Initialize the scenario execution
     * 
-    * @throws PerfCakeException
+    * @throws org.perfcake.PerfCakeException
     */
    public void init() throws PerfCakeException {
       if (log.isTraceEnabled()) {

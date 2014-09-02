@@ -28,6 +28,8 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.perfcake.scenario.Scenario;
+import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.util.Utils;
 
 import java.io.FileInputStream;
@@ -186,7 +188,7 @@ public class ScenarioExecution {
       String scenarioFile = Utils.getProperty(PerfCakeConst.SCENARIO_PROPERTY);
 
       try {
-         scenario = new ScenarioBuilder().load(scenarioFile).build();
+         scenario = new ScenarioLoader().load(scenarioFile);
       } catch (Exception e) {
          log.fatal(String.format("Cannot load scenario '%s': ", scenarioFile), e);
          System.exit(3);

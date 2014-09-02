@@ -17,7 +17,7 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake.model;
+package org.perfcake.scenario;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -30,6 +30,8 @@ import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.model.Header;
+import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.*;
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
 import org.perfcake.reporting.ReportManager;
@@ -40,10 +42,22 @@ import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.validation.Schema;
+import javax.xml.validation.SchemaFactory;
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
@@ -52,24 +66,91 @@ import java.util.Properties;
 /**
  * TODO review logging
  *
- * @author Jiří Sedláček <jiri@sedlackovi.cz>
+ * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class ScenarioFactory {
+public class XMLFactory implements ScenarioFactory {
 
-   public static final Logger log = Logger.getLogger(ScenarioFactory.class);
+   public static final Logger log = Logger.getLogger(XMLFactory.class);
    private static final String DEFAULT_GENERATOR_PACKAGE = "org.perfcake.message.generator";
    private static final String DEFAULT_SENDER_PACKAGE = "org.perfcake.message.sender";
    private static final String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
    private static final String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
    private static final String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
-   private org.perfcake.model.Scenario scenario;
+   private org.perfcake.model.Scenario scenarioModel;
+   private String scenarioConfig;
+   private Scenario scenario = null;
 
-   public ScenarioFactory(org.perfcake.model.Scenario model) {
-      if (model == null) {
-         throw new NullPointerException("model has to be passed and cannot be null");
+   protected XMLFactory() {
+
+   }
+
+   public void init(final URL scenarioURL) throws PerfCakeException {
+      try {
+         this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
+
+      } catch (IOException e) {
+         throw new PerfCakeException("Cannot read scenario configuration: ", e);
       }
-      this.scenario = model;
+
+      this.scenarioModel = parse();
+   }
+
+   public synchronized Scenario getScenario() throws PerfCakeException {
+      if (scenario == null) {
+         scenario = new Scenario();
+
+         RunInfo runInfo = parseRunInfo();
+         AbstractMessageGenerator messageGenerator = parseGenerator();
+         messageGenerator.setRunInfo(runInfo);
+
+         scenario.setGenerator(messageGenerator);
+         scenario.setMessageSenderManager(parseSender(messageGenerator.getThreads()));
+         scenario.setReportManager(parseReporting());
+         scenario.getReportManager().setRunInfo(runInfo);
+
+         ValidationManager validationManager = parseValidation();
+         List<MessageTemplate> messageTemplates = parseMessages(validationManager);
+         scenario.setMessageStore(messageTemplates);
+         scenario.setValidationManager(validationManager);
+      }
+
+      return scenario;
+   }
+
+   /**
+    * Do the parsing itself by using JAXB
+    *
+    * @return parsed JAXB scenario model
+    * @throws PerfCakeException
+    *            if XML is not valid or cannot be successfully parsed
+    */
+   private org.perfcake.model.Scenario parse() throws PerfCakeException {
+      try {
+         Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes(Utils.getDefaultEncoding())));
+         String schemaFileName = "perfcake-scenario-" + Scenario.VERSION + ".xsd";
+
+         URL scenarioXsdUrl = getClass().getResource("/schemas/" + schemaFileName);
+         if (scenarioXsdUrl == null) { // backup taken from web
+            scenarioXsdUrl = new URL("http://schema.perfcake.org/" + schemaFileName);
+         }
+
+         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+         Schema schema = schemaFactory.newSchema(scenarioXsdUrl);
+
+         JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
+         Unmarshaller unmarshaller = context.createUnmarshaller();
+         unmarshaller.setSchema(schema);
+         return (org.perfcake.model.Scenario) unmarshaller.unmarshal(scenarioXML);
+      } catch (SAXException e) {
+         throw new PerfCakeException("Cannot validate scenario configuration: ", e);
+      } catch (JAXBException e) {
+         throw new PerfCakeException("Cannot parse scenario configuration: ", e);
+      } catch (MalformedURLException e) {
+         throw new PerfCakeException("Cannot read scenario schema to validate it: ", e);
+      } catch (UnsupportedEncodingException e) {
+         throw new PerfCakeException("set encoding is not supported: ", e);
+      }
    }
 
    private static Properties getPropertiesFromList(List<Property> properties) throws PerfCakeException {
@@ -98,8 +179,8 @@ public class ScenarioFactory {
     * @throws PerfCakeException
     *            when there is a parse exception
     */
-   public RunInfo parseRunInfo() throws PerfCakeException {
-      Generator gen = scenario.getGenerator();
+   protected RunInfo parseRunInfo() throws PerfCakeException {
+      Generator gen = scenarioModel.getGenerator();
       Generator.Run run = gen.getRun();
 
       return new RunInfo(new Period(PeriodType.valueOf(run.getType().toUpperCase()), Long.valueOf(run.getValue())));
@@ -113,11 +194,11 @@ public class ScenarioFactory {
     * @throws IllegalAccessException
     * @throws ClassNotFoundException
     */
-   public AbstractMessageGenerator parseGenerator() throws PerfCakeException {
+   protected AbstractMessageGenerator parseGenerator() throws PerfCakeException {
       AbstractMessageGenerator generator = null;
 
       try {
-         Generator gen = scenario.getGenerator();
+         Generator gen = scenarioModel.getGenerator();
          String generatorClass = gen.getClazz();
          if (!generatorClass.contains(".")) {
             generatorClass = DEFAULT_GENERATOR_PACKAGE + "." + generatorClass;
@@ -146,10 +227,10 @@ public class ScenarioFactory {
     *           Size of the message sender pool.
     * @return A message sender manager.
     */
-   public MessageSenderManager parseSender(final int senderPoolSize) throws PerfCakeException {
+   protected MessageSenderManager parseSender(final int senderPoolSize) throws PerfCakeException {
       MessageSenderManager msm;
 
-      Sender sen = scenario.getSender();
+      Sender sen = scenarioModel.getSender();
       String senderClass = sen.getClazz();
       if (!senderClass.contains(".")) {
          senderClass = DEFAULT_SENDER_PACKAGE + "." + senderClass;
@@ -179,11 +260,11 @@ public class ScenarioFactory {
     * @throws IOException
     * @throws FileNotFoundException
     */
-   public List<MessageTemplate> parseMessages(ValidationManager validationManager) throws PerfCakeException {
+   protected List<MessageTemplate> parseMessages(ValidationManager validationManager) throws PerfCakeException {
       List<MessageTemplate> messageStore = new ArrayList<>();
 
       try {
-         Messages messages = scenario.getMessages();
+         Messages messages = scenarioModel.getMessages();
          if (messages != null) {
 
             log.info("--- Messages ---");
@@ -259,12 +340,12 @@ public class ScenarioFactory {
     * @throws IllegalAccessException
     * @throws ClassNotFoundException
     */
-   public ReportManager parseReporting() throws PerfCakeException {
+   protected ReportManager parseReporting() throws PerfCakeException {
       ReportManager reportManager = new ReportManager();
 
       try {
          log.info("--- Reporting ---");
-         Reporting reporting = scenario.getReporting();
+         Reporting reporting = scenarioModel.getReporting();
          if (reporting != null) {
             Properties reportingProperties = getPropertiesFromList(reporting.getProperty());
             Utils.logProperties(log, Level.DEBUG, reportingProperties, "   ");
@@ -311,13 +392,13 @@ public class ScenarioFactory {
       return reportManager;
    }
 
-   public ValidationManager parseValidation() throws PerfCakeException {
+   protected ValidationManager parseValidation() throws PerfCakeException {
       final ValidationManager validationManager = new ValidationManager();
 
       log.info("--- Validation ---");
       try {
 
-         Validation validation = scenario.getValidation();
+         Validation validation = scenarioModel.getValidation();
          if (validation != null) {
 
             for (Validation.Validator v : validation.getValidator()) {
@@ -346,8 +427,8 @@ public class ScenarioFactory {
       return validationManager;
    }
 
-   public Properties parseScenarioProperties() throws PerfCakeException {
+   protected Properties parseScenarioProperties() throws PerfCakeException {
       log.info("--- Scenario properties ---");
-      return getPropertiesFromList(scenario.getProperties().getProperty());
+      return getPropertiesFromList(scenarioModel.getProperties().getProperty());
    }
 }

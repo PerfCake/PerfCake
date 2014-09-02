@@ -20,8 +20,8 @@
 package org.perfcake.validation;
 
 import org.perfcake.PerfCakeConst;
-import org.perfcake.Scenario;
-import org.perfcake.ScenarioBuilder;
+import org.perfcake.scenario.Scenario;
+import org.perfcake.scenario.ScenarioLoader;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -40,8 +40,7 @@ public class ValidationIntegrationTest {
    public void basicIntegrationTest() throws Exception {
       System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, getClass().getResource("/scenarios").getPath());
       System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
-      ScenarioBuilder scenarioBuilder = new ScenarioBuilder().load("test-validation-integration");
-      Scenario scenario = scenarioBuilder.build();
+      Scenario scenario = new ScenarioLoader().load("test-validation-integration");
 
       // to avoid complicated scenario construction, we relay on public API and dig into it then
       Field vmField = scenario.getClass().getDeclaredField("validationManager");

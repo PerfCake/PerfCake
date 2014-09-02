@@ -19,6 +19,8 @@
  */
 package org.perfcake;
 
+import org.perfcake.scenario.Scenario;
+import org.perfcake.scenario.ScenarioLoader;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
@@ -34,8 +36,7 @@ public class ScenarioExecutionTest {
    public void prepareScenario() throws PerfCakeException, Exception {
       System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, getClass().getResource("/scenarios").getPath());
       System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
-      ScenarioBuilder builder = new ScenarioBuilder().load("test-dummy-scenario");
-      scenario = builder.build();
+      scenario = new ScenarioLoader().load("test-dummy-scenario");
    }
 
    @Test

@@ -17,7 +17,7 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake.parsing;
+package org.perfcake.scenario;
 
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
@@ -30,8 +30,6 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.DefaultMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.model.ScenarioFactory;
-import org.perfcake.parser.ScenarioParser;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.destinations.DummyDestination;
@@ -47,13 +45,9 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
-public class ScenarioParserTest {
+public class XMLFactoryTest {
    private static final int THREADS = 10;
    private static final String MESSAGE1_CONTENT = "Stupid is as supid does! :)";
    private static final String MESSAGE2_CONTENT = "I'm the fish!";
@@ -70,7 +64,8 @@ public class ScenarioParserTest {
    @Test
    public void parseScenarioPropertiesTest() {
       try {
-         final ScenarioFactory scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
+         final XMLFactory scenarioFactory = new XMLFactory();
+         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml"));
          final Hashtable<Object, Object> scenarioProperties = scenarioFactory.parseScenarioProperties();
          Assert.assertEquals(scenarioProperties.get("quickstartName"), "testQS", "quickstartName property");
          Assert.assertEquals(scenarioProperties.get("filteredProperty"), FILTERED_PROPERTY_VALUE, "filteredProperty property");
@@ -84,7 +79,8 @@ public class ScenarioParserTest {
    @Test
    public void parseSenderTest() {
       try {
-         final ScenarioFactory scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
+         final XMLFactory scenarioFactory = new XMLFactory();
+         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml"));
          final MessageSenderManager senderManager = scenarioFactory.parseSender(THREADS);
          Assert.assertEquals(senderManager.getSenderClass(), SENDER_CLASS, "senderClass");
          Assert.assertEquals(senderManager.getSenderPoolSize(), THREADS, "senderPoolSize");
@@ -98,7 +94,8 @@ public class ScenarioParserTest {
    @Test
    public void parseGeneratorTest() {
       try {
-         final ScenarioFactory scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
+         final XMLFactory scenarioFactory = new XMLFactory();
+         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml"));
          AbstractMessageGenerator generator = scenarioFactory.parseGenerator();
          Assert.assertTrue(generator instanceof DefaultMessageGenerator, "The generator is not an instance of " + DefaultMessageGenerator.class.getName());
          final DefaultMessageGenerator dmg = (DefaultMessageGenerator) generator;
@@ -114,7 +111,8 @@ public class ScenarioParserTest {
    @Test
    public void parseMessagesTest() {
       try {
-         final ScenarioFactory scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
+         final XMLFactory scenarioFactory = new XMLFactory();
+         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml"));
          // Message store
          ValidationManager validationManager = scenarioFactory.parseValidation();
          final List<MessageTemplate> messageStore = scenarioFactory.parseMessages(validationManager);
@@ -185,7 +183,8 @@ public class ScenarioParserTest {
          Assert.assertEquals(m5.getPayload(), "message-content-5");
 
          // Messages section is optional
-         final ScenarioFactory noMessagesScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-messages.xml")).parse());
+         final XMLFactory noMessagesScenarioFactory = new XMLFactory();
+         noMessagesScenarioFactory.init(getClass().getResource("/scenarios/test-scenario-no-messages.xml"));
          validationManager = noMessagesScenarioFactory.parseValidation();
          final List<MessageTemplate> emptyMessageStore = noMessagesScenarioFactory.parseMessages(validationManager);
          Assert.assertTrue(emptyMessageStore.isEmpty(), "empty message store with no messages in scenario");
@@ -199,7 +198,8 @@ public class ScenarioParserTest {
    @Test
    public void parseReportingTest() {
       try {
-         final ScenarioFactory scenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario.xml")).parse());
+         final XMLFactory scenarioFactory = new XMLFactory();
+         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml"));
          final ReportManager reportManager = scenarioFactory.parseReporting();
          Assert.assertNotNull(reportManager);
          Assert.assertEquals(reportManager.getReporters().size(), 2, "reportManager's number of reporters");
@@ -259,7 +259,8 @@ public class ScenarioParserTest {
 
    @Test
    public void parseValidationTest() throws Exception {
-      final ScenarioFactory validationScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-validator-load.xml")).parse());
+      final XMLFactory validationScenarioFactory = new XMLFactory();
+      validationScenarioFactory.init(getClass().getResource("/scenarios/test-validator-load.xml"));
       ValidationManager vm = validationScenarioFactory.parseValidation();
       List<MessageTemplate> mts = validationScenarioFactory.parseMessages(vm);
 
@@ -274,7 +275,8 @@ public class ScenarioParserTest {
       // TODO: add assertions on validation
 
       // validation is optional
-      final ScenarioFactory noValidationScenarioFactory = new ScenarioFactory(new ScenarioParser(getClass().getResource("/scenarios/test-scenario-no-validation.xml")).parse());
+      final XMLFactory noValidationScenarioFactory = new XMLFactory();
+      noValidationScenarioFactory.init(getClass().getResource("/scenarios/test-scenario-no-validation.xml"));
       vm = noValidationScenarioFactory.parseValidation();
       Assert.assertEquals(vm.getSize(), 0);
    }

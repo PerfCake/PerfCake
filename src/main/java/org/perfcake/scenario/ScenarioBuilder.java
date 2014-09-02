@@ -17,15 +17,16 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake;
+package org.perfcake.scenario;
 
 import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeConst;
+import org.perfcake.PerfCakeException;
+import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.AbstractSender;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.model.ScenarioFactory;
-import org.perfcake.parser.ScenarioParser;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.util.Utils;
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Builder class for creating {@link Scenario} instance, which can be run by {@link ScenarioExecution}
+ * Builder class for creating {@link org.perfcake.scenario.Scenario} instance, which can be run by {@link org.perfcake.ScenarioExecution}
  * <p/>
  * Uses fluent API to setup builder.
  *
@@ -64,7 +65,7 @@ public class ScenarioBuilder {
    }
 
    /**
-    * Sets message generator which will be used for {@link Scenario}
+    * Sets message generator which will be used for {@link org.perfcake.scenario.Scenario}
     *
     * @param any
     *       message generator
@@ -76,7 +77,7 @@ public class ScenarioBuilder {
    }
 
    /**
-    * Sets {@link RunInfo} object, which will be used for {@link Scenario}
+    * Sets {@link RunInfo} object, which will be used for {@link org.perfcake.scenario.Scenario}
     *
     * @param RunInfo
     * @return this
@@ -99,7 +100,7 @@ public class ScenarioBuilder {
    }
 
    /**
-    * Adds a {@link Reporter}, which will be used in {@link Scenario} for reporting results. More reporters can be added
+    * Adds a {@link Reporter}, which will be used in {@link org.perfcake.scenario.Scenario} for reporting results. More reporters can be added
     *
     * @param Reporter
     *       implementation
@@ -111,7 +112,7 @@ public class ScenarioBuilder {
    }
 
    /**
-    * Adds a {@link MessageTemplate}, which will be used in {@link Scenario}
+    * Adds a {@link MessageTemplate}, which will be used in {@link org.perfcake.scenario.Scenario}
     *
     * @param MessageTemplate
     * @return this
@@ -136,7 +137,7 @@ public class ScenarioBuilder {
    }
 
    /**
-    * Builds the usable {@link Scenario} object, which can be then used for executing the scenario.
+    * Builds the usable {@link org.perfcake.scenario.Scenario} object, which can be then used for executing the scenario.
     *
     * @return
     * @throws IllegalStateException
@@ -191,57 +192,6 @@ public class ScenarioBuilder {
       sc.setValidationManager(validationManager);
 
       return sc;
-   }
-
-   /**
-    * Loads all data needed for {@link Scenario} from JAXB model, build method may be called afterwards.
-    *
-    * @param model
-    * @return
-    * @throws PerfCakeException
-    */
-   public ScenarioBuilder load(org.perfcake.model.Scenario model) throws PerfCakeException {
-      ScenarioFactory sf = new ScenarioFactory(model);
-
-      runInfo = sf.parseRunInfo();
-      generator = sf.parseGenerator();
-      messageSenderManager = sf.parseSender(generator.getThreads());
-      reportManager = sf.parseReporting();
-      validationManager = sf.parseValidation();
-      messages = sf.parseMessages(validationManager);
-
-      return this;
-   }
-
-   /**
-    * loads {@link Scenario} from system property <code>-Dscenario=<scenario name></code>
-    *
-    * @param scenario
-    * @return
-    * @throws PerfCakeException
-    *       if scenario property is not set or there is some problem with parsing the xml document describing the scenario
-    */
-   public ScenarioBuilder load(String scenario) throws PerfCakeException {
-      if (scenario == null) {
-         throw new PerfCakeException("Scenario property is not set. Please use -Dscenario=<scenario name> to specify a scenario.");
-      }
-
-      URL scenarioUrl = null;
-      try {
-         scenarioUrl = Utils.locationToUrl(scenario, PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"), ".xml");
-      } catch (MalformedURLException e) {
-         throw new PerfCakeException("Cannot parse scenario configuration location: ", e);
-      }
-
-      log.info("Scenario configuration: " + scenarioUrl.toString());
-
-      if (log.isTraceEnabled()) {
-         log.trace("Parsing scenario " + scenarioUrl.toString());
-      }
-
-      org.perfcake.model.Scenario model = new ScenarioParser(scenarioUrl).parse();
-
-      return load(model);
    }
 
 }
