@@ -35,11 +35,11 @@ import java.util.Map;
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class JDBCSender extends AbstractSender {
+public class JdbcSender extends AbstractSender {
    /**
     * The sender's logger.
     */
-   private static final Logger log = Logger.getLogger(JDBCSender.class);
+   private static final Logger log = Logger.getLogger(JdbcSender.class);
 
    /**
     * JDBC URL string.

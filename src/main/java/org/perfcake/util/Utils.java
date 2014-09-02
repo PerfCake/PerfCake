@@ -38,7 +38,7 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
-import org.perfcake.common.TimeStampedRecord;
+import org.perfcake.common.TimestampedRecord;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
@@ -237,13 +237,13 @@ public class Utils {
     * 
     * @return Linear regression trend
     **/
-   public static double computeRegressionTrend(Collection<TimeStampedRecord<Number>> data) {
+   public static double computeRegressionTrend(Collection<TimestampedRecord<Number>> data) {
       final SimpleRegression simpleRegression = new SimpleRegression();
-      final Iterator<TimeStampedRecord<Number>> iterator = data.iterator();
-      TimeStampedRecord<Number> currentRecord;
+      final Iterator<TimestampedRecord<Number>> iterator = data.iterator();
+      TimestampedRecord<Number> currentRecord;
       while (iterator.hasNext()) {
          currentRecord = iterator.next();
-         simpleRegression.addData(currentRecord.getTimeStamp(), currentRecord.getValue().doubleValue());
+         simpleRegression.addData(currentRecord.getTimestamp(), currentRecord.getValue().doubleValue());
       }
       return simpleRegression.getSlope();
    }

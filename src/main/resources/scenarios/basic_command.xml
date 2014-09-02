@@ -7,7 +7,7 @@
    </sender>
    <reporting>
       <reporter class="ThroughputStatsReporter">
-         <destination class="CSVDestination">
+         <destination class="CsvDestination">
             <period type="iteration" value="1"/>
             <property name="path" value="${perfcake.scenario}-throughput-stats.csv"/>
          </destination>

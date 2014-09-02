@@ -31,7 +31,7 @@ import org.perfcake.reporting.MeasurementUnit;
  * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
-public class SOAPSender extends AbstractSender {
+public class SoapSender extends AbstractSender {
 
    /*
     * (non-Javadoc)

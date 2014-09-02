@@ -14,7 +14,7 @@
          <property name="minimalWarmUpCount" value="500"/>
       </reporter>
       <reporter class="ThroughputStatsReporter">
-         <destination class="CSVDestination">
+         <destination class="CsvDestination">
             <period type="time" value="5000"/>
             <property name="path" value="${perfcake.scenario}-${threads}t-${queue.size:5000}tqs-throughput-stats-${perfcake.run.timestamp}.csv"/>
          </destination>

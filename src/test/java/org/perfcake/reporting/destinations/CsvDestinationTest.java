@@ -39,12 +39,12 @@ import java.util.Properties;
 import java.util.Scanner;
 
 /**
- * The CSVDestination test class.
+ * The CsvDestination test class.
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class CSVDestinationTest {
+public class CsvDestinationTest {
 
    private static final long ITERATION = 12345;
    private static final String TEST_OUTPUT_DIR = "test-output";
@@ -52,7 +52,7 @@ public class CSVDestinationTest {
    private static final String PATH = TEST_OUTPUT_DIR + "/out.csv";
    private static final String TIMESTAMP = String.valueOf(Calendar.getInstance().getTimeInMillis());
    private static final String DEFAULT_PATH = "perfcake-results-" + TIMESTAMP + ".csv";
-   private static final Logger log = Logger.getLogger(CSVDestinationTest.class);
+   private static final Logger log = Logger.getLogger(CsvDestinationTest.class);
 
    @BeforeClass
    public void beforeClass() {
@@ -68,7 +68,7 @@ public class CSVDestinationTest {
       final File csvFile = getNewFile(CSV_OUTPUT_PATH, "out.csv");
 
       try {
-         final CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
+         final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          final Measurement measurement = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
          measurement.set(new Quantity<Double>(1111.11, "it/s"));
@@ -95,7 +95,7 @@ public class CSVDestinationTest {
       try {
 
          final Properties destinationProperties = new Properties();
-         final CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
+         final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          Assert.assertEquals(destination.getPath(), DEFAULT_PATH);
          Assert.assertEquals(destination.getDelimiter(), ";");
@@ -132,7 +132,7 @@ public class CSVDestinationTest {
 
       final File csvFile = getNewFile(CSV_OUTPUT_PATH, "out.csv");
       try {
-         final CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
+         final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          final Measurement measurementWithoutDefault = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
          measurementWithoutDefault.set("singleResult", new Quantity<Number>(100, "units"));
@@ -172,7 +172,7 @@ public class CSVDestinationTest {
       final File csvFile = getNewFile(CSV_OUTPUT_PATH, "out.csv");
 
       try {
-         final CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
+         final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          final Measurement measurement = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
          measurement.set(new Quantity<Double>(1111.11, "it/s"));
@@ -203,7 +203,7 @@ public class CSVDestinationTest {
       final File csvFile = getNewFile(CSV_OUTPUT_PATH, "out.csv");
 
       try {
-         final CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
+         final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          final Measurement measurementWithoutDefault = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
          measurementWithoutDefault.set("singleResult", new Quantity<Number>(100, "units"));
@@ -227,7 +227,7 @@ public class CSVDestinationTest {
       final File csvFile = getNewFile(CSV_OUTPUT_PATH, "out.csv");
 
       try {
-         final CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
+         final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          final Measurement measurementStringResult = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
          measurementStringResult.set("StringValue");
@@ -249,7 +249,7 @@ public class CSVDestinationTest {
       final Properties destinationProperties = new Properties();
       destinationProperties.setProperty("path", "");
       try {
-         final CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
+         final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          final Measurement measurement = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
          measurement.set(new Quantity<Double>(1111.11, "it/s"));
@@ -274,7 +274,7 @@ public class CSVDestinationTest {
       destinationProperties.setProperty("path", readOnlyFile.getPath());
 
       try {
-         final CSVDestination destination = (CSVDestination) ObjectFactory.summonInstance(CSVDestination.class.getName(), destinationProperties);
+         final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          final Measurement measurement = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
          measurement.set(new Quantity<Double>(1111.11, "it/s"));
@@ -295,14 +295,14 @@ public class CSVDestinationTest {
 
    @Test
    public void testPrefixAndSuffix() throws IOException, ReportingException {
-      final CSVDestination dest = new CSVDestination();
+      final CsvDestination dest = new CsvDestination();
       final File outf = File.createTempFile("perfcake", "csvdestination-prefixsuffix");
       outf.deleteOnExit();
 
       dest.setPath(outf.getAbsolutePath());
       dest.setLinePrefix("[ ");
       dest.setLineSuffix("],");
-      dest.setAppendStrategy(CSVDestination.AppendStrategy.OVERWRITE);
+      dest.setAppendStrategy(CsvDestination.AppendStrategy.OVERWRITE);
 
       final Measurement m = new Measurement(90, 1000, 20);
       m.set("hello");
@@ -318,13 +318,13 @@ public class CSVDestinationTest {
 
    @Test
    public void testSkipHeaders() throws IOException, ReportingException {
-      final CSVDestination dest = new CSVDestination();
+      final CsvDestination dest = new CsvDestination();
       final File outf = File.createTempFile("perfcake", "csvdestination-skipheaders");
       outf.deleteOnExit();
 
       dest.setPath(outf.getAbsolutePath());
       dest.setSkipHeader(true);
-      dest.setAppendStrategy(CSVDestination.AppendStrategy.OVERWRITE);
+      dest.setAppendStrategy(CsvDestination.AppendStrategy.OVERWRITE);
 
       final Measurement m = new Measurement(90, 1000, 20);
       m.set("hello");
@@ -340,14 +340,14 @@ public class CSVDestinationTest {
 
    @Test
    public void testCustomDelimiterAndLineBreak() throws IOException, ReportingException {
-      final CSVDestination dest = new CSVDestination();
+      final CsvDestination dest = new CsvDestination();
       final File outf = File.createTempFile("perfcake", "csvdestination-delimbreak");
       outf.deleteOnExit();
 
       dest.setPath(outf.getAbsolutePath());
       dest.setDelimiter("-_-");
       dest.setLineBreak("#*#");
-      dest.setAppendStrategy(CSVDestination.AppendStrategy.OVERWRITE);
+      dest.setAppendStrategy(CsvDestination.AppendStrategy.OVERWRITE);
 
       final Measurement m = new Measurement(90, 1000, 20);
       m.set("hello");
@@ -363,7 +363,7 @@ public class CSVDestinationTest {
 
    @Test
    public void testFileNumbering() throws IOException, ReportingException {
-      final CSVDestination dest = new CSVDestination();
+      final CsvDestination dest = new CsvDestination();
       final File outf = File.createTempFile("perfcake", "file-numbering.csv");
       final File outf1 = new File(outf.getAbsolutePath().replace(".", ".1."));
 
@@ -386,7 +386,7 @@ public class CSVDestinationTest {
 
    @Test
    public void testFileNumberingWithoutExt() throws IOException, ReportingException {
-      final CSVDestination dest = new CSVDestination();
+      final CsvDestination dest = new CsvDestination();
       final File outf = File.createTempFile("perfcake", "file-numbering-ext");
       final File outf1 = new File(outf + ".1");
 

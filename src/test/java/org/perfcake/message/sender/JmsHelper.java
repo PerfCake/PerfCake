@@ -38,7 +38,7 @@ import java.util.Properties;
 /**
  * @author Lenka Vašková <vaskova.lenka@gmail.com>
  */
-public class JMSHelper {
+public class JmsHelper {
 
    public static class Wiretap implements Runnable {
 

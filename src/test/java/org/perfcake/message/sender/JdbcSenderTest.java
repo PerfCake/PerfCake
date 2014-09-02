@@ -53,7 +53,7 @@ import org.testng.annotations.Test;
 /**
  * @author Lenka Vašková <vaskova.lenka@gmail.com>
  */
-public class JDBCSenderTest {
+public class JdbcSenderTest {
 
    private static class DebugLogAppender implements Appender {
       private String lastMessage = null;
@@ -146,10 +146,10 @@ public class JDBCSenderTest {
       });
 
       Properties props = new Properties();
-      JDBCSender sender = (JDBCSender) ObjectFactory.summonInstance(JDBCSender.class.getName(), props);
+      JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
 
       // Inject connection
-      Field connectionField = JDBCSender.class.getDeclaredField("connection");
+      Field connectionField = JdbcSender.class.getDeclaredField("connection");
       connectionField.setAccessible(true);
       connectionField.set(sender, c);
 
@@ -201,10 +201,10 @@ public class JDBCSenderTest {
       when(s.getUpdateCount()).thenReturn(3);
 
       Properties props = new Properties();
-      JDBCSender sender = (JDBCSender) ObjectFactory.summonInstance(JDBCSender.class.getName(), props);
+      JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
 
       // Inject connection
-      Field connectionField = JDBCSender.class.getDeclaredField("connection");
+      Field connectionField = JdbcSender.class.getDeclaredField("connection");
       connectionField.setAccessible(true);
       connectionField.set(sender, c);
 
@@ -241,7 +241,7 @@ public class JDBCSenderTest {
       props.setProperty("jdbcUrl", jdbcUrl);
       props.setProperty("driverClass", driverClass);
 
-      JDBCSender sender = (JDBCSender) ObjectFactory.summonInstance(JDBCSender.class.getName(), props);
+      JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
 
       Assert.assertEquals(sender.getUsername(), username);
       Assert.assertEquals(sender.getPassword(), password);
@@ -256,15 +256,15 @@ public class JDBCSenderTest {
       doThrow(new SQLException(errorMessage)).when(c).close();
 
       Properties props = new Properties();
-      JDBCSender sender = (JDBCSender) ObjectFactory.summonInstance(JDBCSender.class.getName(), props);
+      JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
 
       // Inject connection
-      Field connectionField = JDBCSender.class.getDeclaredField("connection");
+      Field connectionField = JdbcSender.class.getDeclaredField("connection");
       connectionField.setAccessible(true);
       connectionField.set(sender, c);
 
       // Add log appender
-      Field logField = JDBCSender.class.getDeclaredField("log");
+      Field logField = JdbcSender.class.getDeclaredField("log");
       logField.setAccessible(true);
       Logger log = (Logger) logField.get(sender);
       DebugLogAppender a = new DebugLogAppender();

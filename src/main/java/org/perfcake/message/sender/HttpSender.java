@@ -44,7 +44,7 @@ import org.perfcake.util.Utils;
  * @author Pavel Macík <pavel.macik@gmail.com>
  * 
  */
-public class HTTPSender extends AbstractSender {
+public class HttpSender extends AbstractSender {
 
    /**
     * Default expected response code.
@@ -54,7 +54,7 @@ public class HTTPSender extends AbstractSender {
    /**
     * The sender's logger.
     */
-   private static final Logger log = Logger.getLogger(HTTPSender.class);
+   private static final Logger log = Logger.getLogger(HttpSender.class);
 
    /**
     * The URL where the HTTP request is send.

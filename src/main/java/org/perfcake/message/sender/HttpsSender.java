@@ -39,7 +39,7 @@ import org.perfcake.util.Utils;
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Filip Eliáš <elfilip01@gmail.com>
  */
-public class HTTPSSender extends HTTPSender {
+public class HttpsSender extends HttpSender {
 
    private String keyStore;
    private String keyStorePassword;
@@ -78,7 +78,7 @@ public class HTTPSSender extends HTTPSender {
 
       if (keyStore != null) {
          if (keyStorePassword == null) {
-            throw new PerfCakeException("The keyStore password is not set. (Use keyStorePassword property of the HTTPSSender to set it!)");
+            throw new PerfCakeException("The keyStore password is not set. (Use keyStorePassword property of the HttpsSender to set it!)");
          } else {
             keyStore_ = initKeyStore(keyStore, keyStorePassword);
             keyManager = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
@@ -88,7 +88,7 @@ public class HTTPSSender extends HTTPSender {
 
       if (trustStore != null) {
          if (trustStorePassword == null) {
-            throw new PerfCakeException("The trustStore password is not set. (Use trustStorePassword property of the HTTPSSender to set it!)");
+            throw new PerfCakeException("The trustStore password is not set. (Use trustStorePassword property of the HttpsSender to set it!)");
          } else {
             trustStore_ = initKeyStore(trustStore, trustStorePassword);
             trustManager = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());

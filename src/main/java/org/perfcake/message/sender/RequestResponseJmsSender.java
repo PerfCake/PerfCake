@@ -45,8 +45,8 @@ import org.perfcake.reporting.MeasurementUnit;
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
-public class RequestResponseJMSSender extends JMSSender {
-   private static final Logger log = Logger.getLogger(RequestResponseJMSSender.class);
+public class RequestResponseJmsSender extends JmsSender {
+   private static final Logger log = Logger.getLogger(RequestResponseJmsSender.class);
 
    private QueueConnection responseConnection;
    private QueueSession responseSession;

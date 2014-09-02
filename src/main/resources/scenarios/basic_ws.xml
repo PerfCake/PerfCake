@@ -3,7 +3,7 @@
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:200}">
       <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:500000}"/>
    </generator>
-   <sender class="HTTPSender">
+   <sender class="HttpSender">
       <property name="target" value="http://${server.host}:${server.port}//jaxws-benchmark-basic/EndpointImpl"/>
    </sender>
    <messages>

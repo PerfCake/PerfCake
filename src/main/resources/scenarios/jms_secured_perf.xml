@@ -3,7 +3,7 @@
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}">
       <run type="${perfcake.run.type:time} value="${perfcake.run.duration:300000}"/>
    </generator>
-   <sender class="RequestResponseJMSSender">
+   <sender class="RequestResponseJmsSender">
       <property name="target" value="queue/jms_secured_perf_request_gw"/>
       <property name="messageType" value="OBJECT"/>
       <property name="responseTarget" value="queue/jms_secured_perf_response"/>
@@ -15,7 +15,7 @@
    </sender>
    <reporting>
       <reporter class="ThroughputStatsReporter">
-         <destination class="CSVDestination">
+         <destination class="CsvDestination">
             <period type="time" value="30000"/>
             <property name="path" value="${perfcake.scenario}-throughput-stats.csv"/>
          </destination>
@@ -24,7 +24,7 @@
          </destination-->
       </reporter>
       <!--reporter class="MemoryUsageReporter">
-         <destination class="CSVDestination">
+         <destination class="CsvDestination">
             <period type="time" value="30000"/>
             <property name="path" value="${perfcake.scenario}-memory-usage.csv" />
          </destination>
