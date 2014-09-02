@@ -21,7 +21,7 @@ package org.perfcake.message.sender;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
-import org.perfcake.message.sender.HTTPSender.Method;
+import org.perfcake.message.sender.HttpSender.Method;
 import org.perfcake.util.ObjectFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -35,7 +35,7 @@ import java.util.Properties;
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
-public class HTTPSenderTest {
+public class HttpSenderTest {
 
    private static final String URL_GET = "http://httpbin.org/get";
    private static final String URL_POST = "http://httpbin.org/post";
@@ -57,7 +57,7 @@ public class HTTPSenderTest {
 
       String response = null;
       try {
-         final HTTPSender sender = (HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties);
+         final HttpSender sender = (HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties);
          Assert.assertEquals(sender.getTarget(), URL_GET);
          Assert.assertEquals(sender.getMethod(), Method.GET);
          Assert.assertNull(sender.getExpectedResponseCodes());
@@ -88,7 +88,7 @@ public class HTTPSenderTest {
       senderProperties.setProperty("target", URL_GET);
       String response = null;
       try {
-         response = _sendMessage((HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties), null, null);
+         response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), null, null);
       } catch (Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
@@ -109,7 +109,7 @@ public class HTTPSenderTest {
          payloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
          payloadMessage.setPayload(POST_PAYLOAD);
 
-         response = _sendMessage((HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties), payloadMessage, null);
+         response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), payloadMessage, null);
       } catch (Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
@@ -131,7 +131,7 @@ public class HTTPSenderTest {
          noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
          noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
-         response = _sendMessage((HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties), noPayloadMessage, null);
+         response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), noPayloadMessage, null);
       } catch (Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
@@ -147,7 +147,7 @@ public class HTTPSenderTest {
       senderProperties.setProperty("expectedResponseCodes", "500,200");
       String response = null;
       try {
-         HTTPSender sender = (HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties);
+         HttpSender sender = (HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties);
          List<Integer> responseCodeList = sender.getExpectedResponseCodeList();
          Assert.assertNotNull(responseCodeList);
          Assert.assertEquals(responseCodeList.size(), 2);
@@ -171,7 +171,7 @@ public class HTTPSenderTest {
          noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
          noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
-         response = _sendMessage((HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties), noPayloadMessage, null);
+         response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), noPayloadMessage, null);
       } catch (Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
@@ -191,7 +191,7 @@ public class HTTPSenderTest {
          noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
          noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
-         response = _sendMessage((HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties), noPayloadMessage, null);
+         response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), noPayloadMessage, null);
       } catch (Exception e) {
          if (e instanceof PerfCakeException) {
             Assert.assertTrue(e.getMessage().contains("unexpected HTTP response code: 500"));
@@ -214,7 +214,7 @@ public class HTTPSenderTest {
          noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
          noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
-         response = _sendMessage((HTTPSender) ObjectFactory.summonInstance(HTTPSender.class.getName(), senderProperties), noPayloadMessage, null);
+         response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), noPayloadMessage, null);
       } catch (Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());

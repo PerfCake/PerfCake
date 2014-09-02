@@ -57,7 +57,7 @@ public class ScenarioParserTest {
    private static final int THREADS = 10;
    private static final String MESSAGE1_CONTENT = "Stupid is as supid does! :)";
    private static final String MESSAGE2_CONTENT = "I'm the fish!";
-   private static final String SENDER_CLASS = "org.perfcake.message.sender.HTTPSender";
+   private static final String SENDER_CLASS = "org.perfcake.message.sender.HttpSender";
    private static final String FILTERED_PROPERTY_VALUE = "filtered-property-value";
    private static final String DEFAULT_PROPERTY_VALUE = "default-property-value";
 

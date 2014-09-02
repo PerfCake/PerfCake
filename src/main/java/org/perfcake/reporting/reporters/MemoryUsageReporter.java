@@ -31,7 +31,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
-import org.perfcake.common.TimeStampedRecord;
+import org.perfcake.common.TimestampedRecord;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.Quantity;
@@ -93,7 +93,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    /**
     * Used memory time window (number of latest records) for possible memory leak detection.
     */
-   private Queue<TimeStampedRecord<Number>> usedMemoryTimeWindow;
+   private Queue<TimestampedRecord<Number>> usedMemoryTimeWindow;
 
    /**
     * Size of the memory time window (number of latest records) for possible memory leak detection.
@@ -231,7 +231,7 @@ public class MemoryUsageReporter extends AbstractReporter {
             if (usedMemoryTimeWindow.size() == usedMemoryTimeWindowSize) {
                usedMemoryTimeWindow.remove();
             }
-            usedMemoryTimeWindow.offer(new TimeStampedRecord<Number>(runInfo.getRunTime(), used));
+            usedMemoryTimeWindow.offer(new TimestampedRecord<Number>(runInfo.getRunTime(), used));
             memoryTrendSlope = (float) Utils.computeRegressionTrend(usedMemoryTimeWindow);
             if (usedMemoryTimeWindow.size() == usedMemoryTimeWindowSize && memoryTrendSlope > memoryLeakSlopeThreshold) {
                memoryLeakDetected = true;

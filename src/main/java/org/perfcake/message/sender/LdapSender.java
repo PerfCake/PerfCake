@@ -42,9 +42,9 @@ import org.perfcake.reporting.MeasurementUnit;
  * 
  * @author vjuranek
  */
-public class LDAPSender extends AbstractSender {
+public class LdapSender extends AbstractSender {
 
-   private static final Logger logger = Logger.getLogger(LDAPSender.class);
+   private static final Logger logger = Logger.getLogger(LdapSender.class);
 
    private LdapContext ctx = null;
    private String ldapUsername = null;

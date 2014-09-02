@@ -11,7 +11,7 @@
    <reporting>
       <reporter class="WarmUpReporter"/>
       <reporter class="ThroughputStatsReporter">
-         <destination class="CSVDestination">
+         <destination class="CsvDestination">
             <period type="time" value="30000"/>
             <property name="path" value="${perfcake.scenario}-throughput-stats.csv"/>
          </destination>
@@ -20,7 +20,7 @@
          </destination-->
       </reporter>
       <!--reporter class="MemoryUsageReporter">
-         <destination class="CSVDestination">
+         <destination class="CsvDestination">
             <period type="time" value="30000"/>
             <property name="path" value="${perfcake.scenario}-memory-usage.csv" />
          </destination>

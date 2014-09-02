@@ -27,7 +27,7 @@ import javax.net.ssl.SSLSocketFactory;
  * @author Martin Večeřa <marvenec@gmail.com>
  * 
  */
-public class SSLSocketSender extends AbstractSocketSender {
+public class SslSocketSender extends AbstractSocketSender {
 
    /*
     * (non-Javadoc)

@@ -52,7 +52,7 @@ import org.perfcake.reporting.MeasurementUnit;
  * @author Marek Baluch <baluch.git@gmail.com>
  *
  */
-public class JMSSender extends AbstractSender {
+public class JmsSender extends AbstractSender {
 
    /**
     * JMS message type.
@@ -64,7 +64,7 @@ public class JMSSender extends AbstractSender {
    /**
     * The logger's logger.
     */
-   private static final Logger log = Logger.getLogger(JMSSender.class);
+   private static final Logger log = Logger.getLogger(JmsSender.class);
 
    /**
     * JMS initial context.
@@ -132,7 +132,7 @@ public class JMSSender extends AbstractSender {
    protected boolean autoAck = true;
 
    /**
-    * Specifies that the payload should be send as one of {@link JMSSender.MessageType}. Default value
+    * Specifies that the payload should be send as one of {@link JmsSender.MessageType}. Default value
     * is set to MessageType.STRING.
     */
    protected MessageType messageType = MessageType.STRING;
@@ -168,9 +168,9 @@ public class JMSSender extends AbstractSender {
    protected Message mess = null;
 
    /**
-    * Creates a new instance of JMSSender.
+    * Creates a new instance of JmsSender.
     */
-   public JMSSender() {
+   public JmsSender() {
       super();
    }
 

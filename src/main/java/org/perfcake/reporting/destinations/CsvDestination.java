@@ -37,7 +37,7 @@ import java.util.Map;
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class CSVDestination implements Destination {
+public class CsvDestination implements Destination {
 
    /**
     * Output CSV file path.
@@ -57,7 +57,7 @@ public class CSVDestination implements Destination {
    /**
     * Logger.
     */
-   private static final Logger log = Logger.getLogger(CSVDestination.class);
+   private static final Logger log = Logger.getLogger(CsvDestination.class);
 
    /**
     * The list containing names of results from measurement.

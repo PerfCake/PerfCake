@@ -3,14 +3,14 @@
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:10}">
       <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:30000}"/>
    </generator>
-   <sender class="LDAPSender">
+   <sender class="LdapSender">
       <property name="target" value="ldap://${server.host:localhost}:${server.port:389}"/>
       <property name="searchBase" value="dc=example,dc=org"/>
        <property name="filter" value="(uid=*)"/>
    </sender>
    <reporting>
       <reporter class="ResponseTimeStatsReporter">
-         <destination class="CSVDestination">
+         <destination class="CsvDestination">
             <period type="time" value="1000"/>
             <property name="path" value="${perfcake.scenario}-throughput-stats.csv"/>
          </destination>
