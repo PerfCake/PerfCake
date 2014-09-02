@@ -313,9 +313,7 @@ public class CSVDestinationTest {
 
       assertCSVFileContent(outf, "Time;Iterations;Result\n[ 0:00:01;21;hello],");
 
-      if (!outf.delete()) {
-         log.warn(String.format("Temporary file %s could not be deleted.", outf.getAbsolutePath()));
-      }
+      delete(outf);
    }
 
    @Test
@@ -337,9 +335,7 @@ public class CSVDestinationTest {
 
       assertCSVFileContent(outf, "0:00:01;21;hello");
 
-      if (!outf.delete()) {
-         log.warn(String.format("Temporary file %s could not be deleted.", outf.getAbsolutePath()));
-      }
+      delete(outf);
    }
 
    @Test
@@ -362,9 +358,53 @@ public class CSVDestinationTest {
 
       assertCSVFileContent(outf, "Time-_-Iterations-_-Result#*#0:00:01-_-21-_-hello#*#");
 
-      if (!outf.delete()) {
-         log.warn(String.format("Temporary file %s could not be deleted.", outf.getAbsolutePath()));
-      }
+      delete(outf);
+   }
+
+   @Test
+   public void testFileNumbering() throws IOException, ReportingException {
+      final CSVDestination dest = new CSVDestination();
+      final File outf = File.createTempFile("perfcake", "file-numbering.csv");
+      final File outf1 = new File(outf.getAbsolutePath().replace(".", ".1."));
+
+      outf.deleteOnExit();
+      outf1.deleteOnExit();
+
+      dest.setPath(outf.getAbsolutePath());
+      final Measurement m = new Measurement(90, 1000, 20);
+      m.set("hello");
+
+      dest.open();
+      dest.report(m);
+      dest.close();
+
+      Assert.assertTrue(outf1.exists());
+
+      delete(outf);
+      delete(outf1);
+   }
+
+   @Test
+   public void testFileNumberingWithoutExt() throws IOException, ReportingException {
+      final CSVDestination dest = new CSVDestination();
+      final File outf = File.createTempFile("perfcake", "file-numbering-ext");
+      final File outf1 = new File(outf + ".1");
+
+      outf.deleteOnExit();
+      outf1.deleteOnExit();
+
+      dest.setPath(outf.getAbsolutePath());
+      final Measurement m = new Measurement(90, 1000, 20);
+      m.set("hello");
+
+      dest.open();
+      dest.report(m);
+      dest.close();
+
+      Assert.assertTrue(outf1.exists());
+
+      delete(outf);
+      delete(outf1);
    }
 
    private void assertCSVFileContent(File file, String expected) {
@@ -385,5 +425,11 @@ public class CSVDestinationTest {
          file.delete();
       }
       return file;
+   }
+
+   private void delete(File f) {
+      if (!f.delete()) {
+         log.warn(String.format("Temporary file %s could not be deleted.", f.getAbsolutePath()));
+      }
    }
 }

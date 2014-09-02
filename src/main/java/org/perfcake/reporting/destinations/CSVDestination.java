@@ -19,21 +19,17 @@
  */
 package org.perfcake.reporting.destinations;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.Utils;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The destination that appends the {@link Measurement} into a CSV file.
@@ -133,7 +129,13 @@ public class CSVDestination implements Destination {
                   File f = null;
                   int ind = 1;
                   do {
-                     f = new File(name + "." + (ind++));
+                     //
+                     int lastDot = name.lastIndexOf(".");
+                     if (lastDot > -1) {
+                        f = new File(name.substring(0, lastDot) + "." + (ind++) + name.substring(lastDot));
+                     } else {
+                        f = new File(name + "." + (ind++));
+                     }
                   } while (f.exists());
                   csvFile = f;
                   break;
