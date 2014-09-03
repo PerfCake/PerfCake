@@ -89,20 +89,33 @@ class SenderTask implements Runnable {
    private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) {
       try {
          sender.preSend(message, messageHeaders);
-
-         mu.startMeasure();
-         final Serializable result = sender.send(message, messageHeaders, mu);
-         mu.stopMeasure();
-
-         sender.postSend(message);
-
-         return result;
       } catch (Exception e) {
          if (log.isEnabledFor(Level.ERROR)) {
             log.error("Exception occurred!", e);
          }
       }
-      return null;
+
+      mu.startMeasure();
+
+      Serializable result = null;
+      try {
+         result = sender.send(message, messageHeaders, mu);
+      } catch (Exception e) {
+         if (log.isEnabledFor(Level.ERROR)) {
+            log.error("Exception occurred!", e);
+         }
+      }
+      mu.stopMeasure();
+
+      try {
+         sender.postSend(message);
+      } catch (Exception e) {
+         if (log.isEnabledFor(Level.ERROR)) {
+            log.error("Exception occurred!", e);
+         }
+      }
+
+      return result;
    }
 
    @Override
