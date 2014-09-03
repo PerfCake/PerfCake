@@ -52,7 +52,7 @@ public class ThroughputStatsReporter extends StatsReporter {
    protected Double computeResult(MeasurementUnit mu) {
       double tm = mu.getLastTime();
       if (tm == 0) {
-         log.error("Unable to properly measure the time. The system is too fast. Run Info status: " + runInfo.toString());
+         log.error("Unable to properly measure the time. The system is too fast.\n Measurement Unit: " + mu.toString() + "\nRun Info status: " + runInfo.toString());
       }
       return 1000d * runInfo.getThreads() / tm; // per second
    }

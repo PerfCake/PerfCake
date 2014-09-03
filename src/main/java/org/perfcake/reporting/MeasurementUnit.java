@@ -213,4 +213,15 @@ public class MeasurementUnit implements Serializable {
       return true;
    }
 
+   @Override
+   public String toString() {
+      return "MeasurementUnit [" +
+            "iteration=" + iteration +
+            ", startTime=" + startTime +
+            ", stopTime=" + stopTime +
+            ", totalTime=" + totalTime +
+            ", measurementResults=" + measurementResults +
+            ", timeStarted=" + timeStarted +
+            ']';
+   }
 }
