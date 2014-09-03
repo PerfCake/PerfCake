@@ -19,7 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import org.apache.log4j.Logger;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.HarmonicMeanAccumulator;
@@ -33,11 +32,6 @@ import org.perfcake.reporting.reporters.accumulators.HarmonicMeanAccumulator;
  */
 public class ThroughputStatsReporter extends StatsReporter {
 
-   /**
-    * The logger.
-    */
-   private static final Logger log = Logger.getLogger(ThroughputStatsReporter.class);
-
    @SuppressWarnings("rawtypes")
    @Override
    protected Accumulator getAccumulator(String key, Class clazz) {
@@ -50,10 +44,6 @@ public class ThroughputStatsReporter extends StatsReporter {
 
    @Override
    protected Double computeResult(MeasurementUnit mu) {
-      double tm = mu.getLastTime();
-      if (tm == 0) {
-         log.error("Unable to properly measure the time. The system is too fast.\n Measurement Unit: " + mu.toString() + "\nRun Info status: " + runInfo.toString());
-      }
-      return 1000d * runInfo.getThreads() / tm; // per second
+      return 1000d * runInfo.getThreads() / mu.getLastTime(); // per second
    }
 }

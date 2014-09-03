@@ -44,4 +44,6 @@ public final class PerfCakeConst {
    public static final String PROPERTIES_FILE_OPT = "properties-file";
    
    public static final String WARM_UP_TAG = "warmUp";
+
+   public static final String TIME_MILLIS_FALLBACK = "perfcake.time.fallback";
 }

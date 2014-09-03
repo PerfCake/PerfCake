@@ -19,13 +19,13 @@
  */
 package org.perfcake;
 
+import org.perfcake.common.Period;
+import org.perfcake.common.PeriodType;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.perfcake.common.Period;
-import org.perfcake.common.PeriodType;
 
 /**
  * Information about the current scenario run.

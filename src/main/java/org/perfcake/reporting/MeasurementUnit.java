@@ -19,6 +19,9 @@
  */
 package org.perfcake.reporting;
 
+import org.perfcake.PerfCakeConst;
+import org.perfcake.util.Utils;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,6 +67,8 @@ public class MeasurementUnit implements Serializable {
     * When the measurement was first started in real time (timestamp value from {@link System.currentTimeMillis()}).
     */
    private long timeStarted = -1;
+
+   private final boolean millisTimeFallback = Boolean.getBoolean(Utils.getProperty(PerfCakeConst.TIME_MILLIS_FALLBACK, "false"));
 
    /**
     * Constructor is protected. Use {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()} to obtain a new instance.
@@ -112,7 +117,7 @@ public class MeasurementUnit implements Serializable {
     */
    public void startMeasure() {
       timeStarted = System.currentTimeMillis();
-      startTime = System.nanoTime();
+      startTime = millisTimeFallback ? System.currentTimeMillis() * 1_000_000 : System.nanoTime();
       stopTime = -1;
    }
 
@@ -120,7 +125,7 @@ public class MeasurementUnit implements Serializable {
     * Stops measuring.
     */
    public void stopMeasure() {
-      stopTime = System.nanoTime();
+      stopTime = millisTimeFallback ? System.currentTimeMillis() * 1_000_000 : System.nanoTime();
       totalTime = totalTime + getLastTime();
    }
 
