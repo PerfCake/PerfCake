@@ -146,7 +146,7 @@ public class MeasurementUnit implements Serializable {
          return -1;
       }
 
-      return (stopTime - startTime + 1) / 1_000_000.0;
+      return (stopTime - startTime) / 1_000_000.0;
    }
 
    /**
