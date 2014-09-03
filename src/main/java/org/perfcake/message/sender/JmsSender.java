@@ -19,29 +19,18 @@
  */
 package org.perfcake.message.sender;
 
+import org.apache.log4j.Logger;
+import org.perfcake.PerfCakeException;
+import org.perfcake.reporting.MeasurementUnit;
+
+import javax.jms.*;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-
-import javax.jms.BytesMessage;
-import javax.jms.DeliveryMode;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueConnectionFactory;
-import javax.jms.QueueSender;
-import javax.jms.QueueSession;
-import javax.jms.Session;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
-import org.apache.log4j.Logger;
-import org.perfcake.PerfCakeException;
-import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The sender that is able to send messages via JMS.
@@ -72,29 +61,29 @@ public class JmsSender extends AbstractSender {
    protected InitialContext ctx = null;
 
    /**
-    * JMS queue connection factory.
+    * JMS destination connection factory.
     */
-   protected QueueConnectionFactory qcf = null;
+   protected ConnectionFactory qcf = null;
 
    /**
     * JMS connection.
     */
-   protected QueueConnection connection;
+   protected Connection connection;
 
    /**
     * JMS session
     */
-   protected QueueSession session;
+   protected Session session;
 
    /**
-    * JMS queue where the messages are send.
+    * JMS destination where the messages are send.
     */
-   protected Queue queue;
+   protected Destination destination;
 
    /**
-    * JMS queue sender.
+    * JMS destination sender.
     */
-   protected QueueSender sender;
+   protected MessageProducer sender;
 
    /**
     * JMS username.
@@ -125,11 +114,6 @@ public class JmsSender extends AbstractSender {
     * Indicates whether the JMS message is persisted during transport or not.
     */
    protected boolean persistent = true;
-
-   /**
-    * Indicates whether the JMS message is auto-acknowledged by the receiver (true) or by client (false).
-    */
-   protected boolean autoAck = true;
 
    /**
     * Specifies that the payload should be send as one of {@link JmsSender.MessageType}. Default value
@@ -205,23 +189,19 @@ public class JmsSender extends AbstractSender {
             ctx = new InitialContext(ctxProps);
          }
 
-         qcf = (QueueConnectionFactory) ctx.lookup(connectionFactory);
+         qcf = (ConnectionFactory) ctx.lookup(connectionFactory);
          if (checkCredentials()) {
-            connection = qcf.createQueueConnection(username, password);
+            connection = qcf.createConnection(username, password);
          } else {
-            connection = qcf.createQueueConnection();
+            connection = qcf.createConnection();
          }
-         queue = (Queue) ctx.lookup(target);
+         destination = (Queue) ctx.lookup(target);
          if (replyTo != null && !"".equals(replyTo)) {
             replyToDestination = (Destination) ctx.lookup(replyTo);
          }
-         if (autoAck) {
-            session = connection.createQueueSession(transacted, Session.AUTO_ACKNOWLEDGE);
-         } else {
-            session = connection.createQueueSession(transacted, Session.CLIENT_ACKNOWLEDGE);
-         }
+         session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE);
          connection.start();
-         sender = session.createSender(queue);
+         sender = session.createProducer(destination);
          sender.setDeliveryMode(persistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
       } catch (JMSException | NamingException | RuntimeException e) {
          throw new PerfCakeException(e);
@@ -420,25 +400,6 @@ public class JmsSender extends AbstractSender {
     */
    public void setPersistent(final boolean persistent) {
       this.persistent = persistent;
-   }
-
-   /**
-    * Used to read the value of autoAck.
-    *
-    * @return The autoAck.
-    */
-   public boolean isAutoAck() {
-      return autoAck;
-   }
-
-   /**
-    * Sets the value of autoAck.
-    *
-    * @param autoAck
-    *           The autoAck to set.
-    */
-   public void setAutoAck(final boolean autoAck) {
-      this.autoAck = autoAck;
    }
 
    /**

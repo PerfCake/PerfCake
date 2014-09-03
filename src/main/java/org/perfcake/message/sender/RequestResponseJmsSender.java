@@ -19,39 +19,27 @@
  */
 package org.perfcake.message.sender;
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueReceiver;
-import javax.jms.QueueSession;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.MeasurementUnit;
+
+import javax.jms.*;
+import javax.naming.NamingException;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
 public class RequestResponseJmsSender extends JmsSender {
    private static final Logger log = Logger.getLogger(RequestResponseJmsSender.class);
 
-   private QueueConnection responseConnection;
-   private QueueSession responseSession;
-   private Queue responseQueue;
-   private QueueReceiver responseReceiver;
+   private Connection responseConnection;
+   private Session responseSession;
+   private MessageConsumer responseReceiver;
 
    private String responseTarget = "";
    private long receivingTimeout = 1000; // default 1s
@@ -59,7 +47,12 @@ public class RequestResponseJmsSender extends JmsSender {
 
    private String correlationId     = UUID.randomUUID().toString();
    private boolean useCorrelationId = false;
-   
+
+   /**
+    * Indicates whether the JMS message is auto-acknowledged by the receiver (true) or by client (false).
+    */
+   protected boolean autoAck = true;
+
    @Override
    public void init() throws Exception {
       super.init();
@@ -67,18 +60,18 @@ public class RequestResponseJmsSender extends JmsSender {
          if (responseTarget == null || responseTarget.equals("")) {
             throw new PerfCakeException("responseTarget property is not defined in the scenario or is empty");
          } else {
-            responseQueue = (Queue) ctx.lookup(responseTarget);
+            Destination responseDestination = (Destination) ctx.lookup(responseTarget);
             if (checkCredentials()) {
-               responseConnection = qcf.createQueueConnection(username, password);
+               responseConnection = qcf.createConnection(username, password);
             } else {
-               responseConnection = qcf.createQueueConnection();
+               responseConnection = qcf.createConnection();
             }
             responseConnection.start();
-            responseSession = responseConnection.createQueueSession(transacted, Session.AUTO_ACKNOWLEDGE);
+            responseSession = responseConnection.createSession(transacted, autoAck ? Session.AUTO_ACKNOWLEDGE : Session.CLIENT_ACKNOWLEDGE);
             if (useCorrelationId) {
-               responseReceiver = responseSession.createReceiver(responseQueue, "JMSCorrelationID='" + correlationId + "'");
+               responseReceiver = responseSession.createConsumer(responseDestination, "JMSCorrelationID='" + correlationId + "'");
             } else {
-               responseReceiver = responseSession.createReceiver(responseQueue);
+               responseReceiver = responseSession.createConsumer(responseDestination);
             }
          }
 
@@ -150,6 +143,9 @@ public class RequestResponseJmsSender extends JmsSender {
                   log.debug("No message in " + responseTarget + " received within the specified timeout (" + receivingTimeout + " ms). Retrying (" + attempts + "/" + receiveAttempts + ") ...");
                }
             } else {
+               if (!autoAck) {
+                  response.acknowledge();
+               }
 
                if (response instanceof ObjectMessage) {
                   retVal = ((ObjectMessage) response).getObject();
@@ -162,6 +158,7 @@ public class RequestResponseJmsSender extends JmsSender {
                } else {
                   throw new PerfCakeException("Received message is not one of (ObjectMessage, TextMessage, BytesMessage) but: " + response.getClass().getName());
                }
+
                if (transacted) {
                   responseSession.commit();
                }
@@ -211,4 +208,22 @@ public class RequestResponseJmsSender extends JmsSender {
       this.responseTarget = responseTarget;
    }
 
+   /**
+    * Used to read the value of autoAck.
+    *
+    * @return The autoAck.
+    */
+   public boolean isAutoAck() {
+      return autoAck;
+   }
+
+   /**
+    * Sets the value of autoAck.
+    *
+    * @param autoAck
+    *           The autoAck to set.
+    */
+   public void setAutoAck(final boolean autoAck) {
+      this.autoAck = autoAck;
+   }
 }

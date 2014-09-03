@@ -46,10 +46,10 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    private static final Logger log = Logger.getLogger(RequestResponseJmsSenderTest.class);
 
-   @Resource(mappedName = "queue/test")
+   @Resource(mappedName = "destination/test")
    private Queue queue;
 
-   @Resource(mappedName = "queue/test_reply")
+   @Resource(mappedName = "destination/test_reply")
    private Queue queueReply;
 
    @Resource(mappedName = "java:/ConnectionFactory")
@@ -66,8 +66,8 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testResponseSend() throws Exception {
-      String queueName = "queue/test";
-      String replyQueueName = "queue/test_reply";
+      String queueName = "destination/test";
+      String replyQueueName = "destination/test_reply";
 
       JmsHelper.Wiretap wiretap = JmsHelper.wiretap(queueName, replyQueueName);
       wiretap.start();
@@ -78,6 +78,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
       props.setProperty("responseTarget", replyQueueName);
       props.setProperty("connectionFactory", "ConnectionFactory");
       props.setProperty("transacted", "true");
+      props.setProperty("autoAck", "false");
 
       RequestResponseJmsSender sender = (RequestResponseJmsSender) ObjectFactory.summonInstance(RequestResponseJmsSender.class.getName(), props);
 
@@ -85,6 +86,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
       Assert.assertEquals(sender.getTarget(), queueName);
       Assert.assertEquals(sender.getResponseTarget(), replyQueueName);
       Assert.assertEquals(sender.isTransacted(), true);
+      Assert.assertEquals(sender.isAutoAck(), false);
 
       try {
          sender.init();
@@ -149,7 +151,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
          wiretap.stop();
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queueReply));
       } finally {
@@ -159,8 +161,8 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testCorrelationId() throws Exception {
-      String queueName = "queue/test";
-      String replyQueueName = "queue/test_reply";
+      String queueName = "destination/test";
+      String replyQueueName = "destination/test_reply";
 
       JmsHelper.Wiretap wiretap = JmsHelper.wiretap(queueName, replyQueueName);
       wiretap.start();
@@ -181,7 +183,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queueReply));
 
@@ -230,8 +232,8 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testNegativeTimeout() throws Exception {
-      String queueName = "queue/test";
-      String replyQueueName = "queue/test_reply";
+      String queueName = "destination/test";
+      String replyQueueName = "destination/test_reply";
 
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
@@ -251,7 +253,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queueReply));
 
@@ -266,7 +268,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
             Assert.assertTrue(pce.getMessage().contains("No message"));
          }
 
-         // read the original message from the queue
+         // read the original message from the destination
          Message originalMessage = JmsHelper.readMessage(factory, 500, queue);
          Assert.assertTrue(originalMessage instanceof TextMessage);
          Assert.assertEquals(((TextMessage) originalMessage).getText(), payload);

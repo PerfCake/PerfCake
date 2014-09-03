@@ -174,7 +174,7 @@ public class JmsHelper {
       Context context = new InitialContext(env);
       try {
          ConnectionFactory cf = (ConnectionFactory) context.lookup("jms/RemoteConnectionFactory");
-         Destination destination = (Destination) context.lookup("jms/queue/test");
+         Destination destination = (Destination) context.lookup("jms/destination/test");
 
          Connection connection = null;
          Session session = null;
