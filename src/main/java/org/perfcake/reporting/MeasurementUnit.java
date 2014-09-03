@@ -68,8 +68,6 @@ public class MeasurementUnit implements Serializable {
     */
    private long timeStarted = -1;
 
-   private final boolean millisTimeFallback = Boolean.getBoolean(Utils.getProperty(PerfCakeConst.TIME_MILLIS_FALLBACK, "false"));
-
    /**
     * Constructor is protected. Use {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()} to obtain a new instance.
     * 
@@ -117,7 +115,7 @@ public class MeasurementUnit implements Serializable {
     */
    public void startMeasure() {
       timeStarted = System.currentTimeMillis();
-      startTime = millisTimeFallback ? System.currentTimeMillis() * 1_000_000 : System.nanoTime();
+      startTime = System.nanoTime();
       stopTime = -1;
    }
 
@@ -125,7 +123,7 @@ public class MeasurementUnit implements Serializable {
     * Stops measuring.
     */
    public void stopMeasure() {
-      stopTime = millisTimeFallback ? System.currentTimeMillis() * 1_000_000 : System.nanoTime();
+      stopTime = System.nanoTime();
       totalTime = totalTime + getLastTime();
    }
 
@@ -148,7 +146,7 @@ public class MeasurementUnit implements Serializable {
          return -1;
       }
 
-      return (stopTime - startTime) / 1_000_000.0;
+      return (stopTime - startTime + 1) / 1_000_000.0;
    }
 
    /**
