@@ -63,9 +63,9 @@ public class ScenarioLoader {
       }
 
       String extension = null;
-      int lastDot = scenario.lastIndexOf(".");
+      int lastDot = scenarioUrl.toString().lastIndexOf(".");
       if (lastDot > -1) {
-         extension = scenario.substring(lastDot + 1).toLowerCase();
+         extension = scenarioUrl.toString().substring(lastDot + 1).toLowerCase();
       }
 
       ScenarioFactory scenarioFactory = getFactory(extension);
