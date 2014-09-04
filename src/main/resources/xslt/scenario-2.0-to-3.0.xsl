@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pc2="urn:perfcake:scenario:2.0" xmlns:pc3="urn:perfcake:scenario:3.0" version="1.0" exclude-result-prefixes="pc2 pc3">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pc2="urn:perfcake:scenario:2.0" xmlns:pc3="urn:perfcake:scenario:3.0" version="1.0" exclude-result-prefixes="pc2 pc3 xalan">
    <xsl:output method="xml" version="1.0" encoding="utf-8" indent="yes" xalan:indent-amount="3"/>
    <xsl:template name="property" match="pc2:property">
       <property xmlns="urn:perfcake:scenario:3.0">
