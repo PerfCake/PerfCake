@@ -30,22 +30,56 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * 
+ * A sender that is the same with @{link JmsSender} and adds a response retrieval.
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class RequestResponseJmsSender extends JmsSender {
+
+   /**
+    * Logger.
+    */
    private static final Logger log = Logger.getLogger(RequestResponseJmsSender.class);
 
+   /**
+    * JMS connection to the response destination.
+    */
    private Connection responseConnection;
+
+   /**
+    * JMS session to the response destination.
+    */
    private Session responseSession;
+
+   /**
+    * JMS consumer for the response destination.
+    */
    private MessageConsumer responseReceiver;
 
+   /**
+    * Where to read the responses from.
+    */
    private String responseTarget = "";
+
+   /**
+    * Timeout for receiving the response in ms for a single attempt.
+    */
    private long receivingTimeout = 1000; // default 1s
+
+   /**
+    * Maximal number of attemts to read the response.
+    */
    private int receiveAttempts = 5;
 
-   private String correlationId     = UUID.randomUUID().toString();
+   /**
+    * Correlation ID of this sender instance for it to read only the messages that it has sent.
+    */
+   private String correlationId = UUID.randomUUID().toString();
+
+   /**
+    * Should the correlation ID be used in the JMS communication? Turning it off (false) allows the sender to read any response from the response destination.
+    */
    private boolean useCorrelationId = false;
 
    /**
@@ -67,7 +101,12 @@ public class RequestResponseJmsSender extends JmsSender {
                responseConnection = qcf.createConnection();
             }
             responseConnection.start();
+
+            if (transacted && !autoAck) {
+               log.warn("AutoAck setting is ignored with a transacted session. Creating a transacted session.");
+            }
             responseSession = responseConnection.createSession(transacted, autoAck ? Session.AUTO_ACKNOWLEDGE : Session.CLIENT_ACKNOWLEDGE);
+
             if (useCorrelationId) {
                responseReceiver = responseSession.createConsumer(responseDestination, "JMSCorrelationID='" + correlationId + "'");
             } else {
@@ -176,26 +215,50 @@ public class RequestResponseJmsSender extends JmsSender {
       }
    }
 
+   /**
+    * Sets the configuration of using the correlation ID in response retrieval.
+    * @param useCorrelationId When true, only the messages that are response to the original message can be read from the response destination. Otherwise, any response message can be read.
+    */
    public void setUseCorrelationId(boolean useCorrelationId) {
 	   this.useCorrelationId = useCorrelationId;
    }
-   
+
+   /**
+    * Gets the configuration of using the correlation ID.
+    * @return Whether the sender receives only the response messages with the appropriate correlation ID, i. e. responses to messages sent by this sender instance.
+    */
    public boolean isUseCorrelationId() {
 	   return useCorrelationId;
    }
-   
+
+   /**
+    * Gets the number of milliseconds to wait for the response message.
+    * @return Number of milliseconds to wait for the response message.
+    */
    public long getReceivingTimeout() {
       return receivingTimeout;
    }
 
+   /**
+    * Sets the number of milliseconds to wait for the response message.
+    * @param receivingTimeout  Number of milliseconds to wait for the response message.
+    */
    public void setReceivingTimeout(final long receivingTimeout) {
       this.receivingTimeout = receivingTimeout;
    }
 
+   /**
+    * Gets the maximum number of attempts to read the response message.
+    * @return The maximum number of attempts to read the response message.
+    */
    public int getReceiveAttempts() {
       return receiveAttempts;
    }
 
+   /**
+    * Sets the maximum number of attempts to read the response message.
+    * @param receiveAttempts The maximum number of attempts to read the response message.
+    */
    public void setReceiveAttempts(final int receiveAttempts) {
       this.receiveAttempts = receiveAttempts;
    }

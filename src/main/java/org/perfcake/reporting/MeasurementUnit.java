@@ -19,8 +19,7 @@
  */
 package org.perfcake.reporting;
 
-import org.perfcake.PerfCakeConst;
-import org.perfcake.util.Utils;
+import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -37,6 +36,11 @@ import java.util.Map;
 public class MeasurementUnit implements Serializable {
 
    private static final long serialVersionUID = 3596375306594505085L;
+
+   /**
+    * Logger.
+    */
+   private static final Logger log = Logger.getLogger(MeasurementUnit.class);
 
    /**
     * Iteration for which this unit was created.
@@ -144,6 +148,11 @@ public class MeasurementUnit implements Serializable {
    public double getLastTime() {
       if (startTime == -1 || stopTime == -1) {
          return -1;
+      }
+
+      if (stopTime - startTime == 0) {
+         log.warn("Zero time measured! PerfCake is probably running on a machine where the internal timer does not provide enough resolution (e.g. a virtual machine). " +
+               "Please refer to the Troubleshooting section in the User Guide.\nCurrent measurement unit: " + this.toString());
       }
 
       return (stopTime - startTime) / 1_000_000.0;
