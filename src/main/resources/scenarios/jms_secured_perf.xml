@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:3.0">
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}">
-      <run type="${perfcake.run.type:time} value="${perfcake.run.duration:300000}"/>
+      <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:300000}"/>
    </generator>
    <sender class="RequestResponseJmsSender">
       <property name="target" value="queue/jms_secured_perf_request_gw"/>
