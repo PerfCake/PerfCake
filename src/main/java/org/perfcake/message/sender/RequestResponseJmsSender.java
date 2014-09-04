@@ -263,10 +263,18 @@ public class RequestResponseJmsSender extends JmsSender {
       this.receiveAttempts = receiveAttempts;
    }
 
+   /**
+    * Gets the destination where the response message is being read from.
+    * @return The name of the response destination.
+    */
    public String getResponseTarget() {
       return responseTarget;
    }
 
+   /**
+    * Sets the name of the destination where the response messages should be read from.
+    * @param responseTarget The name of the response destination.
+    */
    public void setResponseTarget(final String responseTarget) {
       this.responseTarget = responseTarget;
    }

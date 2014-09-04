@@ -46,10 +46,10 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    private static final Logger log = Logger.getLogger(RequestResponseJmsSenderTest.class);
 
-   @Resource(mappedName = "destination/test")
+   @Resource(mappedName = "queue/test")
    private Queue queue;
 
-   @Resource(mappedName = "destination/test_reply")
+   @Resource(mappedName = "queue/test_reply")
    private Queue queueReply;
 
    @Resource(mappedName = "java:/ConnectionFactory")
@@ -66,8 +66,8 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testResponseSend() throws Exception {
-      String queueName = "destination/test";
-      String replyQueueName = "destination/test_reply";
+      String queueName = "queue/test";
+      String replyQueueName = "queue/test_reply";
 
       JmsHelper.Wiretap wiretap = JmsHelper.wiretap(queueName, replyQueueName);
       wiretap.start();
@@ -151,7 +151,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
          wiretap.stop();
 
-         // make sure the destination is empty
+         // make sure the queue is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queueReply));
       } finally {
@@ -161,8 +161,8 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testCorrelationId() throws Exception {
-      String queueName = "destination/test";
-      String replyQueueName = "destination/test_reply";
+      String queueName = "queue/test";
+      String replyQueueName = "queue/test_reply";
 
       JmsHelper.Wiretap wiretap = JmsHelper.wiretap(queueName, replyQueueName);
       wiretap.start();
@@ -183,7 +183,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the destination is empty
+         // make sure the queue is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queueReply));
 
@@ -232,8 +232,8 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testNegativeTimeout() throws Exception {
-      String queueName = "destination/test";
-      String replyQueueName = "destination/test_reply";
+      String queueName = "queue/test";
+      String replyQueueName = "queue/test_reply";
 
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
@@ -253,7 +253,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the destination is empty
+         // make sure the queue is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queueReply));
 
@@ -268,7 +268,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
             Assert.assertTrue(pce.getMessage().contains("No message"));
          }
 
-         // read the original message from the destination
+         // read the original message from the queue
          Message originalMessage = JmsHelper.readMessage(factory, 500, queue);
          Assert.assertTrue(originalMessage instanceof TextMessage);
          Assert.assertEquals(((TextMessage) originalMessage).getText(), payload);

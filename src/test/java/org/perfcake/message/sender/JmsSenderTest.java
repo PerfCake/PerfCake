@@ -46,13 +46,13 @@ import java.util.Properties;
  */
 public class JmsSenderTest extends Arquillian {
 
-   @Resource(mappedName = "destination/test")
+   @Resource(mappedName = "queue/test")
    private Queue queue;
 
-   @Resource(mappedName = "destination/secured_test")
+   @Resource(mappedName = "queue/secured_test")
    private Queue securedQueue;
 
-   @Resource(mappedName = "destination/test_reply")
+   @Resource(mappedName = "queue/test_reply")
    private Queue queueReply;
 
    @Resource(mappedName = "java:/ConnectionFactory")
@@ -77,12 +77,12 @@ public class JmsSenderTest extends Arquillian {
    public void testBasicSend() throws Exception {
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "destination/test");
+      props.setProperty("target", "queue/test");
 
       JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
 
       Assert.assertEquals(sender.getMessageType(), JmsSender.MessageType.STRING);
-      Assert.assertEquals(sender.getTarget(), "destination/test");
+      Assert.assertEquals(sender.getTarget(), "queue/test");
       Assert.assertEquals(sender.isPersistent(), true);
       Assert.assertEquals(sender.isTransacted(), false);
 
@@ -143,7 +143,7 @@ public class JmsSenderTest extends Arquillian {
 
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "destination/secured_test");
+      props.setProperty("target", "queue/secured_test");
       props.setProperty("username", "frank");
       props.setProperty("password", "frank");
 
@@ -186,7 +186,7 @@ public class JmsSenderTest extends Arquillian {
    public void testNonPersistentDelivery() throws Exception {
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "destination/test");
+      props.setProperty("target", "queue/test");
       props.setProperty("persistent", "false");
 
       JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
@@ -223,7 +223,7 @@ public class JmsSenderTest extends Arquillian {
    public void testClientAck() throws Exception {
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "destination/test");
+      props.setProperty("target", "queue/test");
 
       JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
 
@@ -258,7 +258,7 @@ public class JmsSenderTest extends Arquillian {
    public void testSecuredNegativMissingCredentials() throws Exception {
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "destination/secured_test");
+      props.setProperty("target", "queue/secured_test");
 
       JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
       sender.setUsername("frank");
@@ -287,7 +287,7 @@ public class JmsSenderTest extends Arquillian {
    public void testSecuredNegativWrongPassword() throws Exception {
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "destination/secured_test");
+      props.setProperty("target", "queue/secured_test");
 
       JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
       sender.setUsername("frank");
@@ -309,7 +309,7 @@ public class JmsSenderTest extends Arquillian {
 
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "destination/test");
+      props.setProperty("target", "queue/test");
 
       JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
 
@@ -344,7 +344,7 @@ public class JmsSenderTest extends Arquillian {
    public void testClientMode() throws Exception {
       String jndiFactory = org.jboss.naming.remote.client.InitialContextFactory.class.getName();
       String jndiUrl = "remote://localhost:4447";
-      String queueName = "jms/destination/test";
+      String queueName = "jms/queue/test";
 
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
@@ -392,7 +392,7 @@ public class JmsSenderTest extends Arquillian {
 
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "destination/test");
+      props.setProperty("target", "queue/test");
 
       JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
 
@@ -429,8 +429,8 @@ public class JmsSenderTest extends Arquillian {
 
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "destination/test");
-      props.setProperty("replyTo", "destination/test_reply");
+      props.setProperty("target", "queue/test");
+      props.setProperty("replyTo", "queue/test_reply");
 
       JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
 
@@ -450,7 +450,7 @@ public class JmsSenderTest extends Arquillian {
          Message response = JmsHelper.readMessage(factory, 500, queue);
          Assert.assertTrue(response instanceof TextMessage);
          Assert.assertEquals(((TextMessage) response).getText(), payload);
-         Assert.assertEquals(sender.getReplyTo(), "destination/test_reply");
+         Assert.assertEquals(sender.getReplyTo(), "queue/test_reply");
 
          // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
