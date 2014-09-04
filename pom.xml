@@ -81,6 +81,7 @@
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
       <server.port>8080</server.port>
+      <transform.scenarios.outputDir>${project.build.directory}/scenarios</transform.scenarios.outputDir>
    </properties>
    <dependencyManagement>
       <dependencies>
@@ -377,6 +378,27 @@
                </dependency>
             </dependencies>
          </plugin>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>xml-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>transform-scenarios-2.0-to-3.0</id>
+                  <goals>
+                     <goal>transform</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <transformationSets>
+                  <transformationSet>
+                     <dir>${transform.scenarios.dir}</dir>
+                     <outputDir>${transform.scenarios.outputDir}</outputDir>
+                     <stylesheet>src/main/resources/xslt/scenario-2.0-to-3.0.xsl</stylesheet>
+                  </transformationSet>
+               </transformationSets>
+            </configuration>
+         </plugin>
       </plugins>
       <pluginManagement>
          <plugins>
@@ -513,6 +535,19 @@
                               <versionRange>[1.0.0,)</versionRange>
                               <goals>
                                  <goal>unpack</goal>
+                              </goals>
+                           </pluginExecutionFilter>
+                           <action>
+                              <execute />
+                           </action>
+                        </pluginExecution>
+                        <pluginExecution>
+                           <pluginExecutionFilter>
+                              <groupId>org.codehaus.mojo</groupId>
+                              <artifactId>xml-maven-plugin</artifactId>
+                              <versionRange>[1.0.0,)</versionRange>
+                              <goals>
+                                 <goal>transform</goal>
                               </goals>
                            </pluginExecutionFilter>
                            <action>
