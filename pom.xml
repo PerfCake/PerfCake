@@ -384,6 +384,7 @@
             <executions>
                <execution>
                   <id>transform-scenarios-2.0-to-3.0</id>
+                  <phase>none</phase>
                   <goals>
                      <goal>transform</goal>
                   </goals>
