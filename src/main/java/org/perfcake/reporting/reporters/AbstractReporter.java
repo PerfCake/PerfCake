@@ -166,21 +166,23 @@ public abstract class AbstractReporter implements Reporter {
     * @param results
     *       The hash map with results to be accumulated.
     */
-   @SuppressWarnings({ "unchecked", "rawtypes" })
+   @SuppressWarnings({"unchecked", "rawtypes"})
    private void accumulateResults(final Map<String, Object> results) {
       for (final Entry<String, Object> entry : results.entrySet()) {
          // make sure we have an accumulator set to be able to accumulate the result
-         if (accumulatedResults.get(entry.getKey()) == null) {
-            final Accumulator a = getAccumulator(entry.getKey(), entry.getValue().getClass());
+         final String key = entry.getKey();
+         final Object value = entry.getValue();
+         if (accumulatedResults.get(key) == null) {
+            final Accumulator a = getAccumulator(key, value.getClass());
 
             if (a == null) {
-               log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", entry.getKey(), entry.getValue().getClass().getCanonicalName()));
+               log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", key, value.getClass().getCanonicalName()));
             } else {
-               accumulatedResults.put(entry.getKey(), a);
-               accumulatedResults.get(entry.getKey()).add(entry.getValue());
+               accumulatedResults.put(key, a);
+               a.add(value);
             }
          } else {
-            accumulatedResults.get(entry.getKey()).add(entry.getValue());
+            accumulatedResults.get(key).add(value);
          }
       }
    }
