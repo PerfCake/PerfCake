@@ -26,6 +26,7 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.AvgAccumulator;
+import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MinAccumulator;
 
@@ -78,8 +79,9 @@ public abstract class StatsReporter extends AbstractReporter {
             case MINIMUM:
                return new MinAccumulator();
             case AVERAGE:
-            default:
                return new AvgAccumulator();
+            default:
+               return new LastValueAccumulator();
          }
       }
       return super.getAccumulator(key, clazz);
