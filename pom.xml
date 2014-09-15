@@ -381,6 +381,7 @@
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>xml-maven-plugin</artifactId>
+            <version>1.0</version>
             <executions>
                <execution>
                   <id>transform-scenarios-2.0-to-3.0</id>
