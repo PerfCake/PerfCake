@@ -23,7 +23,15 @@ import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.MeasurementUnit;
 
-import javax.jms.*;
+import javax.jms.BytesMessage;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageProducer;
+import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -36,7 +44,6 @@ import java.util.Set;
  * The sender that is able to send messages via JMS.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
- * @author Jiří Sedláček <jiri@sedlackovi.cz>
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Marek Baluch <baluch.git@gmail.com>
  *
@@ -190,7 +197,7 @@ public class JmsSender extends AbstractSender {
          }
 
          qcf = (ConnectionFactory) ctx.lookup(connectionFactory);
-         if (checkCredentials()) {
+         if (checkCredentials(username, password)) {
             connection = qcf.createConnection(username, password);
          } else {
             connection = qcf.createConnection();
@@ -309,14 +316,14 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Checks if JMS credentials ({@link #username} and {@link #password}) are set.
+    * Checks if both of the provided credentials are set.
     *
-    * @return <code>true</code> if both JMS credentials ({@link #username} and {@link #password})
+    * @return <code>true</code> if both of the credentials
     *         are set and <code>false</code> if neither of them is set.
     * @throws PerfCakeException
     *            If one of the credentials is not set.
     */
-   protected boolean checkCredentials() throws PerfCakeException {
+   protected static boolean checkCredentials(String username, String password) throws  PerfCakeException {
       if (username == null && password == null) {
          return false;
       } else if (username == null || password == null) {

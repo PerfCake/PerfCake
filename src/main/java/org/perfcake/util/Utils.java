@@ -19,21 +19,6 @@
  */
 package org.perfcake.util;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.NoSuchElementException;
-import java.util.Properties;
-import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -41,6 +26,17 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.common.TimestampedRecord;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Pavel Macík <pavel.macik@gmail.com>
@@ -246,5 +242,35 @@ public class Utils {
          simpleRegression.addData(currentRecord.getTimestamp(), currentRecord.getValue().doubleValue());
       }
       return simpleRegression.getSlope();
+   }
+
+   /**
+    * Sets the property value to the first not-null value from the list.
+    *
+    * @param props Properties instance.
+    * @param propName Name of the property to be set.
+    * @param values List of possibilities, the first not-null is used to set the property value.
+    */
+   public static void setFirstNotNullProperty(Properties props, String propName, String... values) {
+      String notNull = getFirstNotNull(values);
+      if (notNull != null) {
+         props.setProperty(propName, notNull);
+      }
+   }
+
+   /**
+    * Returns the first not-null string in the provided list.
+    *
+    * @param values The list of possible values.
+    * @return The first non-null value in the list.
+    */
+   public static String getFirstNotNull(String... values) {
+      for (String value: values) {
+         if (value != null) {
+            return value;
+         }
+      }
+
+      return null;
    }
 }
