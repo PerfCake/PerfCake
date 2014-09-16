@@ -26,14 +26,18 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.AvgAccumulator;
-import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MinAccumulator;
+import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator;
+import org.perfcake.reporting.reporters.accumulators.SlidingWindowMaxAccumulator;
+import org.perfcake.reporting.reporters.accumulators.SlidingWindowMinAccumulator;
 
 /**
  * This abstract reporter is able to report the minimal, maximal and average value from the beginning
- * of the measuring to the moment when the results are published including.
- * The default value is a current value at the moment of publishing.
+ * of the measuring to the moment when the results are published including. The actual value about what
+ * the statistics are gathered is computed as a result of the {@link #computeResult(MeasurementUnit)} method.
+ * 
+ * The default value of the reporter is a current value at the moment of publishing.
  * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
@@ -55,6 +59,11 @@ public abstract class StatsReporter extends AbstractReporter {
    private boolean averageEnabled = true;
 
    /**
+    * A property that specifies a window size with the default value of {@link Integer#MAX_VALUE}.
+    */
+   private int windowSize = Integer.MAX_VALUE;
+
+   /**
     * A String representation of a metric of a maximal value.
     */
    public static final String MAXIMUM = "Maximum";
@@ -73,18 +82,57 @@ public abstract class StatsReporter extends AbstractReporter {
    @Override
    protected Accumulator getAccumulator(String key, Class clazz) {
       if (Double.class.equals(clazz)) {
-         switch (key) {
-            case MAXIMUM:
-               return new MaxAccumulator();
-            case MINIMUM:
-               return new MinAccumulator();
-            case AVERAGE:
-               return new AvgAccumulator();
-            default:
-               return new LastValueAccumulator();
+         if (windowSize == Integer.MAX_VALUE) {
+            return getNonWindowedAccumulator(key);
+         } else {
+            return getWindowedAccumulator(key);
          }
       }
       return super.getAccumulator(key, clazz);
+   }
+
+   /**
+    * Gets an appropriate accumulator for a given key from the Measurement Unit's results map for the case that the value of the {@link #windowSize} is
+    * different from the default value of {@link Integer#MAX_VALUE}.
+    * 
+    * @param key
+    *        Name of the key from the results map.
+    * @return An appropriate accumulator instance.
+    */
+   @SuppressWarnings("rawtypes")
+   protected Accumulator getWindowedAccumulator(String key) {
+      switch (key) {
+         case MAXIMUM:
+            return new SlidingWindowMaxAccumulator(windowSize);
+         case MINIMUM:
+            return new SlidingWindowMinAccumulator(windowSize);
+         case AVERAGE:
+            return new SlidingWindowAvgAccumulator(windowSize);
+         default:
+            return super.getAccumulator(key, Double.class);
+      }
+   }
+
+   /**
+    * Gets an appropriate accumulator for a given key from the Measurement Unit's results map for the case that the value of the {@link #windowSize} is
+    * equal to the value of {@link Integer#MAX_VALUE}, which is the default value.
+    * 
+    * @param key
+    *        Name of the key from the results map.
+    * @return An appropriate accumulator instance.
+    */
+   @SuppressWarnings("rawtypes")
+   protected Accumulator getNonWindowedAccumulator(String key) {
+      switch (key) {
+         case MAXIMUM:
+            return new MaxAccumulator();
+         case MINIMUM:
+            return new MinAccumulator();
+         case AVERAGE:
+            return new AvgAccumulator();
+         default:
+            return super.getAccumulator(key, Double.class);
+      }
    }
 
    /**
@@ -136,7 +184,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * Enables or disables the metric of a maximal value.
     * 
     * @param maximumEnabled
-    *           Set <code>true</code> to enable the metric of a maximal value or <code>false</code> to disable it.
+    *        Set <code>true</code> to enable the metric of a maximal value or <code>false</code> to disable it.
     */
    public void setMaximumEnabled(boolean maximumEnabled) {
       this.maximumEnabled = maximumEnabled;
@@ -155,7 +203,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * Enables or disables the metric of a minimal value.
     * 
     * @param minimumEnabled
-    *           Set <code>true</code> to enable the metric of a minimal value or <code>false</code> to disable it.
+    *        Set <code>true</code> to enable the metric of a minimal value or <code>false</code> to disable it.
     */
    public void setMinimumEnabled(boolean minimumEnabled) {
       this.minimumEnabled = minimumEnabled;
@@ -174,9 +222,33 @@ public abstract class StatsReporter extends AbstractReporter {
     * Enables or disables the metric of a average value.
     * 
     * @param averageEnabled
-    *           Set <code>true</code> to enable the metric of a average value or <code>false</code> to disable it.
+    *        Set <code>true</code> to enable the metric of a average value or <code>false</code> to disable it.
     */
    public void setAverageEnabled(boolean averageEnabled) {
       this.averageEnabled = averageEnabled;
    }
+
+   /**
+    * Gets the sliding window size if set. If the size is equal to {@link Integer#MAX_VALUE}, then it means the
+    * sliding window is not used at all and the statistics are taken from the whole run.
+    * 
+    * @return The sliding window size.
+    */
+   public int getWindowSize() {
+      return windowSize;
+   }
+
+   /**
+    * Sets the size of the sliding window.
+    * 
+    * If the size is equal to {@link Integer#MAX_VALUE} (which is the default value), then it means the
+    * sliding window is not used at all and the statistics are taken from the whole run.
+    * 
+    * @param windowSize
+    *        The sliding window size.
+    */
+   public void setWindowSize(int windowSize) {
+      this.windowSize = windowSize;
+   }
+
 }

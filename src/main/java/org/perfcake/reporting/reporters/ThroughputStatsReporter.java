@@ -22,6 +22,7 @@ package org.perfcake.reporting.reporters;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.HarmonicMeanAccumulator;
+import org.perfcake.reporting.reporters.accumulators.SlidingWindowHarmonicMeanAccumulator;
 
 /**
  * The reporter is able to report statistics of throughput.
@@ -34,11 +35,21 @@ public class ThroughputStatsReporter extends StatsReporter {
 
    @SuppressWarnings("rawtypes")
    @Override
-   protected Accumulator getAccumulator(String key, Class clazz) {
+   protected Accumulator getWindowedAccumulator(String key) {
+      if (AVERAGE.equals(key)) {
+         return new SlidingWindowHarmonicMeanAccumulator(getWindowSize());
+      } else {
+         return super.getWindowedAccumulator(key);
+      }
+   }
+
+   @SuppressWarnings("rawtypes")
+   @Override
+   protected Accumulator getNonWindowedAccumulator(String key) {
       if (AVERAGE.equals(key)) {
          return new HarmonicMeanAccumulator();
       } else {
-         return super.getAccumulator(key, clazz);
+         return super.getNonWindowedAccumulator(key);
       }
    }
 

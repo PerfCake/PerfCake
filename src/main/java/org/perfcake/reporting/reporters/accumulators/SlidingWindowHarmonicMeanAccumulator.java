@@ -20,15 +20,21 @@
 package org.perfcake.reporting.reporters.accumulators;
 
 /**
- * Accumulates average over a set number of recently reported values.
+ * Accumulates an harmonic mean over a set number of recently reported values.
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
-public class SlidingWindowAvgAccumulator extends AbstractSlidingWindowAccumulator {
+public class SlidingWindowHarmonicMeanAccumulator extends AbstractSlidingWindowAccumulator {
 
-   public SlidingWindowAvgAccumulator(int windowSize) {
+   public SlidingWindowHarmonicMeanAccumulator(int windowSize) {
       super(windowSize);
+   }
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public void add(final Double number) {
+      fifo.add(1.0 / number);
    }
 
    @Override
@@ -43,6 +49,6 @@ public class SlidingWindowAvgAccumulator extends AbstractSlidingWindowAccumulato
          size = fifo.size();
       }
 
-      return size == 0 ? 0d : accum / size;
+      return size == 0 ? 0d : size / accum;
    }
 }

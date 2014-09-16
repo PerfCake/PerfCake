@@ -49,7 +49,7 @@ public class ScenarioExecutionTest {
       scenario.run();
       final long post = System.currentTimeMillis();
       final long diff = post - pre;
-      Assert.assertTrue(diff > 5000 && diff < 6000, "The elapsed time was expected between 5s and 6s, but actualy was " + (double) diff / 1000 + "s");
+      Assert.assertTrue(diff >= 5000 && diff <= 6000, "The elapsed time was expected between 5s and 6s, but actualy was " + (double) diff / 1000 + "s");
    }
 
    @Test
@@ -59,7 +59,7 @@ public class ScenarioExecutionTest {
       scenario.run();
       final long post = System.currentTimeMillis();
       final long diff = post - pre;
-      Assert.assertTrue(diff > 10000 && diff < 12000, "The elapsed time was expected between 10s and 12s, but actualy was " + (double) diff / 1000 + "s");
+      Assert.assertTrue(diff >= 10000 && diff <= 12000, "The elapsed time was expected between 10s and 12s, but actualy was " + (double) diff / 1000 + "s");
    }
 
    private class ScenarioExecutorStopper implements Runnable {

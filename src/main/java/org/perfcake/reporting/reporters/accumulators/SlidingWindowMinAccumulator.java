@@ -19,30 +19,29 @@
  */
 package org.perfcake.reporting.reporters.accumulators;
 
+
 /**
- * Accumulates average over a set number of recently reported values.
+ * Accumulates a minimal value over a set number of recently reported values.
  * 
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
+ * 
  */
-public class SlidingWindowAvgAccumulator extends AbstractSlidingWindowAccumulator {
+public class SlidingWindowMinAccumulator extends AbstractSlidingWindowAccumulator {
 
-   public SlidingWindowAvgAccumulator(int windowSize) {
+   public SlidingWindowMinAccumulator(final int windowSize) {
       super(windowSize);
    }
 
    @Override
    public Double getResult() {
-      double accum = 0;
-      double size = 0;
-
+      double min = Double.MAX_VALUE;
       synchronized (fifo) {
          for (Object o : fifo) {
-            accum = accum + (Double) o;
+            min = Math.min(min, (Double) o);
          }
-         size = fifo.size();
       }
 
-      return size == 0 ? 0d : accum / size;
+      return fifo.size() == 0 ? Double.NaN : min;
    }
 }

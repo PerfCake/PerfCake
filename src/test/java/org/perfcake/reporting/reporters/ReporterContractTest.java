@@ -19,10 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
@@ -34,17 +30,20 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.reporting.destinations.DummyDestination.ReportAssert;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReporterContractTest {
 
    private final ReportManager rm = new ReportManager();
    private final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, 1000));
-   private final ResponseTimeStatsReporter r1 = new ResponseTimeStatsReporter();
-   /** TODO: use window feature of ResponseTimeStatsReporter once implemented */
-   // private final WindowResponseTimeReporter r2 = new WindowResponseTimeReporter();
-   private final ResponseTimeStatsReporter r2 = new ResponseTimeStatsReporter();
+   private final ValueStatsReporter r1 = new ValueStatsReporter();
+   private final ValueStatsReporter r2 = new ValueStatsReporter();
    private final DummyReporter dr = new DummyReporter();
    private final DummyDestination d1 = new DummyDestination();
    private final DummyDestination d2 = new DummyDestination();
@@ -132,6 +131,7 @@ public class ReporterContractTest {
       Thread.sleep(500);
       mu.stopMeasure();
 
+      mu.appendResult(Measurement.DEFAULT_RESULT, 0d);
       rm.report(mu);
       Assert.assertTrue(ri.isRunning());
       Assert.assertEquals(dr.getLastMethod(), "doReport");
@@ -164,9 +164,7 @@ public class ReporterContractTest {
       Assert.assertTrue(r1.getReportingPeriods().containsAll(bp));
 
       r2.registerDestination(d3, new Period(PeriodType.TIME, 1500));
-
-      /** TODO: use window feature of ResponseTimeStatsReporter once implemented */
-      // r2.setWindowSize(4);
+      r2.setWindowSize(4);
 
       rm.start();
 
@@ -180,15 +178,19 @@ public class ReporterContractTest {
          public void report(final Measurement m) {
             if (first) {
                Assert.assertEquals(m.getIteration(), 0L);
-               Assert.assertEquals(((Double) m.get()).longValue(), 10);
-               Assert.assertEquals(m.get("avg"), 0d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 0);
+               Assert.assertEquals(m.get(StatsReporter.AVERAGE), 0d);
+               Assert.assertEquals(m.get(StatsReporter.MINIMUM), 0d);
+               Assert.assertEquals(m.get(StatsReporter.MAXIMUM), 0d);
                Assert.assertEquals(m.get("it"), "1");
 
                first = false;
             } else {
                Assert.assertEquals(m.getIteration(), 99L);
-               Assert.assertEquals(((Double) m.get()).longValue(), 10);
-               Assert.assertEquals(m.get("avg"), 49.5d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 99);
+               Assert.assertEquals(m.get(StatsReporter.AVERAGE), 49.5d);
+               Assert.assertEquals(m.get(StatsReporter.MINIMUM), 0d);
+               Assert.assertEquals(m.get(StatsReporter.MAXIMUM), 99d);
                Assert.assertEquals(m.get("it"), "100");
                crc.incrementAndGet(); // this block will be executed twice, first for iteration, second for time
             }
@@ -203,20 +205,26 @@ public class ReporterContractTest {
          public void report(final Measurement m) {
             if (run == 0) {
                Assert.assertEquals(m.getPercentage(), 0);
-               Assert.assertEquals(((Double) m.get()).longValue(), 10);
-               Assert.assertEquals(m.get("avg"), 0d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 0);
+               Assert.assertEquals(m.get(StatsReporter.AVERAGE), 0d);
+               Assert.assertEquals(m.get(StatsReporter.MINIMUM), 0d);
+               Assert.assertEquals(m.get(StatsReporter.MAXIMUM), 0d);
 
                run = 1;
             } else if (run == 1) {
                Assert.assertEquals(m.getPercentage(), 8);
-               Assert.assertEquals(((Double) m.get()).longValue(), 10);
-               Assert.assertEquals(m.get("avg"), 39.5d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 79);
+               Assert.assertEquals(m.get(StatsReporter.AVERAGE), 39.5d);
+               Assert.assertEquals(m.get(StatsReporter.MINIMUM), 0d);
+               Assert.assertEquals(m.get(StatsReporter.MAXIMUM), 79d);
                crc.incrementAndGet();
                run = 2;
             } else {
                Assert.assertEquals(m.getPercentage(), 10);
-               Assert.assertEquals(((Double) m.get()).longValue(), 10);
-               Assert.assertEquals(m.get("avg"), 49.5d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 99);
+               Assert.assertEquals(m.get(StatsReporter.AVERAGE), 49.5d);
+               Assert.assertEquals(m.get(StatsReporter.MINIMUM), 0d);
+               Assert.assertEquals(m.get(StatsReporter.MAXIMUM), 99d);
                crc.incrementAndGet();
                run = 3;
             }
@@ -227,7 +235,10 @@ public class ReporterContractTest {
 
          @Override
          public void report(final Measurement m) {
-            Assert.assertEquals(m.get("avg"), 49.5d);
+            Assert.assertEquals(m.get(StatsReporter.AVERAGE), 97.5d);
+            Assert.assertEquals(m.get(StatsReporter.MINIMUM), 96d);
+            Assert.assertEquals(m.get(StatsReporter.MAXIMUM), 99d);
+            Assert.assertEquals(m.get(), 99d);
          }
       });
 
@@ -237,7 +248,7 @@ public class ReporterContractTest {
          mu.startMeasure();
          Thread.sleep(10);
          mu.stopMeasure();
-         mu.appendResult("avg", (double) i - 1); // AvgAccumulator should be used
+         mu.appendResult(Measurement.DEFAULT_RESULT, (double) i - 1);
          mu.appendResult("it", String.valueOf(i)); // LastValueAccumulator should be used
          Assert.assertEquals(((Double) mu.getTotalTime()).longValue(), 10, "Measurement runs for 10ms, so the value should not be much different.");
          rm.report(mu);
@@ -267,10 +278,10 @@ public class ReporterContractTest {
       Assert.assertEquals(ri.getPercentage(), 0d);
       Assert.assertEquals(ri.getIteration(), -1L);
       Assert.assertEquals(ri.getRunTime(), 0L);
-      Assert.assertNull(r1.getAccumulatedResult("avg"));
+      Assert.assertNull(r1.getAccumulatedResult(Measurement.DEFAULT_RESULT));
       Assert.assertNull(r1.getAccumulatedResult("it"));
       Assert.assertNull(r1.getAccumulatedResult(Measurement.DEFAULT_RESULT));
-      Assert.assertNull(r2.getAccumulatedResult("avg"));
+      Assert.assertNull(r2.getAccumulatedResult(Measurement.DEFAULT_RESULT));
       Assert.assertNull(r2.getAccumulatedResult("it"));
       Assert.assertNull(r2.getAccumulatedResult(Measurement.DEFAULT_RESULT));
 
@@ -287,6 +298,7 @@ public class ReporterContractTest {
          mu = rm.newMeasurementUnit();
          lastPercentage = ri.getPercentage();
          lastIteration = mu.getIteration();
+         mu.appendResult(Measurement.DEFAULT_RESULT, 0d);
          rm.report(mu);
       }
 
