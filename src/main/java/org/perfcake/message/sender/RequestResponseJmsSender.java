@@ -19,47 +19,74 @@
  */
 package org.perfcake.message.sender;
 
-import java.io.Serializable;
-import java.util.Map;
-import java.util.UUID;
-
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.QueueConnection;
-import javax.jms.QueueReceiver;
-import javax.jms.QueueSession;
-import javax.jms.Session;
-import javax.jms.TextMessage;
-import javax.naming.NamingException;
-
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.MeasurementUnit;
 
+import javax.jms.*;
+import javax.naming.NamingException;
+import java.io.Serializable;
+import java.util.Map;
+import java.util.UUID;
+
 /**
- * 
+ * A sender that is the same with @{link JmsSender} and adds a response retrieval.
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
 public class RequestResponseJmsSender extends JmsSender {
+
+   /**
+    * Logger.
+    */
    private static final Logger log = Logger.getLogger(RequestResponseJmsSender.class);
 
-   private QueueConnection responseConnection;
-   private QueueSession responseSession;
-   private Queue responseQueue;
-   private QueueReceiver responseReceiver;
+   /**
+    * JMS connection to the response destination.
+    */
+   private Connection responseConnection;
 
+   /**
+    * JMS session to the response destination.
+    */
+   private Session responseSession;
+
+   /**
+    * JMS consumer for the response destination.
+    */
+   private MessageConsumer responseReceiver;
+
+   /**
+    * Where to read the responses from.
+    */
    private String responseTarget = "";
+
+   /**
+    * Timeout for receiving the response in ms for a single attempt.
+    */
    private long receivingTimeout = 1000; // default 1s
+
+   /**
+    * Maximal number of attemts to read the response.
+    */
    private int receiveAttempts = 5;
 
-   private String correlationId     = UUID.randomUUID().toString();
+   /**
+    * Correlation ID of this sender instance for it to read only the messages that it has sent.
+    */
+   private String correlationId = UUID.randomUUID().toString();
+
+   /**
+    * Should the correlation ID be used in the JMS communication? Turning it off (false) allows the sender to read any response from the response destination.
+    */
    private boolean useCorrelationId = false;
-   
+
+   /**
+    * Indicates whether the JMS message is auto-acknowledged by the receiver (true) or by client (false).
+    */
+   protected boolean autoAck = true;
+
    @Override
    public void init() throws Exception {
       super.init();
@@ -67,18 +94,23 @@ public class RequestResponseJmsSender extends JmsSender {
          if (responseTarget == null || responseTarget.equals("")) {
             throw new PerfCakeException("responseTarget property is not defined in the scenario or is empty");
          } else {
-            responseQueue = (Queue) ctx.lookup(responseTarget);
+            Destination responseDestination = (Destination) ctx.lookup(responseTarget);
             if (checkCredentials()) {
-               responseConnection = qcf.createQueueConnection(username, password);
+               responseConnection = qcf.createConnection(username, password);
             } else {
-               responseConnection = qcf.createQueueConnection();
+               responseConnection = qcf.createConnection();
             }
             responseConnection.start();
-            responseSession = responseConnection.createQueueSession(transacted, Session.AUTO_ACKNOWLEDGE);
+
+            if (transacted && !autoAck) {
+               log.warn("AutoAck setting is ignored with a transacted session. Creating a transacted session.");
+            }
+            responseSession = responseConnection.createSession(transacted, autoAck ? Session.AUTO_ACKNOWLEDGE : Session.CLIENT_ACKNOWLEDGE);
+
             if (useCorrelationId) {
-               responseReceiver = responseSession.createReceiver(responseQueue, "JMSCorrelationID='" + correlationId + "'");
+               responseReceiver = responseSession.createConsumer(responseDestination, "JMSCorrelationID='" + correlationId + "'");
             } else {
-               responseReceiver = responseSession.createReceiver(responseQueue);
+               responseReceiver = responseSession.createConsumer(responseDestination);
             }
          }
 
@@ -150,6 +182,9 @@ public class RequestResponseJmsSender extends JmsSender {
                   log.debug("No message in " + responseTarget + " received within the specified timeout (" + receivingTimeout + " ms). Retrying (" + attempts + "/" + receiveAttempts + ") ...");
                }
             } else {
+               if (!autoAck) {
+                  response.acknowledge();
+               }
 
                if (response instanceof ObjectMessage) {
                   retVal = ((ObjectMessage) response).getObject();
@@ -162,6 +197,7 @@ public class RequestResponseJmsSender extends JmsSender {
                } else {
                   throw new PerfCakeException("Received message is not one of (ObjectMessage, TextMessage, BytesMessage) but: " + response.getClass().getName());
                }
+
                if (transacted) {
                   responseSession.commit();
                }
@@ -179,36 +215,86 @@ public class RequestResponseJmsSender extends JmsSender {
       }
    }
 
+   /**
+    * Sets the configuration of using the correlation ID in response retrieval.
+    * @param useCorrelationId When true, only the messages that are response to the original message can be read from the response destination. Otherwise, any response message can be read.
+    */
    public void setUseCorrelationId(boolean useCorrelationId) {
 	   this.useCorrelationId = useCorrelationId;
    }
-   
+
+   /**
+    * Gets the configuration of using the correlation ID.
+    * @return Whether the sender receives only the response messages with the appropriate correlation ID, i. e. responses to messages sent by this sender instance.
+    */
    public boolean isUseCorrelationId() {
 	   return useCorrelationId;
    }
-   
+
+   /**
+    * Gets the number of milliseconds to wait for the response message.
+    * @return Number of milliseconds to wait for the response message.
+    */
    public long getReceivingTimeout() {
       return receivingTimeout;
    }
 
+   /**
+    * Sets the number of milliseconds to wait for the response message.
+    * @param receivingTimeout  Number of milliseconds to wait for the response message.
+    */
    public void setReceivingTimeout(final long receivingTimeout) {
       this.receivingTimeout = receivingTimeout;
    }
 
+   /**
+    * Gets the maximum number of attempts to read the response message.
+    * @return The maximum number of attempts to read the response message.
+    */
    public int getReceiveAttempts() {
       return receiveAttempts;
    }
 
+   /**
+    * Sets the maximum number of attempts to read the response message.
+    * @param receiveAttempts The maximum number of attempts to read the response message.
+    */
    public void setReceiveAttempts(final int receiveAttempts) {
       this.receiveAttempts = receiveAttempts;
    }
 
+   /**
+    * Gets the destination where the response message is being read from.
+    * @return The name of the response destination.
+    */
    public String getResponseTarget() {
       return responseTarget;
    }
 
+   /**
+    * Sets the name of the destination where the response messages should be read from.
+    * @param responseTarget The name of the response destination.
+    */
    public void setResponseTarget(final String responseTarget) {
       this.responseTarget = responseTarget;
    }
 
+   /**
+    * Used to read the value of autoAck.
+    *
+    * @return The autoAck.
+    */
+   public boolean isAutoAck() {
+      return autoAck;
+   }
+
+   /**
+    * Sets the value of autoAck.
+    *
+    * @param autoAck
+    *           The autoAck to set.
+    */
+   public void setAutoAck(final boolean autoAck) {
+      this.autoAck = autoAck;
+   }
 }

@@ -31,6 +31,7 @@ import org.perfcake.reporting.reporters.accumulators.HarmonicMeanAccumulator;
  * @see StatsReporter Details about the actual statistic metrics.
  */
 public class ThroughputStatsReporter extends StatsReporter {
+
    @SuppressWarnings("rawtypes")
    @Override
    protected Accumulator getAccumulator(String key, Class clazz) {

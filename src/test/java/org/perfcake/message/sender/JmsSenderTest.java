@@ -70,7 +70,7 @@ public class JmsSenderTest extends Arquillian {
    @Test(priority = 0)
    public void testSanityCheck() throws Exception {
       Assert.assertNotNull(factory, "Unable to inject connection factory.");
-      Assert.assertNotNull(queue, "Unable to inject queue queue/test.");
+      Assert.assertNotNull(queue, "Unable to inject destination destination/test.");
    }
 
    @Test
@@ -89,7 +89,7 @@ public class JmsSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
 
          // STRING Type
@@ -129,7 +129,7 @@ public class JmsSenderTest extends Arquillian {
          Assert.assertTrue(response instanceof BytesMessage);
          Assert.assertEquals(((BytesMessage) response).readUTF(), payload1);
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
 
       } finally {
@@ -157,7 +157,7 @@ public class JmsSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, securedQueue));
 
          // STRING Type
@@ -167,7 +167,7 @@ public class JmsSenderTest extends Arquillian {
          sender.send(message, null);
          sender.postSend(message);
 
-         // make sure the queue is empty because the message is not yet commited (done in close())
+         // make sure the destination is empty because the message is not yet commited (done in close())
          Assert.assertNull(JmsHelper.readMessage(factory, 500, securedQueue));
       } finally {
          sender.close();
@@ -178,7 +178,7 @@ public class JmsSenderTest extends Arquillian {
       Assert.assertTrue(response instanceof TextMessage);
       Assert.assertEquals(((TextMessage) response).getText(), payload);
 
-      // make sure the queue is empty
+      // make sure the destination is empty
       Assert.assertNull(JmsHelper.readMessage(factory, 500, securedQueue));
    }
 
@@ -196,7 +196,7 @@ public class JmsSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
 
          // NON-PERSISTENT delivery
@@ -212,7 +212,7 @@ public class JmsSenderTest extends Arquillian {
          Assert.assertTrue(response instanceof TextMessage);
          Assert.assertEquals(((TextMessage) response).getText(), payload1);
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
       } finally {
          sender.close();
@@ -224,16 +224,14 @@ public class JmsSenderTest extends Arquillian {
       Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
       props.setProperty("target", "queue/test");
-      props.setProperty("autoAck", "false");
 
       JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
 
-      Assert.assertEquals(sender.isAutoAck(), false);
       Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
       try {
          sender.init();
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
 
          // CLIENT-ACK
@@ -248,7 +246,7 @@ public class JmsSenderTest extends Arquillian {
          Assert.assertTrue(response instanceof TextMessage);
          Assert.assertEquals(((TextMessage) response).getText(), payload);
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
       } finally {
          sender.close();
@@ -318,7 +316,7 @@ public class JmsSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
 
          // STRING Type
@@ -334,7 +332,7 @@ public class JmsSenderTest extends Arquillian {
          Assert.assertEquals(((TextMessage) response).getText(), payload);
          Assert.assertEquals(response.getStringProperty("kulíšek"), "kulíšek nejmenší");
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
       } finally {
          sender.close();
@@ -367,7 +365,7 @@ public class JmsSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.clientReadMessage(500, queueName));
 
          org.perfcake.message.Message message = new org.perfcake.message.Message();
@@ -381,7 +379,7 @@ public class JmsSenderTest extends Arquillian {
          Assert.assertTrue(response instanceof TextMessage);
          Assert.assertEquals(((TextMessage) response).getText(), payload);
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.clientReadMessage(500, queueName));
       } finally {
          sender.close();
@@ -401,7 +399,7 @@ public class JmsSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
 
          // STRING Type
@@ -418,7 +416,7 @@ public class JmsSenderTest extends Arquillian {
          Assert.assertEquals(((TextMessage) response).getText(), payload);
          Assert.assertEquals(response.getStringProperty("kulisek"), "kulisek nejmensi");
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
       } finally {
          sender.close();
@@ -439,7 +437,7 @@ public class JmsSenderTest extends Arquillian {
       try {
          sender.init();
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
 
          // STRING Type
@@ -454,7 +452,7 @@ public class JmsSenderTest extends Arquillian {
          Assert.assertEquals(((TextMessage) response).getText(), payload);
          Assert.assertEquals(sender.getReplyTo(), "queue/test_reply");
 
-         // make sure the queue is empty
+         // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
       } finally {
          sender.close();

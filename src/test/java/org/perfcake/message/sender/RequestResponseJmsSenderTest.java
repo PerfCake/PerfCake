@@ -78,6 +78,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
       props.setProperty("responseTarget", replyQueueName);
       props.setProperty("connectionFactory", "ConnectionFactory");
       props.setProperty("transacted", "true");
+      props.setProperty("autoAck", "false");
 
       RequestResponseJmsSender sender = (RequestResponseJmsSender) ObjectFactory.summonInstance(RequestResponseJmsSender.class.getName(), props);
 
@@ -85,6 +86,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
       Assert.assertEquals(sender.getTarget(), queueName);
       Assert.assertEquals(sender.getResponseTarget(), replyQueueName);
       Assert.assertEquals(sender.isTransacted(), true);
+      Assert.assertEquals(sender.isAutoAck(), false);
 
       try {
          sender.init();
