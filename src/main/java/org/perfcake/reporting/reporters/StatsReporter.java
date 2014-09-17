@@ -26,6 +26,7 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.AvgAccumulator;
+import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MinAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator;
@@ -106,10 +107,11 @@ public abstract class StatsReporter extends AbstractReporter {
             return new SlidingWindowMaxAccumulator(windowSize);
          case MINIMUM:
             return new SlidingWindowMinAccumulator(windowSize);
+         case Measurement.DEFAULT_RESULT:
+            return new LastValueAccumulator();
          case AVERAGE:
-            return new SlidingWindowAvgAccumulator(windowSize);
          default:
-            return super.getAccumulator(key, Double.class);
+            return new SlidingWindowAvgAccumulator(windowSize);
       }
    }
 
@@ -128,10 +130,11 @@ public abstract class StatsReporter extends AbstractReporter {
             return new MaxAccumulator();
          case MINIMUM:
             return new MinAccumulator();
+         case Measurement.DEFAULT_RESULT:
+            return new LastValueAccumulator();
          case AVERAGE:
-            return new AvgAccumulator();
          default:
-            return super.getAccumulator(key, Double.class);
+            return new AvgAccumulator();
       }
    }
 
@@ -219,10 +222,10 @@ public abstract class StatsReporter extends AbstractReporter {
    }
 
    /**
-    * Enables or disables the metric of a average value.
+    * Enables or disables the metric of an average value.
     * 
     * @param averageEnabled
-    *        Set <code>true</code> to enable the metric of a average value or <code>false</code> to disable it.
+    *        Set <code>true</code> to enable the metric of an average value or <code>false</code> to disable it.
     */
    public void setAverageEnabled(boolean averageEnabled) {
       this.averageEnabled = averageEnabled;
@@ -250,5 +253,4 @@ public abstract class StatsReporter extends AbstractReporter {
    public void setWindowSize(int windowSize) {
       this.windowSize = windowSize;
    }
-
 }
