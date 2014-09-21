@@ -36,10 +36,6 @@
          <name>Pavel Macík</name>
          <email>pavel.macik@gmail.com</email>
       </developer>
-      <developer>
-         <name>Jiří Sedláček</name>
-         <email>jiri@sedlackovi.cz</email>
-      </developer>
    </developers>
    <contributors>
       <contributor>
@@ -53,6 +49,19 @@
       <contributor>
          <name>Lenka Vašková</name>
          <email>vaskova.lenka@gmail.com</email>
+      </contributor>
+      <contributor>
+         <name>Jiří Sedláček</name>
+         <email>jiri@sedlackovi.cz</email>
+      </contributor>
+      <contributor>
+         <name>Vojtěch Juránek</name>
+      </contributor>
+      <contributor>
+         <name>Jiří Sviták</name>
+      </contributor>
+      <contributor>
+         <name>Jiří Locker</name>
       </contributor>
    </contributors>
    <ciManagement>
@@ -163,7 +172,7 @@
       <dependency>
          <groupId>commons-beanutils</groupId>
          <artifactId>commons-beanutils</artifactId>
-         <version>1.8.3</version>
+         <version>1.9.2</version>
       </dependency>
       <dependency>
          <groupId>commons-logging</groupId>

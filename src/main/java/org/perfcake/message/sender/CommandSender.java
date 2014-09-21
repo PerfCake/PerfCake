@@ -184,8 +184,9 @@ public class CommandSender extends AbstractSender {
     * @param messageFrom
     *           The messageFrom to set.
     */
-   public void setMessageFrom(final MessageFrom messageFrom) {
+   public CommandSender setMessageFrom(final MessageFrom messageFrom) {
       this.messageFrom = messageFrom;
+      return this;
    }
 
    /**
@@ -203,8 +204,9 @@ public class CommandSender extends AbstractSender {
     * @param commandPrefix
     *           The commandPrefix to set.
     */
-   protected void setCommandPrefix(final String commandPrefix) {
+   protected CommandSender setCommandPrefix(final String commandPrefix) {
       this.commandPrefix = commandPrefix;
+      return this;
    }
 
    /**
@@ -218,7 +220,8 @@ public class CommandSender extends AbstractSender {
     * @param environmentVariables
     *           the environmentVariables to set
     */
-   public void setEnvironmentVariables(String[] environmentVariables) {
+   public CommandSender setEnvironmentVariables(String[] environmentVariables) {
       this.environmentVariables = Arrays.copyOf(environmentVariables, environmentVariables.length); // ignore any later external modifications
+      return this;
    }
 }

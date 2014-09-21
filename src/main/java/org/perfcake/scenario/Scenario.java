@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,9 +30,9 @@ import org.perfcake.validation.ValidationManager;
 import java.util.List;
 
 /**
- * 
+ *
  * Scenario encapsulates whole test execution, contains all information necessary to run the test.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Jiří Sedláček <jiri@sedlackovi.cz>
@@ -50,7 +50,7 @@ public class Scenario {
 
    /**
     * Initialize the scenario execution
-    * 
+    *
     * @throws org.perfcake.PerfCakeException
     */
    public void init() throws PerfCakeException {
@@ -70,7 +70,7 @@ public class Scenario {
 
    /**
     * Execute the scenario. This mainly means to send the messages.
-    * 
+    *
     * @throws PerfCakeException
     */
    public void run() throws PerfCakeException {
@@ -98,7 +98,7 @@ public class Scenario {
 
    /**
     * Finalize the scenario.
-    * 
+    *
     * @throws PerfCakeException
     */
    public void close() throws PerfCakeException {
@@ -151,7 +151,7 @@ public class Scenario {
 
    /**
     * Sets the value of validationManager.
-    * 
+    *
     * @param validationManager
     *           The value of validationManager to set.
     */
@@ -159,4 +159,11 @@ public class Scenario {
       this.validationManager = validationManager;
    }
 
+   /**
+    * Gets the validation manager configured with the scenario.
+    * @return The validation manager configured with the scenario.
+    */
+   ValidationManager getValidationManager() {
+      return validationManager;
+   }
 }

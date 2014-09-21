@@ -277,7 +277,7 @@ public class CsvDestination implements Destination {
     * @param path
     *           The output file path to be set.
     */
-   public void setPath(final String path) {
+   public CsvDestination setPath(final String path) {
       synchronized (this) {
          if (csvFile != null) {
             throw new UnsupportedOperationException("Changing the value of path after opening the destination is not allowed.");
@@ -285,6 +285,7 @@ public class CsvDestination implements Destination {
       }
 
       this.path = path;
+      return this;
    }
 
    /**
@@ -302,8 +303,9 @@ public class CsvDestination implements Destination {
     * @param delimiter
     *           The delimiter to be used between data elements in an output line.
     */
-   public void setDelimiter(final String delimiter) {
+   public CsvDestination setDelimiter(final String delimiter) {
       this.delimiter = delimiter;
+      return this;
    }
 
    /**
@@ -321,8 +323,9 @@ public class CsvDestination implements Destination {
     * @param appendStrategy
     *           The appendStrategy value to set.
     */
-   public void setAppendStrategy(AppendStrategy appendStrategy) {
+   public CsvDestination setAppendStrategy(AppendStrategy appendStrategy) {
       this.appendStrategy = appendStrategy;
+      return this;
    }
 
    /**
@@ -339,8 +342,9 @@ public class CsvDestination implements Destination {
     * @param linePrefix
     *           The data lines prefix.
     */
-   public void setLinePrefix(String linePrefix) {
+   public CsvDestination setLinePrefix(String linePrefix) {
       this.linePrefix = linePrefix;
+      return this;
    }
 
    /**
@@ -357,8 +361,9 @@ public class CsvDestination implements Destination {
     * @param lineSuffix
     *           The data lines suffix.
     */
-   public void setLineSuffix(String lineSuffix) {
+   public CsvDestination setLineSuffix(String lineSuffix) {
       this.lineSuffix = lineSuffix;
+      return this;
    }
 
    /**
@@ -375,8 +380,9 @@ public class CsvDestination implements Destination {
     *           The delimiter used to separate output lines.
     *
     */
-   public void setLineBreak(String lineBreak) {
+   public CsvDestination setLineBreak(String lineBreak) {
       this.lineBreak = lineBreak;
+      return this;
    }
 
    /**
@@ -392,7 +398,8 @@ public class CsvDestination implements Destination {
     * @param skipHeader
     *           When set to true, headers are not written.
     */
-   public void setSkipHeader(boolean skipHeader) {
+   public CsvDestination setSkipHeader(boolean skipHeader) {
       this.skipHeader = skipHeader;
+      return this;
    }
 }

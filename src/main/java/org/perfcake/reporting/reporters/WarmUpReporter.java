@@ -165,8 +165,9 @@ public class WarmUpReporter extends AbstractReporter {
     * @param minimalWarmUpDuration
     *           The minimal warm-up period duration to set.
     */
-   public void setMinimalWarmUpDuration(final long minimalWarmUpDuration) {
+   public WarmUpReporter setMinimalWarmUpDuration(final long minimalWarmUpDuration) {
       this.minimalWarmUpDuration = minimalWarmUpDuration;
+      return this;
    }
 
    /**
@@ -184,8 +185,9 @@ public class WarmUpReporter extends AbstractReporter {
     * @param minimalWarmUpCount
     *           The value of minimal warm-up iteration count to set.
     */
-   public void setMinimalWarmUpCount(final long minimalWarmUpCount) {
+   public WarmUpReporter setMinimalWarmUpCount(final long minimalWarmUpCount) {
       this.minimalWarmUpCount = minimalWarmUpCount;
+      return this;
    }
 
    /**
@@ -203,8 +205,9 @@ public class WarmUpReporter extends AbstractReporter {
     * @param relativeThreshold
     *           The value of relativeThreshold to set.
     */
-   public void setRelativeThreshold(final double relativeThreshold) {
+   public WarmUpReporter setRelativeThreshold(final double relativeThreshold) {
       this.relativeThreshold = relativeThreshold;
+      return this;
    }
 
    /**
@@ -222,8 +225,9 @@ public class WarmUpReporter extends AbstractReporter {
     * @param absoluteThreshold
     *           The value of absoluteThreshold to set.
     */
-   public void setAbsoluteThreshold(final double absoluteThreshold) {
+   public WarmUpReporter setAbsoluteThreshold(final double absoluteThreshold) {
       this.absoluteThreshold = absoluteThreshold;
+      return this;
    }
 
 }

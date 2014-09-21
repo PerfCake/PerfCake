@@ -54,8 +54,9 @@ public class RegExpValidator implements MessageValidator {
       return pattern;
    }
 
-   public void setPattern(String pattern) {
+   public RegExpValidator setPattern(String pattern) {
       this.pattern = pattern;
+      return this;
    }
 
    public void setPattern(Element pattern) {

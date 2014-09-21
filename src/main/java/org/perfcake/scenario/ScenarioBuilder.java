@@ -19,84 +19,62 @@
  */
 package org.perfcake.scenario;
 
-import org.apache.log4j.Logger;
-import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
-import org.perfcake.message.sender.AbstractSender;
+import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.reporters.Reporter;
-import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Builder class for creating {@link org.perfcake.scenario.Scenario} instance, which can be run by {@link org.perfcake.ScenarioExecution}
- * <p/>
- * Uses fluent API to setup builder.
+ * A Java based builder for creating {@link org.perfcake.scenario.Scenario} instance, which can be run by {@link org.perfcake.ScenarioExecution}.
  *
- * @author Jiří Sedláček <jiri@sedlackovi.cz>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class ScenarioBuilder {
 
-   public static final Logger log = Logger.getLogger(ScenarioBuilder.class);
-
-   private RunInfo runInfo;
-   private AbstractSender senderTemplate;
-   private List<Reporter> reporters = new ArrayList<>();
-   private List<MessageTemplate> messages = new ArrayList<>();
-   private AbstractMessageGenerator generator;
-   private ValidationManager validationManager = new ValidationManager();
-
-   private ReportManager reportManager;
-
-   private MessageSenderManager messageSenderManager;
-
-   public ScenarioBuilder() throws PerfCakeException {
-
-   }
+   private Scenario scenario;
 
    /**
-    * Sets message generator which will be used for {@link org.perfcake.scenario.Scenario}
+    * Gets a new ScenarioBuilder instance. Mandatory objects must be passed in.
     *
-    * @param any
-    *       message generator
-    * @return this
+    * @param runInfo RunInfo specifying the test run time.
+    * @param messageGenerator Message generator to be used to generate messages during test.
+    * @param senderTemplate Sender template which will be cloned to create all sender instances.
+    * @throws PerfCakeException When any of the parameters are not set or creation of the underlying classes fails.
     */
-   public ScenarioBuilder setGenerator(AbstractMessageGenerator g) {
-      this.generator = g;
-      return this;
-   }
+   public ScenarioBuilder(final RunInfo runInfo, final AbstractMessageGenerator messageGenerator, final MessageSender senderTemplate) throws PerfCakeException {
+      if (runInfo == null) {
+         throw new PerfCakeException("RunInfo is not set.");
+      }
+      if (messageGenerator == null) {
+         throw new PerfCakeException("Generator is not set.");
+      }
+      if (senderTemplate == null) {
+         throw new PerfCakeException("Sender is not set.");
+      }
 
-   /**
-    * Sets {@link RunInfo} object, which will be used for {@link org.perfcake.scenario.Scenario}
-    *
-    * @param RunInfo
-    * @return this
-    */
-   public ScenarioBuilder setRunInfo(RunInfo ri) {
-      this.runInfo = ri;
-      return this;
-   }
+      scenario = new Scenario();
+      messageGenerator.setRunInfo(runInfo);
+      scenario.setGenerator(messageGenerator);
 
-   /**
-    * Sets {@link AbstractSender} implementation object, which will be used as a template for preparing pool of senders
-    *
-    * @param AbstractSender
-    *       implementation
-    * @return this
-    */
-   public ScenarioBuilder setSender(AbstractSender s) {
-      this.senderTemplate = s;
-      return this;
+      MessageSenderManager messageSenderManager = new MessageSenderManager();
+      messageSenderManager.setSenderClass(senderTemplate.getClass().getName());
+      messageSenderManager.setSenderPoolSize(messageGenerator.getThreads());
+      scenario.setMessageSenderManager(messageSenderManager);
+
+      ReportManager reportManager = new ReportManager();
+      reportManager.setRunInfo(runInfo);
+      scenario.setReportManager(reportManager);
+
+      scenario.setMessageStore(new ArrayList<MessageTemplate>());
+      scenario.setValidationManager(new ValidationManager());
    }
 
    /**
@@ -106,92 +84,42 @@ public class ScenarioBuilder {
     *       implementation
     * @return this
     */
-   public ScenarioBuilder addReporter(Reporter r) {
-      reporters.add(r);
+   public ScenarioBuilder addReporter(final Reporter r) {
+      scenario.getReportManager().registerReporter(r);
       return this;
    }
 
    /**
-    * Adds a {@link MessageTemplate}, which will be used in {@link org.perfcake.scenario.Scenario}
+    * Adds a {@link MessageTemplate}, which will be used in the {@link org.perfcake.scenario.Scenario}
     *
-    * @param MessageTemplate
+    * @param MessageTemplate A message template to be added to the list of messages to be send during in one sender cycle.
     * @return this
     */
-   public ScenarioBuilder addMessage(MessageTemplate message) {
-      messages.add(message);
+   public ScenarioBuilder addMessage(final MessageTemplate messageTemplate) {
+      scenario.getMessageStore().add(messageTemplate);
       return this;
    }
 
    /**
-    * Put validator under the key validatorId
+    * Puts a validator under the given key.
     *
-    * @param validatorId
-    * @param message
-    *       validator
-    * @return
+    * @param validatorId Id of the new validator.
+    * @param messageValidator The message validator to be registered.
+    * @return this
     */
-   public ScenarioBuilder putMessageValidator(String validatorId, MessageValidator mv) {
-      validationManager.addValidator(validatorId, mv);
-      validationManager.setEnabled(true);
+   public ScenarioBuilder putMessageValidator(final String validatorId, final MessageValidator messageValidator) {
+      scenario.getValidationManager().addValidator(validatorId, messageValidator);
+      scenario.getValidationManager().setEnabled(true);
       return this;
    }
 
    /**
     * Builds the usable {@link org.perfcake.scenario.Scenario} object, which can be then used for executing the scenario.
     *
-    * @return
-    * @throws IllegalStateException
-    *       if {@link RunInfo} is not set
-    * @throws IllegalStateException
-    *       if some generator is not set
-    * @throws IllegalStateException
-    *       if some sender is not set or messageSenderManager was not loaded
+    * @return The finished {@link org.perfcake.scenario.Scenario}.
     */
    public Scenario build() throws Exception {
-      if (runInfo == null) {
-         throw new IllegalStateException("RunInfo is not set");
-      }
-      if (generator == null) {
-         throw new IllegalStateException("Generator is not set");
-      }
-      if (messageSenderManager == null && senderTemplate == null) {
-         throw new IllegalStateException("Sender is not set");
-      }
-
-      Scenario sc = new Scenario();
-      generator.setRunInfo(runInfo);
-      sc.setGenerator(generator);
-
-      if (messageSenderManager == null) {
-         MessageSenderManager msm = new MessageSenderManager();
-         msm.setSenderClass(senderTemplate.getClass().getName());
-         msm.setSenderPoolSize(generator.getThreads());
-/*         for (int i = 0; i < generator.getThreads(); i++) {
-            AbstractSender newInstance = senderTemplate.getClass().newInstance();
-            BeanUtils.copyProperties(newInstance, senderTemplate);
-            newInstance.init();
-            msm.addSenderInstance(newInstance);
-         }*/
-         sc.setMessageSenderManager(msm);
-      } else {
-         sc.setMessageSenderManager(messageSenderManager);
-      }
-
-      if (reportManager == null) { // if report parsed directly
-         reportManager = new ReportManager();
-      }
-
-      for (Reporter r : reporters) {
-         reportManager.registerReporter(r);
-      }
-
-      reportManager.setRunInfo(runInfo);
-      sc.setReportManager(reportManager);
-
-      sc.setMessageStore(messages);
-      sc.setValidationManager(validationManager);
-
-      return sc;
+      return scenario;
    }
 
 }

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ import org.perfcake.reporting.ReportingException;
  * The destination that appends the measurements to Log4j to category org.perfcake.reporting.destinations.Log4jDestination.
  * Make appropriate configurations to customize its output. You can configure a separate appender only for this category for instance.
  * Logging level can be set via the level attribute.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class Log4jDestination implements Destination {
@@ -45,7 +45,7 @@ public class Log4jDestination implements Destination {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.reporting.destinations.Destination#open()
     */
    @Override
@@ -55,7 +55,7 @@ public class Log4jDestination implements Destination {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.reporting.destinations.Destination#close()
     */
    @Override
@@ -98,7 +98,7 @@ public class Log4jDestination implements Destination {
 
    /**
     * Get the current logging level.
-    * 
+    *
     * @return The current logging level.
     */
    public Level getLevel() {
@@ -107,12 +107,13 @@ public class Log4jDestination implements Destination {
 
    /**
     * Sets the level at which the destination should log the measurement results.
-    * 
+    *
     * @param level
     *           Level at which the destination logs.
     */
-   public void setLevel(final Level level) {
+   public Log4jDestination setLevel(final Level level) {
       this.level = level;
+      return this;
    }
 
 }

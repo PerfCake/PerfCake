@@ -180,8 +180,9 @@ public class JdbcSender extends AbstractSender {
     * @param jdbcUrl
     *       The jdbcUrl to set.
     */
-   public void setJdbcUrl(final String jdbcUrl) {
+   public JdbcSender setJdbcUrl(final String jdbcUrl) {
       this.jdbcUrl = jdbcUrl;
+      return this;
    }
 
    /**
@@ -199,8 +200,9 @@ public class JdbcSender extends AbstractSender {
     * @param driverClass
     *       The driverClass to set.
     */
-   public void setDriverClass(final String driverClass) {
+   public JdbcSender setDriverClass(final String driverClass) {
       this.driverClass = driverClass;
+      return this;
    }
 
    /**
@@ -218,8 +220,9 @@ public class JdbcSender extends AbstractSender {
     * @param username
     *       The username to set.
     */
-   public void setUsername(final String username) {
+   public JdbcSender setUsername(final String username) {
       this.username = username;
+      return this;
    }
 
    /**
@@ -237,8 +240,9 @@ public class JdbcSender extends AbstractSender {
     * @param password
     *       The password to set.
     */
-   public void setPassword(final String password) {
+   public JdbcSender setPassword(final String password) {
       this.password = password;
+      return this;
    }
 
 }

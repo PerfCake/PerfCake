@@ -204,71 +204,80 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
       return preThreadCount;
    }
 
-   public void setPreThreadCount(int preThreadCount) {
+   public RampUpDownGenerator setPreThreadCount(int preThreadCount) {
       this.preThreadCount = preThreadCount;
+      return this;
    }
 
    public int getPostThreadCount() {
       return postThreadCount;
    }
 
-   public void setPostThreadCount(int postThreadCount) {
+   public RampUpDownGenerator setPostThreadCount(int postThreadCount) {
       this.postThreadCount = postThreadCount;
+      return this;
    }
 
    public long getPreDuration() {
       return preDuration;
    }
 
-   public void setPreDuration(long preDuration) {
+   public RampUpDownGenerator setPreDuration(long preDuration) {
       this.preDuration = preDuration;
+      return this;
    }
 
    public int getRampUpStep() {
       return rampUpStep;
    }
 
-   public void setRampUpStep(int rampUpStep) {
+   public RampUpDownGenerator setRampUpStep(int rampUpStep) {
       this.rampUpStep = rampUpStep;
+      return this;
    }
 
    public long getRampUpStepPeriod() {
       return rampUpStepPeriod;
    }
 
-   public void setRampUpStepPeriod(long rampUpStepPeriod) {
+   public RampUpDownGenerator setRampUpStepPeriod(long rampUpStepPeriod) {
       this.rampUpStepPeriod = rampUpStepPeriod;
+      return this;
    }
 
    public int getRampDownStep() {
       return rampDownStep;
    }
 
-   public void setRampDownStep(int rampDownStep) {
+   public RampUpDownGenerator setRampDownStep(int rampDownStep) {
       this.rampDownStep = rampDownStep;
+      return this;
    }
 
    public long getRampDownStepPeriod() {
       return rampDownStepPeriod;
    }
 
-   public void setRampDownStepPeriod(long rampDownStepPeriod) {
+   public RampUpDownGenerator setRampDownStepPeriod(long rampDownStepPeriod) {
       this.rampDownStepPeriod = rampDownStepPeriod;
+      return this;
    }
 
    public long getMainDuration() {
       return mainDuration;
    }
 
-   public void setMainDuration(long mainDuration) {
+   public RampUpDownGenerator setMainDuration(long mainDuration) {
       this.mainDuration = mainDuration;
+      return this;
    }
 
    public int getMaxThreadCount() {
       return mainThreadCount;
    }
 
-   public void setMaxThreadCount(int maxThreadCount) {
+   public RampUpDownGenerator setMaxThreadCount(int maxThreadCount) {
       this.mainThreadCount = maxThreadCount;
+      return this;
    }
 }

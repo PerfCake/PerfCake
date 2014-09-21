@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The common ancestor for all senders.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 abstract public class AbstractSender implements MessageSender {
@@ -45,7 +45,7 @@ abstract public class AbstractSender implements MessageSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.MessageSender#init()
     */
    @Override
@@ -53,7 +53,7 @@ abstract public class AbstractSender implements MessageSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.MessageSender#close()
     */
    @Override
@@ -61,7 +61,7 @@ abstract public class AbstractSender implements MessageSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -87,7 +87,7 @@ abstract public class AbstractSender implements MessageSender {
    /**
     * Do not use any logger or anything not directly related to sending the
     * message, since this method is being measured
-    * 
+    *
     * @param message
     * @return
     * @throws Exception
@@ -99,7 +99,7 @@ abstract public class AbstractSender implements MessageSender {
    /**
     * Do not use any logger or anything not directly related to sending the
     * message, since this method is being measured
-    * 
+    *
     * @param message
     * @param properties
     * @return
@@ -120,7 +120,7 @@ abstract public class AbstractSender implements MessageSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message)
     */
    @Override
@@ -130,7 +130,7 @@ abstract public class AbstractSender implements MessageSender {
 
    /**
     * Used to read the value of target.
-    * 
+    *
     * @return The target.
     */
    public String getTarget() {
@@ -139,11 +139,13 @@ abstract public class AbstractSender implements MessageSender {
 
    /**
     * Sets the value of target.
-    * 
+    *
     * @param target
     *           The target to set.
+    * @return this to support fluent API.
     */
-   public void setTarget(final String target) {
+   public AbstractSender setTarget(final String target) {
       this.target = target;
+      return this;
    }
 }

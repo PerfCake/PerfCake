@@ -213,8 +213,9 @@ public class DictionaryValidator implements MessageValidator {
     * Sets Gets the dictionary directory name.
     * @param dictionaryDirectory The name of the dictionary directory.
     */
-   public void setDictionaryDirectory(String dictionaryDirectory) {
+   public DictionaryValidator setDictionaryDirectory(String dictionaryDirectory) {
       this.dictionaryDirectory = dictionaryDirectory;
+      return this;
    }
 
    /**
@@ -229,8 +230,9 @@ public class DictionaryValidator implements MessageValidator {
     * Sets the file name of the dictionary index.
     * @param dictionaryIndex The file name of the dictionary index.
     */
-   public void setDictionaryIndex(String dictionaryIndex) {
+   public DictionaryValidator setDictionaryIndex(String dictionaryIndex) {
       this.dictionaryIndex = dictionaryIndex;
+      return this;
    }
 
    /**
@@ -245,7 +247,8 @@ public class DictionaryValidator implements MessageValidator {
     * Sets the record mode
     * @param record True to activate the record mode.
     */
-   public void setRecord(boolean record) {
+   public DictionaryValidator setRecord(boolean record) {
       this.record = record;
+      return this;
    }
 }

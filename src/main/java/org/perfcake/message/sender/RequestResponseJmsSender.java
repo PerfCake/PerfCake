@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -301,8 +301,9 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param useCorrelationId When true, only the messages that are response to the original message can be read from the response destination. Otherwise, any response message can be read.
     */
-   public void setUseCorrelationId(boolean useCorrelationId) {
+   public RequestResponseJmsSender setUseCorrelationId(boolean useCorrelationId) {
       this.useCorrelationId = useCorrelationId;
+      return this;
    }
 
    /**
@@ -328,8 +329,9 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param receivingTimeout Number of milliseconds to wait for the response message.
     */
-   public void setReceivingTimeout(final long receivingTimeout) {
+   public RequestResponseJmsSender setReceivingTimeout(final long receivingTimeout) {
       this.receivingTimeout = receivingTimeout;
+      return this;
    }
 
    /**
@@ -346,8 +348,9 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param receiveAttempts The maximum number of attempts to read the response message.
     */
-   public void setReceiveAttempts(final int receiveAttempts) {
+   public RequestResponseJmsSender setReceiveAttempts(final int receiveAttempts) {
       this.receiveAttempts = receiveAttempts;
+      return this;
    }
 
    /**
@@ -364,8 +367,9 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseTarget The name of the response destination.
     */
-   public void setResponseTarget(final String responseTarget) {
+   public RequestResponseJmsSender setResponseTarget(final String responseTarget) {
       this.responseTarget = responseTarget;
+      return this;
    }
 
    /**
@@ -382,8 +386,9 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param autoAck The autoAck to set.
     */
-   public void setAutoAck(final boolean autoAck) {
+   public RequestResponseJmsSender setAutoAck(final boolean autoAck) {
       this.autoAck = autoAck;
+      return this;
    }
 
    /**
@@ -401,8 +406,9 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseConnectionFactory The connection factory used for the response reception.
     */
-   public void setResponseConnectionFactory(String responseConnectionFactory) {
+   public RequestResponseJmsSender setResponseConnectionFactory(String responseConnectionFactory) {
       this.responseConnectionFactory = responseConnectionFactory;
+      return this;
    }
 
    /**
@@ -419,8 +425,9 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseJndiContextFactory The JNDI context factory used for the response reception.
     */
-   public void setResponseJndiContextFactory(String responseJndiContextFactory) {
+   public RequestResponseJmsSender setResponseJndiContextFactory(String responseJndiContextFactory) {
       this.responseJndiContextFactory = responseJndiContextFactory;
+      return this;
    }
 
    /**
@@ -438,8 +445,9 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseJndiUrl The JNDI URL used for the response reception.
     */
-   public void setResponseJndiUrl(String responseJndiUrl) {
+   public RequestResponseJmsSender setResponseJndiUrl(String responseJndiUrl) {
       this.responseJndiUrl = responseJndiUrl;
+      return this;
    }
 
    /**
@@ -457,8 +465,9 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseJndiSecurityPrincipal The security principal used for the response reception.
     */
-   public void setResponseJndiSecurityPrincipal(String responseJndiSecurityPrincipal) {
+   public RequestResponseJmsSender setResponseJndiSecurityPrincipal(String responseJndiSecurityPrincipal) {
       this.responseJndiSecurityPrincipal = responseJndiSecurityPrincipal;
+      return this;
    }
 
    /**
@@ -477,8 +486,9 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseJndiSecurityCredentials The JNDI security credentials to be used for the response reception.
     */
-   public void setResponseJndiSecurityCredentials(String responseJndiSecurityCredentials) {
+   public RequestResponseJmsSender setResponseJndiSecurityCredentials(String responseJndiSecurityCredentials) {
       this.responseJndiSecurityCredentials = responseJndiSecurityCredentials;
+      return this;
    }
 
    /**
@@ -495,8 +505,9 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseUsername The JMS username used for response reception.
     */
-   public void setResponseUsername(String responseUsername) {
+   public RequestResponseJmsSender setResponseUsername(String responseUsername) {
       this.responseUsername = responseUsername;
+      return this;
    }
 
    /**
@@ -513,7 +524,8 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responsePassword The JMS username used for response reception.
     */
-   public void setResponsePassword(String responsePassword) {
+   public RequestResponseJmsSender setResponsePassword(String responsePassword) {
       this.responsePassword = responsePassword;
+      return this;
    }
 }

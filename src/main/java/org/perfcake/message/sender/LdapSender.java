@@ -39,7 +39,7 @@ import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The sender which queries LDAP server.
- * 
+ *
  * @author vjuranek
  */
 public class LdapSender extends AbstractSender {
@@ -58,32 +58,36 @@ public class LdapSender extends AbstractSender {
       return ldapUsername;
    }
 
-   public void setLdapUsername(String ldapUsername) {
+   public LdapSender setLdapUsername(String ldapUsername) {
       this.ldapUsername = ldapUsername;
+      return this;
    }
 
    public String getLdapPassword() {
       return ldapPassword;
    }
 
-   public void setLdapPassword(String ldapPassword) {
+   public LdapSender setLdapPassword(String ldapPassword) {
       this.ldapPassword = ldapPassword;
+      return this;
    }
 
    public String getSearchBase() {
       return searchBase;
    }
 
-   public void setSearchBase(String searchBase) {
+   public LdapSender setSearchBase(String searchBase) {
       this.searchBase = searchBase;
+      return this;
    }
 
    public String getFilter() {
       return filter;
    }
 
-   public void setFilter(String filter) {
+   public LdapSender setFilter(String filter) {
       this.filter = filter;
+      return this;
    }
 
    @Override

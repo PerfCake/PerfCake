@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,10 +39,10 @@ import org.perfcake.util.Utils;
 
 /**
  * The sender that is able to send the messages via HTTP protocol.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
- * 
+ *
  */
 public class HttpSender extends AbstractSender {
 
@@ -110,18 +110,19 @@ public class HttpSender extends AbstractSender {
 
    /**
     * Sets the value of expectedResponseCodes property.
-    * 
+    *
     * @param expectedResponseCodes
     *           The expectedResponseCodes property to set.
     */
-   public void setExpectedResponseCodes(final String expectedResponseCodes) {
+   public HttpSender setExpectedResponseCodes(final String expectedResponseCodes) {
       this.expectedResponseCodes = expectedResponseCodes;
       setExpectedResponseCodesList(expectedResponseCodes.split(","));
+      return this;
    }
 
    /**
     * Used to read the list of expected response codes.
-    * 
+    *
     * @return The list of expected response codes.
     */
    public List<Integer> getExpectedResponseCodeList() {
@@ -130,7 +131,7 @@ public class HttpSender extends AbstractSender {
 
    /**
     * Used to read the value of expectedResponseCodes property.
-    * 
+    *
     * @return The expectedResponseCodes.
     */
    public String getExpectedResponseCodes() {
@@ -139,21 +140,23 @@ public class HttpSender extends AbstractSender {
 
    /**
     * Sets a list of expected response codes.
-    * 
+    *
     * @param codes
     *           The array of codes.
     */
-   protected void setExpectedResponseCodesList(final String[] codes) {
+   protected HttpSender setExpectedResponseCodesList(final String[] codes) {
       LinkedList<Integer> numCodes = new LinkedList<Integer>();
       for (String code : codes) {
          numCodes.add(Integer.parseInt(code.trim()));
       }
       expectedResponseCodeList = numCodes;
+
+      return this;
    }
 
    /**
     * Checks if the code is expected.
-    * 
+    *
     * @param code
     *           Checked response code.
     * @return
@@ -288,7 +291,7 @@ public class HttpSender extends AbstractSender {
 
    /**
     * Used to read the value of HTTP method.
-    * 
+    *
     * @return The HTTP method.
     */
    public Method getMethod() {
@@ -297,12 +300,13 @@ public class HttpSender extends AbstractSender {
 
    /**
     * Sets the value of HTTP method.
-    * 
+    *
     * @param method
     *           The HTTP method to set.
     */
-   public void setMethod(final Method method) {
+   public HttpSender setMethod(final Method method) {
       this.method = method;
+      return this;
    }
 
 }

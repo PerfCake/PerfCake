@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,7 @@ import org.perfcake.reporting.MeasurementUnit;
  * scenario testing and developing purposes. It does not actually send any message.
  * It can simulate a synchronous waiting for a reply by setting the {@link #delay} property in milliseconds (with default values 0).
  * property.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
@@ -48,7 +48,7 @@ public class DummySender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#init()
     */
    @Override
@@ -61,7 +61,7 @@ public class DummySender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#close()
     */
    @Override
@@ -74,7 +74,7 @@ public class DummySender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -91,7 +91,7 @@ public class DummySender extends AbstractSender {
 
    /**
     * Used to read the value of delay.
-    * 
+    *
     * @return The delay.
     */
    public long getDelay() {
@@ -100,12 +100,13 @@ public class DummySender extends AbstractSender {
 
    /**
     * Sets the value of delay.
-    * 
+    *
     * @param delay
     *           The delay to set.
     */
-   public void setDelay(final long delay) {
+   public DummySender setDelay(final long delay) {
       this.delay = delay;
+      return this;
    }
 
 }

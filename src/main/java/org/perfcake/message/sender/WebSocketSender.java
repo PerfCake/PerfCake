@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,7 +63,7 @@ public class WebSocketSender extends AbstractSender {
 
    private PayloadType payloadType = PayloadType.TEXT;
 
-   public void setRemoteEndpointType(final String remoteEndpointType) {
+   public WebSocketSender setRemoteEndpointType(final String remoteEndpointType) {
       switch (remoteEndpointType) {
          case "basic":
             this.remoteEndpointType = RemoteEndpointType.BASIC;
@@ -74,9 +74,11 @@ public class WebSocketSender extends AbstractSender {
          default:
             throw new IllegalStateException("Unknown or undefined web socket remote endpoint type. Use either basic or async.");
       }
+
+      return this;
    }
 
-   public void setPayloadType(final String payloadType) {
+   public WebSocketSender setPayloadType(final String payloadType) {
       switch (payloadType) {
          case "text":
             this.payloadType = PayloadType.TEXT;
@@ -90,6 +92,8 @@ public class WebSocketSender extends AbstractSender {
          default:
             throw new IllegalStateException("Unknown or undefined web socket payload type. Use text, binary, or ping.");
       }
+
+      return this;
    }
 
    @Override

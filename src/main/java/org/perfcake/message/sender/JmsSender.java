@@ -348,8 +348,9 @@ public class JmsSender extends AbstractSender {
     * @param username
     *           The username to set.
     */
-   public void setUsername(final String username) {
+   public JmsSender setUsername(final String username) {
       this.username = username;
+      return this;
    }
 
    /**
@@ -367,8 +368,9 @@ public class JmsSender extends AbstractSender {
     * @param password
     *           The password to set.
     */
-   public void setPassword(final String password) {
+   public JmsSender setPassword(final String password) {
       this.password = password;
+      return this;
    }
 
    /**
@@ -386,8 +388,9 @@ public class JmsSender extends AbstractSender {
     * @param transacted
     *           The transacted to set.
     */
-   public void setTransacted(final boolean transacted) {
+   public JmsSender setTransacted(final boolean transacted) {
       this.transacted = transacted;
+      return this;
    }
 
    /**
@@ -405,8 +408,9 @@ public class JmsSender extends AbstractSender {
     * @param persistent
     *           The persistent to set.
     */
-   public void setPersistent(final boolean persistent) {
+   public JmsSender setPersistent(final boolean persistent) {
       this.persistent = persistent;
+      return this;
    }
 
    /**
@@ -414,8 +418,9 @@ public class JmsSender extends AbstractSender {
     *
     * @param messageType
     */
-   public void setMessageType(MessageType messageType) {
+   public JmsSender setMessageType(MessageType messageType) {
 	   this.messageType = messageType;
+      return this;
    }
 
    /**
@@ -442,8 +447,9 @@ public class JmsSender extends AbstractSender {
     * @param connectionFactory
     *           The connectionFactory to set.
     */
-   public void setConnectionFactory(final String connectionFactory) {
+   public JmsSender setConnectionFactory(final String connectionFactory) {
       this.connectionFactory = connectionFactory;
+      return this;
    }
 
    /**
@@ -461,8 +467,9 @@ public class JmsSender extends AbstractSender {
     * @param jndiContextFactory
     *           The jndiContextFactory to set.
     */
-   public void setJndiContextFactory(final String jndiContextFactory) {
+   public JmsSender setJndiContextFactory(final String jndiContextFactory) {
       this.jndiContextFactory = jndiContextFactory;
+      return this;
    }
 
    /**
@@ -480,8 +487,9 @@ public class JmsSender extends AbstractSender {
     * @param jndiUrl
     *           The jndiUrl to set.
     */
-   public void setJndiUrl(final String jndiUrl) {
+   public JmsSender setJndiUrl(final String jndiUrl) {
       this.jndiUrl = jndiUrl;
+      return this;
    }
 
    /**
@@ -499,8 +507,9 @@ public class JmsSender extends AbstractSender {
     * @param jndiSecurityPrincipal
     *           The jndiSecurityPrincipal to set.
     */
-   public void setJndiSecurityPrincipal(final String jndiSecurityPrincipal) {
+   public JmsSender setJndiSecurityPrincipal(final String jndiSecurityPrincipal) {
       this.jndiSecurityPrincipal = jndiSecurityPrincipal;
+      return this;
    }
 
    /**
@@ -518,8 +527,9 @@ public class JmsSender extends AbstractSender {
     * @param jndiSecurityCredentials
     *           The jndiSecurityCredentials to set.
     */
-   public void setJndiSecurityCredentials(final String jndiSecurityCredentials) {
+   public JmsSender setJndiSecurityCredentials(final String jndiSecurityCredentials) {
       this.jndiSecurityCredentials = jndiSecurityCredentials;
+      return this;
    }
 
    /**
@@ -537,8 +547,9 @@ public class JmsSender extends AbstractSender {
     * @param replyTo
     *           The replyTo to set.
     */
-   public void setReplyTo(final String replyTo) {
+   public JmsSender setReplyTo(final String replyTo) {
       this.replyTo = replyTo;
+      return this;
    }
 
 }

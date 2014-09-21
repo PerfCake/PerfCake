@@ -102,12 +102,14 @@ public class RulesValidator implements MessageValidator {
     * Sets the rules file from which the assertions are loaded.
     * @param validationRuleFile The file name of the assertions file.
     */
-   public void setRules(final String validationRuleFile) {
+   public RulesValidator setRules(final String validationRuleFile) {
       try (final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(validationRuleFile), StandardCharsets.UTF_8))) {
          processAssertions(br);
       } catch (final Exception ex) {
          log.error("Error creating Drools base message validator.", ex);
       }
+
+      return this;
    }
 
    /**

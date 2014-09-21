@@ -19,8 +19,7 @@
  */
 package org.perfcake.util;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.ConvertUtilsBean;
+import org.apache.commons.beanutils.*;
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.w3c.dom.Element;
@@ -59,6 +58,15 @@ public class ObjectFactory {
       }
    }
 
+   /**
+    * Lookup for a set method on a bean that is able to accept Element
+    * @param object
+    * @param propertyName
+    * @param value
+    * @return
+    * @throws InvocationTargetException
+    * @throws IllegalAccessException
+    */
    private static boolean setElementProperty(final Object object, final String propertyName, final Element value) throws InvocationTargetException, IllegalAccessException {
       try {
          Method setter = object.getClass().getDeclaredMethod("set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1), Element.class);
@@ -77,7 +85,10 @@ public class ObjectFactory {
     * @throws IllegalAccessException
     */
    public static void setPropertiesOnObject(final Object object, final Properties properties) throws IllegalAccessException, InvocationTargetException {
-      BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumConvertUtilsBean());
+      PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();
+      propertyUtilsBean.addBeanIntrospector(new FluentPropertyBeanIntrospector());
+      BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumConvertUtilsBean(), propertyUtilsBean);
+
       for (Map.Entry<Object, Object> entry : properties.entrySet()) {
          if (log.isTraceEnabled()) {
             log.trace("Setting property: '" + entry.getKey().toString() + "'='" + entry.getValue().toString() + "'");

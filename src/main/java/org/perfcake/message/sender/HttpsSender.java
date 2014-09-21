@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,7 +34,7 @@ import org.perfcake.message.Message;
 import org.perfcake.util.Utils;
 
 /**
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Filip Eliáš <elfilip01@gmail.com>
@@ -106,32 +106,36 @@ public class HttpsSender extends HttpSender {
       return keyStore;
    }
 
-   public void setKeyStore(final String keyStore) {
+   public HttpsSender setKeyStore(final String keyStore) {
       this.keyStore = keyStore;
+      return this;
    }
 
    public String getKeyStorePassword() {
       return keyStorePassword;
    }
 
-   public void setKeyStorePassword(final String keyStorePassword) {
+   public HttpsSender setKeyStorePassword(final String keyStorePassword) {
       this.keyStorePassword = keyStorePassword;
+      return this;
    }
 
    public String getTrustStore() {
       return trustStore;
    }
 
-   public void setTrustStore(final String trustStore) {
+   public HttpsSender setTrustStore(final String trustStore) {
       this.trustStore = trustStore;
+      return this;
    }
 
    public String getTrustStorePassword() {
       return trustStorePassword;
    }
 
-   public void setTrustStorePassword(final String trustStorePassword) {
+   public HttpsSender setTrustStorePassword(final String trustStorePassword) {
       this.trustStorePassword = trustStorePassword;
+      return this;
    }
 
 }

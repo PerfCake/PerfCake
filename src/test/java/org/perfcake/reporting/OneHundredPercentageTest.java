@@ -41,34 +41,22 @@ import org.testng.annotations.Test;
 public class OneHundredPercentageTest {
 
    private Scenario getScenario(Period p, DummyDestination dd) throws Exception {
-      ScenarioBuilder sb = new ScenarioBuilder();
-
       RunInfo ri = new RunInfo(p);
-
-      sb.setRunInfo(ri);
 
       DefaultMessageGenerator mg = new DefaultMessageGenerator();
       mg.setThreads(100);
       mg.setThreadQueueSize(1000);
 
-      sb.setGenerator(mg);
-
-      DummySender ds = new DummySender();
-
-      sb.setSender(new DummySender());
-
       ThroughputStatsReporter atr = new ThroughputStatsReporter();
-      atr.setRunInfo(ri);
-
       atr.registerDestination(dd, new Period(PeriodType.TIME, 500));
-
-      sb.addReporter(atr);
 
       Message m = new Message();
       m.setPayload("hello");
 
       MessageTemplate mt = new MessageTemplate(m, 1, null);
 
+      ScenarioBuilder sb = new ScenarioBuilder(ri, mg, new DummySender());
+      sb.addReporter(atr);
       sb.addMessage(mt);
 
       return sb.build();

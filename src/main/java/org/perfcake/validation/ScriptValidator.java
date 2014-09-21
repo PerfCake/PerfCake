@@ -94,19 +94,22 @@ public class ScriptValidator implements MessageValidator {
       return engine;
    }
 
-   public void setEngine(String engine) {
+   public ScriptValidator setEngine(String engine) {
       this.compiledScript = null;
       this.engine = engine;
+      return this;
    }
 
    public String getScript() {
       return script;
    }
 
-   public void setScript(String script) {
+   public ScriptValidator setScript(String script) {
       this.scriptFile = null;
       this.compiledScript = null;
       this.script = script;
+
+      return this;
    }
 
    public void setScript(Element script) {
@@ -119,9 +122,11 @@ public class ScriptValidator implements MessageValidator {
       return scriptFile;
    }
 
-   public void setScriptFile(String scriptFile) {
+   public ScriptValidator setScriptFile(String scriptFile) {
       this.script = null;
       this.compiledScript = null;
       this.scriptFile = scriptFile;
+
+      return this;
    }
 }
