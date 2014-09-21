@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -50,6 +50,7 @@ import java.util.Properties;
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
+@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "DM_EXIT", justification = "This class is allowed to terminate the JVM.")
 public class ScenarioExecution {
 
    private static final Logger log = Logger.getLogger(ScenarioExecution.class);
@@ -102,8 +103,8 @@ public class ScenarioExecution {
       Properties props = new Properties();
       String propsFile = System.getProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY);
       if (propsFile != null) {
-         try {
-            props.load(new FileInputStream(propsFile));
+         try (final FileInputStream propsInputStream = new FileInputStream(propsFile)) {
+            props.load(propsInputStream);
          } catch (IOException e) {
             // we can still continue without reading file
             log.warn(String.format("Unable to read the properties file '%s': ", propsFile), e);
