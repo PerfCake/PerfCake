@@ -19,6 +19,8 @@
  */
 package org.perfcake.util.agent;
 
+import org.perfcake.util.agent.PerfCakeAgent.Memory;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,8 +31,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Properties;
-
-import org.perfcake.util.agent.PerfCakeAgent.Memory;
 
 /**
  * The actuall implementation of the PerfCake agent.
@@ -136,7 +136,7 @@ public class AgentThread implements Runnable {
     * Logs a message.
     *
     * @param msg
-    *           Message to be logged.
+    *       Message to be logged.
     */
    private static void log(String msg) {
       System.out.println(PerfCakeAgent.class.getSimpleName() + " > " + msg);
@@ -146,7 +146,7 @@ public class AgentThread implements Runnable {
     * Logs an error message.
     *
     * @param msg
-    *           Message to be logged.
+    *       Message to be logged.
     */
    private static void err(String msg) {
       System.err.println(PerfCakeAgent.class.getSimpleName() + " > ERROR: " + msg);

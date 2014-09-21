@@ -19,7 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
@@ -27,9 +26,10 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 
+import org.apache.log4j.Logger;
+
 /**
  * @author Pavel Macík <pavel.macik@gmail.com>
- *
  */
 public class DummyReporter extends AbstractReporter {
 

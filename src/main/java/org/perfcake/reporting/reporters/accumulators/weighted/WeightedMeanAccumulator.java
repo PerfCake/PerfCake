@@ -27,7 +27,6 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
  * (x1 * w1 + x2 * w2 + x3 * w3 + ...) / (w1 + w2 + w3 + ...)
  *
  * @author Martin Večeřa <marvenec@gmail.com>
- *
  */
 public class WeightedMeanAccumulator implements Accumulator<WeightedValue<Double>> {
 

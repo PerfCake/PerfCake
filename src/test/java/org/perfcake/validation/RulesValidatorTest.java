@@ -20,6 +20,7 @@
 package org.perfcake.validation;
 
 import org.perfcake.message.Message;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

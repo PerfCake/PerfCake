@@ -19,11 +19,12 @@
  */
 package org.perfcake.message.generator;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSenderManager;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -114,7 +115,8 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
       PeriodType runTimeType = runInfo.getDuration().getPeriodType();
       runInfo.addTag("");
 
-      mainLoop: while (runInfo.isRunning()) {
+      mainLoop:
+      while (runInfo.isRunning()) {
          final long runTime;
          switch (runTimeType) {
             case TIME:

@@ -19,13 +19,24 @@
  */
 package org.perfcake.validation;
 
-import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
+
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
-import javax.script.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import javax.script.Bindings;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 /**
  * Validates messages using Java Script Engine and the provided script.

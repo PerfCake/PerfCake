@@ -97,7 +97,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * different from the default value of {@link Integer#MAX_VALUE}.
     *
     * @param key
-    *        Name of the key from the results map.
+    *       Name of the key from the results map.
     * @return An appropriate accumulator instance.
     */
    @SuppressWarnings("rawtypes")
@@ -120,7 +120,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * equal to the value of {@link Integer#MAX_VALUE}, which is the default value.
     *
     * @param key
-    *        Name of the key from the results map.
+    *       Name of the key from the results map.
     * @return An appropriate accumulator instance.
     */
    @SuppressWarnings("rawtypes")
@@ -187,7 +187,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * Enables or disables the metric of a maximal value.
     *
     * @param maximumEnabled
-    *        Set <code>true</code> to enable the metric of a maximal value or <code>false</code> to disable it.
+    *       Set <code>true</code> to enable the metric of a maximal value or <code>false</code> to disable it.
     */
    public StatsReporter setMaximumEnabled(boolean maximumEnabled) {
       this.maximumEnabled = maximumEnabled;
@@ -207,7 +207,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * Enables or disables the metric of a minimal value.
     *
     * @param minimumEnabled
-    *        Set <code>true</code> to enable the metric of a minimal value or <code>false</code> to disable it.
+    *       Set <code>true</code> to enable the metric of a minimal value or <code>false</code> to disable it.
     */
    public StatsReporter setMinimumEnabled(boolean minimumEnabled) {
       this.minimumEnabled = minimumEnabled;
@@ -227,7 +227,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * Enables or disables the metric of an average value.
     *
     * @param averageEnabled
-    *        Set <code>true</code> to enable the metric of an average value or <code>false</code> to disable it.
+    *       Set <code>true</code> to enable the metric of an average value or <code>false</code> to disable it.
     */
    public StatsReporter setAverageEnabled(boolean averageEnabled) {
       this.averageEnabled = averageEnabled;
@@ -251,7 +251,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * sliding window is not used at all and the statistics are taken from the whole run.
     *
     * @param windowSize
-    *        The sliding window size.
+    *       The sliding window size.
     */
    public StatsReporter setWindowSize(int windowSize) {
       this.windowSize = windowSize;

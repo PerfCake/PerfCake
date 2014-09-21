@@ -19,10 +19,11 @@
  */
 package org.perfcake.scenario;
 
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.Utils;
+
+import org.apache.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,7 +40,8 @@ public class ScenarioLoader {
    /**
     * Loads {@link org.perfcake.scenario.Scenario} from the location specified with the system property <code>-Dscenario=<scenario name></code>
     *
-    * @param scenario scenario location
+    * @param scenario
+    *       scenario location
     * @return parsed scenario.
     * @throws PerfCakeException
     *       if scenario property is not set or there is some problem with loading the scenario.

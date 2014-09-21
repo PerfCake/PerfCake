@@ -23,7 +23,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class WeightedHarmonicMeanAccumulatorTest {
@@ -40,7 +39,6 @@ public class WeightedHarmonicMeanAccumulatorTest {
 
       wma.reset();
       Assert.assertEquals(wma.getResult(), new WeightedValue<Double>(Double.NaN, 1l));
-
 
    }
 }

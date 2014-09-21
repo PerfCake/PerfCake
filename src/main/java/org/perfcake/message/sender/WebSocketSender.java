@@ -19,12 +19,17 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
+import org.perfcake.message.Message;
+import org.perfcake.reporting.MeasurementUnit;
+
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
-
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
@@ -36,14 +41,9 @@ import javax.websocket.RemoteEndpoint;
 import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
-import org.apache.log4j.Logger;
-import org.perfcake.PerfCakeException;
-import org.perfcake.message.Message;
-import org.perfcake.reporting.MeasurementUnit;
-
 /**
  * The sender can be used to send a simple messages via websocket protocol to a remote websocket server endpoint.
- **/
+ */
 public class WebSocketSender extends AbstractSender {
 
    private static final Logger logger = Logger.getLogger(WebSocketSender.class);
@@ -105,8 +105,9 @@ public class WebSocketSender extends AbstractSender {
       } catch (DeploymentException | URISyntaxException e) {
          throw new RuntimeException(e);
       }
-      if (session == null)
+      if (session == null) {
          throw new PerfCakeException("Web socket session cannot be null before the scenario run.");
+      }
    }
 
    @Override

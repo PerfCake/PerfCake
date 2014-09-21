@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,14 +19,19 @@
  */
 package org.perfcake.validation;
 
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.message.ReceivedMessage;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.TreeMap;
 
 /**
  * A manager of validator that should validate message responses.
@@ -73,7 +78,8 @@ public class ValidationManager {
    /**
     * Creates a new validator menager. The message responses are store in a file queue in a temporary file.
     *
-    * @throws PerfCakeException When it was not possible to initialize the message store.
+    * @throws PerfCakeException
+    *       When it was not possible to initialize the message store.
     */
    public ValidationManager() throws PerfCakeException {
       try {
@@ -88,8 +94,10 @@ public class ValidationManager {
    /**
     * Sets a different location of the file queue for storing message responses.
     *
-    * @param queueFile The new location of the file queue.
-    * @throws PerfCakeException When it was not possible to initialize the file queue or there is a running validation.
+    * @param queueFile
+    *       The new location of the file queue.
+    * @throws PerfCakeException
+    *       When it was not possible to initialize the file queue or there is a running validation.
     */
    public void setQueueFile(final File queueFile) throws PerfCakeException {
       if (isFinished()) {
@@ -102,8 +110,10 @@ public class ValidationManager {
    /**
     * Adds a new message validator.
     *
-    * @param validatorId      A string id of the new validator.
-    * @param messageValidator A validator instance.
+    * @param validatorId
+    *       A string id of the new validator.
+    * @param messageValidator
+    *       A validator instance.
     */
    public void addValidator(final String validatorId, final MessageValidator messageValidator) {
       validators.put(validatorId, messageValidator);
@@ -112,7 +122,8 @@ public class ValidationManager {
    /**
     * Gets the validator with the given id.
     *
-    * @param validatorId A string id of the validator.
+    * @param validatorId
+    *       A string id of the validator.
     * @return The validator instance or null if there is no such validator with the given id.
     */
    public MessageValidator getValidator(final String validatorId) {
@@ -121,13 +132,15 @@ public class ValidationManager {
 
    /**
     * Get all the validators requested in the list of ids.
-    * @param validatorIds A list of ids of validators to be returned.
+    *
+    * @param validatorIds
+    *       A list of ids of validators to be returned.
     * @return The list of requested validators.
     */
    public List<MessageValidator> getValidators(final List<String> validatorIds) {
       List<MessageValidator> _validators = new ArrayList<>();
 
-      for(String id: validatorIds) {
+      for (String id : validatorIds) {
          _validators.add(getValidator(id));
       }
 
@@ -149,7 +162,8 @@ public class ValidationManager {
     * Wait for the validation to be finished. The call is blocked until the validator thread finishes execution or an exception
     * is thrown. Internally, this joins the validator thread to the current thread.
     *
-    * @throws InterruptedException If the validator thread was interrupted.
+    * @throws InterruptedException
+    *       If the validator thread was interrupted.
     */
    public void waitForValidation() throws InterruptedException {
       if (validationThread != null) {
@@ -170,7 +184,8 @@ public class ValidationManager {
    /**
     * Adds a new message response to be validated.
     *
-    * @param receivedMessage The message response to be validated.
+    * @param receivedMessage
+    *       The message response to be validated.
     */
    public void addToResultMessages(final ReceivedMessage receivedMessage) {
       resultMessages.add(receivedMessage);
@@ -197,7 +212,8 @@ public class ValidationManager {
    /**
     * Enables/disables validation. This only takes effect before the validation is started and or finished.
     *
-    * @param enabled specifies whether we want the validation to be enabled.
+    * @param enabled
+    *       specifies whether we want the validation to be enabled.
     */
    public void setEnabled(final boolean enabled) {
       if (enabled || finished) {

@@ -72,7 +72,8 @@ public class RunInfo {
    /**
     * Creates a new RunInfo.
     *
-    * @param duration Target duration of the run (time or iterations)
+    * @param duration
+    *       Target duration of the run (time or iterations)
     */
    public RunInfo(final Period duration) {
       this.duration = duration;
@@ -168,8 +169,7 @@ public class RunInfo {
     * the result value will be influenced.
     *
     * @param iteration
-    *             the iteration for which we want to know the progress % number compared to the configured period duration
-    *
+    *       the iteration for which we want to know the progress % number compared to the configured period duration
     * @return Completed percents of the theoretical measurement state. This cannot be more than 100% no matter what value is provided.
     */
    public double getPercentage(long iteration) {
@@ -253,7 +253,8 @@ public class RunInfo {
    /**
     * Checks for a presence of a given tag.
     *
-    * @param tag A tag to be checked
+    * @param tag
+    *       A tag to be checked
     * @return True if the specified tag is set for this run info
     */
    public boolean hasTag(final String tag) {
@@ -263,7 +264,8 @@ public class RunInfo {
    /**
     * Associate a new tag with this measurement.
     *
-    * @param tag A new tag to be associated
+    * @param tag
+    *       A new tag to be associated
     */
    public void addTag(final String tag) {
       tags.add(tag);
@@ -272,7 +274,8 @@ public class RunInfo {
    /**
     * A set of tags to be associated with the current measurement.
     *
-    * @param tags A set of tags to be associated
+    * @param tags
+    *       A set of tags to be associated
     */
    public void addTags(final Set<String> tags) {
       this.tags.addAll(tags);
@@ -281,7 +284,8 @@ public class RunInfo {
    /**
     * Removes a tag from this run.
     *
-    * @param tag A tag to be removed
+    * @param tag
+    *       A tag to be removed
     */
    public void removeTag(final String tag) {
       this.tags.remove(tag);
@@ -306,16 +310,17 @@ public class RunInfo {
     *
     * @return The number of threads.
     */
-   public int getThreads(){
+   public int getThreads() {
       return threads;
    }
 
    /**
     * Sets the information about the number of threads that is currently used to generate the load.
     *
-    * @param threads The number of threads.
+    * @param threads
+    *       The number of threads.
     */
-   public void setThreads(int threads){
+   public void setThreads(int threads) {
       this.threads = threads;
    }
 

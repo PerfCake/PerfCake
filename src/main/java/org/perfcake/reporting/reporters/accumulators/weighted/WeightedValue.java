@@ -24,7 +24,6 @@ package org.perfcake.reporting.reporters.accumulators.weighted;
  * This is used for statistics. An instance is immutable.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
- *
  */
 public class WeightedValue<T extends Number> {
    private final T value;
@@ -32,8 +31,11 @@ public class WeightedValue<T extends Number> {
 
    /**
     * Create a new immutable instance with the specified value and weight.
-    * @param value The value to be stored
-    * @param weight The weight of the value
+    *
+    * @param value
+    *       The value to be stored
+    * @param weight
+    *       The weight of the value
     */
    public WeightedValue(final T value, final long weight) {
       this.value = value;
@@ -42,6 +44,7 @@ public class WeightedValue<T extends Number> {
 
    /**
     * Get the stored value.
+    *
     * @return The stored value.
     */
    public T getValue() {
@@ -50,6 +53,7 @@ public class WeightedValue<T extends Number> {
 
    /**
     * Gets the weight of the value.
+    *
     * @return The weight of the value.
     */
    public long getWeight() {

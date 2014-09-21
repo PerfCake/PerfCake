@@ -19,12 +19,18 @@
  */
 package org.perfcake.message.sender;
 
-import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
+import org.apache.log4j.Logger;
+
 import java.io.Serializable;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 
 /**

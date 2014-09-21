@@ -27,7 +27,6 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
  * (w1 + w2 + w3 + ...) / ((w1 / x1) + (w2 / x2) + (w3 / x3) + ...)
  *
  * @author Martin Večeřa <marvenec@gmail.com>
- *
  */
 public class WeightedHarmonicMeanAccumulator implements Accumulator<WeightedValue<Double>> {
 

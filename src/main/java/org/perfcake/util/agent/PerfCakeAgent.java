@@ -20,7 +20,6 @@ package org.perfcake.util.agent;
  * PerfCake agent that can be used to monitor tested system's JVM.
  *
  * @author Pavel Macík <pavel.macik@gmail.com>
- *
  */
 public class PerfCakeAgent {
 
@@ -38,7 +37,6 @@ public class PerfCakeAgent {
     * The memory type.
     *
     * @author Pavel Macík <pavel.macik@gmail.com>
-    *
     */
    public enum Memory {
       FREE, USED, TOTAL, MAX
@@ -48,7 +46,7 @@ public class PerfCakeAgent {
     * {@link PerfCakeAgent}'s pre-main method.
     *
     * @param agentArgs
-    *           Agent arguments.
+    *       Agent arguments.
     */
    public static void premain(String agentArgs) {
       Thread agentThread = new Thread(new AgentThread(agentArgs));

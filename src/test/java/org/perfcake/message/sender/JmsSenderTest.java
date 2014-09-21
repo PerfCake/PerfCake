@@ -19,16 +19,20 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
+import org.perfcake.util.ObjectFactory;
+
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.container.test.api.RunAsClient;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.perfcake.PerfCakeException;
-import org.perfcake.util.ObjectFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 import javax.annotation.Resource;
 import javax.jms.BytesMessage;
 import javax.jms.ConnectionFactory;
@@ -37,9 +41,6 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
 
 /**
  * @author Lenka Vašková <vaskova.lenka@gmail.com>

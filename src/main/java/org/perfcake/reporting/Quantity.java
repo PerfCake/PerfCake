@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +21,8 @@ package org.perfcake.reporting;
 
 /**
  * A number with a unit
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
 public class Quantity<N extends Number> {
    private final N number;
@@ -31,11 +30,11 @@ public class Quantity<N extends Number> {
 
    /**
     * Create a new quantity
-    * 
+    *
     * @param number
-    *           The value
+    *       The value
     * @param unit
-    *           The unit of the value
+    *       The unit of the value
     */
    public Quantity(final N number, final String unit) {
       this.number = number;
@@ -44,7 +43,7 @@ public class Quantity<N extends Number> {
 
    /**
     * Gets the current value
-    * 
+    *
     * @return the current value
     */
    public N getNumber() {
@@ -53,7 +52,7 @@ public class Quantity<N extends Number> {
 
    /**
     * Gets the unit of the value
-    * 
+    *
     * @return the unit of the value
     */
    public String getUnit() {
@@ -72,23 +71,30 @@ public class Quantity<N extends Number> {
    @SuppressWarnings("rawtypes")
    @Override
    public boolean equals(final Object obj) {
-      if (this == obj)
+      if (this == obj) {
          return true;
-      if (obj == null)
+      }
+      if (obj == null) {
          return false;
-      if (getClass() != obj.getClass())
+      }
+      if (getClass() != obj.getClass()) {
          return false;
+      }
       Quantity other = (Quantity) obj;
       if (number == null) {
-         if (other.number != null)
+         if (other.number != null) {
             return false;
-      } else if (!number.equals(other.number))
+         }
+      } else if (!number.equals(other.number)) {
          return false;
+      }
       if (unit == null) {
-         if (other.unit != null)
+         if (other.unit != null) {
             return false;
-      } else if (!unit.equals(other.unit))
+         }
+      } else if (!unit.equals(other.unit)) {
          return false;
+      }
       return true;
    }
 

@@ -19,9 +19,13 @@
  */
 package org.perfcake.util;
 
-import org.apache.commons.beanutils.*;
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
+
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.ConvertUtilsBean;
+import org.apache.commons.beanutils.FluentPropertyBeanIntrospector;
+import org.apache.commons.beanutils.PropertyUtilsBean;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 import java.io.File;
@@ -60,6 +64,7 @@ public class ObjectFactory {
 
    /**
     * Lookup for a set method on a bean that is able to accept Element
+    *
     * @param object
     * @param propertyName
     * @param value

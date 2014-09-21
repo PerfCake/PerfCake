@@ -19,17 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
 import org.perfcake.common.TimestampedRecord;
 import org.perfcake.reporting.Measurement;
@@ -43,13 +32,24 @@ import org.perfcake.util.Utils;
 import org.perfcake.util.agent.PerfCakeAgent;
 import org.perfcake.util.agent.PerfCakeAgent.Memory;
 
+import org.apache.log4j.Logger;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * Reporter that is able to get the memory usage information from a remote JVM,
  * where {@link PerfCakeAgent} is deployed. It communicates with the {@link PerfCakeAgent} to
  * get the information.
  *
  * @author Pavel Macík <pavel.macik@gmail.com>
- *
  */
 public class MemoryUsageReporter extends AbstractReporter {
 
@@ -113,17 +113,17 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Determines the period in which a memory usage is gathered from the {@link PerfCakeAgent}.
-    **/
+    */
    private long memoryLeakDetectionMonitoringPeriod = 500L;
 
    /**
     * A flag that indicates that a possible memory leak has been detected.
-    **/
+    */
    private boolean memoryLeakDetected = false;
 
    /**
     * Tha latest computed used memory trend slope value.
-    **/
+    */
    private float memoryTrendSlope = 0;
 
    private MemoryDataGatheringTask memoryDataGatheringTask = null;
@@ -212,7 +212,7 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * An inner class of the task that gathers memory data for memory leak detection analysis.
-    **/
+    */
    private class MemoryDataGatheringTask implements Runnable {
 
       private boolean running;
@@ -254,7 +254,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * Gets the memory usage information from the {@link PerfCakeAgent} the reporter is connected to.
     *
     * @param type
-    *           {@link Memory} type.
+    *       {@link Memory} type.
     * @return Amount of memory type in bytes.
     * @throws IOException
     */
@@ -276,7 +276,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * Used to set the value of agentHostname.
     *
     * @param agentHostname
-    *           The agent hostname value to set.
+    *       The agent hostname value to set.
     */
    public MemoryUsageReporter setAgentHostname(final String agentHostname) {
       this.agentHostname = agentHostname;
@@ -296,7 +296,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * Used to set the value of agentPort.
     *
     * @param agentPort
-    *           The agent port value to set.
+    *       The agent port value to set.
     */
    public MemoryUsageReporter setAgentPort(final String agentPort) {
       this.agentPort = agentPort;
@@ -316,7 +316,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * Used to set the value of timeWindowSize.
     *
     * @param usedMemoryTimeWindowSize
-    *           The usedMemoryTimeWindowSize value to set.
+    *       The usedMemoryTimeWindowSize value to set.
     */
    public MemoryUsageReporter setUsedMemoryTimeWindowSize(int timeWindowSize) {
       this.usedMemoryTimeWindowSize = timeWindowSize;
@@ -336,7 +336,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * Used to set the value of memoryLeakSlopeThreshold.
     *
     * @param memoryLeakSlopeThreshold
-    *           The memoryLeakSlopeThreshold value to set.
+    *       The memoryLeakSlopeThreshold value to set.
     */
    public MemoryUsageReporter setMemoryLeakSlopeThreshold(double memoryLeakSlopeThreshold) {
       this.memoryLeakSlopeThreshold = memoryLeakSlopeThreshold;
@@ -356,7 +356,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * Used to set the value of memoryLeakDetectionEnabled.
     *
     * @param memoryLeakDetectionEnabled
-    *           The memoryLeakDetectionEnabled value to set.
+    *       The memoryLeakDetectionEnabled value to set.
     */
    public MemoryUsageReporter setMemoryLeakDetectionEnabled(boolean memoryLeakDetectionEnabled) {
       this.memoryLeakDetectionEnabled = memoryLeakDetectionEnabled;
@@ -376,7 +376,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * Used to set the value of memoryLeakDetectionMonitoringPeriod.
     *
     * @param memoryLeakDetectionMonitoringPeriod
-    *           The memoryLeakDetectionMonitoringPeriod value to set.
+    *       The memoryLeakDetectionMonitoringPeriod value to set.
     */
    public MemoryUsageReporter setMemoryLeakDetectionMonitoringPeriod(long memoryLeakDetectionMonitoringPeriod) {
       this.memoryLeakDetectionMonitoringPeriod = memoryLeakDetectionMonitoringPeriod;

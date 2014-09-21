@@ -20,8 +20,6 @@
 package org.perfcake.reporting;
 
 import org.perfcake.RunInfo;
-import org.perfcake.scenario.Scenario;
-import org.perfcake.scenario.ScenarioBuilder;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
@@ -30,6 +28,9 @@ import org.perfcake.message.generator.DefaultMessageGenerator;
 import org.perfcake.message.sender.DummySender;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.reporting.reporters.ThroughputStatsReporter;
+import org.perfcake.scenario.Scenario;
+import org.perfcake.scenario.ScenarioBuilder;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

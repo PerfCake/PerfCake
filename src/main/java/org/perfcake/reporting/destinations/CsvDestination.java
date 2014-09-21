@@ -19,14 +19,19 @@
  */
 package org.perfcake.reporting.destinations;
 
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.Utils;
 
-import java.io.*;
+import org.apache.log4j.Logger;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -92,28 +97,28 @@ public class CsvDestination implements Destination {
    /**
     * Strategy that is used in case that the output file, that this destination represents
     * was used by a different destination or scenario run before.
-    **/
+    */
    private AppendStrategy appendStrategy = AppendStrategy.RENAME;
 
    /**
     * Strategy that is used in case that the output file exists. {@link AppendStrategy#OVERWRITE} means that the file
     * is overwritten, {@link AppendStrategy#RENAME} means that the current output file is renamed by adding a number-based
     * suffix and {@link AppendStrategy#FORCE_APPEND} is for appending new results to the original file.
-    **/
+    */
    public enum AppendStrategy {
       /**
        * The original file is overwritten.
-       **/
+       */
       OVERWRITE,
 
       /**
        * The original file is left alone but the output file is renamed according to a number-based pattern.
-       **/
+       */
       RENAME,
 
       /**
        * The measurements are appended to the original file.
-       **/
+       */
       FORCE_APPEND
    }
 
@@ -275,7 +280,7 @@ public class CsvDestination implements Destination {
     * Once the destination opens the target file, the changes to this property are ignored.
     *
     * @param path
-    *           The output file path to be set.
+    *       The output file path to be set.
     */
    public CsvDestination setPath(final String path) {
       synchronized (this) {
@@ -301,7 +306,7 @@ public class CsvDestination implements Destination {
     * Sets the delimiter used in a line between individual data elements.
     *
     * @param delimiter
-    *           The delimiter to be used between data elements in an output line.
+    *       The delimiter to be used between data elements in an output line.
     */
    public CsvDestination setDelimiter(final String delimiter) {
       this.delimiter = delimiter;
@@ -321,7 +326,7 @@ public class CsvDestination implements Destination {
     * Sets the append strategy to be used when writing to the CSV file.
     *
     * @param appendStrategy
-    *           The appendStrategy value to set.
+    *       The appendStrategy value to set.
     */
    public CsvDestination setAppendStrategy(AppendStrategy appendStrategy) {
       this.appendStrategy = appendStrategy;
@@ -330,6 +335,7 @@ public class CsvDestination implements Destination {
 
    /**
     * Gets the data line prefix.
+    *
     * @return The data line prefix.
     */
    public String getLinePrefix() {
@@ -339,8 +345,9 @@ public class CsvDestination implements Destination {
    /**
     * Sets the data line prefix.
     * This string is written to the output file at the beginning of each line containing data (i.e. not to headers line).
+    *
     * @param linePrefix
-    *           The data lines prefix.
+    *       The data lines prefix.
     */
    public CsvDestination setLinePrefix(String linePrefix) {
       this.linePrefix = linePrefix;
@@ -349,6 +356,7 @@ public class CsvDestination implements Destination {
 
    /**
     * Gets the data line suffix.
+    *
     * @return The data line suffix.
     */
    public String getLineSuffix() {
@@ -358,8 +366,9 @@ public class CsvDestination implements Destination {
    /**
     * Sets the data line suffix.
     * This string is written to the output file at the end of each line containing data (i.e. not to headers line).
+    *
     * @param lineSuffix
-    *           The data lines suffix.
+    *       The data lines suffix.
     */
    public CsvDestination setLineSuffix(String lineSuffix) {
       this.lineSuffix = lineSuffix;
@@ -368,6 +377,7 @@ public class CsvDestination implements Destination {
 
    /**
     * Gets the delimiter used to separate individual lines in the output files.
+    *
     * @return The delimiter used to separate output lines.
     */
    public String getLineBreak() {
@@ -376,9 +386,9 @@ public class CsvDestination implements Destination {
 
    /**
     * Sets the delimiter used to separate individual lines in the output files.
-    * @param lineBreak
-    *           The delimiter used to separate output lines.
     *
+    * @param lineBreak
+    *       The delimiter used to separate output lines.
     */
    public CsvDestination setLineBreak(String lineBreak) {
       this.lineBreak = lineBreak;
@@ -387,6 +397,7 @@ public class CsvDestination implements Destination {
 
    /**
     * When true, headers are not written to the output file.
+    *
     * @return True when headers should be written to the output file, false otherwise.
     */
    public boolean isSkipHeader() {
@@ -395,8 +406,9 @@ public class CsvDestination implements Destination {
 
    /**
     * Specifies whether headers should be ommited from the output file.
+    *
     * @param skipHeader
-    *           When set to true, headers are not written.
+    *       When set to true, headers are not written.
     */
    public CsvDestination setSkipHeader(boolean skipHeader) {
       this.skipHeader = skipHeader;

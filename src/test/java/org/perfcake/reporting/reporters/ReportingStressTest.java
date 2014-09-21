@@ -19,10 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.perfcake.RunInfo;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
@@ -30,14 +26,18 @@ import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.DummyDestination;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Verify that reporting can handle multiple threads.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
- *
  */
 public class ReportingStressTest {
 

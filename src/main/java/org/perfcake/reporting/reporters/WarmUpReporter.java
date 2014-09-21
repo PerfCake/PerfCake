@@ -19,7 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.MeasurementUnit;
@@ -28,6 +27,8 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator;
+
+import org.apache.log4j.Logger;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -43,7 +44,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * </p>
  *
  * @author Pavel Macík <pavel.macik@gmail.com>
- *
  */
 public class WarmUpReporter extends AbstractReporter {
 
@@ -163,7 +163,7 @@ public class WarmUpReporter extends AbstractReporter {
     * Sets the value of minimal warm-up period duration.
     *
     * @param minimalWarmUpDuration
-    *           The minimal warm-up period duration to set.
+    *       The minimal warm-up period duration to set.
     */
    public WarmUpReporter setMinimalWarmUpDuration(final long minimalWarmUpDuration) {
       this.minimalWarmUpDuration = minimalWarmUpDuration;
@@ -183,7 +183,7 @@ public class WarmUpReporter extends AbstractReporter {
     * Sets the value of minimal warm-up iteration count.
     *
     * @param minimalWarmUpCount
-    *           The value of minimal warm-up iteration count to set.
+    *       The value of minimal warm-up iteration count to set.
     */
    public WarmUpReporter setMinimalWarmUpCount(final long minimalWarmUpCount) {
       this.minimalWarmUpCount = minimalWarmUpCount;
@@ -203,7 +203,7 @@ public class WarmUpReporter extends AbstractReporter {
     * Sets the value of relativeThreshold.
     *
     * @param relativeThreshold
-    *           The value of relativeThreshold to set.
+    *       The value of relativeThreshold to set.
     */
    public WarmUpReporter setRelativeThreshold(final double relativeThreshold) {
       this.relativeThreshold = relativeThreshold;
@@ -223,7 +223,7 @@ public class WarmUpReporter extends AbstractReporter {
     * Sets the value of absoluteThreshold.
     *
     * @param absoluteThreshold
-    *           The value of absoluteThreshold to set.
+    *       The value of absoluteThreshold to set.
     */
    public WarmUpReporter setAbsoluteThreshold(final double absoluteThreshold) {
       this.absoluteThreshold = absoluteThreshold;

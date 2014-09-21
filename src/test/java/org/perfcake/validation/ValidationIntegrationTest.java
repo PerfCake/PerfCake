@@ -22,6 +22,7 @@ package org.perfcake.validation;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

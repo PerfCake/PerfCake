@@ -19,9 +19,10 @@
  */
 package org.perfcake.message.generator;
 
-import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.ReportManager;
+
+import org.apache.log4j.Logger;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -69,7 +70,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     * Place a new {@link SenderTask} implementing the message sending to an internal thread queue.
     *
     * @throws java.lang.InterruptedException
-    *            When it was not possible to place another task because the queue was empty
+    *       When it was not possible to place another task because the queue was empty
     */
    protected void prepareTask() throws InterruptedException {
       if (log.isTraceEnabled()) {
@@ -105,7 +106,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     * Takes care of gentle shutdown of the generator based on the period type.
     *
     * @throws java.lang.InterruptedException
-    *            When waiting for the termination was interrupted.
+    *       When waiting for the termination was interrupted.
     */
    protected void shutdown() throws InterruptedException {
       if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // in case of iterations, we wait for the tasks to be finished first
@@ -150,7 +151,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     * Sets the value of monitoringPeriod.
     *
     * @param monitoringPeriod
-    *           The monitoringPeriod to set.
+    *       The monitoringPeriod to set.
     * @return this
     */
    public DefaultMessageGenerator setMonitoringPeriod(final long monitoringPeriod) {
@@ -180,7 +181,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     * Sets the the size of the internal thread queue.
     *
     * @param threadQueueSize
-    *           The thread queue size.
+    *       The thread queue size.
     * @return this
     */
    public DefaultMessageGenerator setThreadQueueSize(final int threadQueueSize) {

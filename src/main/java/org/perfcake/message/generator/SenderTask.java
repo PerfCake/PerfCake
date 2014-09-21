@@ -19,8 +19,6 @@
  */
 package org.perfcake.message.generator;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
@@ -30,6 +28,9 @@ import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.HashMap;

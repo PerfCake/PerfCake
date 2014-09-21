@@ -39,13 +39,18 @@ import org.perfcake.reporting.reporters.WarmUpReporter;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.RegExpValidator;
 import org.perfcake.validation.ValidationManager;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class XMLFactoryTest {
    private static final int THREADS = 10;

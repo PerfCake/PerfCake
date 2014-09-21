@@ -19,11 +19,15 @@
  */
 package org.perfcake.validation;
 
-import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
+
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -79,8 +83,11 @@ public class RulesValidator implements MessageValidator {
 
    /**
     * Creates a new {@link org.perfcake.validation.RulesValidatorHelper} based on the provided assertions.
-    * @param assertionsReader A buffered reader prepared to read the assertions. Each line represents a single assertion.
-    * @throws Exception When it was not possible to read and process the assertions.
+    *
+    * @param assertionsReader
+    *       A buffered reader prepared to read the assertions. Each line represents a single assertion.
+    * @throws Exception
+    *       When it was not possible to read and process the assertions.
     */
    private void processAssertions(BufferedReader assertionsReader) throws Exception {
       HashMap<Integer, String> assertions = new HashMap<>();
@@ -100,7 +107,9 @@ public class RulesValidator implements MessageValidator {
 
    /**
     * Sets the rules file from which the assertions are loaded.
-    * @param validationRuleFile The file name of the assertions file.
+    *
+    * @param validationRuleFile
+    *       The file name of the assertions file.
     */
    public RulesValidator setRules(final String validationRuleFile) {
       try (final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(validationRuleFile), StandardCharsets.UTF_8))) {
@@ -114,7 +123,9 @@ public class RulesValidator implements MessageValidator {
 
    /**
     * Sets the rules based on an XML element holding the assertions.
-    * @param validationRule The XML element with the assertions.
+    *
+    * @param validationRule
+    *       The XML element with the assertions.
     */
    public void setRules(final Element validationRule) {
       try (final BufferedReader br = new BufferedReader(new StringReader(validationRule.getTextContent()))) {

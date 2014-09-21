@@ -19,22 +19,20 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
+import org.perfcake.message.Message;
+import org.perfcake.util.Utils;
+
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.Map;
-
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-import org.perfcake.PerfCakeException;
-import org.perfcake.message.Message;
-import org.perfcake.util.Utils;
-
 /**
- *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Filip Eliáš <elfilip01@gmail.com>

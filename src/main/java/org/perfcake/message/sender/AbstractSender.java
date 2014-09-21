@@ -19,13 +19,14 @@
  */
 package org.perfcake.message.sender;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+
+import org.apache.log4j.Logger;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * The common ancestor for all senders.
@@ -141,7 +142,7 @@ abstract public class AbstractSender implements MessageSender {
     * Sets the value of target.
     *
     * @param target
-    *           The target to set.
+    *       The target to set.
     * @return this to support fluent API.
     */
    public AbstractSender setTarget(final String target) {

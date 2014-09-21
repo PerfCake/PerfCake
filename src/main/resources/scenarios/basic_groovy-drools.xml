@@ -35,7 +35,7 @@
       <validator id="1" class="RegExpMessageValidator">
          <property value="pattern">
             <text>
-<![CDATA[
+               <![CDATA[
 ^you entered: Hello groovy world 1
 you entered: Hello groovy world 2
 you entered: Hello groovy world 3$

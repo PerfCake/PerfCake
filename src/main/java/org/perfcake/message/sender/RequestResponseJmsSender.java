@@ -19,11 +19,16 @@
  */
 package org.perfcake.message.sender;
 
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.util.Utils;
 
+import org.apache.log4j.Logger;
+
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Properties;
+import java.util.UUID;
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -37,10 +42,6 @@ import javax.jms.TextMessage;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.io.Serializable;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
 
 /**
  * A sender that is the same with @{link JmsSender} and adds a response retrieval.
@@ -299,7 +300,8 @@ public class RequestResponseJmsSender extends JmsSender {
    /**
     * Sets the configuration of using the correlation ID in response retrieval.
     *
-    * @param useCorrelationId When true, only the messages that are response to the original message can be read from the response destination. Otherwise, any response message can be read.
+    * @param useCorrelationId
+    *       When true, only the messages that are response to the original message can be read from the response destination. Otherwise, any response message can be read.
     */
    public RequestResponseJmsSender setUseCorrelationId(boolean useCorrelationId) {
       this.useCorrelationId = useCorrelationId;
@@ -327,7 +329,8 @@ public class RequestResponseJmsSender extends JmsSender {
    /**
     * Sets the number of milliseconds to wait for the response message.
     *
-    * @param receivingTimeout Number of milliseconds to wait for the response message.
+    * @param receivingTimeout
+    *       Number of milliseconds to wait for the response message.
     */
    public RequestResponseJmsSender setReceivingTimeout(final long receivingTimeout) {
       this.receivingTimeout = receivingTimeout;
@@ -346,7 +349,8 @@ public class RequestResponseJmsSender extends JmsSender {
    /**
     * Sets the maximum number of attempts to read the response message.
     *
-    * @param receiveAttempts The maximum number of attempts to read the response message.
+    * @param receiveAttempts
+    *       The maximum number of attempts to read the response message.
     */
    public RequestResponseJmsSender setReceiveAttempts(final int receiveAttempts) {
       this.receiveAttempts = receiveAttempts;
@@ -365,7 +369,8 @@ public class RequestResponseJmsSender extends JmsSender {
    /**
     * Sets the name of the destination where the response messages should be read from.
     *
-    * @param responseTarget The name of the response destination.
+    * @param responseTarget
+    *       The name of the response destination.
     */
    public RequestResponseJmsSender setResponseTarget(final String responseTarget) {
       this.responseTarget = responseTarget;
@@ -384,7 +389,8 @@ public class RequestResponseJmsSender extends JmsSender {
    /**
     * Sets the value of autoAck.
     *
-    * @param autoAck The autoAck to set.
+    * @param autoAck
+    *       The autoAck to set.
     */
    public RequestResponseJmsSender setAutoAck(final boolean autoAck) {
       this.autoAck = autoAck;
@@ -404,7 +410,8 @@ public class RequestResponseJmsSender extends JmsSender {
     * Sets the connection factory used for the response reception.
     * When this is not set, the connection factory used to send the messages is used.
     *
-    * @param responseConnectionFactory The connection factory used for the response reception.
+    * @param responseConnectionFactory
+    *       The connection factory used for the response reception.
     */
    public RequestResponseJmsSender setResponseConnectionFactory(String responseConnectionFactory) {
       this.responseConnectionFactory = responseConnectionFactory;
@@ -423,7 +430,8 @@ public class RequestResponseJmsSender extends JmsSender {
    /**
     * Sets the JNDI context factory used for the response reception.
     *
-    * @param responseJndiContextFactory The JNDI context factory used for the response reception.
+    * @param responseJndiContextFactory
+    *       The JNDI context factory used for the response reception.
     */
    public RequestResponseJmsSender setResponseJndiContextFactory(String responseJndiContextFactory) {
       this.responseJndiContextFactory = responseJndiContextFactory;
@@ -443,7 +451,8 @@ public class RequestResponseJmsSender extends JmsSender {
     * Sets the JNDI URL used for the response reception.
     * When this is not set, the JNDI properties set for sending messages are taken.
     *
-    * @param responseJndiUrl The JNDI URL used for the response reception.
+    * @param responseJndiUrl
+    *       The JNDI URL used for the response reception.
     */
    public RequestResponseJmsSender setResponseJndiUrl(String responseJndiUrl) {
       this.responseJndiUrl = responseJndiUrl;
@@ -463,7 +472,8 @@ public class RequestResponseJmsSender extends JmsSender {
     * Sets the JNDI security principal used for the response reception.
     * When this is not set, an unsecured connection is used.
     *
-    * @param responseJndiSecurityPrincipal The security principal used for the response reception.
+    * @param responseJndiSecurityPrincipal
+    *       The security principal used for the response reception.
     */
    public RequestResponseJmsSender setResponseJndiSecurityPrincipal(String responseJndiSecurityPrincipal) {
       this.responseJndiSecurityPrincipal = responseJndiSecurityPrincipal;
@@ -484,7 +494,8 @@ public class RequestResponseJmsSender extends JmsSender {
     * When this is not set and JNDI security principal for the response reception was set, empty password is used.
     * Otherwise, an unsecured connection is used.
     *
-    * @param responseJndiSecurityCredentials The JNDI security credentials to be used for the response reception.
+    * @param responseJndiSecurityCredentials
+    *       The JNDI security credentials to be used for the response reception.
     */
    public RequestResponseJmsSender setResponseJndiSecurityCredentials(String responseJndiSecurityCredentials) {
       this.responseJndiSecurityCredentials = responseJndiSecurityCredentials;
@@ -503,7 +514,8 @@ public class RequestResponseJmsSender extends JmsSender {
    /**
     * Sets the JMS username used for response reception.
     *
-    * @param responseUsername The JMS username used for response reception.
+    * @param responseUsername
+    *       The JMS username used for response reception.
     */
    public RequestResponseJmsSender setResponseUsername(String responseUsername) {
       this.responseUsername = responseUsername;
@@ -522,7 +534,8 @@ public class RequestResponseJmsSender extends JmsSender {
    /**
     * Sets the JMS password used for response reception.
     *
-    * @param responsePassword The JMS username used for response reception.
+    * @param responsePassword
+    *       The JMS username used for response reception.
     */
    public RequestResponseJmsSender setResponsePassword(String responsePassword) {
       this.responsePassword = responsePassword;

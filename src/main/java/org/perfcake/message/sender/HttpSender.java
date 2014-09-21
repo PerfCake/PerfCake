@@ -19,6 +19,13 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
+import org.perfcake.message.Message;
+import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.Utils;
+
+import org.apache.log4j.Logger;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -31,18 +38,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
-import org.perfcake.PerfCakeException;
-import org.perfcake.message.Message;
-import org.perfcake.reporting.MeasurementUnit;
-import org.perfcake.util.Utils;
-
 /**
  * The sender that is able to send the messages via HTTP protocol.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
- *
  */
 public class HttpSender extends AbstractSender {
 
@@ -112,7 +112,7 @@ public class HttpSender extends AbstractSender {
     * Sets the value of expectedResponseCodes property.
     *
     * @param expectedResponseCodes
-    *           The expectedResponseCodes property to set.
+    *       The expectedResponseCodes property to set.
     */
    public HttpSender setExpectedResponseCodes(final String expectedResponseCodes) {
       this.expectedResponseCodes = expectedResponseCodes;
@@ -142,7 +142,7 @@ public class HttpSender extends AbstractSender {
     * Sets a list of expected response codes.
     *
     * @param codes
-    *           The array of codes.
+    *       The array of codes.
     */
    protected HttpSender setExpectedResponseCodesList(final String[] codes) {
       LinkedList<Integer> numCodes = new LinkedList<Integer>();
@@ -158,9 +158,8 @@ public class HttpSender extends AbstractSender {
     * Checks if the code is expected.
     *
     * @param code
-    *           Checked response code.
-    * @return
-    *         true/false according to if the code is expected or not.
+    *       Checked response code.
+    * @return true/false according to if the code is expected or not.
     */
    private boolean checkResponseCode(final int code) {
       if (expectedResponseCodeList.isEmpty()) {
@@ -302,7 +301,7 @@ public class HttpSender extends AbstractSender {
     * Sets the value of HTTP method.
     *
     * @param method
-    *           The HTTP method to set.
+    *       The HTTP method to set.
     */
    public HttpSender setMethod(final Method method) {
       this.method = method;

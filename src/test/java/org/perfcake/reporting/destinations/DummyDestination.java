@@ -19,19 +19,18 @@
  */
 package org.perfcake.reporting.destinations;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * Testing destination.
  *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- *
  */
 public class DummyDestination implements Destination {
 
@@ -99,7 +98,7 @@ public class DummyDestination implements Destination {
     * Used to set the value of property.
     *
     * @param property
-    *           The property value to set.
+    *       The property value to set.
     */
    public void setProperty(final String property) {
       this.property = property;
@@ -118,7 +117,7 @@ public class DummyDestination implements Destination {
     * Used to set the value of property2.
     *
     * @param property2
-    *           The property2 value to set.
+    *       The property2 value to set.
     */
    public void setProperty2(final String property2) {
       this.property2 = property2;
@@ -164,7 +163,7 @@ public class DummyDestination implements Destination {
     * Sets a new report assert to this destination.
     *
     * @param reportAssert
-    *           The report assert to be registered.
+    *       The report assert to be registered.
     */
    public void setReportAssert(final ReportAssert reportAssert) {
       this.reportAssert = reportAssert;

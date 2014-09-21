@@ -19,10 +19,20 @@
  */
 package org.perfcake.validation;
 
-import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
 
-import java.io.*;
+import org.apache.log4j.Logger;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -77,7 +87,8 @@ public class DictionaryValidator implements MessageValidator {
    /**
     * Escapes = and : in the payload string.
     *
-    * @param payload The payload string to be escaped.
+    * @param payload
+    *       The payload string to be escaped.
     * @return Escaped payload.
     */
    private String escapePayload(String payload) {
@@ -87,9 +98,12 @@ public class DictionaryValidator implements MessageValidator {
    /**
     * Records the correct response.
     *
-    * @param originalMessage The original message.
-    * @param response The response that is considered correct.
-    * @throws ValidationException If any of the disk operations fails.
+    * @param originalMessage
+    *       The original message.
+    * @param response
+    *       The response that is considered correct.
+    * @throws ValidationException
+    *       If any of the disk operations fails.
     */
    private void recordResponse(final Message originalMessage, final Message response) throws ValidationException {
       final String responseHashCode = Integer.toString(response.getPayload().toString().hashCode());
@@ -115,7 +129,8 @@ public class DictionaryValidator implements MessageValidator {
     * Reads the index into memory, or return the previously read index.
     *
     * @return the response index.
-    * @throws ValidationException If any of the disk operations fails.
+    * @throws ValidationException
+    *       If any of the disk operations fails.
     */
    private Properties getIndexCache() throws ValidationException {
       if (indexCache == null) {
@@ -133,10 +148,13 @@ public class DictionaryValidator implements MessageValidator {
    /**
     * Validates the response against the previously recorded correct responses.
     *
-    * @param originalMessage The original message.
-    * @param response The response to be validated.
+    * @param originalMessage
+    *       The original message.
+    * @param response
+    *       The response to be validated.
     * @return True if and only if the validation passed.
-    * @throws ValidationException If any of the disk operations fails.
+    * @throws ValidationException
+    *       If any of the disk operations fails.
     */
    private boolean validateResponse(Message originalMessage, Message response) throws ValidationException {
       final String responseHashCode = getIndexCache().getProperty(escapePayload(originalMessage.getPayload().toString()));
@@ -156,6 +174,7 @@ public class DictionaryValidator implements MessageValidator {
 
    /**
     * Gets the file with index of recorded responses.
+    *
     * @return The index file.
     */
    private File getIndexFile() {
@@ -164,6 +183,7 @@ public class DictionaryValidator implements MessageValidator {
 
    /**
     * Checks whether the index file exists.
+    *
     * @return True if and only if the index file exists.
     */
    private boolean indexExists() {
@@ -203,6 +223,7 @@ public class DictionaryValidator implements MessageValidator {
 
    /**
     * Gets the dictionary directory name.
+    *
     * @return The dictionary directory name.
     */
    public String getDictionaryDirectory() {
@@ -211,7 +232,9 @@ public class DictionaryValidator implements MessageValidator {
 
    /**
     * Sets Gets the dictionary directory name.
-    * @param dictionaryDirectory The name of the dictionary directory.
+    *
+    * @param dictionaryDirectory
+    *       The name of the dictionary directory.
     */
    public DictionaryValidator setDictionaryDirectory(String dictionaryDirectory) {
       this.dictionaryDirectory = dictionaryDirectory;
@@ -220,6 +243,7 @@ public class DictionaryValidator implements MessageValidator {
 
    /**
     * Gets the file name of the dictionary index.
+    *
     * @return The file name of the dictionary index.
     */
    public String getDictionaryIndex() {
@@ -228,7 +252,9 @@ public class DictionaryValidator implements MessageValidator {
 
    /**
     * Sets the file name of the dictionary index.
-    * @param dictionaryIndex The file name of the dictionary index.
+    *
+    * @param dictionaryIndex
+    *       The file name of the dictionary index.
     */
    public DictionaryValidator setDictionaryIndex(String dictionaryIndex) {
       this.dictionaryIndex = dictionaryIndex;
@@ -237,6 +263,7 @@ public class DictionaryValidator implements MessageValidator {
 
    /**
     * Checks whether we are in the record mode.
+    *
     * @return True if and only if the record mode is active.
     */
    public boolean isRecord() {
@@ -245,7 +272,9 @@ public class DictionaryValidator implements MessageValidator {
 
    /**
     * Sets the record mode
-    * @param record True to activate the record mode.
+    *
+    * @param record
+    *       True to activate the record mode.
     */
    public DictionaryValidator setRecord(boolean record) {
       this.record = record;

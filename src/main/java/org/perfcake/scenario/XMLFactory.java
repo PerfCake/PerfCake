@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,6 @@
  */
 package org.perfcake.scenario;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
@@ -32,8 +30,12 @@ import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.model.Header;
 import org.perfcake.model.Property;
-import org.perfcake.model.Scenario.*;
+import org.perfcake.model.Scenario.Generator;
+import org.perfcake.model.Scenario.Messages;
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
+import org.perfcake.model.Scenario.Reporting;
+import org.perfcake.model.Scenario.Sender;
+import org.perfcake.model.Scenario.Validation;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
@@ -41,9 +43,26 @@ import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -52,16 +71,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.Properties;
 
 /**
  * TODO review logging
@@ -123,7 +132,7 @@ public class XMLFactory implements ScenarioFactory {
     *
     * @return parsed JAXB scenario model
     * @throws PerfCakeException
-    *            if XML is not valid or cannot be successfully parsed
+    *       if XML is not valid or cannot be successfully parsed
     */
    private org.perfcake.model.Scenario parse() throws PerfCakeException {
       try {
@@ -177,7 +186,7 @@ public class XMLFactory implements ScenarioFactory {
     *
     * @return RunInfo object representing the configuration
     * @throws PerfCakeException
-    *            when there is a parse exception
+    *       when there is a parse exception
     */
    protected RunInfo parseRunInfo() throws PerfCakeException {
       Generator gen = scenarioModel.getGenerator();
@@ -224,7 +233,7 @@ public class XMLFactory implements ScenarioFactory {
     * Parse the <code>sender</code> element into a {@link MessageSenderManager} instance.
     *
     * @param senderPoolSize
-    *           Size of the message sender pool.
+    *       Size of the message sender pool.
     * @return A message sender manager.
     */
    protected MessageSenderManager parseSender(final int senderPoolSize) throws PerfCakeException {
@@ -253,10 +262,10 @@ public class XMLFactory implements ScenarioFactory {
     * Parse the <code>messages</code> element into a message store.
     *
     * @param validationManager
-    *           ValidationManager carrying all parsed validators, these will be associated with the message templates.
+    *       ValidationManager carrying all parsed validators, these will be associated with the message templates.
     * @return Message store in a form of {@link Map}&lt;{@link Message}, {@link Long}&gt; where the keys are stored messages and the values
-    *         are multiplicity of how many times the message is sent in a single
-    *         iteration.
+    * are multiplicity of how many times the message is sent in a single
+    * iteration.
     * @throws IOException
     * @throws FileNotFoundException
     */

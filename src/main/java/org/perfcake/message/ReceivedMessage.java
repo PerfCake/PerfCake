@@ -48,9 +48,13 @@ public class ReceivedMessage implements Serializable {
 
    /**
     * Creates a new received message container.
-    * @param response The received response payload.
-    * @param sentMessageTemplate The original message template.
-    * @param sentMessage The real message sent with the placeholders filled with values.
+    *
+    * @param response
+    *       The received response payload.
+    * @param sentMessageTemplate
+    *       The original message template.
+    * @param sentMessage
+    *       The real message sent with the placeholders filled with values.
     */
    public ReceivedMessage(final Serializable response, final MessageTemplate sentMessageTemplate, final Message sentMessage) {
       this.response = response;
@@ -60,6 +64,7 @@ public class ReceivedMessage implements Serializable {
 
    /**
     * Gets the stored response.
+    *
     * @return The stored response.
     */
    public Serializable getResponse() {
@@ -68,6 +73,7 @@ public class ReceivedMessage implements Serializable {
 
    /**
     * Gets the original message template.
+    *
     * @return The original message template.
     */
    public MessageTemplate getSentMessageTemplate() {
@@ -76,6 +82,7 @@ public class ReceivedMessage implements Serializable {
 
    /**
     * Gets the sent message with the placeholders filled with values.
+    *
     * @return The sent message with the placeholders filled with values.
     */
    public Message getSentMessage() {

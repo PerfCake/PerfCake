@@ -19,7 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
@@ -34,8 +33,14 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 
-import java.util.*;
+import org.apache.log4j.Logger;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -166,7 +171,7 @@ public abstract class AbstractReporter implements Reporter {
     * @param results
     *       The hash map with results to be accumulated.
     */
-   @SuppressWarnings({"unchecked", "rawtypes"})
+   @SuppressWarnings({ "unchecked", "rawtypes" })
    private void accumulateResults(final Map<String, Object> results) {
       for (final Entry<String, Object> entry : results.entrySet()) {
          // make sure we have an accumulator set to be able to accumulate the result

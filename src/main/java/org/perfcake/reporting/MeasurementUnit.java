@@ -29,9 +29,8 @@ import java.util.Map;
 /**
  * A result of the smallest measurement unit - an iteration.
  * One should obtain a new instance of a MeasurementUnit using {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()}.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
 public class MeasurementUnit implements Serializable {
 
@@ -74,9 +73,9 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Constructor is protected. Use {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()} to obtain a new instance.
-    * 
+    *
     * @param iteration
-    *           Current iteration number.
+    *       Current iteration number.
     */
    protected MeasurementUnit(final long iteration) {
       this.iteration = iteration;
@@ -84,11 +83,11 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Append a custom result.
-    * 
+    *
     * @param label
-    *           The label of the result.
+    *       The label of the result.
     * @param value
-    *           The value of the result.
+    *       The value of the result.
     */
    public void appendResult(final String label, final Object value) {
       measurementResults.put(label, value);
@@ -96,7 +95,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Get immutable map with all the custom results.
-    * 
+    *
     * @return An immutable copy of the custom results map.
     */
    public Map<String, Object> getResults() {
@@ -105,9 +104,9 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Get a custom result for the given label.
-    * 
+    *
     * @param label
-    *           The label of the custom result.
+    *       The label of the custom result.
     * @return The value for the given custom result.
     */
    public Object getResult(final String label) {
@@ -133,7 +132,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Gets total time measured during all measurements done by this Measurement Unit (all time periods between calls to {@link #startMeasure()} and {@link #stopMeasure()} in milliseconds.
-    * 
+    *
     * @return The total time measured by this unit in milliseconds.
     */
    public double getTotalTime() {
@@ -142,7 +141,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Gets time of the last measurement (time period between calls to {@link #startMeasure()} and {@link #stopMeasure()} in milliseconds.
-    * 
+    *
     * @return Time of the last measurement in milliseconds.
     */
    public double getLastTime() {
@@ -160,9 +159,9 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Checks whether this measurement unit was first started after the specified time (Unix time in millis)
-    * 
+    *
     * @param ref
-    *           The reference time to compare to the start of the measurement
+    *       The reference time to compare to the start of the measurement
     * @return true if this measurement unit was first started after the specified reference time
     */
    public boolean startedAfter(long ref) {
@@ -171,7 +170,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Gets the number of current iteration of this Measurement Unit.
-    * 
+    *
     * @return The number of iteration.
     */
    public long getIteration() {

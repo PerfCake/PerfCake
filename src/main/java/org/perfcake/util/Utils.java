@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,21 +19,26 @@
  */
 package org.perfcake.util;
 
-import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.common.TimestampedRecord;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
+
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.Properties;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,9 +56,9 @@ public class Utils {
    /**
     * It takes a string and replaces all ${&lt;property.name&gt;} placeholders
     * by respective value of the property named &lt;property.name&gt; using {@link SystemPropertyGetter}.
-    * 
+    *
     * @param text
-    *           Original string.
+    *       Original string.
     * @return Filtered string with.
     * @throws IOException
     */
@@ -88,9 +93,9 @@ public class Utils {
     * Returns a property value. First it looks at system properties using {@link System#getProperty(String)} if the system property does not exist
     * it looks at environment variables using {@link System#getenv(String)}. If
     * the variable does not exist the method returns a <code>null</code>.
-    * 
+    *
     * @param name
-    *           Property name
+    *       Property name
     * @return Property value or <code>null</code>.
     */
    public static String getProperty(final String name) {
@@ -101,11 +106,11 @@ public class Utils {
     * Returns a property value. First it looks at system properties using {@link System#getProperty(String)} if the system property does not exist
     * it looks at environment variables using {@link System#getenv(String)}. If
     * the variable does not exist the method returns <code>defautValue</code>.
-    * 
+    *
     * @param name
-    *           Property name
+    *       Property name
     * @param defaultValue
-    *           Default property value
+    *       Default property value
     * @return Property value or <code>defaultValue</code>.
     */
    public static String getProperty(final String name, final String defaultValue) {
@@ -133,9 +138,9 @@ public class Utils {
 
    /**
     * Reads file content into a string. The file content is processed as an UTF-8 encoded text.
-    * 
+    *
     * @param url
-    *           specifies the file location as a URL
+    *       specifies the file location as a URL
     * @return the file contents
     * @throws IOException
     */
@@ -154,18 +159,18 @@ public class Utils {
     * Convert location to URL. If location specifies a protocol, it is immediately converted. Without a protocol specified, output is
     * file://${&lt;defaultLocationProperty&gt;}/&lt;location&gt;&lt;defaultSuffix&gt; using defaultLocation as a default value for the defaultLocationProperty
     * when the property is undefined.
-    * 
+    *
     * @param location
-    *           location of the resource
+    *       location of the resource
     * @param defaultLocationProperty
-    *           property to read the default location prefix
+    *       property to read the default location prefix
     * @param defaultLocation
-    *           default value for defaultLocationProperty if this property is undefined
+    *       default value for defaultLocationProperty if this property is undefined
     * @param defaultSuffix
-    *           default suffix of the location
+    *       default suffix of the location
     * @return URL representing the location
     * @throws MalformedURLException
-    *            when the location cannot be converted to a URL
+    *       when the location cannot be converted to a URL
     */
    public static URL locationToUrl(String location, final String defaultLocationProperty, final String defaultLocation, final String defaultSuffix) throws MalformedURLException {
       // is there a protocol specified? suppose just scenario name
@@ -178,9 +183,9 @@ public class Utils {
 
    /**
     * Determines the default location of resources based on the resourcesDir constant.
-    * 
+    *
     * @param locationSuffix
-    *           Optional suffix to be added to the path
+    *       Optional suffix to be added to the path
     * @return the location based on the resourcesDir constant
     */
    public static String determineDefaultLocation(final String locationSuffix) {
@@ -189,9 +194,9 @@ public class Utils {
 
    /**
     * Converts camelCaseStringsWithACRONYMS to CAMEL_CASE_STRINGS_WITH_ACRONYMS
-    * 
+    *
     * @param camelCase
-    *           a camelCase string
+    *       a camelCase string
     * @return the same string in equivalent format for Java enum values
     */
    public static String camelCaseToEnum(final String camelCase) {
@@ -203,9 +208,9 @@ public class Utils {
 
    /**
     * Converts time in milliseconds to H:MM:SS format, where H is unbound.
-    * 
+    *
     * @param time
-    *           Timestamp in milliseconds.
+    *       Timestamp in milliseconds.
     * @return String representing the timestamp in H:MM:SS format.
     */
    public static String timeToHMS(final long time) {
@@ -221,7 +226,7 @@ public class Utils {
 
    /**
     * Uses {@link PerfCakeConst#DEFAULT_ENCODING_PROPERTY} system property, if this property is not set, <b>UTF-8</b> is used.
-    * 
+    *
     * @return String representation of default encoding for all read and written files
     */
    public static String getDefaultEncoding() {
@@ -230,9 +235,9 @@ public class Utils {
 
    /**
     * Computes a linear regression trend of the data set povided.
-    * 
+    *
     * @return Linear regression trend
-    **/
+    */
    public static double computeRegressionTrend(Collection<TimestampedRecord<Number>> data) {
       final SimpleRegression simpleRegression = new SimpleRegression();
       final Iterator<TimestampedRecord<Number>> iterator = data.iterator();
@@ -247,9 +252,12 @@ public class Utils {
    /**
     * Sets the property value to the first not-null value from the list.
     *
-    * @param props Properties instance.
-    * @param propName Name of the property to be set.
-    * @param values List of possibilities, the first not-null is used to set the property value.
+    * @param props
+    *       Properties instance.
+    * @param propName
+    *       Name of the property to be set.
+    * @param values
+    *       List of possibilities, the first not-null is used to set the property value.
     */
    public static void setFirstNotNullProperty(Properties props, String propName, String... values) {
       String notNull = getFirstNotNull(values);
@@ -261,11 +269,12 @@ public class Utils {
    /**
     * Returns the first not-null string in the provided list.
     *
-    * @param values The list of possible values.
+    * @param values
+    *       The list of possible values.
     * @return The first non-null value in the list.
     */
    public static String getFirstNotNull(String... values) {
-      for (String value: values) {
+      for (String value : values) {
          if (value != null) {
             return value;
          }

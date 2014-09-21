@@ -44,10 +44,14 @@ public class ScenarioBuilder {
    /**
     * Gets a new ScenarioBuilder instance. Mandatory objects must be passed in.
     *
-    * @param runInfo RunInfo specifying the test run time.
-    * @param messageGenerator Message generator to be used to generate messages during test.
-    * @param senderTemplate Sender template which will be cloned to create all sender instances.
-    * @throws PerfCakeException When any of the parameters are not set or creation of the underlying classes fails.
+    * @param runInfo
+    *       RunInfo specifying the test run time.
+    * @param messageGenerator
+    *       Message generator to be used to generate messages during test.
+    * @param senderTemplate
+    *       Sender template which will be cloned to create all sender instances.
+    * @throws PerfCakeException
+    *       When any of the parameters are not set or creation of the underlying classes fails.
     */
    public ScenarioBuilder(final RunInfo runInfo, final AbstractMessageGenerator messageGenerator, final MessageSender senderTemplate) throws PerfCakeException {
       if (runInfo == null) {
@@ -92,7 +96,8 @@ public class ScenarioBuilder {
    /**
     * Adds a {@link MessageTemplate}, which will be used in the {@link org.perfcake.scenario.Scenario}
     *
-    * @param MessageTemplate A message template to be added to the list of messages to be send during in one sender cycle.
+    * @param MessageTemplate
+    *       A message template to be added to the list of messages to be send during in one sender cycle.
     * @return this
     */
    public ScenarioBuilder addMessage(final MessageTemplate messageTemplate) {
@@ -103,8 +108,10 @@ public class ScenarioBuilder {
    /**
     * Puts a validator under the given key.
     *
-    * @param validatorId Id of the new validator.
-    * @param messageValidator The message validator to be registered.
+    * @param validatorId
+    *       Id of the new validator.
+    * @param messageValidator
+    *       The message validator to be registered.
     * @return this
     */
    public ScenarioBuilder putMessageValidator(final String validatorId, final MessageValidator messageValidator) {

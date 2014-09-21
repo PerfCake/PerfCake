@@ -6,7 +6,7 @@ import org.apache.commons.collections.buffer.CircularFifoBuffer;
 
 /**
  * Accumulates a value over a set number of recently reported values.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
@@ -16,9 +16,9 @@ public abstract class AbstractSlidingWindowAccumulator implements Accumulator<Do
 
    /**
     * Creates a new average accumulator with the sliding window of a given size.
-    * 
+    *
     * @param windowSize
-    *        Size of the sliding window
+    *       Size of the sliding window
     */
    public AbstractSlidingWindowAccumulator(final int windowSize) {
       fifo = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(windowSize));

@@ -19,6 +19,9 @@
  */
 package org.perfcake.validation;
 
+import org.perfcake.message.Message;
+import org.perfcake.util.Utils;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.kie.api.KieServices;
@@ -29,8 +32,6 @@ import org.kie.api.io.KieResources;
 import org.kie.api.io.Resource;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-import org.perfcake.message.Message;
-import org.perfcake.util.Utils;
 
 import java.io.StringReader;
 import java.util.HashMap;
@@ -65,8 +66,11 @@ class RulesValidatorHelper {
 
    /**
     * Gets a new helper based on the assertions.
-    * @param assertions Assertions that should be added to the rules.
-    * @throws ValidationException When the KIE container construction fails.
+    *
+    * @param assertions
+    *       Assertions that should be added to the rules.
+    * @throws ValidationException
+    *       When the KIE container construction fails.
     */
    public RulesValidatorHelper(final Map<Integer, String> assertions) throws ValidationException {
       this.assertions = assertions;
@@ -77,8 +81,11 @@ class RulesValidatorHelper {
 
    /**
     * Validates the response given the original message and the previously configured assertions.
-    * @param originalMessage The original message.
-    * @param response The response message.
+    *
+    * @param originalMessage
+    *       The original message.
+    * @param response
+    *       The response message.
     * @return Map with unused/invalid assertions.
     */
    public Map<Integer, String> validate(final Message originalMessage, final Message response) {
@@ -104,9 +111,9 @@ class RulesValidatorHelper {
     * Build a KIE container from the assertions.
     *
     * @param kieServices
-    *             Existing KieServices instance which should be used to build the KIE container.
+    *       Existing KieServices instance which should be used to build the KIE container.
     * @param assertions
-    *             Assertions that represent the rules.
+    *       Assertions that represent the rules.
     * @return The new KIE container.
     */
    private KieContainer build(final KieServices kieServices, final Map<Integer, String> assertions) throws ValidationException {

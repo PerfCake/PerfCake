@@ -19,9 +19,10 @@
  */
 package org.perfcake.reporting.destinations;
 
-import org.apache.log4j.Logger;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
+
+import org.apache.log4j.Logger;
 
 /**
  * The destination that appends the measurements to Log4j to category org.perfcake.reporting.destinations.Log4jDestination.
@@ -109,7 +110,7 @@ public class Log4jDestination implements Destination {
     * Sets the level at which the destination should log the measurement results.
     *
     * @param level
-    *           Level at which the destination logs.
+    *       Level at which the destination logs.
     */
    public Log4jDestination setLevel(final Level level) {
       this.level = level;

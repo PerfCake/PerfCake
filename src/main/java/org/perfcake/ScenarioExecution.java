@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,10 @@
  * -----------------------------------------------------------------------/
  */
 package org.perfcake;
+
+import org.perfcake.scenario.Scenario;
+import org.perfcake.scenario.ScenarioLoader;
+import org.perfcake.util.Utils;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -28,9 +32,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.perfcake.scenario.Scenario;
-import org.perfcake.scenario.ScenarioLoader;
-import org.perfcake.util.Utils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -48,7 +49,6 @@ import java.util.Properties;
  *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
 public class ScenarioExecution {
 
@@ -66,7 +66,9 @@ public class ScenarioExecution {
 
    /**
     * Parses command line arguments and creates this class to take care of the Scenario execution.
-    * @param args command line arguments.
+    *
+    * @param args
+    *       command line arguments.
     */
    private ScenarioExecution(final String[] args) {
       parseCommandLine(args);
@@ -75,9 +77,13 @@ public class ScenarioExecution {
 
    /**
     * Parses a single command line parameter/option.
-    * @param option The parameter/option name.
-    * @param property The system property to which the option value should be stored.
-    * @param defaultValue The default value for the option when it is not present at the command line.
+    *
+    * @param option
+    *       The parameter/option name.
+    * @param property
+    *       The system property to which the option value should be stored.
+    * @param defaultValue
+    *       The default value for the option when it is not present at the command line.
     */
    private void parseParameter(final String option, final String property, final String defaultValue) {
       if (commandLine.hasOption(option)) {
@@ -114,7 +120,9 @@ public class ScenarioExecution {
 
    /**
     * Parses the command line.
-    * @param args Command line arguments.
+    *
+    * @param args
+    *       Command line arguments.
     */
    @SuppressWarnings("static-access")
    private void parseCommandLine(final String[] args) {
@@ -215,7 +223,9 @@ public class ScenarioExecution {
 
    /**
     * The main method which creates an instance of ScenarioExecution and executes the scenario.
-    * @param args Command line arguments.
+    *
+    * @param args
+    *       Command line arguments.
     */
    public static void main(final String[] args) {
       ScenarioExecution se = new ScenarioExecution(args);

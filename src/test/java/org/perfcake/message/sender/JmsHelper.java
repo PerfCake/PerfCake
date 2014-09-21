@@ -21,6 +21,7 @@ package org.perfcake.message.sender;
 
 import org.apache.log4j.Logger;
 
+import java.util.Properties;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
@@ -33,7 +34,6 @@ import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.util.Properties;
 
 /**
  * @author Lenka Vašková <vaskova.lenka@gmail.com>

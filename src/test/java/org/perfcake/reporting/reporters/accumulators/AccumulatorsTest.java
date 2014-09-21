@@ -19,20 +19,18 @@
  */
 package org.perfcake.reporting.reporters.accumulators;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
- *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
- *
  */
 public class AccumulatorsTest {
 

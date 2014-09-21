@@ -19,6 +19,6 @@
       </message>
    </messages>
    <validation>
-      <validator id="v1" class="DummyValidator" />
+      <validator id="v1" class="DummyValidator"/>
    </validation>
 </scenario>

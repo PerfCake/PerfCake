@@ -19,13 +19,13 @@
  */
 package org.perfcake.reporting.destinations;
 
-import org.apache.log4j.Logger;
-
 import org.perfcake.PerfCakeConst;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.ObjectFactory;
+
+import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -40,7 +40,7 @@ import java.util.Scanner;
 
 /**
  * The CsvDestination test class.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */

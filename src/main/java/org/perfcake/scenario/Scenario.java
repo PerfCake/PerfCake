@@ -19,7 +19,6 @@
  */
 package org.perfcake.scenario;
 
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.AbstractMessageGenerator;
@@ -27,15 +26,15 @@ import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 
+import org.apache.log4j.Logger;
+
 import java.util.List;
 
 /**
- *
  * Scenario encapsulates whole test execution, contains all information necessary to run the test.
  *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * @author Jiří Sedláček <jiri@sedlackovi.cz>
  */
 public class Scenario {
 
@@ -91,7 +90,7 @@ public class Scenario {
 
    /**
     * Stops the scenario execution.
-    **/
+    */
    public void stop() {
       reportManager.stop();
    }
@@ -153,7 +152,7 @@ public class Scenario {
     * Sets the value of validationManager.
     *
     * @param validationManager
-    *           The value of validationManager to set.
+    *       The value of validationManager to set.
     */
    void setValidationManager(ValidationManager validationManager) {
       this.validationManager = validationManager;
@@ -161,6 +160,7 @@ public class Scenario {
 
    /**
     * Gets the validation manager configured with the scenario.
+    *
     * @return The validation manager configured with the scenario.
     */
    ValidationManager getValidationManager() {

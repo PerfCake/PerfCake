@@ -19,12 +19,13 @@
  */
 package org.perfcake.message.sender;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+
+import org.apache.log4j.Logger;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * This sender is intended to work as a dummy sender and to be used for
@@ -102,7 +103,7 @@ public class DummySender extends AbstractSender {
     * Sets the value of delay.
     *
     * @param delay
-    *           The delay to set.
+    *       The delay to set.
     */
    public DummySender setDelay(final long delay) {
       this.delay = delay;

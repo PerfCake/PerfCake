@@ -21,6 +21,7 @@ package org.perfcake;
 
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;

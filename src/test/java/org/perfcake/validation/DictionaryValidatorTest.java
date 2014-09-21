@@ -19,15 +19,18 @@
  */
 package org.perfcake.validation;
 
-import org.apache.commons.io.FileUtils;
 import org.perfcake.message.Message;
+
+import org.apache.commons.io.FileUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.attribute.*;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Set;
 
 public class DictionaryValidatorTest {

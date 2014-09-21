@@ -22,30 +22,29 @@ package org.perfcake.common;
 /**
  * A record that is valid for a particular time stamp.
  * The record has a time stamp and a value.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
- * 
- **/
+ */
 public class TimestampedRecord<T extends Number> {
 
    /**
     * Time stamp.
-    **/
+    */
    private long timestamp;
 
    /**
     * The value.
-    **/
+    */
    private T value;
 
    /**
     * Creates a new record.
-    * 
+    *
     * @param timestamp
-    *           The time stamp of the record.
+    *       The time stamp of the record.
     * @param value
-    *           The value of the record.
-    **/
+    *       The value of the record.
+    */
    public TimestampedRecord(long timestamp, T value) {
       super();
       this.timestamp = timestamp;
@@ -54,7 +53,7 @@ public class TimestampedRecord<T extends Number> {
 
    /**
     * Used to read the value of timestamp.
-    * 
+    *
     * @return The timestamp value.
     */
    public long getTimestamp() {
@@ -63,9 +62,9 @@ public class TimestampedRecord<T extends Number> {
 
    /**
     * Used to set the value of timestamp.
-    * 
+    *
     * @param timestamp
-    *           The timestamp value to set.
+    *       The timestamp value to set.
     */
    public void setTimestamp(long timestamp) {
       this.timestamp = timestamp;
@@ -73,7 +72,7 @@ public class TimestampedRecord<T extends Number> {
 
    /**
     * Used to read the value.
-    * 
+    *
     * @return The value.
     */
    public T getValue() {
@@ -82,9 +81,9 @@ public class TimestampedRecord<T extends Number> {
 
    /**
     * Used to set the value of value.
-    * 
+    *
     * @param value
-    *           The value to set.
+    *       The value to set.
     */
    public void setValue(T value) {
       this.value = value;

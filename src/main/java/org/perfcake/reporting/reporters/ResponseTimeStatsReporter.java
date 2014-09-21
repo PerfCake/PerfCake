@@ -23,9 +23,8 @@ import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The reporter is able to report statistics of response time.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
- * 
  * @see StatsReporter Details about the actual statistic metrics.
  */
 public class ResponseTimeStatsReporter extends StatsReporter {

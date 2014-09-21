@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,18 +23,18 @@ import org.perfcake.message.Message;
 
 /**
  * A contract of a message validator.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public interface MessageValidator {
 
    /**
     * Makes sure the provided message is valid.
-    * 
+    *
     * @param originalMessage
-    *          The message that has been sent.
+    *       The message that has been sent.
     * @param response
-    *          A response for the original message.
+    *       A response for the original message.
     * @return True if the message passes all validations.
     */
    public boolean isValid(Message originalMessage, Message response);

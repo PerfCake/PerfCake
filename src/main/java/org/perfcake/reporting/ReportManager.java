@@ -19,12 +19,13 @@
  */
 package org.perfcake.reporting;
 
-import org.apache.log4j.Logger;
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
+
+import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;

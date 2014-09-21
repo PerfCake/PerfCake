@@ -56,7 +56,9 @@ public class DummyValidator implements MessageValidator {
 
    /**
     * Sets the value the validation method should return.
-    * @param returnValue The value that should be returned from the validation.
+    *
+    * @param returnValue
+    *       The value that should be returned from the validation.
     */
    public void setReturnValue(boolean returnValue) {
       this.returnValue = returnValue;
@@ -64,6 +66,7 @@ public class DummyValidator implements MessageValidator {
 
    /**
     * Gets the last original message passed through the validator.
+    *
     * @return Last original message passed through the validator.
     */
    public Message getLastOriginalMessage() {
@@ -73,6 +76,7 @@ public class DummyValidator implements MessageValidator {
 
    /**
     * Gets the last response message passed through the validator.
+    *
     * @return Last response message passed through the validator.
     */
    public Message getLastResponse() {
@@ -81,6 +85,7 @@ public class DummyValidator implements MessageValidator {
 
    /**
     * Gets the last timestamp of moment the validation method was called.
+    *
     * @return When was the validation method called for the last time.
     */
    public long getLastCalledTimestamp() {
@@ -89,6 +94,7 @@ public class DummyValidator implements MessageValidator {
 
    /**
     * Gets the return value for the validation method.
+    *
     * @return Return value for the validation method.
     */
    public boolean getReturnValue() {

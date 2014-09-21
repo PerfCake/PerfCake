@@ -19,10 +19,15 @@
  */
 package org.perfcake.message.sender;
 
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.MeasurementUnit;
 
+import org.apache.log4j.Logger;
+
+import java.io.Serializable;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -35,10 +40,6 @@ import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import java.io.Serializable;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 
 /**
  * The sender that is able to send messages via JMS.
@@ -46,7 +47,6 @@ import java.util.Set;
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Marek Baluch <baluch.git@gmail.com>
- *
  */
 public class JmsSender extends AbstractSender {
 
@@ -54,7 +54,7 @@ public class JmsSender extends AbstractSender {
     * JMS message type.
     */
    public static enum MessageType {
-	   OBJECT, STRING, BYTEARRAY
+      OBJECT, STRING, BYTEARRAY
    }
 
    /**
@@ -319,11 +319,11 @@ public class JmsSender extends AbstractSender {
     * Checks if both of the provided credentials are set.
     *
     * @return <code>true</code> if both of the credentials
-    *         are set and <code>false</code> if neither of them is set.
+    * are set and <code>false</code> if neither of them is set.
     * @throws PerfCakeException
-    *            If one of the credentials is not set.
+    *       If one of the credentials is not set.
     */
-   protected static boolean checkCredentials(String username, String password) throws  PerfCakeException {
+   protected static boolean checkCredentials(String username, String password) throws PerfCakeException {
       if (username == null && password == null) {
          return false;
       } else if (username == null || password == null) {
@@ -346,7 +346,7 @@ public class JmsSender extends AbstractSender {
     * Sets the value of username.
     *
     * @param username
-    *           The username to set.
+    *       The username to set.
     */
    public JmsSender setUsername(final String username) {
       this.username = username;
@@ -366,7 +366,7 @@ public class JmsSender extends AbstractSender {
     * Sets the value of password.
     *
     * @param password
-    *           The password to set.
+    *       The password to set.
     */
    public JmsSender setPassword(final String password) {
       this.password = password;
@@ -386,7 +386,7 @@ public class JmsSender extends AbstractSender {
     * Sets the value of transacted.
     *
     * @param transacted
-    *           The transacted to set.
+    *       The transacted to set.
     */
    public JmsSender setTransacted(final boolean transacted) {
       this.transacted = transacted;
@@ -406,7 +406,7 @@ public class JmsSender extends AbstractSender {
     * Sets the value of persistent.
     *
     * @param persistent
-    *           The persistent to set.
+    *       The persistent to set.
     */
    public JmsSender setPersistent(final boolean persistent) {
       this.persistent = persistent;
@@ -419,7 +419,7 @@ public class JmsSender extends AbstractSender {
     * @param messageType
     */
    public JmsSender setMessageType(MessageType messageType) {
-	   this.messageType = messageType;
+      this.messageType = messageType;
       return this;
    }
 
@@ -429,7 +429,7 @@ public class JmsSender extends AbstractSender {
     * @return
     */
    public MessageType getMessageType() {
-	   return messageType;
+      return messageType;
    }
 
    /**
@@ -445,7 +445,7 @@ public class JmsSender extends AbstractSender {
     * Sets the value of connectionFactory.
     *
     * @param connectionFactory
-    *           The connectionFactory to set.
+    *       The connectionFactory to set.
     */
    public JmsSender setConnectionFactory(final String connectionFactory) {
       this.connectionFactory = connectionFactory;
@@ -465,7 +465,7 @@ public class JmsSender extends AbstractSender {
     * Sets the value of jndiContextFactory.
     *
     * @param jndiContextFactory
-    *           The jndiContextFactory to set.
+    *       The jndiContextFactory to set.
     */
    public JmsSender setJndiContextFactory(final String jndiContextFactory) {
       this.jndiContextFactory = jndiContextFactory;
@@ -485,7 +485,7 @@ public class JmsSender extends AbstractSender {
     * Sets the value of jndiUrl.
     *
     * @param jndiUrl
-    *           The jndiUrl to set.
+    *       The jndiUrl to set.
     */
    public JmsSender setJndiUrl(final String jndiUrl) {
       this.jndiUrl = jndiUrl;
@@ -505,7 +505,7 @@ public class JmsSender extends AbstractSender {
     * Sets the value of jndiSecurityPrincipal.
     *
     * @param jndiSecurityPrincipal
-    *           The jndiSecurityPrincipal to set.
+    *       The jndiSecurityPrincipal to set.
     */
    public JmsSender setJndiSecurityPrincipal(final String jndiSecurityPrincipal) {
       this.jndiSecurityPrincipal = jndiSecurityPrincipal;
@@ -525,7 +525,7 @@ public class JmsSender extends AbstractSender {
     * Sets the value of jndiSecurityCredentials.
     *
     * @param jndiSecurityCredentials
-    *           The jndiSecurityCredentials to set.
+    *       The jndiSecurityCredentials to set.
     */
    public JmsSender setJndiSecurityCredentials(final String jndiSecurityCredentials) {
       this.jndiSecurityCredentials = jndiSecurityCredentials;
@@ -545,7 +545,7 @@ public class JmsSender extends AbstractSender {
     * Sets the value of replyTo.
     *
     * @param replyTo
-    *           The replyTo to set.
+    *       The replyTo to set.
     */
    public JmsSender setReplyTo(final String replyTo) {
       this.replyTo = replyTo;

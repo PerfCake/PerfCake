@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,19 +19,20 @@
  */
 package org.perfcake.message;
 
+import org.perfcake.util.Utils;
+import org.perfcake.util.properties.DefaultPropertyGetter;
+
+import org.apache.log4j.Logger;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-import org.perfcake.util.Utils;
-import org.perfcake.util.properties.DefaultPropertyGetter;
-import org.perfcake.validation.MessageValidator;
-
 /**
  * TODO logging and javadoc
+ *
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */

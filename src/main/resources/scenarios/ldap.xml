@@ -6,7 +6,7 @@
    <sender class="LdapSender">
       <property name="target" value="ldap://${server.host:localhost}:${server.port:389}"/>
       <property name="searchBase" value="dc=example,dc=org"/>
-       <property name="filter" value="(uid=*)"/>
+      <property name="filter" value="(uid=*)"/>
    </sender>
    <reporting>
       <reporter class="ResponseTimeStatsReporter">

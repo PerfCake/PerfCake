@@ -23,7 +23,6 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class WeightedMeanAccumulatorTest {

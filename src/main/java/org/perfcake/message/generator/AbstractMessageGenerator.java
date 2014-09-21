@@ -83,9 +83,9 @@ public abstract class AbstractMessageGenerator {
     * Initialize the generator. During the initialization the {@link #messageSenderManager} is initialized as well.
     *
     * @param messageSenderManager
-    *           Message sender manager.
+    *       Message sender manager.
     * @param messageStore
-    *           Message store where the messages are taken from.
+    *       Message store where the messages are taken from.
     * @throws Exception
     */
    public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception {
@@ -110,7 +110,7 @@ public abstract class AbstractMessageGenerator {
     * Sets the message sender manager.
     *
     * @param messageSenderManager
-    *           The message sender manager to set.
+    *       The message sender manager to set.
     */
    public void setMessageSenderManager(final MessageSenderManager messageSenderManager) {
       this.messageSenderManager = messageSenderManager;
@@ -120,7 +120,7 @@ public abstract class AbstractMessageGenerator {
     * Sets the current run info
     *
     * @param runInfo
-    *           The current run info object
+    *       The current run info object
     */
    public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
@@ -137,7 +137,7 @@ public abstract class AbstractMessageGenerator {
     * Sets the report manager
     *
     * @param reportManager
-    *           The report manager to set.
+    *       The report manager to set.
     */
    public void setReportManager(final ReportManager reportManager) {
       this.reportManager = reportManager;
@@ -172,7 +172,7 @@ public abstract class AbstractMessageGenerator {
     * Computes the current average speed the iterations are executed.
     *
     * @param cnt
-    *           The iteration count.
+    *       The iteration count.
     * @return The current average iteration execution speed.
     */
    protected float getSpeed(final long cnt) {
@@ -208,7 +208,7 @@ public abstract class AbstractMessageGenerator {
     * Sets the number of threads.
     *
     * @param threads
-    *           The number of threads.
+    *       The number of threads.
     * @return this
     */
    public AbstractMessageGenerator setThreads(final int threads) {
@@ -233,7 +233,7 @@ public abstract class AbstractMessageGenerator {
     * Sets the value of messageNumberingEnabled.
     *
     * @param messageNumberingEnabled
-    *           The messageNumberingEnabled to set.
+    *       The messageNumberingEnabled to set.
     * @return this
     */
    public AbstractMessageGenerator setMessageNumberingEnabled(final boolean messageNumberingEnabled) {

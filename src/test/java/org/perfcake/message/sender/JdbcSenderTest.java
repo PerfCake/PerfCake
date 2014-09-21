@@ -19,23 +19,9 @@
  */
 package org.perfcake.message.sender;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Properties;
+import org.perfcake.util.ObjectFactory;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
@@ -46,9 +32,17 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.perfcake.util.ObjectFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
 
 /**
  * @author Lenka Vašková <vaskova.lenka@gmail.com>

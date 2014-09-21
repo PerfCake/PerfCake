@@ -19,6 +19,10 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.message.Message;
+import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.Utils;
+
 import java.io.BufferedOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -28,10 +32,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.perfcake.message.Message;
-import org.perfcake.reporting.MeasurementUnit;
-import org.perfcake.util.Utils;
 
 /**
  * The sender that can invoke external command (specified by {@link #target} property)
@@ -182,7 +182,7 @@ public class CommandSender extends AbstractSender {
     * Sets the value of messageFrom property.
     *
     * @param messageFrom
-    *           The messageFrom to set.
+    *       The messageFrom to set.
     */
    public CommandSender setMessageFrom(final MessageFrom messageFrom) {
       this.messageFrom = messageFrom;
@@ -202,7 +202,7 @@ public class CommandSender extends AbstractSender {
     * Sets the value of commandPrefix.
     *
     * @param commandPrefix
-    *           The commandPrefix to set.
+    *       The commandPrefix to set.
     */
    protected CommandSender setCommandPrefix(final String commandPrefix) {
       this.commandPrefix = commandPrefix;
@@ -218,7 +218,7 @@ public class CommandSender extends AbstractSender {
 
    /**
     * @param environmentVariables
-    *           the environmentVariables to set
+    *       the environmentVariables to set
     */
    public CommandSender setEnvironmentVariables(String[] environmentVariables) {
       this.environmentVariables = Arrays.copyOf(environmentVariables, environmentVariables.length); // ignore any later external modifications

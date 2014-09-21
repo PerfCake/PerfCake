@@ -19,11 +19,16 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
+import org.perfcake.message.Message;
+import org.perfcake.reporting.MeasurementUnit;
+
+import org.apache.log4j.Logger;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
-
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -31,11 +36,6 @@ import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
 import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
-
-import org.apache.log4j.Logger;
-import org.perfcake.PerfCakeException;
-import org.perfcake.message.Message;
-import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The sender which queries LDAP server.

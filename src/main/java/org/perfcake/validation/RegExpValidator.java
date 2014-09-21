@@ -19,8 +19,9 @@
  */
 package org.perfcake.validation;
 
-import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
+
+import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 
 /**

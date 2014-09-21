@@ -2,254 +2,254 @@
 
 <server xmlns="urn:jboss:domain:1.2">
 
-    <extensions>
-        <extension module="org.jboss.as.connector"/>
-        <extension module="org.jboss.as.deployment-scanner"/>
-        <extension module="org.jboss.as.jmx"/>
-        <extension module="org.jboss.as.logging"/>
-        <extension module="org.jboss.as.messaging"/>
-        <extension module="org.jboss.as.naming"/>
-        <extension module="org.jboss.as.remoting"/>
-        <extension module="org.jboss.as.security"/>
-        <extension module="org.jboss.as.threads"/>
-        <extension module="org.jboss.as.transactions"/>
-        <extension module="org.jboss.as.web"/>
-        <extension module="org.jboss.as.weld"/>
-    </extensions>
+   <extensions>
+      <extension module="org.jboss.as.connector"/>
+      <extension module="org.jboss.as.deployment-scanner"/>
+      <extension module="org.jboss.as.jmx"/>
+      <extension module="org.jboss.as.logging"/>
+      <extension module="org.jboss.as.messaging"/>
+      <extension module="org.jboss.as.naming"/>
+      <extension module="org.jboss.as.remoting"/>
+      <extension module="org.jboss.as.security"/>
+      <extension module="org.jboss.as.threads"/>
+      <extension module="org.jboss.as.transactions"/>
+      <extension module="org.jboss.as.web"/>
+      <extension module="org.jboss.as.weld"/>
+   </extensions>
 
-    <management>
-        <security-realms>
-            <security-realm name="ManagementRealm">
-                <authentication>
-                    <properties path="mgmt-users.properties" relative-to="jboss.server.config.dir"/>
-                </authentication>
-            </security-realm>
-            <security-realm name="ApplicationRealm">
-                <authentication>
-                    <properties path="../../../../src/test/resources/application-users.properties" relative-to="jboss.server.config.dir"/>
-                </authentication>
-            </security-realm>
-        </security-realms>
-        <management-interfaces>
-            <native-interface security-realm="ManagementRealm">
-                <socket-binding native="management-native"/>
-            </native-interface>
-            <http-interface security-realm="ManagementRealm">
-                <socket-binding http="management-http"/>
-            </http-interface>
-        </management-interfaces>
-    </management>
+   <management>
+      <security-realms>
+         <security-realm name="ManagementRealm">
+            <authentication>
+               <properties path="mgmt-users.properties" relative-to="jboss.server.config.dir"/>
+            </authentication>
+         </security-realm>
+         <security-realm name="ApplicationRealm">
+            <authentication>
+               <properties path="../../../../src/test/resources/application-users.properties" relative-to="jboss.server.config.dir"/>
+            </authentication>
+         </security-realm>
+      </security-realms>
+      <management-interfaces>
+         <native-interface security-realm="ManagementRealm">
+            <socket-binding native="management-native"/>
+         </native-interface>
+         <http-interface security-realm="ManagementRealm">
+            <socket-binding http="management-http"/>
+         </http-interface>
+      </management-interfaces>
+   </management>
 
-    <profile>
-        <subsystem xmlns="urn:jboss:domain:logging:1.1">
-            <console-handler name="CONSOLE">
-                <level name="INFO"/>
-                <formatter>
-                    <pattern-formatter pattern="%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n"/>
-                </formatter>
-            </console-handler>
-            <periodic-rotating-file-handler name="FILE">
-                <formatter>
-                    <pattern-formatter pattern="%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n"/>
-                </formatter>
-                <file relative-to="jboss.server.log.dir" path="server.log"/>
-                <suffix value=".yyyy-MM-dd"/>
-                <append value="true"/>
-            </periodic-rotating-file-handler>
-            <logger category="com.arjuna">
-                <level name="WARN"/>
-            </logger>
-            <logger category="org.apache.tomcat.util.modeler">
-                <level name="WARN"/>
-            </logger>
-            <logger category="sun.rmi">
-                <level name="WARN"/>
-            </logger>
-            <logger category="jacorb">
-                <level name="WARN"/>
-            </logger>
-            <logger category="jacorb.config">
-                <level name="ERROR"/>
-            </logger>
-            <root-logger>
-                <level name="INFO"/>
-                <handlers>
-                    <handler name="CONSOLE"/>
-                    <handler name="FILE"/>
-                </handlers>
-            </root-logger>
-        </subsystem>
-        <subsystem xmlns="urn:jboss:domain:deployment-scanner:1.1">
-            <deployment-scanner path="deployments" relative-to="jboss.server.base.dir" scan-interval="5000"/>
-        </subsystem>
-        <subsystem xmlns="urn:jboss:domain:jmx:1.1">
-            <show-model value="true"/>
-            <remoting-connector/>
-        </subsystem>
-        <subsystem xmlns="urn:jboss:domain:messaging:1.1">
-            <hornetq-server>
-                <persistence-enabled>false</persistence-enabled>
-                <security-domain>simple</security-domain>
-                <journal-type>NIO</journal-type>
-                <journal-file-size>102400</journal-file-size>
-                <journal-min-files>2</journal-min-files>
+   <profile>
+      <subsystem xmlns="urn:jboss:domain:logging:1.1">
+         <console-handler name="CONSOLE">
+            <level name="INFO"/>
+            <formatter>
+               <pattern-formatter pattern="%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n"/>
+            </formatter>
+         </console-handler>
+         <periodic-rotating-file-handler name="FILE">
+            <formatter>
+               <pattern-formatter pattern="%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n"/>
+            </formatter>
+            <file relative-to="jboss.server.log.dir" path="server.log"/>
+            <suffix value=".yyyy-MM-dd"/>
+            <append value="true"/>
+         </periodic-rotating-file-handler>
+         <logger category="com.arjuna">
+            <level name="WARN"/>
+         </logger>
+         <logger category="org.apache.tomcat.util.modeler">
+            <level name="WARN"/>
+         </logger>
+         <logger category="sun.rmi">
+            <level name="WARN"/>
+         </logger>
+         <logger category="jacorb">
+            <level name="WARN"/>
+         </logger>
+         <logger category="jacorb.config">
+            <level name="ERROR"/>
+         </logger>
+         <root-logger>
+            <level name="INFO"/>
+            <handlers>
+               <handler name="CONSOLE"/>
+               <handler name="FILE"/>
+            </handlers>
+         </root-logger>
+      </subsystem>
+      <subsystem xmlns="urn:jboss:domain:deployment-scanner:1.1">
+         <deployment-scanner path="deployments" relative-to="jboss.server.base.dir" scan-interval="5000"/>
+      </subsystem>
+      <subsystem xmlns="urn:jboss:domain:jmx:1.1">
+         <show-model value="true"/>
+         <remoting-connector/>
+      </subsystem>
+      <subsystem xmlns="urn:jboss:domain:messaging:1.1">
+         <hornetq-server>
+            <persistence-enabled>false</persistence-enabled>
+            <security-domain>simple</security-domain>
+            <journal-type>NIO</journal-type>
+            <journal-file-size>102400</journal-file-size>
+            <journal-min-files>2</journal-min-files>
 
-                <connectors>
-                    <netty-connector name="netty" socket-binding="messaging"/>
-                    <netty-connector name="netty-throughput" socket-binding="messaging-throughput">
-                        <param key="batch-delay" value="50"/>
-                    </netty-connector>
-                    <in-vm-connector name="in-vm" server-id="0"/>
-                </connectors>
+            <connectors>
+               <netty-connector name="netty" socket-binding="messaging"/>
+               <netty-connector name="netty-throughput" socket-binding="messaging-throughput">
+                  <param key="batch-delay" value="50"/>
+               </netty-connector>
+               <in-vm-connector name="in-vm" server-id="0"/>
+            </connectors>
 
-                <acceptors>
-                    <netty-acceptor name="netty" socket-binding="messaging"/>
-                    <netty-acceptor name="netty-throughput" socket-binding="messaging-throughput">
-                        <param key="batch-delay" value="50"/>
-                        <param key="direct-deliver" value="false"/>
-                    </netty-acceptor>
-                    <in-vm-acceptor name="in-vm" server-id="0"/>
-                </acceptors>
+            <acceptors>
+               <netty-acceptor name="netty" socket-binding="messaging"/>
+               <netty-acceptor name="netty-throughput" socket-binding="messaging-throughput">
+                  <param key="batch-delay" value="50"/>
+                  <param key="direct-deliver" value="false"/>
+               </netty-acceptor>
+               <in-vm-acceptor name="in-vm" server-id="0"/>
+            </acceptors>
 
-                <security-settings>
-                    <security-setting match="#">
-                        <permission type="send" roles="guest"/>
-                        <permission type="consume" roles="guest"/>
-                        <permission type="createNonDurableQueue" roles="guest"/>
-                        <permission type="deleteNonDurableQueue" roles="guest"/>
-                    </security-setting>
-                    <security-setting match="secured.#">
-                        <permission type="send" roles="user"/>
-                        <permission type="consume" roles="user"/>
-                        <permission type="createNonDurableQueue" roles="user"/>
-                        <permission type="deleteNonDurableQueue" roles="user"/>
-                    </security-setting>
-                </security-settings>
+            <security-settings>
+               <security-setting match="#">
+                  <permission type="send" roles="guest"/>
+                  <permission type="consume" roles="guest"/>
+                  <permission type="createNonDurableQueue" roles="guest"/>
+                  <permission type="deleteNonDurableQueue" roles="guest"/>
+               </security-setting>
+               <security-setting match="secured.#">
+                  <permission type="send" roles="user"/>
+                  <permission type="consume" roles="user"/>
+                  <permission type="createNonDurableQueue" roles="user"/>
+                  <permission type="deleteNonDurableQueue" roles="user"/>
+               </security-setting>
+            </security-settings>
 
-                <address-settings>
-                    <address-setting match="#">
-                        <dead-letter-address>jms.queue.DLQ</dead-letter-address>
-                        <expiry-address>jms.queue.ExpiryQueue</expiry-address>
-                        <redelivery-delay>0</redelivery-delay>
-                        <max-size-bytes>10485760</max-size-bytes>
-                        <address-full-policy>BLOCK</address-full-policy>
-                        <message-counter-history-day-limit>10</message-counter-history-day-limit>
-                    </address-setting>
-                </address-settings>
+            <address-settings>
+               <address-setting match="#">
+                  <dead-letter-address>jms.queue.DLQ</dead-letter-address>
+                  <expiry-address>jms.queue.ExpiryQueue</expiry-address>
+                  <redelivery-delay>0</redelivery-delay>
+                  <max-size-bytes>10485760</max-size-bytes>
+                  <address-full-policy>BLOCK</address-full-policy>
+                  <message-counter-history-day-limit>10</message-counter-history-day-limit>
+               </address-setting>
+            </address-settings>
 
-                <jms-connection-factories>
-                    <connection-factory name="InVmConnectionFactory">
-                        <connectors>
-                            <connector-ref connector-name="in-vm"/>
-                        </connectors>
-                        <entries>
-                            <entry name="java:/ConnectionFactory"/>
-                        </entries>
-                    </connection-factory>
-                    <connection-factory name="RemoteConnectionFactory">
-                        <connectors>
-                            <connector-ref connector-name="netty"/>
-                        </connectors>
-                        <entries>
-                            <entry name="RemoteConnectionFactory"/>
-                            <entry name="java:jboss/exported/jms/RemoteConnectionFactory"/>
-                        </entries>
-                    </connection-factory>
-                </jms-connection-factories>
+            <jms-connection-factories>
+               <connection-factory name="InVmConnectionFactory">
+                  <connectors>
+                     <connector-ref connector-name="in-vm"/>
+                  </connectors>
+                  <entries>
+                     <entry name="java:/ConnectionFactory"/>
+                  </entries>
+               </connection-factory>
+               <connection-factory name="RemoteConnectionFactory">
+                  <connectors>
+                     <connector-ref connector-name="netty"/>
+                  </connectors>
+                  <entries>
+                     <entry name="RemoteConnectionFactory"/>
+                     <entry name="java:jboss/exported/jms/RemoteConnectionFactory"/>
+                  </entries>
+               </connection-factory>
+            </jms-connection-factories>
 
-                <jms-destinations>
-                    <jms-queue name="testQueue">
-                        <entry name="queue/test"/>
-                        <entry name="java:jboss/exported/jms/queue/test"/>
-                    </jms-queue>
-                    <jms-queue name="secured.testQueue">
-                        <entry name="queue/secured_test"/>
-                        <entry name="java:jboss/exported/jms/queue/secured_test"/>
-                    </jms-queue>
-                    <jms-queue name="testQueueReply">
-                        <entry name="queue/test_reply"/>
-                        <entry name="java:jboss/exported/jms/queue/test_reply"/>
-                    </jms-queue>
-                    <jms-topic name="testTopic">
-                        <entry name="topic/test"/>
-                        <entry name="java:jboss/exported/jms/topic/test"/>
-                    </jms-topic>
-                </jms-destinations>
-            </hornetq-server>
-        </subsystem>
-        <subsystem xmlns="urn:jboss:domain:naming:1.1"/>
-        <subsystem xmlns="urn:jboss:domain:remoting:1.1">
-            <connector name="remoting-connector" socket-binding="remoting" security-realm="ApplicationRealm"/>
-        </subsystem>
-        <subsystem xmlns="urn:jboss:domain:security:1.1">
-            <security-domains>
-                <security-domain name="other" cache-type="default">
-                    <authentication>
-                        <login-module code="Remoting" flag="optional">
-                            <module-option name="password-stacking" value="useFirstPass"/>
-                        </login-module>
-                        <login-module code="RealmUsersRoles" flag="required">
-                            <module-option name="usersProperties" value="${jboss.server.config.dir}/application-users.properties"/>
-                            <module-option name="rolesProperties" value="${jboss.server.config.dir}/application-roles.properties"/>
-                            <module-option name="realm" value="ApplicationRealm"/>
-                            <module-option name="password-stacking" value="useFirstPass"/>
-                        </login-module>
-                    </authentication>
-                </security-domain>
-                <security-domain name="jboss-web-policy" cache-type="default">
-                    <authorization>
-                        <policy-module code="Delegating" flag="required"/>
-                    </authorization>
-                </security-domain>
-                <security-domain name="jboss-ejb-policy" cache-type="default">
-                    <authorization>
-                        <policy-module code="Delegating" flag="required"/>
-                    </authorization>
-                </security-domain>
-                <security-domain name="simple" cache-type="default">
-                    <authentication>
-                        <login-module code="Simple" flag="required"/>
-                    </authentication>
-                </security-domain>
-            </security-domains>
-        </subsystem>
-        <subsystem xmlns="urn:jboss:domain:threads:1.1"/>
-        <subsystem xmlns="urn:jboss:domain:transactions:1.1">
-            <core-environment>
-                <process-id>
-                    <uuid/>
-                </process-id>
-            </core-environment>
-            <recovery-environment socket-binding="txn-recovery-environment" status-socket-binding="txn-status-manager"/>
-            <coordinator-environment default-timeout="300"/>
-        </subsystem>
-        <subsystem xmlns="urn:jboss:domain:web:1.1" default-virtual-server="default-host" native="false">
-            <connector name="http" protocol="HTTP/1.1" scheme="http" socket-binding="http"/>
-            <virtual-server name="default-host" enable-welcome-root="true">
-                <alias name="localhost"/>
-            </virtual-server>
-        </subsystem>
-        <subsystem xmlns="urn:jboss:domain:weld:1.0"/>
-    </profile>
+            <jms-destinations>
+               <jms-queue name="testQueue">
+                  <entry name="queue/test"/>
+                  <entry name="java:jboss/exported/jms/queue/test"/>
+               </jms-queue>
+               <jms-queue name="secured.testQueue">
+                  <entry name="queue/secured_test"/>
+                  <entry name="java:jboss/exported/jms/queue/secured_test"/>
+               </jms-queue>
+               <jms-queue name="testQueueReply">
+                  <entry name="queue/test_reply"/>
+                  <entry name="java:jboss/exported/jms/queue/test_reply"/>
+               </jms-queue>
+               <jms-topic name="testTopic">
+                  <entry name="topic/test"/>
+                  <entry name="java:jboss/exported/jms/topic/test"/>
+               </jms-topic>
+            </jms-destinations>
+         </hornetq-server>
+      </subsystem>
+      <subsystem xmlns="urn:jboss:domain:naming:1.1"/>
+      <subsystem xmlns="urn:jboss:domain:remoting:1.1">
+         <connector name="remoting-connector" socket-binding="remoting" security-realm="ApplicationRealm"/>
+      </subsystem>
+      <subsystem xmlns="urn:jboss:domain:security:1.1">
+         <security-domains>
+            <security-domain name="other" cache-type="default">
+               <authentication>
+                  <login-module code="Remoting" flag="optional">
+                     <module-option name="password-stacking" value="useFirstPass"/>
+                  </login-module>
+                  <login-module code="RealmUsersRoles" flag="required">
+                     <module-option name="usersProperties" value="${jboss.server.config.dir}/application-users.properties"/>
+                     <module-option name="rolesProperties" value="${jboss.server.config.dir}/application-roles.properties"/>
+                     <module-option name="realm" value="ApplicationRealm"/>
+                     <module-option name="password-stacking" value="useFirstPass"/>
+                  </login-module>
+               </authentication>
+            </security-domain>
+            <security-domain name="jboss-web-policy" cache-type="default">
+               <authorization>
+                  <policy-module code="Delegating" flag="required"/>
+               </authorization>
+            </security-domain>
+            <security-domain name="jboss-ejb-policy" cache-type="default">
+               <authorization>
+                  <policy-module code="Delegating" flag="required"/>
+               </authorization>
+            </security-domain>
+            <security-domain name="simple" cache-type="default">
+               <authentication>
+                  <login-module code="Simple" flag="required"/>
+               </authentication>
+            </security-domain>
+         </security-domains>
+      </subsystem>
+      <subsystem xmlns="urn:jboss:domain:threads:1.1"/>
+      <subsystem xmlns="urn:jboss:domain:transactions:1.1">
+         <core-environment>
+            <process-id>
+               <uuid/>
+            </process-id>
+         </core-environment>
+         <recovery-environment socket-binding="txn-recovery-environment" status-socket-binding="txn-status-manager"/>
+         <coordinator-environment default-timeout="300"/>
+      </subsystem>
+      <subsystem xmlns="urn:jboss:domain:web:1.1" default-virtual-server="default-host" native="false">
+         <connector name="http" protocol="HTTP/1.1" scheme="http" socket-binding="http"/>
+         <virtual-server name="default-host" enable-welcome-root="true">
+            <alias name="localhost"/>
+         </virtual-server>
+      </subsystem>
+      <subsystem xmlns="urn:jboss:domain:weld:1.0"/>
+   </profile>
 
-    <interfaces>
-        <interface name="management">
-            <inet-address value="${jboss.bind.address.management:127.0.0.1}"/>
-        </interface>
-        <interface name="public">
-            <inet-address value="${jboss.bind.address:127.0.0.1}"/>
-        </interface>
-    </interfaces>
+   <interfaces>
+      <interface name="management">
+         <inet-address value="${jboss.bind.address.management:127.0.0.1}"/>
+      </interface>
+      <interface name="public">
+         <inet-address value="${jboss.bind.address:127.0.0.1}"/>
+      </interface>
+   </interfaces>
 
-    <socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
-        <socket-binding name="management-native" interface="management" port="${jboss.management.native.port:9999}"/>
-        <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:9990}"/>
-        <socket-binding name="http" port="8080"/>
-        <socket-binding name="messaging" port="5445"/>
-        <socket-binding name="messaging-throughput" port="5455"/>
-        <socket-binding name="remoting" port="4447"/>
-        <socket-binding name="txn-recovery-environment" port="4712"/>
-        <socket-binding name="txn-status-manager" port="4713"/>
-    </socket-binding-group>
+   <socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
+      <socket-binding name="management-native" interface="management" port="${jboss.management.native.port:9999}"/>
+      <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:9990}"/>
+      <socket-binding name="http" port="8080"/>
+      <socket-binding name="messaging" port="5445"/>
+      <socket-binding name="messaging-throughput" port="5455"/>
+      <socket-binding name="remoting" port="4447"/>
+      <socket-binding name="txn-recovery-environment" port="4712"/>
+      <socket-binding name="txn-status-manager" port="4713"/>
+   </socket-binding-group>
 
 </server>

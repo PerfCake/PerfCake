@@ -25,6 +25,7 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -106,25 +107,25 @@ public class NewReporterContractTest {
     * rm.registerReporter(r1);
     * rm.setRunInfo(ri);
     * rm.registerReporter(r2);
-    * 
+    *
     * Assert.assertEquals(r1.runInfo, ri); // make sure the change was propagated
     * Assert.assertEquals(r2.runInfo, ri); // make sure the change was propagated
-    * 
+    *
     * rm.unregisterReporter(r2);
     * rm.registerReporter(r1); // this should be ignored
     * Assert.assertEquals(rm.getReporters().size(), 1);
-    * 
+    *
     * rm.registerReporter(r2);
     * Assert.assertTrue(rm.getReporters().contains(r1));
     * Assert.assertTrue(rm.getReporters().contains(r2));
-    * 
+    *
     * rm.registerReporter(dr);
     * mu = rm.newMeasurementUnit();
-    * 
+    *
     * rm.report(mu);
     * Assert.assertNull(dr.getLastMethod(), "No value should have been reported as reporting was not started.");
     * }
-    * 
+    *
     * @Test(priority = 2)
     * public void measurementUnitTest() throws ReportingException, InterruptedException {
     * rm.start();
@@ -137,20 +138,20 @@ public class NewReporterContractTest {
     * Assert.assertEquals(mu.getIteration(), 499);
     * Assert.assertEquals(mu.getLastTime(), -1);
     * Assert.assertEquals(mu.getTotalTime(), 0);
-    * 
+    *
     * mu.startMeasure();
     * Thread.sleep(500);
     * mu.stopMeasure();
     * Assert.assertTrue(mu.getTotalTime() < 600); // we slept only for 500ms
     * Assert.assertTrue(mu.getLastTime() < 600);
-    * 
+    *
     * mu.startMeasure();
     * Thread.sleep(500);
     * mu.stopMeasure();
     * Assert.assertTrue(mu.getTotalTime() < 1200); // we slept only for 2x500ms
     * Assert.assertTrue(mu.getLastTime() < 600);
     * }
-    * 
+    *
     * @Test(priority = 3)
     * public void runInfoTest() throws ReportingException, InterruptedException {
     * Assert.assertEquals(ri.getPercentage(), 0d); // we did not run
@@ -158,58 +159,58 @@ public class NewReporterContractTest {
     * Assert.assertEquals(ri.getStartTime(), -1);
     * Assert.assertEquals(ri.getEndTime(), -1);
     * Assert.assertEquals(ri.getRunTime(), 0);
-    * 
+    *
     * mu = rm.newMeasurementUnit();
     * Assert.assertNull(mu);
-    * 
+    *
     * rm.start(); // this logs 3 warnings because we did not add any destinations
     * mu = rm.newMeasurementUnit();
-    * 
+    *
     * mu.startMeasure();
     * Thread.sleep(500);
     * mu.stopMeasure();
-    * 
+    *
     * rm.report(mu);
     * Assert.assertTrue(ri.isRunning());
     * Assert.assertEquals(dr.getLastMethod(), "doReport");
-    * 
+    *
     * rm.reset();
     * Assert.assertEquals(dr.getLastMethod(), "doReset");
-    * 
+    *
     * Thread.sleep(10);
-    * 
+    *
     * rm.stop();
     * Assert.assertFalse(ri.isRunning());
-    * 
+    *
     * Assert.assertEquals(ri.getPercentage(), 0d); // we had reset
     * Assert.assertFalse(ri.isRunning());
     * Assert.assertTrue(ri.getEndTime() > ri.getStartTime());
     * Assert.assertTrue(ri.getRunTime() == ri.getEndTime() - ri.getStartTime());
     * }
-    * 
+    *
     * @Test(priority = 4)
     * public void reportingPeriodTest() throws ReportingException, InterruptedException {
     * r1.registerDestination(d1, new Period(PeriodType.ITERATION, 100));
     * r1.registerDestination(d2, new Period(PeriodType.PERCENTAGE, 8));
     * r1.registerDestination(d1, new Period(PeriodType.TIME, 2000));
-    * 
+    *
     * final Set<BoundPeriod<Destination>> bp = new HashSet<>();
     * bp.add(new BoundPeriod<Destination>(PeriodType.ITERATION, 100, d1));
     * bp.add(new BoundPeriod<Destination>(PeriodType.PERCENTAGE, 8, d2));
     * bp.add(new BoundPeriod<Destination>(PeriodType.TIME, 2000, d1));
     * Assert.assertTrue(r1.getReportingPeriods().containsAll(bp));
-    * 
+    *
     * r2.registerDestination(d3, new Period(PeriodType.TIME, 1500));
     * r2.setWindowSize(4);
-    * 
+    *
     * rm.start();
-    * 
+    *
     * final AtomicInteger crc = new AtomicInteger(0);
-    * 
+    *
     * d1.setReportAssert(new ReportAssert() {
-    * 
+    *
     * private boolean first = true;
-    * 
+    *
     * @Override
     * public void report(final Measurement m) {
     * if (first) {
@@ -217,7 +218,7 @@ public class NewReporterContractTest {
     * Assert.assertEquals(m.get(), 10d);
     * Assert.assertEquals(m.get("avg"), 0d);
     * Assert.assertEquals(m.get("it"), "1");
-    * 
+    *
     * first = false;
     * } else {
     * Assert.assertEquals(m.getIteration(), 99L);
@@ -228,18 +229,18 @@ public class NewReporterContractTest {
     * }
     * }
     * });
-    * 
+    *
     * d2.setReportAssert(new ReportAssert() {
-    * 
+    *
     * private boolean first = true;
-    * 
+    *
     * @Override
     * public void report(final Measurement m) {
     * if (first) {
     * Assert.assertEquals(m.getPercentage(), 0);
     * Assert.assertEquals(m.get(), 10d);
     * Assert.assertEquals(m.get("avg"), 0d);
-    * 
+    *
     * first = false;
     * } else {
     * Assert.assertEquals(m.getPercentage(), 8);
@@ -249,15 +250,15 @@ public class NewReporterContractTest {
     * }
     * }
     * });
-    * 
+    *
     * d3.setReportAssert(new ReportAssert() {
-    * 
+    *
     * @Override
     * public void report(final Measurement m) {
     * Assert.assertEquals(m.get("avg"), 97.5d);
     * }
     * });
-    * 
+    *
     * mu = null;
     * for (int i = 1; i <= 100; i++) {
     * mu = rm.newMeasurementUnit();
@@ -275,20 +276,20 @@ public class NewReporterContractTest {
     * Assert.assertEquals(mu.getTotalTime(), 10);
     * Assert.assertEquals(d1.getLastType(), PeriodType.ITERATION);
     * Assert.assertEquals(d2.getLastType(), PeriodType.PERCENTAGE);
-    * 
+    *
     * Thread.sleep(2500);
-    * 
+    *
     * Assert.assertEquals(d1.getLastType(), PeriodType.TIME);
     * d3.setReportAssert(null);
-    * 
+    *
     * rm.stop();
-    * 
+    *
     * Assert.assertEquals(crc.get(), 3);
-    * 
+    *
     * d1.setReportAssert(null);
     * d2.setReportAssert(null);
     * }
-    * 
+    *
     * @Test(priority = 5)
     * public void reportManagerResetTest() throws ReportingException, InterruptedException {
     * rm.reset();
@@ -301,27 +302,27 @@ public class NewReporterContractTest {
     * Assert.assertNull(r2.getAccumulatedResult("avg"));
     * Assert.assertNull(r2.getAccumulatedResult("it"));
     * Assert.assertNull(r2.getAccumulatedResult(Measurement.DEFAULT_RESULT));
-    * 
+    *
     * Assert.assertEquals(dr.getLastMethod(), "doReset");
     * }
-    * 
+    *
     * @Test(priority = 6, timeOut = 10000)
     * public void finishReachTest() throws ReportingException, InterruptedException {
     * rm.start();
     * double lastPercentage = 0;
     * long lastIteration = 0;
-    * 
+    *
     * while (ri.isRunning()) {
     * mu = rm.newMeasurementUnit();
     * lastPercentage = ri.getPercentage();
     * lastIteration = mu.getIteration();
     * rm.report(mu);
     * }
-    * 
+    *
     * Assert.assertEquals(lastIteration, 999L);
     * Assert.assertEquals(lastPercentage, 100d);
     * rm.stop();
-    * 
+    *
     * Assert.assertEquals(ri.getPercentage(), 0d);
     * Assert.assertEquals(ri.getIteration(), -1L);
     * }

@@ -24,7 +24,6 @@ package org.perfcake.reporting.reporters.accumulators;
  * Atomic types are not used because both values must be set at the same time. Hence the methods are synchronized.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
- *
  */
 public class MaxLongValueAccumulator implements Accumulator<Long> {
    /**

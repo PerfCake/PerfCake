@@ -22,7 +22,10 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.ObjectFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -94,7 +97,7 @@ public class MessageSenderManager {
    }
 
    public void close() throws PerfCakeException {
-      for (MessageSender ms: allSenders) {
+      for (MessageSender ms : allSenders) {
          ms.close();
       }
    }
