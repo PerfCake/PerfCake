@@ -298,9 +298,6 @@
             <configuration>
                <destfile>${basedir}/target/coverage-reports/jacoco-unit.exec</destfile>
                <datafile>${basedir}/target/coverage-reports/jacoco-unit.exec</datafile>
-               <!--excludes>
-                  <exclude>**</exclude>
-               </excludes-->
                <includes>
                   <include>org/perfcake/**</include>
                </includes>
