@@ -582,6 +582,9 @@
    <profiles>
       <profile>
          <id>2-to-3</id>
+         <activation>
+            <activeByDefault>true</activeByDefault>
+         </activation>
          <build>
             <plugins>
                <plugin>

@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xalan="http://xml.apache.org/xslt" xmlns:pc2="urn:perfcake:scenario:2.0" xmlns:pc3="urn:perfcake:scenario:3.0" version="1.0" exclude-result-prefixes="pc2 pc3 xalan">
-   <xsl:output method="xml" version="1.0" encoding="utf-8" indent="yes" xalan:indent-amount="3"/>
+   <xsl:output method="xml" version="1.0" encoding="utf-8" indent="yes" xalan:indent-amount="3" cdata-section-elements="pc3:validator"/>
    <xsl:template name="property" match="pc2:property">
       <property xmlns="urn:perfcake:scenario:3.0">
          <xsl:attribute name="name">
             <xsl:value-of select="@name"/>
          </xsl:attribute>
-         <xsl:attribute name="value">
-            <xsl:value-of select="@value"/>
-         </xsl:attribute>
+         <xsl:choose>
+            <xsl:when test="@value">
+               <xsl:attribute name="value">
+               <xsl:value-of select="@value"/>
+            </xsl:attribute>
+            </xsl:when>
+            <xsl:otherwise>
+               <xsl:copy-of select="node()"/>
+            </xsl:otherwise>
+         </xsl:choose>
       </property>
    </xsl:template>
    <xsl:template name="header" match="pc2:header">
@@ -169,9 +176,37 @@
                      <xsl:for-each select="pc2:header">
                         <xsl:call-template name="header"/>
                      </xsl:for-each>
+                     <xsl:for-each select="pc2:validatorRef">
+                        <validatorRef>
+                           <xsl:attribute name="id">
+                              <xsl:value-of select="@id"/>
+                           </xsl:attribute>
+                        </validatorRef>
+                     </xsl:for-each>
                   </message>
                </xsl:for-each>
             </messages>
+         </xsl:if>
+         <xsl:if test="pc2:scenario/pc2:validation">
+            <validation>
+               <xsl:for-each select="pc2:scenario/pc2:validation/pc2:validator">
+                  <validator>
+                     <xsl:attribute name="id">
+                        <xsl:value-of select="@id"/>
+                     </xsl:attribute>
+                     <xsl:attribute name="class">
+                        <xsl:choose>
+                           <xsl:when test="@class = 'TextMessageValidator'">RegExpValidator</xsl:when>
+                           <xsl:when test="@class = 'RulesMessageValidator'">RulesValidator</xsl:when>
+                           <xsl:otherwise>
+                              <xsl:value-of select="@class"/>
+                           </xsl:otherwise>
+                        </xsl:choose>
+                     </xsl:attribute>
+                     <xsl:text><xsl:copy-of select="node()"/></xsl:text>
+                  </validator>
+               </xsl:for-each>
+            </validation>
          </xsl:if>
       </scenario>
    </xsl:template>
