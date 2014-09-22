@@ -57,6 +57,7 @@
             <include>scenarios/*</include>
             <include>schemas/*</include>
             <include>google-charts/*</include>
+            <include>xslt/*</include>
          </includes>
          <fileMode>0644</fileMode>
       </fileSet>
