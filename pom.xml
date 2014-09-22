@@ -6,7 +6,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake</artifactId>
-   <version>3.0</version>
+   <version>3.1</version>
    <parent>
       <groupId>org.sonatype.oss</groupId>
       <artifactId>oss-parent</artifactId>
@@ -25,7 +25,7 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-      <tag>v3.0</tag>
+      <tag>v3.1</tag>
    </scm>
    <developers>
       <developer>
@@ -93,6 +93,38 @@
       <server.port>8080</server.port>
       <transform.scenarios.outputDir>${project.build.directory}/scenarios</transform.scenarios.outputDir>
    </properties>
+   <repositories>
+      <repository>
+         <id>jboss-public-repository-group</id>
+         <name>JBoss Public Maven Repository Group</name>
+         <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+         <layout>default</layout>
+         <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+         </releases>
+         <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+         </snapshots>
+      </repository>
+   </repositories>
+   <pluginRepositories>
+      <pluginRepository>
+         <id>jboss-public-repository-group</id>
+         <name>JBoss Public Maven Repository Group</name>
+         <url>https://repository.jboss.org/nexus/content/groups/public-jboss/</url>
+         <layout>default</layout>
+         <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+         </releases>
+         <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+         </snapshots>
+      </pluginRepository>
+   </pluginRepositories>
    <dependencyManagement>
       <dependencies>
          <dependency>
