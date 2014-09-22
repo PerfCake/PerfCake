@@ -20,9 +20,7 @@
 package org.perfcake;
 
 /**
- * 
  * @author Martin Večeřa <marvenec@gmail.com>
- * @author Jiří Sedláček <jiri@sedlackovi.cz>
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public final class PerfCakeConst {
@@ -42,6 +40,6 @@ public final class PerfCakeConst {
    public static final String MESSAGES_DIR_OPT = "messages-dir";
    public static final String PLUGINS_DIR_OPT = "plugins-dir";
    public static final String PROPERTIES_FILE_OPT = "properties-file";
-   
+
    public static final String WARM_UP_TAG = "warmUp";
 }

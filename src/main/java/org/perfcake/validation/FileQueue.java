@@ -19,6 +19,8 @@
  */
 package org.perfcake.validation;
 
+import org.perfcake.PerfCakeException;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,11 +36,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
-import org.perfcake.PerfCakeException;
-
 /**
  * FileQueue is a persistent queue, which stores its items to specified file
- * 
+ *
  * @author Pavel Drozd <ravliv7@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
@@ -201,7 +201,7 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
 
    /**
     * Returns first item in queue
-    * 
+    *
     * @return
     */
    @SuppressWarnings("unchecked")

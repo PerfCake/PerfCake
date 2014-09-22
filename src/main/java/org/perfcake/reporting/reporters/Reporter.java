@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.util.Set;
-
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
@@ -29,6 +27,8 @@ import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
+
+import java.util.Set;
 
 /**
  * A contract of Reporter. Reporter takes
@@ -47,7 +47,6 @@ import org.perfcake.reporting.destinations.Destination;
  * Reporter must be thread safe as it can be called from multiple threads at the same time.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
- *
  */
 public interface Reporter {
 
@@ -56,7 +55,7 @@ public interface Reporter {
     * is not allowed to modify the Measurement Unit. This method must be thread-safe.
     *
     * @param mu
-    *           Measurement Unit from a run iteration
+    *       Measurement Unit from a run iteration
     */
    public void report(MeasurementUnit mu) throws ReportingException;
 
@@ -65,10 +64,9 @@ public interface Reporter {
     * a given period.
     *
     * @param d
-    *           The Destination to which the results should be published
-    *
+    *       The Destination to which the results should be published
     * @param p
-    *           The period interval in which the destination should publish results
+    *       The period interval in which the destination should publish results
     */
    public void registerDestination(Destination d, Period p);
 
@@ -76,9 +74,9 @@ public interface Reporter {
     * Publishes results to the destination. This method is called only when the results should be published.
     *
     * @param periodType
-    *           A period type that caused the invocation of this method.
+    *       A period type that caused the invocation of this method.
     * @param d
-    *           A destination to which the result should be reported.
+    *       A destination to which the result should be reported.
     * @throws ReportingException
     */
    public void publishResult(PeriodType periodType, Destination d) throws ReportingException;
@@ -93,10 +91,9 @@ public interface Reporter {
     * iteration type that reports every 100 iterations at the same time).
     *
     * @param d
-    *           The Destination to which the results should be published
-    *
+    *       The Destination to which the results should be published
     * @param p
-    *           The set of period intervals in which the destination should publish results
+    *       The set of period intervals in which the destination should publish results
     */
    public void registerDestination(Destination d, Set<Period> p);
 
@@ -105,7 +102,7 @@ public interface Reporter {
     * should it be registered with multiple periods. A Reporter should close the Destination if it is still open.
     *
     * @param d
-    *           The Destination to be unregistered (and stopped)
+    *       The Destination to be unregistered (and stopped)
     */
    public void unregisterDestination(Destination d);
 
@@ -138,7 +135,7 @@ public interface Reporter {
     * prior to starting the reporter. Failed to do so can lead to an assertion error.
     *
     * @param runInfo
-    *           RunInfo for the current measurement run
+    *       RunInfo for the current measurement run
     */
    public void setRunInfo(RunInfo runInfo);
 
@@ -147,10 +144,9 @@ public interface Reporter {
     * monitor the current status of reporting.
     *
     * @param reportManager
-    *           ReportManager that owns this Reporter
+    *       ReportManager that owns this Reporter
     */
    public void setReportManager(ReportManager reportManager);
-
 
    /**
     * Gets an unmodifiable set of registered reporting periods.

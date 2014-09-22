@@ -21,7 +21,7 @@ package org.perfcake.common;
 
 /**
  * Units of the {@link Period} type.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public enum PeriodType {

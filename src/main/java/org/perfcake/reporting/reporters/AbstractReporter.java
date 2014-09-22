@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
@@ -34,8 +33,14 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 
-import java.util.*;
+import org.apache.log4j.Logger;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -167,20 +172,22 @@ public abstract class AbstractReporter implements Reporter {
     *       The hash map with results to be accumulated.
     */
    @SuppressWarnings({ "unchecked", "rawtypes" })
-   protected void accumulateResults(final Map<String, Object> results) {
+   private void accumulateResults(final Map<String, Object> results) {
       for (final Entry<String, Object> entry : results.entrySet()) {
          // make sure we have an accumulator set to be able to accumulate the result
-         if (accumulatedResults.get(entry.getKey()) == null) {
-            final Accumulator a = getAccumulator(entry.getKey(), entry.getValue().getClass());
+         final String key = entry.getKey();
+         final Object value = entry.getValue();
+         if (accumulatedResults.get(key) == null) {
+            final Accumulator a = getAccumulator(key, value.getClass());
 
             if (a == null) {
-               log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", entry.getKey(), entry.getValue().getClass().getCanonicalName()));
+               log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", key, value.getClass().getCanonicalName()));
             } else {
-               accumulatedResults.put(entry.getKey(), a);
-               accumulatedResults.get(entry.getKey()).add(entry.getValue());
+               accumulatedResults.put(key, a);
+               a.add(value);
             }
          } else {
-            accumulatedResults.get(entry.getKey()).add(entry.getValue());
+            accumulatedResults.get(key).add(value);
          }
       }
    }

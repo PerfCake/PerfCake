@@ -56,12 +56,13 @@
             <include>messages/*</include>
             <include>scenarios/*</include>
             <include>schemas/*</include>
+            <include>google-charts/*</include>
          </includes>
          <fileMode>0644</fileMode>
       </fileSet>
       <fileSet>
          <directory>${basedir}/src/main/resources</directory>
-         <outputDirectory />
+         <outputDirectory/>
          <includes>
             <include>log4j.xml</include>
          </includes>

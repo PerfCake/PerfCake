@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:2.0">
+<scenario xmlns="urn:perfcake:scenario:3.0">
    <properties>
       <property name="quickstartName" value="testQS"/>
       <property name="filteredProperty" value="${test.filtered.property:default1}"/>
@@ -9,7 +9,7 @@
       <run type="time" value="30"/>
       <property name="threadQueueSize" value="5000"/>
    </generator>
-   <sender class="HTTPSender">
+   <sender class="HttpSender">
       <property name="target" value="http://${server.host}:${server.port}/HTTPGateway/http/PerformanceTest/HTTPGateway"/>
    </sender>
    <reporting>

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,22 +19,30 @@
  */
 package org.perfcake.util;
 
+import org.perfcake.PerfCakeConst;
+
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.apache.commons.beanutils.ConvertUtilsBean;
+import org.apache.commons.beanutils.FluentPropertyBeanIntrospector;
+import org.apache.commons.beanutils.PropertyUtilsBean;
+import org.apache.log4j.Logger;
+import org.w3c.dom.Element;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.beanutils.BeanUtilsBean;
-import org.apache.commons.beanutils.ConvertUtilsBean;
-import org.apache.log4j.Logger;
-import org.perfcake.PerfCakeConst;
-
 /**
+ * This class can create POJOs according to the given class name and a map of attributes and their values.
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class ObjectFactory {
@@ -52,7 +60,27 @@ public class ObjectFactory {
             return super.convert(value, clazz);
          }
       }
+   }
 
+   /**
+    * Lookup for a set method on a bean that is able to accept Element
+    *
+    * @param object
+    * @param propertyName
+    * @param value
+    * @return
+    * @throws InvocationTargetException
+    * @throws IllegalAccessException
+    */
+   private static boolean setElementProperty(final Object object, final String propertyName, final Element value) throws InvocationTargetException, IllegalAccessException {
+      try {
+         Method setter = object.getClass().getDeclaredMethod("set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1), Element.class);
+         setter.invoke(object, value);
+
+         return true;
+      } catch (NoSuchMethodException e) {
+         return false;
+      }
    }
 
    /**
@@ -62,13 +90,24 @@ public class ObjectFactory {
     * @throws IllegalAccessException
     */
    public static void setPropertiesOnObject(final Object object, final Properties properties) throws IllegalAccessException, InvocationTargetException {
-      BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumConvertUtilsBean());
-      for (String key : properties.stringPropertyNames()) {
+      PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();
+      propertyUtilsBean.addBeanIntrospector(new FluentPropertyBeanIntrospector());
+      BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumConvertUtilsBean(), propertyUtilsBean);
+
+      for (Map.Entry<Object, Object> entry : properties.entrySet()) {
          if (log.isTraceEnabled()) {
-            log.trace("Setting property: '" + key + "'='" + properties.getProperty(key) + "'");
+            log.trace("Setting property: '" + entry.getKey().toString() + "'='" + entry.getValue().toString() + "'");
          }
-         beanUtilsBean.setProperty(object, key, properties.getProperty(key));
-         // BeanUtils.setProperty(object, key, properties.getProperty(key));
+
+         boolean successSet = false; // did we manage to set the property value?
+
+         if (entry.getValue() instanceof Element) { // first, is it an XML element? try to set it...
+            successSet = setElementProperty(object, entry.getKey().toString(), (Element) entry.getValue());
+         }
+
+         if (!successSet) { // not yet set - either it was not an XML element or it failed with it
+            beanUtilsBean.setProperty(object, entry.getKey().toString(), entry.getValue());
+         }
       }
    }
 
@@ -122,7 +161,7 @@ public class ObjectFactory {
       }
 
       public boolean accept(File dir, String name) {
-         return name.endsWith(extension) ? true : false;
+         return name.endsWith(extension);
       }
    }
 

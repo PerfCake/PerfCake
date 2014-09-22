@@ -23,31 +23,19 @@ import org.perfcake.message.Message;
 
 /**
  * A contract of a message validator.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
- * @author Marek Baluch <baluchw@gmail.com>
  */
 public interface MessageValidator {
 
    /**
     * Makes sure the provided message is valid.
-    * 
-    * @param message
-    *           A message to be validated.
+    *
+    * @param originalMessage
+    *       The message that has been sent.
+    * @param response
+    *       A response for the original message.
     * @return True if the message passes all validations.
     */
-   public boolean isValid(Message message);
-
-   /**
-    * TODO what needs to be specified in XSD to allow any XML in the place for assertions?
-    * Sets the assertions that must be valid for all messages with the given message id. Assertions are passed in as a part of
-    * an XML document. This can be any arbitrary configuration depending on the validator.
-    * 
-    * @param validationRule
-    *           A part of the XML configuration file specifying the assertion. It is the responsibility of the validator to
-    *           understand this.
-    * @param msgId
-    *           Messages with this message id should be validated using this validator.
-    */
-   public void setAssertions(String validationRule, String msgId);
+   public boolean isValid(Message originalMessage, Message response);
 }

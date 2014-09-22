@@ -19,17 +19,16 @@
  */
 package org.perfcake.message.sender;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
+import java.io.Serializable;
+import java.util.Map;
+
 /**
  * TODO: Provide implementation. This should write to NIO channels.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
 public class ChannelSender extends AbstractSender {
 

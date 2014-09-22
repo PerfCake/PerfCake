@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,14 +25,15 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.validation.ValidatorManager;
+import org.perfcake.validation.ValidationManager;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * <p> This represents the common ancestor for all generators. It can generate messages using a specified number ({@link #threads}) of concurrent messages senders (see {@link MessageSender}). </p> <p> The generator should also have the ability to tag messages by the sequence number that indicated the order of messages. </p>
+ * This represents the common ancestor for all generators. It can generate messages using a specified number ({@link #threads}) of concurrent messages senders (see {@link MessageSender}).
+ * The generator should also have the ability to tag messages by the sequence number that indicated the order of messages.
  *
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
@@ -51,7 +52,7 @@ public abstract class AbstractMessageGenerator {
    /**
     * A reference to the current message validator manager.
     */
-   protected ValidatorManager validatorManager;
+   protected ValidationManager validationManager;
 
    /**
     * Message store where the messages for senders to be send are taken from.
@@ -61,7 +62,7 @@ public abstract class AbstractMessageGenerator {
    /**
     * Number of concurrent threads the generator will use to send the messages.
     */
-   protected int threads = 1;
+   private int threads = 1;
 
    /**
     * The executor service used to run the threads.
@@ -99,7 +100,7 @@ public abstract class AbstractMessageGenerator {
       task.setMessageStore(messageStore);
       task.setReportManager(reportManager);
       task.setSenderManager(messageSenderManager);
-      task.setValidatorManager(validatorManager);
+      task.setValidationManager(validationManager);
       task.setMessageNumberingEnabled(isMessageNumberingEnabled());
 
       return task;
@@ -123,6 +124,7 @@ public abstract class AbstractMessageGenerator {
     */
    public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
+      this.runInfo.setThreads(threads);
       validateRunInfo();
    }
 
@@ -207,9 +209,15 @@ public abstract class AbstractMessageGenerator {
     *
     * @param threads
     *       The number of threads.
+    * @return this
     */
-   public void setThreads(final int threads) {
+   public AbstractMessageGenerator setThreads(final int threads) {
       this.threads = threads;
+      if (runInfo != null) {
+         runInfo.setThreads(threads);
+      }
+
+      return this;
    }
 
    /**
@@ -226,12 +234,14 @@ public abstract class AbstractMessageGenerator {
     *
     * @param messageNumberingEnabled
     *       The messageNumberingEnabled to set.
+    * @return this
     */
-   public void setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
+   public AbstractMessageGenerator setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
       this.messageNumberingEnabled = messageNumberingEnabled;
+      return this;
    }
 
-   public void setValidatorManager(final ValidatorManager validatorManager) {
-      this.validatorManager = validatorManager;
+   public void setValidationManager(final ValidationManager validationManager) {
+      this.validationManager = validationManager;
    }
 }

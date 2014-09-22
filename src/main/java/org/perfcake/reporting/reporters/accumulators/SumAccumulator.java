@@ -22,9 +22,8 @@ package org.perfcake.reporting.reporters.accumulators;
 /**
  * Accumulates the sum of values.
  * Atomic types are not used because both values must be set at the same time. Hence the methods are synchronized.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
- * 
  */
 public class SumAccumulator implements Accumulator<Double> {
    /**
@@ -34,7 +33,7 @@ public class SumAccumulator implements Accumulator<Double> {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.reporting.reporters.accumulators.Accumulator#add(java.lang.Object)
     */
    @Override
@@ -44,7 +43,7 @@ public class SumAccumulator implements Accumulator<Double> {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.reporting.reporters.accumulators.Accumulator#getResult()
     */
    @Override
@@ -54,7 +53,7 @@ public class SumAccumulator implements Accumulator<Double> {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.reporting.reporters.accumulators.Accumulator#reset()
     */
    @Override

@@ -19,19 +19,8 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
-import org.perfcake.common.TimeStampedRecord;
+import org.perfcake.common.TimestampedRecord;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.Quantity;
@@ -43,13 +32,24 @@ import org.perfcake.util.Utils;
 import org.perfcake.util.agent.PerfCakeAgent;
 import org.perfcake.util.agent.PerfCakeAgent.Memory;
 
+import org.apache.log4j.Logger;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * Reporter that is able to get the memory usage information from a remote JVM,
  * where {@link PerfCakeAgent} is deployed. It communicates with the {@link PerfCakeAgent} to
  * get the information.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
- * 
  */
 public class MemoryUsageReporter extends AbstractReporter {
 
@@ -68,7 +68,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    /**
     * Port number where {@link PerfCakeAgent} is listening on.
     */
-   private String agentPort = "8849";
+   private String agentPort = "8850";
 
    /**
     * IP address of the {@link PerfCakeAgent}.
@@ -93,7 +93,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    /**
     * Used memory time window (number of latest records) for possible memory leak detection.
     */
-   private Queue<TimeStampedRecord<Number>> usedMemoryTimeWindow;
+   private Queue<TimestampedRecord<Number>> usedMemoryTimeWindow;
 
    /**
     * Size of the memory time window (number of latest records) for possible memory leak detection.
@@ -113,17 +113,17 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Determines the period in which a memory usage is gathered from the {@link PerfCakeAgent}.
-    **/
+    */
    private long memoryLeakDetectionMonitoringPeriod = 500L;
 
    /**
     * A flag that indicates that a possible memory leak has been detected.
-    **/
+    */
    private boolean memoryLeakDetected = false;
 
    /**
     * Tha latest computed used memory trend slope value.
-    **/
+    */
    private float memoryTrendSlope = 0;
 
    private MemoryDataGatheringTask memoryDataGatheringTask = null;
@@ -212,7 +212,7 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * An inner class of the task that gathers memory data for memory leak detection analysis.
-    **/
+    */
    private class MemoryDataGatheringTask implements Runnable {
 
       private boolean running;
@@ -231,7 +231,7 @@ public class MemoryUsageReporter extends AbstractReporter {
             if (usedMemoryTimeWindow.size() == usedMemoryTimeWindowSize) {
                usedMemoryTimeWindow.remove();
             }
-            usedMemoryTimeWindow.offer(new TimeStampedRecord<Number>(runInfo.getRunTime(), used));
+            usedMemoryTimeWindow.offer(new TimestampedRecord<Number>(runInfo.getRunTime(), used));
             memoryTrendSlope = (float) Utils.computeRegressionTrend(usedMemoryTimeWindow);
             if (usedMemoryTimeWindow.size() == usedMemoryTimeWindowSize && memoryTrendSlope > memoryLeakSlopeThreshold) {
                memoryLeakDetected = true;
@@ -252,9 +252,9 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Gets the memory usage information from the {@link PerfCakeAgent} the reporter is connected to.
-    * 
+    *
     * @param type
-    *           {@link Memory} type.
+    *       {@link Memory} type.
     * @return Amount of memory type in bytes.
     * @throws IOException
     */
@@ -265,7 +265,7 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Used to read the value of agentHostname.
-    * 
+    *
     * @return The agent hostname value.
     */
    public String getAgentHostname() {
@@ -274,17 +274,18 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Used to set the value of agentHostname.
-    * 
+    *
     * @param agentHostname
-    *           The agent hostname value to set.
+    *       The agent hostname value to set.
     */
-   public void setAgentHostname(final String agentHostname) {
+   public MemoryUsageReporter setAgentHostname(final String agentHostname) {
       this.agentHostname = agentHostname;
+      return this;
    }
 
    /**
     * Used to read the value of agentPort.
-    * 
+    *
     * @return The agent port value.
     */
    public String getAgentPort() {
@@ -293,17 +294,18 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Used to set the value of agentPort.
-    * 
+    *
     * @param agentPort
-    *           The agent port value to set.
+    *       The agent port value to set.
     */
-   public void setAgentPort(final String agentPort) {
+   public MemoryUsageReporter setAgentPort(final String agentPort) {
       this.agentPort = agentPort;
+      return this;
    }
 
    /**
     * Used to read the value of usedMemoryTimeWindowSize.
-    * 
+    *
     * @return The usedMemoryTimeWindowSize value.
     */
    public int getUsedMemoryTimeWindowSize() {
@@ -312,17 +314,18 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Used to set the value of timeWindowSize.
-    * 
+    *
     * @param usedMemoryTimeWindowSize
-    *           The usedMemoryTimeWindowSize value to set.
+    *       The usedMemoryTimeWindowSize value to set.
     */
-   public void setUsedMemoryTimeWindowSize(int timeWindowSize) {
+   public MemoryUsageReporter setUsedMemoryTimeWindowSize(int timeWindowSize) {
       this.usedMemoryTimeWindowSize = timeWindowSize;
+      return this;
    }
 
    /**
     * Used to read the value of memoryLeakSlopeThreshold.
-    * 
+    *
     * @return The memoryLeakSlopeThreshold value.
     */
    public double getMemoryLeakSlopeThreshold() {
@@ -331,17 +334,18 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Used to set the value of memoryLeakSlopeThreshold.
-    * 
+    *
     * @param memoryLeakSlopeThreshold
-    *           The memoryLeakSlopeThreshold value to set.
+    *       The memoryLeakSlopeThreshold value to set.
     */
-   public void setMemoryLeakSlopeThreshold(double memoryLeakSlopeThreshold) {
+   public MemoryUsageReporter setMemoryLeakSlopeThreshold(double memoryLeakSlopeThreshold) {
       this.memoryLeakSlopeThreshold = memoryLeakSlopeThreshold;
+      return this;
    }
 
    /**
     * Used to read the value of memoryLeakDetectionEnabled.
-    * 
+    *
     * @return The memoryLeakDetectionEnabled value.
     */
    public boolean isMemoryLeakDetectionEnabled() {
@@ -350,17 +354,18 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Used to set the value of memoryLeakDetectionEnabled.
-    * 
+    *
     * @param memoryLeakDetectionEnabled
-    *           The memoryLeakDetectionEnabled value to set.
+    *       The memoryLeakDetectionEnabled value to set.
     */
-   public void setMemoryLeakDetectionEnabled(boolean memoryLeakDetectionEnabled) {
+   public MemoryUsageReporter setMemoryLeakDetectionEnabled(boolean memoryLeakDetectionEnabled) {
       this.memoryLeakDetectionEnabled = memoryLeakDetectionEnabled;
+      return this;
    }
 
    /**
     * Used to read the value of memoryLeakDetectionMonitoringPeriod.
-    * 
+    *
     * @return The memoryLeakDetectionMonitoringPeriod value.
     */
    public long getMemoryLeakDetectionMonitoringPeriod() {
@@ -369,11 +374,12 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Used to set the value of memoryLeakDetectionMonitoringPeriod.
-    * 
+    *
     * @param memoryLeakDetectionMonitoringPeriod
-    *           The memoryLeakDetectionMonitoringPeriod value to set.
+    *       The memoryLeakDetectionMonitoringPeriod value to set.
     */
-   public void setMemoryLeakDetectionMonitoringPeriod(long memoryLeakDetectionMonitoringPeriod) {
+   public MemoryUsageReporter setMemoryLeakDetectionMonitoringPeriod(long memoryLeakDetectionMonitoringPeriod) {
       this.memoryLeakDetectionMonitoringPeriod = memoryLeakDetectionMonitoringPeriod;
+      return this;
    }
 }

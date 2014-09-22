@@ -19,11 +19,10 @@
  */
 package org.perfcake.reporting;
 
-import java.util.concurrent.TimeUnit;
-
-import org.perfcake.reporting.Measurement;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.concurrent.TimeUnit;
 
 public class MeasurementTest {
    private static final long HOURS = 729;

@@ -25,9 +25,8 @@ import java.io.Serializable;
  * Period represent a certain amount of units of a given type. These units are represented
  * using {@link PeriodType}, i.e. time, iterations, percents.
  * Period is an immutable type.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
 public class Period implements Serializable {
 
@@ -45,11 +44,11 @@ public class Period implements Serializable {
 
    /**
     * Create a new Period
-    * 
+    *
     * @param periodType
-    *           Type of the period
+    *       Type of the period
     * @param period
-    *           Length of the period
+    *       Length of the period
     */
    public Period(final PeriodType periodType, final long period) {
       this.periodType = periodType;
@@ -58,7 +57,7 @@ public class Period implements Serializable {
 
    /**
     * Gets current period type.
-    * 
+    *
     * @return period type
     */
    public PeriodType getPeriodType() {
@@ -67,7 +66,7 @@ public class Period implements Serializable {
 
    /**
     * Get current period length.
-    * 
+    *
     * @return period length
     */
    public long getPeriod() {

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,19 +19,18 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
-import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
+import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator;
+
+import org.apache.log4j.Logger;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * <p>
@@ -45,7 +44,6 @@ import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator
  * </p>
  *
  * @author Pavel Macík <pavel.macik@gmail.com>
- *
  */
 public class WarmUpReporter extends AbstractReporter {
 
@@ -86,6 +84,8 @@ public class WarmUpReporter extends AbstractReporter {
     */
    private AtomicLong checkingPeriodIndex = new AtomicLong(0);
 
+   private final LastValueAccumulator lastThroughput = new LastValueAccumulator();
+
    /**
     * The period in milliseconds in which the checking if the tested system is warmed up.
     */
@@ -123,13 +123,13 @@ public class WarmUpReporter extends AbstractReporter {
             checkingPeriodIndex.incrementAndGet();
 
             // The throughput unit is number of iterations per second
-            final double currentThroughput = (double) CHECKING_PERIOD * getMaxIteration() / runInfo.getRunTime();
-            final Double lastThroughput = (Double) getAccumulatedResult(Measurement.DEFAULT_RESULT);
-            if (lastThroughput != null) {
-               final double relDelta = Math.abs(currentThroughput / lastThroughput - 1.0);
-               final double absDelta = Math.abs(currentThroughput - lastThroughput);
+            final Double currentThroughput = (double) CHECKING_PERIOD * getMaxIteration() / runInfo.getRunTime();
+            final Double lastThroughputValue = (Double) lastThroughput.getResult();
+            if (lastThroughputValue != null) {
+               final double relDelta = Math.abs(currentThroughput / lastThroughputValue - 1.0);
+               final double absDelta = Math.abs(currentThroughput - lastThroughputValue);
                if (log.isTraceEnabled()) {
-                  log.trace("checkingPeriodIndex=" + checkingPeriodIndex + ", currentThroughput=" + currentThroughput + ", lastThroughput=" + lastThroughput + ", absDelta=" + absDelta + ", relDelta=" + relDelta);
+                  log.trace("checkingPeriodIndex=" + checkingPeriodIndex + ", currentThroughput=" + currentThroughput + ", lastThroughput=" + lastThroughputValue + ", absDelta=" + absDelta + ", relDelta=" + relDelta);
                }
                if ((runInfo.getRunTime() > minimalWarmUpDuration) && (getMaxIteration() > minimalWarmUpCount) && (absDelta < absoluteThreshold || relDelta < relativeThreshold)) {
                   if (log.isInfoEnabled()) {
@@ -140,9 +140,7 @@ public class WarmUpReporter extends AbstractReporter {
                   warmed = true;
                }
             }
-            final Map<String, Object> result = new HashMap<>();
-            result.put(Measurement.DEFAULT_RESULT, currentThroughput);
-            accumulateResults(result);
+            lastThroughput.add(currentThroughput);
          }
       }
    }
@@ -165,10 +163,11 @@ public class WarmUpReporter extends AbstractReporter {
     * Sets the value of minimal warm-up period duration.
     *
     * @param minimalWarmUpDuration
-    *           The minimal warm-up period duration to set.
+    *       The minimal warm-up period duration to set.
     */
-   public void setMinimalWarmUpDuration(final long minimalWarmUpDuration) {
+   public WarmUpReporter setMinimalWarmUpDuration(final long minimalWarmUpDuration) {
       this.minimalWarmUpDuration = minimalWarmUpDuration;
+      return this;
    }
 
    /**
@@ -184,10 +183,11 @@ public class WarmUpReporter extends AbstractReporter {
     * Sets the value of minimal warm-up iteration count.
     *
     * @param minimalWarmUpCount
-    *           The value of minimal warm-up iteration count to set.
+    *       The value of minimal warm-up iteration count to set.
     */
-   public void setMinimalWarmUpCount(final long minimalWarmUpCount) {
+   public WarmUpReporter setMinimalWarmUpCount(final long minimalWarmUpCount) {
       this.minimalWarmUpCount = minimalWarmUpCount;
+      return this;
    }
 
    /**
@@ -203,10 +203,11 @@ public class WarmUpReporter extends AbstractReporter {
     * Sets the value of relativeThreshold.
     *
     * @param relativeThreshold
-    *           The value of relativeThreshold to set.
+    *       The value of relativeThreshold to set.
     */
-   public void setRelativeThreshold(final double relativeThreshold) {
+   public WarmUpReporter setRelativeThreshold(final double relativeThreshold) {
       this.relativeThreshold = relativeThreshold;
+      return this;
    }
 
    /**
@@ -222,10 +223,11 @@ public class WarmUpReporter extends AbstractReporter {
     * Sets the value of absoluteThreshold.
     *
     * @param absoluteThreshold
-    *           The value of absoluteThreshold to set.
+    *       The value of absoluteThreshold to set.
     */
-   public void setAbsoluteThreshold(final double absoluteThreshold) {
+   public WarmUpReporter setAbsoluteThreshold(final double absoluteThreshold) {
       this.absoluteThreshold = absoluteThreshold;
+      return this;
    }
 
 }

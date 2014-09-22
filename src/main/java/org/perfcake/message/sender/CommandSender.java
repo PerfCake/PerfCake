@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,10 @@
  * -----------------------------------------------------------------------/
  */
 package org.perfcake.message.sender;
+
+import org.perfcake.message.Message;
+import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.Utils;
 
 import java.io.BufferedOutputStream;
 import java.io.InputStreamReader;
@@ -29,13 +33,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.perfcake.message.Message;
-import org.perfcake.reporting.MeasurementUnit;
-import org.perfcake.util.Utils;
-
 /**
  * The sender that can invoke external command (specified by {@link #target} property)
- * in a separate process to send the message payload passed to the standard input of
+ * in a separate process to send the message payload (if message is specified) passed to the standard input of
  * the process or as the command argument.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
@@ -87,54 +87,60 @@ public class CommandSender extends AbstractSender {
       STDIN, ARGUMENTS;
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#init()
-    */
    @Override
    public void init() throws Exception {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#close()
-    */
    @Override
    public void close() {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
-      this.messagePayload = message.getPayload().toString();
-      command = (commandPrefix + " " + target + (messageFrom == MessageFrom.ARGUMENTS ? " " + message.getPayload() : "")).trim();
+      if (message != null) {
+         final Serializable payload = message.getPayload();
+         if (payload != null) {
+            messagePayload = payload.toString();
+         } else {
+            messagePayload = null;
+         }
+      } else {
+         messagePayload = null;
+      }
 
-      Set<Entry<String, String>> propertiesEntrySet = properties.entrySet();
-      String[] environmentVariables = new String[propertiesEntrySet.size()];
+      if (messagePayload != null && messageFrom == MessageFrom.ARGUMENTS) {
+         command = (commandPrefix + " " + target + " " + messagePayload).trim();
+      } else {
+         command = (commandPrefix + " " + target).trim();
+      }
+
+      final Set<Entry<String, String>> propertiesEntrySet = properties.entrySet();
+      final Set<Entry<String, String>> envEntrySet = System.getenv().entrySet();
+      environmentVariables = new String[propertiesEntrySet.size() + envEntrySet.size() + (message != null ? message.getHeaders().size() + message.getProperties().size() : 0)];
       int i = 0;
       for (Entry<String, String> entry : propertiesEntrySet) {
          environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
       }
+      for (Entry<String, String> entry : envEntrySet) {
+         environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
+      }
+      if (message != null) {
+         for (Entry<Object, Object> entry : message.getHeaders().entrySet()) {
+            environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
+         }
+         for (Entry<Object, Object> entry : message.getProperties().entrySet()) {
+            environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
+         }
+      }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       process = Runtime.getRuntime().exec(command, environmentVariables);
-      if (messageFrom == MessageFrom.STDIN) {
+      if (messagePayload != null && messageFrom == MessageFrom.STDIN) {
          writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(process.getOutputStream()), Utils.getDefaultEncoding()), true);
          writer.write(messagePayload);
          writer.flush();
@@ -156,11 +162,6 @@ public class CommandSender extends AbstractSender {
       return result;
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
-    */
    @Override
    public void postSend(final Message message) throws Exception {
       super.postSend(message);
@@ -181,10 +182,11 @@ public class CommandSender extends AbstractSender {
     * Sets the value of messageFrom property.
     *
     * @param messageFrom
-    *           The messageFrom to set.
+    *       The messageFrom to set.
     */
-   public void setMessageFrom(final MessageFrom messageFrom) {
+   public CommandSender setMessageFrom(final MessageFrom messageFrom) {
       this.messageFrom = messageFrom;
+      return this;
    }
 
    /**
@@ -200,10 +202,11 @@ public class CommandSender extends AbstractSender {
     * Sets the value of commandPrefix.
     *
     * @param commandPrefix
-    *           The commandPrefix to set.
+    *       The commandPrefix to set.
     */
-   protected void setCommandPrefix(final String commandPrefix) {
+   protected CommandSender setCommandPrefix(final String commandPrefix) {
       this.commandPrefix = commandPrefix;
+      return this;
    }
 
    /**
@@ -215,10 +218,10 @@ public class CommandSender extends AbstractSender {
 
    /**
     * @param environmentVariables
-    *           the environmentVariables to set
+    *       the environmentVariables to set
     */
-   public void setEnvironmentVariables(String[] environmentVariables) {
+   public CommandSender setEnvironmentVariables(String[] environmentVariables) {
       this.environmentVariables = Arrays.copyOf(environmentVariables, environmentVariables.length); // ignore any later external modifications
+      return this;
    }
-
 }

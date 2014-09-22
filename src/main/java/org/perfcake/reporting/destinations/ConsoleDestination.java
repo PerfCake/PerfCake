@@ -24,7 +24,7 @@ import org.perfcake.reporting.ReportingException;
 
 /**
  * The destination that appends the measurements to stdout.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
@@ -32,7 +32,7 @@ public class ConsoleDestination implements Destination {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.reporting.destinations.Destination#open()
     */
    @Override
@@ -42,7 +42,7 @@ public class ConsoleDestination implements Destination {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.reporting.destinations.Destination#close()
     */
    @Override
@@ -52,7 +52,7 @@ public class ConsoleDestination implements Destination {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.reporting.destinations.Destination#report(org.perfcake.reporting.Measurement)
     */
    @Override

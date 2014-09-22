@@ -19,19 +19,20 @@
  */
 package org.perfcake.message;
 
+import org.perfcake.util.Utils;
+import org.perfcake.util.properties.DefaultPropertyGetter;
+
+import org.apache.log4j.Logger;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
-import org.perfcake.util.Utils;
-import org.perfcake.util.properties.DefaultPropertyGetter;
-import org.perfcake.validation.MessageValidator;
-
 /**
- * 
+ * TODO logging and javadoc
+ *
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
@@ -40,22 +41,22 @@ public class MessageTemplate implements Serializable {
 
    private static final String propertyPattern = "[^\\\\](#\\{([^#\\{:]+)(:[^#\\{:]*)?})";
 
-   private Logger log = Logger.getLogger(MessageTemplate.class);
+   private transient Logger log = Logger.getLogger(MessageTemplate.class);
 
    private final Message message;
    private final long multiplicity;
-   private final List<MessageValidator> validators;// may be empty
+   private final List<String> validatorIds;
    private transient Pattern pattern;
 
    public Matcher getMatcher(String text) {
       return pattern != null ? pattern.matcher(text) : null;
    }
 
-   public MessageTemplate(final Message message, final long multiplicity, final List<MessageValidator> validators) {
+   public MessageTemplate(final Message message, final long multiplicity, final List<String> validatorIds) {
       this.message = message;
       preparePattern();
       this.multiplicity = multiplicity;
-      this.validators = validators;
+      this.validatorIds = validatorIds;
    }
 
    public Message getMessage() {
@@ -100,7 +101,7 @@ public class MessageTemplate implements Serializable {
       return multiplicity;
    }
 
-   public List<MessageValidator> getValidators() {
-      return validators;
+   public List<String> getValidatorIds() {
+      return validatorIds;
    }
 }

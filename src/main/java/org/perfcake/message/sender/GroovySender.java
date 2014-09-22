@@ -22,11 +22,10 @@ package org.perfcake.message.sender;
 import java.io.File;
 
 /**
- * 
  * The sender that is able to execute an external Groovy script and pass the message
  * payload via the standard input or as a command argument. It extends the {@link CommandSender} and
  * executes the groovy script via groovy command with <code>groovy {@link #target}</code> passed as an argument.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
@@ -39,7 +38,7 @@ public class GroovySender extends CommandSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.CommandSender#init()
     */
    @Override
@@ -49,7 +48,7 @@ public class GroovySender extends CommandSender {
 
    /**
     * Used to read the value of groovyExecutable property.
-    * 
+    *
     * @return The groovyExecutable.
     */
    public String getGroovyExecutable() {
@@ -61,12 +60,13 @@ public class GroovySender extends CommandSender {
 
    /**
     * Sets the value of groovyExecutable property.
-    * 
+    *
     * @param groovyExecutable
-    *           The groovyExecutable to set.
+    *       The groovyExecutable to set.
     */
-   public void setGroovyExecutable(final String groovyExecutable) {
+   public GroovySender setGroovyExecutable(final String groovyExecutable) {
       this.groovyExecutable = groovyExecutable;
+      return this;
    }
 
 }

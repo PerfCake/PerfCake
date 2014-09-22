@@ -19,17 +19,18 @@
  */
 package org.perfcake.message.sender;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
+import org.apache.log4j.Logger;
+
+import java.io.Serializable;
+import java.util.Map;
+
 /**
  * The common ancestor for all senders.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 abstract public class AbstractSender implements MessageSender {
@@ -45,7 +46,7 @@ abstract public class AbstractSender implements MessageSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.MessageSender#init()
     */
    @Override
@@ -53,7 +54,7 @@ abstract public class AbstractSender implements MessageSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.MessageSender#close()
     */
    @Override
@@ -61,7 +62,7 @@ abstract public class AbstractSender implements MessageSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -87,7 +88,7 @@ abstract public class AbstractSender implements MessageSender {
    /**
     * Do not use any logger or anything not directly related to sending the
     * message, since this method is being measured
-    * 
+    *
     * @param message
     * @return
     * @throws Exception
@@ -99,7 +100,7 @@ abstract public class AbstractSender implements MessageSender {
    /**
     * Do not use any logger or anything not directly related to sending the
     * message, since this method is being measured
-    * 
+    *
     * @param message
     * @param properties
     * @return
@@ -120,7 +121,7 @@ abstract public class AbstractSender implements MessageSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message)
     */
    @Override
@@ -130,7 +131,7 @@ abstract public class AbstractSender implements MessageSender {
 
    /**
     * Used to read the value of target.
-    * 
+    *
     * @return The target.
     */
    public String getTarget() {
@@ -139,11 +140,13 @@ abstract public class AbstractSender implements MessageSender {
 
    /**
     * Sets the value of target.
-    * 
+    *
     * @param target
-    *           The target to set.
+    *       The target to set.
+    * @return this to support fluent API.
     */
-   public void setTarget(final String target) {
+   public AbstractSender setTarget(final String target) {
       this.target = target;
+      return this;
    }
 }

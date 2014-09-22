@@ -19,6 +19,13 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
+import org.perfcake.message.Message;
+import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.Utils;
+
+import org.apache.log4j.Logger;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,15 +35,9 @@ import java.io.Serializable;
 import java.net.Socket;
 import java.util.Map;
 
-import org.perfcake.PerfCakeException;
-import org.perfcake.message.Message;
-import org.perfcake.reporting.MeasurementUnit;
-import org.perfcake.util.Utils;
-import org.testng.log4testng.Logger;
-
 /**
  * The common ancestor for all senders that are able to send messages through a socket.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 abstract public class AbstractSocketSender extends AbstractSender {
@@ -73,7 +74,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#init()
     */
    @Override
@@ -85,7 +86,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#close()
     */
    @Override
@@ -95,14 +96,14 @@ abstract public class AbstractSocketSender extends AbstractSender {
 
    /**
     * Opens a socket on the {@link #host} address.
-    * 
+    *
     * @throws Exception
     */
    abstract protected void openSocket() throws Exception;
 
    /**
     * Opens the writer to an outbound socket's stream and the reader to read from inbound socket's stream.
-    * 
+    *
     * @throws Exception
     */
    private void openStreams() throws Exception {
@@ -129,7 +130,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -141,7 +142,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -162,7 +163,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
     */
    @Override

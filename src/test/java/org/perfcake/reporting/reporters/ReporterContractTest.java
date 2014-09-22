@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,6 +30,7 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.reporting.destinations.DummyDestination.ReportAssert;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -41,8 +42,8 @@ public class ReporterContractTest {
 
    private final ReportManager rm = new ReportManager();
    private final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, 1000));
-   private final ResponseTimeReporter r1 = new ResponseTimeReporter();
-   private final WindowResponseTimeReporter r2 = new WindowResponseTimeReporter();
+   private final ResponseTimeStatsReporter r1 = new ResponseTimeStatsReporter();
+   private final ResponseTimeStatsReporter r2 = new ResponseTimeStatsReporter();
    private final DummyReporter dr = new DummyReporter();
    private final DummyDestination d1 = new DummyDestination();
    private final DummyDestination d2 = new DummyDestination();
@@ -51,7 +52,7 @@ public class ReporterContractTest {
 
    @Test
    public void noRunInfoTest() throws ReportingException {
-      final ResponseTimeReporter r = new ResponseTimeReporter();
+      final ResponseTimeStatsReporter r = new ResponseTimeStatsReporter();
 
       Exception e = null;
       try {
@@ -96,20 +97,20 @@ public class ReporterContractTest {
       rm.stop();
       rm.reset();
       Assert.assertEquals(mu.getIteration(), 499);
-      Assert.assertEquals(mu.getLastTime(), -1);
-      Assert.assertEquals(mu.getTotalTime(), 0);
+      Assert.assertEquals(mu.getLastTime(), -1.0);
+      Assert.assertEquals(mu.getTotalTime(), 0.0);
 
       mu.startMeasure();
       Thread.sleep(500);
       mu.stopMeasure();
-      Assert.assertTrue(mu.getTotalTime() < 600); // we slept only for 500ms
-      Assert.assertTrue(mu.getLastTime() < 600);
+      Assert.assertTrue(mu.getTotalTime() < 600.0); // we slept only for 500ms
+      Assert.assertTrue(mu.getLastTime() < 600.0);
 
       mu.startMeasure();
       Thread.sleep(500);
       mu.stopMeasure();
-      Assert.assertTrue(mu.getTotalTime() < 1200); // we slept only for 2x500ms
-      Assert.assertTrue(mu.getLastTime() < 600);
+      Assert.assertTrue(mu.getTotalTime() < 1200.0); // we slept only for 2x500ms
+      Assert.assertTrue(mu.getLastTime() < 600.0);
    }
 
    @Test(priority = 3)
@@ -176,14 +177,14 @@ public class ReporterContractTest {
          public void report(final Measurement m) {
             if (first) {
                Assert.assertEquals(m.getIteration(), 0L);
-               Assert.assertEquals(m.get(), 10d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 10);
                Assert.assertEquals(m.get("avg"), 0d);
                Assert.assertEquals(m.get("it"), "1");
 
                first = false;
             } else {
                Assert.assertEquals(m.getIteration(), 99L);
-               Assert.assertEquals(m.get(), 10d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 10);
                Assert.assertEquals(m.get("avg"), 49.5d);
                Assert.assertEquals(m.get("it"), "100");
                crc.incrementAndGet(); // this block will be executed twice, first for iteration, second for time
@@ -199,19 +200,19 @@ public class ReporterContractTest {
          public void report(final Measurement m) {
             if (run == 0) {
                Assert.assertEquals(m.getPercentage(), 0);
-               Assert.assertEquals(m.get(), 10d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 10);
                Assert.assertEquals(m.get("avg"), 0d);
 
                run = 1;
             } else if (run == 1) {
                Assert.assertEquals(m.getPercentage(), 8);
-               Assert.assertEquals((double) m.get(), 10d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 10);
                Assert.assertEquals(m.get("avg"), 39.5d);
                crc.incrementAndGet();
                run = 2;
             } else {
                Assert.assertEquals(m.getPercentage(), 10);
-               Assert.assertEquals((double) m.get(), 10d);
+               Assert.assertEquals(((Double) m.get()).longValue(), 10);
                Assert.assertEquals(m.get("avg"), 49.5d);
                crc.incrementAndGet();
                run = 3;
@@ -235,13 +236,12 @@ public class ReporterContractTest {
          mu.stopMeasure();
          mu.appendResult("avg", (double) i - 1); // AvgAccumulator should be used
          mu.appendResult("it", String.valueOf(i)); // LastValueAccumulator should be used
-         // 15 is the tolarance according to Puškvorec's constant
-         Assert.assertTrue(mu.getTotalTime() < 15L && mu.getTotalTime() >= 10L, "Measurement run for 10ms, so the value should not be much different.");
+         Assert.assertEquals(((Double) mu.getTotalTime()).longValue(), 10, "Measurement runs for 10ms, so the value should not be much different.");
          rm.report(mu);
       }
       Assert.assertEquals(mu.getIteration(), 99);
-      Assert.assertEquals(mu.getLastTime(), 10);
-      Assert.assertEquals(mu.getTotalTime(), 10);
+      Assert.assertEquals(((Double) mu.getLastTime()).longValue(), 10);
+      Assert.assertEquals(((Double) mu.getTotalTime()).longValue(), 10);
       Assert.assertEquals(d1.getLastType(), PeriodType.ITERATION);
       Assert.assertEquals(d2.getLastType(), PeriodType.PERCENTAGE);
 

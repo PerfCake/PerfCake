@@ -19,16 +19,16 @@
  */
 package org.perfcake.message.sender;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
+import java.io.Serializable;
+import java.util.Map;
+
 /**
  * Interface for a message sender.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public interface MessageSender {

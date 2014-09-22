@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.Properties;
 
 /**
- * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class Message implements Serializable {

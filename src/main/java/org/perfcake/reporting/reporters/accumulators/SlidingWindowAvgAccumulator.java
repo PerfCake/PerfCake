@@ -19,34 +19,16 @@
  */
 package org.perfcake.reporting.reporters.accumulators;
 
-import org.apache.commons.collections.Buffer;
-import org.apache.commons.collections.BufferUtils;
-import org.apache.commons.collections.buffer.CircularFifoBuffer;
-
 /**
  * Accumulates average over a set number of recently reported values.
- * 
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
+ * @author Pavel Macík <pavel.macik@gmail.com>
  */
-public class SlidingWindowAvgAccumulator implements Accumulator<Double> {
+public class SlidingWindowAvgAccumulator extends AbstractSlidingWindowAccumulator {
 
-   private final Buffer fifo;
-
-   /**
-    * Creates a new average accumulator with the sliding window of a given size.
-    * 
-    * @param windowSize
-    *           Size of the sliding window
-    */
-   public SlidingWindowAvgAccumulator(final int windowSize) {
-      fifo = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(windowSize));
-   }
-
-   @SuppressWarnings("unchecked")
-   @Override
-   public void add(final Double value) {
-      fifo.add(value);
+   public SlidingWindowAvgAccumulator(int windowSize) {
+      super(windowSize);
    }
 
    @Override
@@ -63,10 +45,4 @@ public class SlidingWindowAvgAccumulator implements Accumulator<Double> {
 
       return size == 0 ? 0d : accum / size;
    }
-
-   @Override
-   public void reset() {
-      fifo.clear();
-   }
-
 }

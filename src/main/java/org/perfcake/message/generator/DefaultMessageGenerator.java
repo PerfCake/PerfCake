@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,9 +19,10 @@
  */
 package org.perfcake.message.generator;
 
-import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.ReportManager;
+
+import org.apache.log4j.Logger;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -29,7 +30,9 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 /**
- * <p> Generator that is able to generate maximal load. </p>
+ * <p>
+ * Generator that is able to generate maximal load.
+ * </p>
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
@@ -69,7 +72,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     * @throws java.lang.InterruptedException
     *       When it was not possible to place another task because the queue was empty
     */
-   private void prepareTask() throws InterruptedException {
+   protected void prepareTask() throws InterruptedException {
       if (log.isTraceEnabled()) {
          log.trace("Preparing a sender task");
       }
@@ -99,7 +102,13 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       }
    }
 
-   private void shutdown() throws InterruptedException {
+   /**
+    * Takes care of gentle shutdown of the generator based on the period type.
+    *
+    * @throws java.lang.InterruptedException
+    *       When waiting for the termination was interrupted.
+    */
+   protected void shutdown() throws InterruptedException {
       if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // in case of iterations, we wait for the tasks to be finished first
          log.info(SHUTDOWN_LOG);
          adaptiveTermination();
@@ -117,7 +126,8 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    public void generate() throws Exception {
       log.info("Starting to generate...");
       semaphore = new Semaphore(threadQueueSize);
-      executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(threads);
+      executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(getThreads());
+      runInfo.setThreads(getThreads());
       setStartTime();
 
       while (runInfo.isRunning()) {
@@ -142,9 +152,11 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     *
     * @param monitoringPeriod
     *       The monitoringPeriod to set.
+    * @return this
     */
-   public void setMonitoringPeriod(final long monitoringPeriod) {
+   public DefaultMessageGenerator setMonitoringPeriod(final long monitoringPeriod) {
       this.monitoringPeriod = monitoringPeriod;
+      return this;
    }
 
    /**
@@ -170,9 +182,11 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     *
     * @param threadQueueSize
     *       The thread queue size.
+    * @return this
     */
-   public void setThreadQueueSize(final int threadQueueSize) {
+   public DefaultMessageGenerator setThreadQueueSize(final int threadQueueSize) {
       this.threadQueueSize = threadQueueSize;
+      return this;
    }
 
    @Override

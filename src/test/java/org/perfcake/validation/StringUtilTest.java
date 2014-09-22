@@ -23,9 +23,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * 
  * @author Martin Večera <marvenec@gmail.com>
- * 
  */
 public class StringUtilTest {
 

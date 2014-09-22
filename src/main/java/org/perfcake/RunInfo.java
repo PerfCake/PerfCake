@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,13 +19,13 @@
  */
 package org.perfcake;
 
+import org.perfcake.common.Period;
+import org.perfcake.common.PeriodType;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.perfcake.common.Period;
-import org.perfcake.common.PeriodType;
 
 /**
  * Information about the current scenario run.
@@ -55,6 +55,11 @@ public class RunInfo {
    private long endTime = -1;
 
    /**
+    * Number of threads that is currently used to generate the load.
+    */
+   private volatile int threads = 1;
+
+   /**
     * Number of the last iteration.
     */
    private final AtomicLong iterations = new AtomicLong(0);
@@ -67,7 +72,8 @@ public class RunInfo {
    /**
     * Creates a new RunInfo.
     *
-    * @param duration Target duration of the run (time or iterations)
+    * @param duration
+    *       Target duration of the run (time or iterations)
     */
    public RunInfo(final Period duration) {
       this.duration = duration;
@@ -163,8 +169,7 @@ public class RunInfo {
     * the result value will be influenced.
     *
     * @param iteration
-    *             the iteration for which we want to know the progress % number compared to the configured period duration
-    *
+    *       the iteration for which we want to know the progress % number compared to the configured period duration
     * @return Completed percents of the theoretical measurement state. This cannot be more than 100% no matter what value is provided.
     */
    public double getPercentage(long iteration) {
@@ -248,7 +253,8 @@ public class RunInfo {
    /**
     * Checks for a presence of a given tag.
     *
-    * @param tag A tag to be checked
+    * @param tag
+    *       A tag to be checked
     * @return True if the specified tag is set for this run info
     */
    public boolean hasTag(final String tag) {
@@ -258,7 +264,8 @@ public class RunInfo {
    /**
     * Associate a new tag with this measurement.
     *
-    * @param tag A new tag to be associated
+    * @param tag
+    *       A new tag to be associated
     */
    public void addTag(final String tag) {
       tags.add(tag);
@@ -267,7 +274,8 @@ public class RunInfo {
    /**
     * A set of tags to be associated with the current measurement.
     *
-    * @param tags A set of tags to be associated
+    * @param tags
+    *       A set of tags to be associated
     */
    public void addTags(final Set<String> tags) {
       this.tags.addAll(tags);
@@ -276,7 +284,8 @@ public class RunInfo {
    /**
     * Removes a tag from this run.
     *
-    * @param tag A tag to be removed
+    * @param tag
+    *       A tag to be removed
     */
    public void removeTag(final String tag) {
       this.tags.remove(tag);
@@ -294,6 +303,25 @@ public class RunInfo {
    @Override
    public String toString() {
       return String.format("RunInfo [duration=%s, startTime=%d, endTime=%d, iterations=%d, tags=%s, started=%d, running=%d, percentage=%.3f]", duration, startTime, endTime, getIteration(), tags, isStarted() ? 1 : 0, isRunning() ? 1 : 0, getPercentage());
+   }
+
+   /**
+    * Returns number of threads that is currently used to generate the load.
+    *
+    * @return The number of threads.
+    */
+   public int getThreads() {
+      return threads;
+   }
+
+   /**
+    * Sets the information about the number of threads that is currently used to generate the load.
+    *
+    * @param threads
+    *       The number of threads.
+    */
+   public void setThreads(int threads) {
+      this.threads = threads;
    }
 
 }

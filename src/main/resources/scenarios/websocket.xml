@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:2.0">
+<scenario xmlns="urn:perfcake:scenario:3.0">
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:1}">
       <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:50000}"/>
       <property name="threadQueueSize" value="100000"/>
@@ -11,9 +11,9 @@
       <property name="payloadType" value="${payloadType:text}"/>
    </sender>
    <reporting>
-      <reporter class="AverageThroughputReporter">
+      <reporter class="ThroughputStatsReporter">
          <destination class="ConsoleDestination">
-            <period type="time" value="1000" />
+            <period type="time" value="1000"/>
          </destination>
       </reporter>
    </reporting>

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,6 @@
  */
 package org.perfcake.message.generator;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
@@ -29,7 +27,10 @@ import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.validation.ValidatorManager;
+import org.perfcake.validation.ValidationManager;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import java.util.concurrent.Semaphore;
  * <p> The sender task is a runnable class that is executing a single task of sending the message(s) from the message store using instances of {@link MessageSender} provided by message sender manager (see {@link MessageSenderManager}), receiving the message sender's response and handling the reporting and response message validation. </p> <p> It is used by the generators. </p>
  *
  * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 class SenderTask implements Runnable {
 
@@ -73,7 +75,7 @@ class SenderTask implements Runnable {
    /**
     * A reference to the current validator manager. It is used to validate message responses.
     */
-   private ValidatorManager validatorManager;
+   private ValidationManager validationManager;
 
    /**
     * Semaphore used from the outside of SenderTask, it controls the amount of prepared tasks in a buffer.
@@ -88,25 +90,38 @@ class SenderTask implements Runnable {
    private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) {
       try {
          sender.preSend(message, messageHeaders);
-
-         mu.startMeasure();
-         final Serializable result = sender.send(message, messageHeaders, mu);
-         mu.stopMeasure();
-
-         sender.postSend(message);
-
-         return result;
       } catch (Exception e) {
          if (log.isEnabledFor(Level.ERROR)) {
-            log.error("Exception occured!", e);
+            log.error("Exception occurred!", e);
          }
       }
-      return null;
+
+      mu.startMeasure();
+
+      Serializable result = null;
+      try {
+         result = sender.send(message, messageHeaders, mu);
+      } catch (Exception e) {
+         if (log.isEnabledFor(Level.ERROR)) {
+            log.error("Exception occurred!", e);
+         }
+      }
+      mu.stopMeasure();
+
+      try {
+         sender.postSend(message);
+      } catch (Exception e) {
+         if (log.isEnabledFor(Level.ERROR)) {
+            log.error("Exception occurred!", e);
+         }
+      }
+
+      return result;
    }
 
    @Override
    public void run() {
-      assert messageStore != null && reportManager != null && validatorManager != null && senderManager != null : "SenderTask was not properly initialized.";
+      assert messageStore != null && reportManager != null && validationManager != null && senderManager != null : "SenderTask was not properly initialized.";
 
       final Properties messageAttributes = new Properties();
       final HashMap<String, String> messageHeaders = new HashMap<>();
@@ -134,17 +149,17 @@ class SenderTask implements Runnable {
                   long multiplicity = messageToSend.getMultiplicity();
 
                   for (int i = 0; i < multiplicity; i++) {
-                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend);
-                     if (validatorManager.isEnabled()) {
-                        validatorManager.addToResultMessages(receivedMessage);
+                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend, currentMessage);
+                     if (validationManager.isEnabled()) {
+                        validationManager.addToResultMessages(receivedMessage);
                      }
                   }
 
                }
             } else {
-               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null);
-               if (validatorManager.isEnabled()) {
-                  validatorManager.addToResultMessages(receivedMessage);
+               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null, null);
+               if (validationManager.isEnabled()) {
+                  validationManager.addToResultMessages(receivedMessage);
                }
             }
 
@@ -182,7 +197,7 @@ class SenderTask implements Runnable {
       this.reportManager = reportManager;
    }
 
-   protected void setValidatorManager(final ValidatorManager validatorManager) {
-      this.validatorManager = validatorManager;
+   protected void setValidationManager(final ValidationManager validationManager) {
+      this.validationManager = validationManager;
    }
 }

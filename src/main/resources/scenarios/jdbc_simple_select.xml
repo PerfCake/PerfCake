@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:2.0">
+<scenario xmlns="urn:perfcake:scenario:3.0">
    <generator class="ImmediateMessageGenerator" threads="${perfcake.thread.count:500}">
       <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:500000}"/>
    </generator>
-   <sender class="JDBCSender">
+   <sender class="JdbcSender">
       <property name="target" value="jdbc:postgres:/localhost:5432/postgres"/>
       <property name="driverClass" value="org.postgresql.Driver"/>
       <property name="username" value="postgres"/>
@@ -11,10 +11,10 @@
    </sender>
    <reporting>
       <reporter class="WarmUpReporter"/>
-      <reporter class="AverageThroughputReporter">
-         <destination class="CSVDestination">
+      <reporter class="ThroughputStatsReporter">
+         <destination class="CsvDestination">
             <period type="time" value="30000"/>
-            <property name="path" value="${perfcake.scenario}-response-time.csv"/>
+            <property name="path" value="${perfcake.scenario}-throughput-stats.csv"/>
          </destination>
          <destination class="ConsoleDestination">
             <period type="time" value="1000"/>

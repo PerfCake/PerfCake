@@ -22,37 +22,70 @@ package org.perfcake.message;
 import java.io.Serializable;
 
 /**
- * 
+ * Holds the couple of sent message and response recorded for it. This is used mainly for validation.
+ *
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
+ * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class ReceivedMessage implements Serializable {
 
    private static final long serialVersionUID = 8426248937516343968L;
 
-   // payload, id
-   private Serializable payload;
+   /**
+    * Received response payload.
+    */
+   private final Serializable response;
 
-   private MessageTemplate sentMessage;
+   /**
+    * Original message template.
+    */
+   private final MessageTemplate sentMessageTemplate;
 
-   public ReceivedMessage(final Serializable payload, final MessageTemplate sentMessage) {
-      this.payload = payload;
+   /**
+    * Original message that has been send (placeholders filled with values).
+    */
+   private final Message sentMessage;
+
+   /**
+    * Creates a new received message container.
+    *
+    * @param response
+    *       The received response payload.
+    * @param sentMessageTemplate
+    *       The original message template.
+    * @param sentMessage
+    *       The real message sent with the placeholders filled with values.
+    */
+   public ReceivedMessage(final Serializable response, final MessageTemplate sentMessageTemplate, final Message sentMessage) {
+      this.response = response;
       this.sentMessage = sentMessage;
+      this.sentMessageTemplate = sentMessageTemplate;
    }
 
-   public Serializable getPayload() {
-      return payload;
+   /**
+    * Gets the stored response.
+    *
+    * @return The stored response.
+    */
+   public Serializable getResponse() {
+      return response;
    }
 
-   public void setPayload(final Serializable payload) {
-      this.payload = payload;
+   /**
+    * Gets the original message template.
+    *
+    * @return The original message template.
+    */
+   public MessageTemplate getSentMessageTemplate() {
+      return sentMessageTemplate;
    }
 
-   public MessageTemplate getSentMessage() {
+   /**
+    * Gets the sent message with the placeholders filled with values.
+    *
+    * @return The sent message with the placeholders filled with values.
+    */
+   public Message getSentMessage() {
       return sentMessage;
    }
-
-   public void setSentMessage(final MessageTemplate sentMessage) {
-      this.sentMessage = sentMessage;
-   }
-
 }

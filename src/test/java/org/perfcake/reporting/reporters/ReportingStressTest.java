@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,10 +19,6 @@
  */
 package org.perfcake.reporting.reporters;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.perfcake.RunInfo;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
@@ -30,14 +26,18 @@ import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.DummyDestination;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Verify that reporting can handle multiple threads.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
- *
  */
 public class ReportingStressTest {
 
@@ -45,9 +45,9 @@ public class ReportingStressTest {
    public void f() throws InterruptedException {
       final ReportManager rm = new ReportManager();
       final RunInfo ri = new RunInfo(new Period(PeriodType.TIME, 10000));
-      final ResponseTimeReporter r1 = new ResponseTimeReporter();
-      final ResponseTimeReporter r2 = new ResponseTimeReporter();
-      final ResponseTimeReporter r3 = new ResponseTimeReporter();
+      final ResponseTimeStatsReporter r1 = new ResponseTimeStatsReporter();
+      final ResponseTimeStatsReporter r2 = new ResponseTimeStatsReporter();
+      final ResponseTimeStatsReporter r3 = new ResponseTimeStatsReporter();
       final DummyDestination d11 = new DummyDestination();
       final DummyDestination d12 = new DummyDestination();
       final DummyDestination d13 = new DummyDestination();

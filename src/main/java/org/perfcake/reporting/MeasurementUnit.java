@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,8 @@
  * -----------------------------------------------------------------------/
  */
 package org.perfcake.reporting;
+
+import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -29,11 +31,15 @@ import java.util.Map;
  * One should obtain a new instance of a MeasurementUnit using {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()}.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
- *
  */
 public class MeasurementUnit implements Serializable {
 
    private static final long serialVersionUID = 3596375306594505085L;
+
+   /**
+    * Logger.
+    */
+   private static final Logger log = Logger.getLogger(MeasurementUnit.class);
 
    /**
     * Iteration for which this unit was created.
@@ -53,7 +59,7 @@ public class MeasurementUnit implements Serializable {
    /**
     * Total measured time.
     */
-   private long totalTime = 0;
+   private double totalTime = 0;
 
    /**
     * Custom results reported by a sender.
@@ -69,7 +75,7 @@ public class MeasurementUnit implements Serializable {
     * Constructor is protected. Use {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()} to obtain a new instance.
     *
     * @param iteration
-    *           Current iteration number.
+    *       Current iteration number.
     */
    protected MeasurementUnit(final long iteration) {
       this.iteration = iteration;
@@ -79,9 +85,9 @@ public class MeasurementUnit implements Serializable {
     * Append a custom result.
     *
     * @param label
-    *           The label of the result.
+    *       The label of the result.
     * @param value
-    *           The value of the result.
+    *       The value of the result.
     */
    public void appendResult(final String label, final Object value) {
       measurementResults.put(label, value);
@@ -100,7 +106,7 @@ public class MeasurementUnit implements Serializable {
     * Get a custom result for the given label.
     *
     * @param label
-    *           The label of the custom result.
+    *       The label of the custom result.
     * @return The value for the given custom result.
     */
    public Object getResult(final String label) {
@@ -129,7 +135,7 @@ public class MeasurementUnit implements Serializable {
     *
     * @return The total time measured by this unit in milliseconds.
     */
-   public long getTotalTime() {
+   public double getTotalTime() {
       return totalTime;
    }
 
@@ -138,21 +144,28 @@ public class MeasurementUnit implements Serializable {
     *
     * @return Time of the last measurement in milliseconds.
     */
-   public long getLastTime() {
+   public double getLastTime() {
       if (startTime == -1 || stopTime == -1) {
          return -1;
       }
 
-      return (stopTime - startTime) / 1_000_000;
+      if (stopTime - startTime == 0) {
+         log.warn("Zero time measured! PerfCake is probably running on a machine where the internal timer does not provide enough resolution (e.g. a virtual machine). " +
+               "Please refer to the Troubleshooting section in the User Guide.\nCurrent measurement unit: " + this.toString());
+      }
+
+      return (stopTime - startTime) / 1_000_000.0;
    }
 
    /**
     * Checks whether this measurement unit was first started after the specified time (Unix time in millis)
-    * @param ref The reference time to compare to the start of the measurement
+    *
+    * @param ref
+    *       The reference time to compare to the start of the measurement
     * @return true if this measurement unit was first started after the specified reference time
     */
    public boolean startedAfter(long ref) {
-      return  timeStarted > ref;
+      return timeStarted > ref;
    }
 
    /**
@@ -166,38 +179,60 @@ public class MeasurementUnit implements Serializable {
 
    @Override
    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + (int) (iteration ^ (iteration >>> 32));
-      result = prime * result + ((measurementResults == null) ? 0 : measurementResults.hashCode());
-      result = prime * result + (int) (startTime ^ (startTime >>> 32));
-      result = prime * result + (int) (stopTime ^ (stopTime >>> 32));
-      result = prime * result + (int) (totalTime ^ (totalTime >>> 32));
+      int result;
+      long temp;
+      result = (int) (iteration ^ (iteration >>> 32));
+      result = 31 * result + (int) (startTime ^ (startTime >>> 32));
+      result = 31 * result + (int) (stopTime ^ (stopTime >>> 32));
+      temp = Double.doubleToLongBits(totalTime);
+      result = 31 * result + (int) (temp ^ (temp >>> 32));
+      result = 31 * result + measurementResults.hashCode();
+      result = 31 * result + (int) (timeStarted ^ (timeStarted >>> 32));
       return result;
    }
 
    @Override
-   public boolean equals(final Object obj) {
-      if (this == obj)
+   public boolean equals(Object obj) {
+      if (this == obj) {
          return true;
-      if (obj == null)
+      }
+      if (obj == null || getClass() != obj.getClass()) {
          return false;
-      if (getClass() != obj.getClass())
+      }
+
+      MeasurementUnit that = (MeasurementUnit) obj;
+
+      if (iteration != that.iteration) {
          return false;
-      MeasurementUnit other = (MeasurementUnit) obj;
-      if (iteration != other.iteration)
+      }
+      if (startTime != that.startTime) {
          return false;
-      if (measurementResults == null) {
-         if (other.measurementResults != null)
-            return false;
-      } else if (!measurementResults.equals(other.measurementResults))
+      }
+      if (stopTime != that.stopTime) {
          return false;
-      if (startTime != other.startTime)
+      }
+      if (timeStarted != that.timeStarted) {
          return false;
-      if (stopTime != other.stopTime)
+      }
+      if (Double.compare(that.totalTime, totalTime) != 0) {
          return false;
-      if (totalTime != other.totalTime)
+      }
+      if (!measurementResults.equals(that.measurementResults)) {
          return false;
+      }
+
       return true;
+   }
+
+   @Override
+   public String toString() {
+      return "MeasurementUnit [" +
+            "iteration=" + iteration +
+            ", startTime=" + startTime +
+            ", stopTime=" + stopTime +
+            ", totalTime=" + totalTime +
+            ", measurementResults=" + measurementResults +
+            ", timeStarted=" + timeStarted +
+            ']';
    }
 }

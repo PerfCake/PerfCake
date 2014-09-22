@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:3.0">
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:10}">
+      <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:30000}"/>
+   </generator>
+   <sender class="LdapSender">
+      <property name="target" value="ldap://${server.host:localhost}:${server.port:389}"/>
+      <property name="searchBase" value="dc=example,dc=org"/>
+      <property name="filter" value="(uid=*)"/>
+   </sender>
+   <reporting>
+      <reporter class="ResponseTimeStatsReporter">
+         <destination class="CsvDestination">
+            <period type="time" value="1000"/>
+            <property name="path" value="${perfcake.scenario}-throughput-stats.csv"/>
+         </destination>
+         <destination class="ConsoleDestination">
+            <period type="time" value="1000"/>
+         </destination>
+      </reporter>
+   </reporting>
+</scenario>

@@ -22,9 +22,9 @@ package org.perfcake.validation;
 import org.perfcake.PerfCakeException;
 
 /**
- * 
+ * An exception to indicate problems in message validation.
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
 public class ValidationException extends PerfCakeException {
 

@@ -19,9 +19,11 @@
  */
 package org.perfcake.message.sender;
 
-import static org.testng.Assert.assertNotNull;
-import static org.testng.Assert.assertTrue;
-import static org.testng.Assert.fail;
+import static org.testng.Assert.*;
+
+import org.perfcake.PerfCakeException;
+
+import org.testng.annotations.Test;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -32,49 +34,27 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.perfcake.PerfCakeException;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
 /**
- * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class MessageSenderManagerTest {
-   private static MessageSenderManager msm;
 
    private static final int SENDER_COUNT = 100;
-
-   private static final String SENDER_CLASS_NAME = "org.perfcake.message.sender.DummySender";
-
+   private static final String SENDER_CLASS_NAME = DummySender.class.getName();
    private static final int THREAD_COUNT = 100;
-
    private static final int SENDER_TASK_COUNT = 2000;
-
    private static final int THREAD_SLEEP_MILLIS = 1000;
-
    private static final AtomicInteger counter = new AtomicInteger(SENDER_TASK_COUNT);
-
-   private static Map<Runnable, Throwable> threads = new HashMap<Runnable, Throwable>();
-
-   @BeforeClass
-   public static void setUpClass() throws Exception {
-      msm = new MessageSenderManager();
-      msm.setSenderPoolSize(SENDER_COUNT);
-      msm.setSenderClass(SENDER_CLASS_NAME);
-      msm.init();
-   }
-
-   @AfterClass
-   public static void tearDownClass() throws Exception {
-      msm.close();
-   }
 
    @Test
    public void messageSenderManagerTest() throws Exception {
+      final MessageSenderManager msm = new MessageSenderManager();
+      msm.setSenderPoolSize(SENDER_COUNT);
+      msm.setSenderClass(SENDER_CLASS_NAME);
+      msm.init();
+
       assertTrue(msm.availableSenderCount() == SENDER_COUNT);
-      MessageSender[] senders = new MessageSender[SENDER_COUNT];
+      final MessageSender[] senders = new MessageSender[SENDER_COUNT];
       int i = 0, n = 5;
       for (; i < n; i++) {
          senders[i] = msm.acquireSender();
@@ -97,13 +77,21 @@ public class MessageSenderManagerTest {
       }
       msm.releaseAllSenders();
       assertTrue(msm.availableSenderCount() == SENDER_COUNT);
+      msm.close();
    }
 
    @Test(groups = { "performance" })
    public void threadSafeTest() throws Exception {
-      ExecutorService es = Executors.newFixedThreadPool(THREAD_COUNT);
+      final MessageSenderManager msm = new MessageSenderManager();
+      msm.setSenderPoolSize(SENDER_COUNT);
+      msm.setSenderClass(SENDER_CLASS_NAME);
+      msm.init();
+
+      final Map<Runnable, Throwable> threads = new HashMap<Runnable, Throwable>();
+      final ExecutorService es = Executors.newFixedThreadPool(THREAD_COUNT);
+
       for (int i = 0; i < SENDER_TASK_COUNT; i++) {
-         Runnable senderTask = new SenderTask();
+         Runnable senderTask = new SenderTask(msm, threads);
          threads.put(senderTask, null);
          es.submit(senderTask);
       }
@@ -111,25 +99,35 @@ public class MessageSenderManagerTest {
       es.awaitTermination((long) (SENDER_TASK_COUNT * THREAD_SLEEP_MILLIS * 1.2), TimeUnit.MILLISECONDS);
       assertTrue(es.isTerminated());
       assertTrue(es.isShutdown());
-      Iterator<Runnable> it = threads.keySet().iterator();
+      final Iterator<Runnable> it = threads.keySet().iterator();
       while (it.hasNext()) {
          Throwable t = threads.get(it.next());
          if (t != null) {
             fail("One of the threads threw following exception: " + t.getMessage());
          }
       }
+      msm.close();
    }
 
    private static class SenderTask implements Runnable {
       private static final Random rnd = new Random(System.currentTimeMillis());
 
+      private MessageSenderManager msm;
+      private Map<Runnable, Throwable> threads;
+
+      public SenderTask(MessageSenderManager msm, Map<Runnable, Throwable> threads) {
+         this.msm = msm;
+         this.threads = threads;
+      }
+
       @Override
       public void run() {
          try {
-            MessageSender sender = msm.acquireSender();
+            final MessageSender sender = msm.acquireSender();
             Thread.sleep(rnd.nextInt(THREAD_SLEEP_MILLIS));
             msm.releaseSender(sender);
             counter.decrementAndGet();
+
          } catch (Throwable t) {
             threads.put(Thread.currentThread(), t);
          }

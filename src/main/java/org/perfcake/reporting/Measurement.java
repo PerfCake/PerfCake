@@ -19,19 +19,18 @@
  */
 package org.perfcake.reporting;
 
+import org.perfcake.util.Utils;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.perfcake.util.Utils;
-
 /**
  * Measurement is a product of {@link org.perfcake.reporting.reporters.Reporter}. It is typically a combination of multiple {@link MeasurementUnit Measuremen Units}. The way they are combined is the
  * matter of a particular Reporter.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
 public class Measurement {
 
@@ -62,7 +61,7 @@ public class Measurement {
 
    /**
     * Creates a new instance of Measurement.
-    * 
+    *
     * @param percentage
     * @param time
     * @param iteration
@@ -76,7 +75,7 @@ public class Measurement {
 
    /**
     * Used to read the value of percentage.
-    * 
+    *
     * @return The percentage.
     */
    public long getPercentage() {
@@ -85,7 +84,7 @@ public class Measurement {
 
    /**
     * Used to read the value of time.
-    * 
+    *
     * @return The time.
     */
    public long getTime() {
@@ -94,7 +93,7 @@ public class Measurement {
 
    /**
     * Used to read the value of iteration.
-    * 
+    *
     * @return The iteration.
     */
    public long getIteration() {
@@ -103,7 +102,7 @@ public class Measurement {
 
    /**
     * Used to read the value of results.
-    * 
+    *
     * @return The results.
     */
    public Map<String, Object> getAll() {
@@ -112,7 +111,7 @@ public class Measurement {
 
    /**
     * Used to read the value of the default result.
-    * 
+    *
     * @return The default result.
     */
    public Object get() {
@@ -128,13 +127,12 @@ public class Measurement {
    }
 
    /**
-    * 
     * Used to append a named result.
-    * 
+    *
     * @param name
-    *           Name of the result.
+    *       Name of the result.
     * @param result
-    *           The result value.
+    *       The result value.
     */
    public void set(final String name, final Object result) {
       results.put(name, result);
@@ -142,9 +140,9 @@ public class Measurement {
 
    /**
     * Used to set the default result.
-    * 
+    *
     * @param result
-    *           The default result value.
+    *       The default result value.
     */
    public void set(final Object result) {
       results.put(DEFAULT_RESULT, result);
@@ -152,7 +150,7 @@ public class Measurement {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see java.lang.Object#toString()
     */
    @Override

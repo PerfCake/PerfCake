@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:2.0">
+   <generator class="DefaultMessageGenerator" threads="${threads:25}">
+      <run type="${perfcake.performance.run.type:time}" value="${perfcake.performance.run.duration:300000}"/>
+      <property name="threadQueueSize" value="${queue.size:5000}"/>
+   </generator>
+   <sender class="DummySender">
+      <property name="target" value=""/>
+   </sender>
+   <reporting>
+      <reporter class="WarmUpReporter" enabled="${perfcake.performance.warmup.enabled:true}">
+         <property name="relativeThreshold" value="0.005"/>
+         <property name="absoluteThreshold" value="0.5"/>
+         <property name="minimalWarmUpCount" value="500"/>
+      </reporter>
+      <reporter class="ThroughputStatsReporter">
+         <destination class="CsvDestination">
+            <period type="time" value="5000"/>
+            <property name="path" value="${perfcake.scenario}-${threads}t-${queue.size:5000}tqs-throughput-stats-${perfcake.run.timestamp}.csv"/>
+         </destination>
+         <destination class="ConsoleDestination">
+            <period type="time" value="5000"/>
+         </destination>
+      </reporter>
+   </reporting>
+</scenario>

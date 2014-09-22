@@ -20,10 +20,10 @@
 package org.perfcake;
 
 /**
- * 
+ * An exception to indicate generic problems in PerfCake.
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
- * 
  */
 public class PerfCakeException extends Exception {
 

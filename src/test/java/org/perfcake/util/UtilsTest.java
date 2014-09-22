@@ -19,6 +19,11 @@
  */
 package org.perfcake.util;
 
+import org.perfcake.util.properties.DefaultPropertyGetter;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,10 +32,6 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.perfcake.util.properties.DefaultPropertyGetter;
-import org.testng.Assert;
-import org.testng.annotations.Test;
 
 public class UtilsTest {
 
@@ -44,10 +45,10 @@ public class UtilsTest {
    public void camelCaseToEnum() {
       Assert.assertEquals(Utils.camelCaseToEnum("camelCaseStringsWithACRONYMS"), "CAMEL_CASE_STRINGS_WITH_ACRONYMS");
    }
-   
-   @Test 
+
+   @Test
    public void testTimeToHMS() {
-      
+
       long test1 = (12 * 3600 + 12 * 60 + 12) * 1000;
       Assert.assertEquals(Utils.timeToHMS(test1), "12:12:12");
       long test2 = (121 * 3600 + 12 * 60 + 12) * 1000;
@@ -55,30 +56,30 @@ public class UtilsTest {
       long test3 = (1 * 3600 + 12 * 60 + 12) * 1000;
       Assert.assertEquals(Utils.timeToHMS(test3), "1:12:12");
    }
-   
+
    @Test
    public void testGetProperty() {
       Assert.assertNull(Utils.getProperty(TEST_KEY));
       Assert.assertEquals(Utils.getProperty(TEST_KEY, DEFAULT_VALUE), DEFAULT_VALUE);
-      
+
       System.setProperty(TEST_KEY, TEST_VALUE);
-      
+
       Assert.assertEquals(Utils.getProperty(TEST_KEY, DEFAULT_VALUE), TEST_VALUE);
-      
+
       Map<String, String> env = System.getenv();
       if (!env.isEmpty()) {
          Entry<String, String> first = env.entrySet().iterator().next();
          Assert.assertEquals(Utils.getProperty(first.getKey()), first.getValue());
       }
    }
-   
+
    @Test
    public void testFilterProperties() throws IOException {
       String unfiltered = "text with ${test.key2} property";
       System.setProperty(TEST_KEY2, TEST_VALUE);
-      
+
       String filtered = Utils.filterProperties(unfiltered);
-      
+
       Assert.assertEquals(filtered, "text with test.value property");
 
       final String propertyPattern = "[^\\\\](#\\{([^#\\{:]+)(:[^#\\{:]*)?})";
@@ -91,16 +92,43 @@ public class UtilsTest {
       filtered = Utils.filterProperties(filteredString, matcher, new DefaultPropertyGetter(testProperties));
       Assert.assertEquals(filtered, "Sound system in Blue Oyster test");
    }
-   
+
    @Test
    public void testLocationToURL() throws MalformedURLException {
       URL url1 = Utils.locationToUrl("foo", PROPERTY_LOCATION, "bar", ".bak");
       Assert.assertEquals(url1.getProtocol(), "file");
       Assert.assertEquals(url1.toExternalForm(), "file://bar/foo.bak");
-      
+
       System.setProperty(PROPERTY_LOCATION, "barbar");
       URL url2 = Utils.locationToUrl("http://foo", PROPERTY_LOCATION, "bar", ".bak");
       Assert.assertEquals(url2.getProtocol(), "http");
       Assert.assertEquals(url2.toExternalForm(), "http://foo");
+   }
+
+   @Test
+   public void testNonNullValue() {
+      String s1 = null, s2 = null, s3 = null;
+
+      Assert.assertNull(Utils.getFirstNotNull(s1, s2, s3));
+      Assert.assertEquals(Utils.getFirstNotNull(s1, "Hello", s2), "Hello");
+      Assert.assertEquals(Utils.getFirstNotNull("World", s1, s2), "World");
+      Assert.assertEquals(Utils.getFirstNotNull(s1, "Hello", "world", s2), "Hello");
+      Assert.assertNull(Utils.getFirstNotNull());
+   }
+
+   @Test
+   public void testSetNotNullProperty() {
+      Properties p = new Properties();
+      Utils.setFirstNotNullProperty(p, "p1", null, null, null);
+      Utils.setFirstNotNullProperty(p, "p2", null, "Hello", null);
+      Utils.setFirstNotNullProperty(p, "p3", "World", null, null);
+      Utils.setFirstNotNullProperty(p, "p4", null, "Hello", "world", null);
+      Utils.setFirstNotNullProperty(p, "p5");
+
+      Assert.assertNull(p.getProperty("p1"));
+      Assert.assertEquals(p.getProperty("p2"), "Hello");
+      Assert.assertEquals(p.getProperty("p3"), "World");
+      Assert.assertEquals(p.getProperty("p4"), "Hello");
+      Assert.assertNull(p.getProperty("p5"));
    }
 }

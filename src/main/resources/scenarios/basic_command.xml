@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:2.0">
+<scenario xmlns="urn:perfcake:scenario:3.0">
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}">
       <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:10}"/>
    </generator>
    <sender class="CommandSender">
    </sender>
    <reporting>
-      <reporter class="AverageThroughputReporter">
-         <destination class="CSVDestination">
+      <reporter class="ThroughputStatsReporter">
+         <destination class="CsvDestination">
             <period type="iteration" value="1"/>
-            <property name="path" value="${perfcake.scenario}-response-time.csv"/>
+            <property name="path" value="${perfcake.scenario}-throughput-stats.csv"/>
          </destination>
          <destination class="ConsoleDestination">
             <period type="time" value="1000"/>

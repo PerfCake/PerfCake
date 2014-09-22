@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,20 +19,18 @@
  */
 package org.perfcake.reporting.reporters.accumulators;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import org.testng.Assert;
 import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 /**
- *
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
- *
  */
 public class AccumulatorsTest {
 
@@ -122,7 +120,7 @@ public class AccumulatorsTest {
       Assert.assertEquals((long) mlva.getResult(), 1l);
 
       Random r = new Random();
-      for(int i = 0; i < 5000; i++) {
+      for (int i = 0; i < 5000; i++) {
          mlva.add(r.nextLong() >> 32);
       }
       Assert.assertTrue(mlva.getResult() <= Long.MAX_VALUE >> 32);
@@ -134,7 +132,7 @@ public class AccumulatorsTest {
    @DataProvider(name = "stressTest")
    public Object[][] createDataForStressTest() {
       final Long START = 1L, END = 100_000L;
-      int WINDOW = 1000;
+      final int WINDOW = 1000;
 
       // accumulator, start, end, result, after reset
       return new Object[][] { { new AvgAccumulator(), START, END, (START + END) / 2d, 0d },

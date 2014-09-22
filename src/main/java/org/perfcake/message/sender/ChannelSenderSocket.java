@@ -20,7 +20,6 @@
 package org.perfcake.message.sender;
 
 /**
- * 
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  */
 public class ChannelSenderSocket {

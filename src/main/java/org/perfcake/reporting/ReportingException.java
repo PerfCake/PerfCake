@@ -21,6 +21,11 @@ package org.perfcake.reporting;
 
 import org.perfcake.PerfCakeException;
 
+/**
+ * An exception to indicate problems while reporting results.
+ *
+ * @author Martin Večeřa <marvenec@gmail.com>
+ */
 public class ReportingException extends PerfCakeException {
 
    private static final long serialVersionUID = -4067480238483727264L;

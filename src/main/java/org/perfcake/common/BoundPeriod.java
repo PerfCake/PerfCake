@@ -22,11 +22,10 @@ package org.perfcake.common;
 /**
  * This is a {@link Period} that can be bound to a specific object. The binding means that the
  * BoundPeriod is valid only on the given object and an action should be taken only for this object.
- * 
- * @author Martin Večera <marvenec@gmail.com>
- * 
+ *
  * @param <T>
- *           Class of the binded object
+ *       Class of the binded object
+ * @author Martin Večera <marvenec@gmail.com>
  */
 public class BoundPeriod<T> extends Period {
 
@@ -39,13 +38,13 @@ public class BoundPeriod<T> extends Period {
 
    /**
     * Creates a new BoundPeriod
-    * 
+    *
     * @param periodType
-    *           Period unit type
+    *       Period unit type
     * @param period
-    *           Period length
+    *       Period length
     * @param binding
-    *           Object bound to this period
+    *       Object bound to this period
     */
    public BoundPeriod(final PeriodType periodType, final long period, final T binding) {
       super(periodType, period);
@@ -54,11 +53,11 @@ public class BoundPeriod<T> extends Period {
 
    /**
     * Creates a new BoundPeriod based on an existing Period.
-    * 
+    *
     * @param p
-    *           Existing period
+    *       Existing period
     * @param binding
-    *           Object bound to this period
+    *       Object bound to this period
     */
    public BoundPeriod(final Period p, final T binding) {
       this(p.getPeriodType(), p.getPeriod(), binding);
@@ -66,7 +65,7 @@ public class BoundPeriod<T> extends Period {
 
    /**
     * Gets the object bound to this period.
-    * 
+    *
     * @return The object bound to this period
     */
    public T getBinding() {

@@ -19,19 +19,20 @@
  */
 package org.perfcake.message.sender;
 
-import java.io.Serializable;
-import java.util.Map;
-
-import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+
+import org.apache.log4j.Logger;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * This sender is intended to work as a dummy sender and to be used for
  * scenario testing and developing purposes. It does not actually send any message.
  * It can simulate a synchronous waiting for a reply by setting the {@link #delay} property in milliseconds (with default values 0).
  * property.
- * 
+ *
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
@@ -48,7 +49,7 @@ public class DummySender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#init()
     */
    @Override
@@ -61,7 +62,7 @@ public class DummySender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#close()
     */
    @Override
@@ -74,7 +75,7 @@ public class DummySender extends AbstractSender {
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
@@ -91,7 +92,7 @@ public class DummySender extends AbstractSender {
 
    /**
     * Used to read the value of delay.
-    * 
+    *
     * @return The delay.
     */
    public long getDelay() {
@@ -100,12 +101,13 @@ public class DummySender extends AbstractSender {
 
    /**
     * Sets the value of delay.
-    * 
+    *
     * @param delay
-    *           The delay to set.
+    *       The delay to set.
     */
-   public void setDelay(final long delay) {
+   public DummySender setDelay(final long delay) {
       this.delay = delay;
+      return this;
    }
 
 }

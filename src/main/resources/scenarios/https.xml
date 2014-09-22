@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:2.0">
+<scenario xmlns="urn:perfcake:scenario:3.0">
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}">
       <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:300000}"/>
    </generator>
-   <sender class="HTTPSSender">
+   <sender class="HttpsSender">
       <property name="target" value="https://${server.host}:8443/HTTPGatewayHTTPS/http/PerformanceTest/HTTPGatewayHTTPS"/>
       <property name="trustStore" value="${my.keystores}/cacerts.jks"/>
       <property name="trustStorePassword" value="ts_password"/>
    </sender>
    <reporting>
-      <reporter class="AverageThroughputReporter">
-         <destination class="CSVDestination">
+      <reporter class="ThroughputStatsReporter">
+         <destination class="CsvDestination">
             <period type="time" value="30000"/>
-            <property name="path" value="${perfcake.scenario}-response-time.csv"/>
+            <property name="path" value="${perfcake.scenario}-throughput-stats.csv"/>
          </destination>
          <!--destination class="ConsoleDestination">
             <period type="time" value="30000" />
          </destination-->
       </reporter>
       <!--reporter class="MemoryUsageReporter">
-         <destination class="CSVDestination">
+         <destination class="CsvDestination">
             <period type="time" value="30000"/>
             <property name="path" value="${perfcake.scenario}-memory-usage.csv" />
          </destination>
