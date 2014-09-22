@@ -231,7 +231,7 @@ public class ScenarioExecution {
    public static void main(final String[] args) {
       ScenarioExecution se = new ScenarioExecution(args);
 
-      log.info(String.format("=== Welcome to PerfCake %s ===", Scenario.VERSION));
+      log.info(String.format("=== Welcome to PerfCake %s ===", PerfCakeConst.VERSION));
 
       if (log.isEnabledFor(Level.TRACE)) {
          // Print system properties
