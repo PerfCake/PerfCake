@@ -1,7 +1,34 @@
 PerfCake Change Log
 ===================
 
-Release 3.0 (next release)
+Release 4.0 (next release)
+==========================
+
+Features
+--------
+
+Bug Fixes
+---------
+
+Release 3.2
+==========================
+
+Features
+--------
+
+Bug Fixes
+---------
+
+Release 3.1
+==========================
+
+Features
+--------
+
+Bug Fixes
+---------
+
+Release 3.0
 ==========================
 
 Features
