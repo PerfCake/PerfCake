@@ -84,6 +84,33 @@
             <xsl:for-each select="pc2:scenario/pc2:sender/pc2:property">
                <xsl:call-template name="property"/>
             </xsl:for-each>
+            <xsl:if test="pc2:scenario/pc2:sender/@class = 'RequestResponseJMSSender'">
+               <xsl:if test="pc2:scenario/pc2:sender/pc2:property[@name='username']">
+                  <property name="responseUsername">
+                     <xsl:attribute name="value">
+                     <xsl:value-of select="pc2:scenario/pc2:sender/pc2:property[@name='username']/@value"/>
+                  </xsl:attribute>
+                  </property>
+               </xsl:if>
+               <xsl:if test="pc2:scenario/pc2:sender/pc2:property[@name='password']">
+                  <property name="responsePassword">
+                     <xsl:attribute name="value">
+                     <xsl:value-of select="pc2:scenario/pc2:sender/pc2:property[@name='password']/@value"/>
+                  </xsl:attribute>
+                  </property>
+               </xsl:if>
+               <property name="responseJndiSecurityPrincipal">
+                  <xsl:attribute name="value">
+                     <xsl:value-of select="pc2:scenario/pc2:sender/pc2:property[@name='jndiSecurityPrincipal']/@value"/>
+                  </xsl:attribute>
+               </property>
+               <property name="responseJndiSecurityCredentials">
+                  <xsl:attribute name="value">
+                     <xsl:value-of select="pc2:scenario/pc2:sender/pc2:property[@name='jndiSecurityCredentials']/@value"/>
+                  </xsl:attribute>
+               </property>
+            </xsl:if>
+            <property></property>
          </sender>
          <xsl:if test="pc2:scenario/pc2:reporting">
             <reporting>
