@@ -10,6 +10,16 @@ Features
 Bug Fixes
 ---------
 
+Release 3.3
+==========================
+
+Features
+--------
+
+Bug Fixes
+---------
+* https://github.com/PerfCake/PerfCake/issues/146 - The XSLT for scenario conversion from v2 to v3 does not cover RequestResponseJmsSender properly.
+
 Release 3.2
 ==========================
 
@@ -18,6 +28,8 @@ Features
 
 Bug Fixes
 ---------
+* Workaround for https://jira.codehaus.org/browse/MJAVADOC-408
+* Scenario conversion XSLT is missing from binary distribution.
 
 Release 3.1
 ==========================
@@ -27,6 +39,7 @@ Features
 
 Bug Fixes
 ---------
+* JBoss Maven repository is missing - needed for JMS based tests.
 
 Release 3.0
 ==========================
@@ -46,6 +59,8 @@ Features
 * Compatibility with JDK 8.
 * Properties in Scenario can have arbitrary XML elements in it, components can declare setter that accepts org.w3c.dom.Element
 * Implemented **LDAPSender**.
+* **RequestResponseJMSSender** has the ability to set different connection for request and response queues.
+* Created XSLT for scenario XML conversion from v 2.0 to 3.0.
 
 Bug Fixes
 ---------
@@ -54,6 +69,9 @@ Bug Fixes
 * https://github.com/PerfCake/PerfCake/issues/111 - PerfCakeAgent hangs when configured to monitor local JVM process.
 * https://github.com/PerfCake/PerfCake/issues/123 - Review and update tests to become independent to each other.
 * https://github.com/PerfCake/PerfCake/issues/127 - CommandSender throws NullPointerException when message is not used.
+* https://github.com/PerfCake/PerfCake/issues/128 - Fix ext.dirs path to also include JRE libraries.
+* https://github.com/PerfCake/PerfCake/issues/130 - Early log messages are not shown.
+* https://github.com/PerfCake/PerfCake/issues/132 - Rename those classes that do not follow the naming conventions so they do.
 
 Release 2.1
 ===========
