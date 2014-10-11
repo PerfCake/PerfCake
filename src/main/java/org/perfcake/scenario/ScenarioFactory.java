@@ -30,6 +30,12 @@ import java.net.URL;
  */
 public interface ScenarioFactory {
 
+   static final String DEFAULT_GENERATOR_PACKAGE = "org.perfcake.message.generator";
+   static final String DEFAULT_SENDER_PACKAGE = "org.perfcake.message.sender";
+   static final String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
+   static final String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
+   static final String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
+
    public void init(final URL scenarioURL) throws PerfCakeException;
 
    public Scenario getScenario() throws PerfCakeException;
