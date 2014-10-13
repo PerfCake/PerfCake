@@ -1,5 +1,7 @@
 package org.perfcake.scenario.dsl;
 
+import org.perfcake.scenario.Scenario;
+
 import groovy.lang.Binding;
 import org.codehaus.groovy.control.CompilationFailedException;
 
@@ -13,7 +15,7 @@ public class DslScenarioLoader {
 
       final ScenarioDelegate scenarioDelegate = new ScenarioDelegate();
       scenarioDelegate.setBinding(binding);
-      final DslScenario dsl = (DslScenario) scenarioDelegate.run();
+      final Scenario dsl = (Scenario) scenarioDelegate.run();
 
       System.out.println(dsl);
    }

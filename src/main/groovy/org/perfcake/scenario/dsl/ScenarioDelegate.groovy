@@ -15,6 +15,7 @@ import org.perfcake.scenario.ScenarioFactory
 import org.perfcake.util.ObjectFactory
 import org.perfcake.util.Utils
 
+import org.apache.log4j.Logger
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
@@ -31,7 +32,6 @@ class PropertiesBacked {
    }
 
    def methodMissing(String name, args) {
-      println "scenario missing method $name $args"
       if (args.length == 1) {
          properties[name] = args[0]
       } else {
@@ -524,8 +524,6 @@ abstract class BaseDslScriptClass extends Script {
    }
 
    def methodMissing(String name, args) {
-      println "script missing method $name $args"
-
       def scenario = this.binding.scenario
       scenario.properties[name] = args[0]
 
@@ -686,6 +684,9 @@ def scenarioBinding = new Binding([
 def shell = new GroovyShell(scenarioBinding, configuration)
 shell.evaluate(dslFileName as File)
 
-println scenario.buildScenario()
+def log = Logger.getLogger(ScenarioDelegate.class)
+if (log.isDebugEnabled()) {
+   log.debug(scenario.toString())
+}
 
-return scenario
+return scenario.buildScenario()
