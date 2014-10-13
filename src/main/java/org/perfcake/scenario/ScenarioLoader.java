@@ -46,7 +46,7 @@ public class ScenarioLoader {
     * @throws PerfCakeException
     *       if scenario property is not set or there is some problem with loading the scenario.
     */
-   public Scenario load(final String scenario) throws PerfCakeException {
+   public static Scenario load(final String scenario) throws PerfCakeException {
       if (scenario == null) {
          throw new PerfCakeException("Scenario property is not set. Please use -Dscenario=<scenario name> to specify a scenario.");
       }
@@ -76,10 +76,12 @@ public class ScenarioLoader {
       return scenarioFactory.getScenario();
    }
 
-   private ScenarioFactory getFactory(final String extension) throws PerfCakeException {
+   private static ScenarioFactory getFactory(final String extension) throws PerfCakeException {
       switch (extension) {
          case "xml":
             return new XMLFactory();
+         case "dsl":
+            return new DSLFactory();
          default:
             throw new PerfCakeException(String.format("Unknown scenario type %s", extension));
       }

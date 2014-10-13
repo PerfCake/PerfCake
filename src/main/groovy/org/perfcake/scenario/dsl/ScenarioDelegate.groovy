@@ -33,6 +33,9 @@ class PropertiesBacked {
 
    def methodMissing(String name, args) {
       if (args.length == 1) {
+         if (args[0] instanceof Time) {
+            args[0] = ((Time) args[0]).ms
+         }
          properties[name] = args[0]
       } else {
          properties[name] = args
@@ -154,7 +157,9 @@ class DslScenario extends PropertiesBacked {
    }
 
    def Scenario buildScenario() {
-      ScenarioBuilder builder = new ScenarioBuilder(runInfo.buildRunInfo(), generator.buildMessageGenerator(), sender.buildMessageSender())
+      AbstractMessageGenerator g = generator.buildMessageGenerator()
+      g.setThreads((int) runInfo.getThreads())
+      ScenarioBuilder builder = new ScenarioBuilder(runInfo.buildRunInfo(), g, sender.messageSenderClassName, sender.messageSenderProperties)
       if (reporters) {
          reporters.each {
             builder.addReporter(it.buildReporter())
@@ -208,7 +213,7 @@ class RunInfo extends PropertiesBacked {
       this.iterations = iterations
    }
 
-   def with(Long threads) {
+   def with(Integer threads) {
       this.threads = threads
       this
    }
@@ -269,11 +274,14 @@ class Sender extends ObjectWithClassName {
       "Sender: {${super.toString()}}"
    }
 
-   MessageSender buildMessageSender() {
+   Properties getMessageSenderProperties() {
       def props = new Properties()
       props.putAll(properties)
+      props
+   }
 
-      ObjectFactory.summonInstance(className.contains('.') ?: ScenarioFactory.DEFAULT_SENDER_PACKAGE + '.' + className, props)
+   String getMessageSenderClassName() {
+      className.contains('.') ?: ScenarioFactory.DEFAULT_SENDER_PACKAGE + '.' + className
    }
 }
 
@@ -682,7 +690,7 @@ def scenarioBinding = new Binding([
 ])
 
 def shell = new GroovyShell(scenarioBinding, configuration)
-shell.evaluate(dslFileName as File)
+shell.evaluate(dslScript as String)
 
 def log = Logger.getLogger(ScenarioDelegate.class)
 if (log.isDebugEnabled()) {

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,6 +31,7 @@ import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;
 
 import java.util.ArrayList;
+import java.util.Properties;
 
 /**
  * A Java based builder for creating {@link org.perfcake.scenario.Scenario} instance, which can be run by {@link org.perfcake.ScenarioExecution}.
@@ -53,14 +54,14 @@ public class ScenarioBuilder {
     * @throws PerfCakeException
     *       When any of the parameters are not set or creation of the underlying classes fails.
     */
-   public ScenarioBuilder(final RunInfo runInfo, final AbstractMessageGenerator messageGenerator, final MessageSender senderTemplate) throws PerfCakeException {
+   public ScenarioBuilder(final RunInfo runInfo, final AbstractMessageGenerator messageGenerator, final String senderClass, final Properties senderProperties) throws PerfCakeException {
       if (runInfo == null) {
          throw new PerfCakeException("RunInfo is not set.");
       }
       if (messageGenerator == null) {
          throw new PerfCakeException("Generator is not set.");
       }
-      if (senderTemplate == null) {
+      if (senderClass == null) {
          throw new PerfCakeException("Sender is not set.");
       }
 
@@ -69,7 +70,8 @@ public class ScenarioBuilder {
       scenario.setGenerator(messageGenerator);
 
       MessageSenderManager messageSenderManager = new MessageSenderManager();
-      messageSenderManager.setSenderClass(senderTemplate.getClass().getName());
+      messageSenderManager.setSenderClass(senderClass);
+      messageSenderManager.addMessageSenderProperties(senderProperties);
       messageSenderManager.setSenderPoolSize(messageGenerator.getThreads());
       scenario.setMessageSenderManager(messageSenderManager);
 

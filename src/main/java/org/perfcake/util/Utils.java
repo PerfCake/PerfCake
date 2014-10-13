@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -173,9 +173,14 @@ public class Utils {
     *       when the location cannot be converted to a URL
     */
    public static URL locationToUrl(String location, final String defaultLocationProperty, final String defaultLocation, final String defaultSuffix) throws MalformedURLException {
+      // if we are looking for a file and there is no path specified, remove the prefix for later automatic directory insertion
+      if (location.startsWith("file://") && !location.substring(7).contains(File.separator)) {
+         location = location.substring(7);
+      }
+
       // is there a protocol specified? suppose just scenario name
       if (location.indexOf("://") < 0) {
-         location = "file://" + Utils.getProperty(defaultLocationProperty, defaultLocation) + "/" + location + defaultSuffix;
+         location = "file://" + Utils.getProperty(defaultLocationProperty, defaultLocation) + "/" + (location.contains(".") ? location : location + defaultSuffix);
       }
 
       return new URL(location);
