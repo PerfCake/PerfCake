@@ -25,12 +25,16 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.DefaultMessageGenerator;
 import org.perfcake.message.sender.DummySender;
+import org.perfcake.message.sender.JmsSender;
 import org.perfcake.message.sender.MessageSender;
+import org.perfcake.message.sender.RequestResponseJmsSender;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;
+import java.util.Map;
 
 /**
  * Verifies the correct parsing of DSL scenarios.
@@ -44,7 +48,7 @@ public class DSLFactoryTest {
       System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, getClass().getResource("/scenarios").getPath());
       System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
 
-      Scenario s = ScenarioLoader.load("stub_test_scenario.dsl");
+      Scenario s = ScenarioLoader.load("stub_test_scenario");
       s.init();
 
       Assert.assertTrue(s.getGenerator() instanceof DefaultMessageGenerator);
@@ -65,5 +69,15 @@ public class DSLFactoryTest {
       Assert.assertEquals(((DummySender) ms).getDelay(), 12 * 1000);
       Assert.assertEquals(((DummySender) ms).getTarget(), "httpbin.org");
 
+   }
+
+   @Test
+   public void testDescribe() throws Exception {
+      MessageSender ms = new RequestResponseJmsSender();
+      ((JmsSender) ms).setPassword("abc");
+
+      Map m = BeanUtils.describe(ms);
+
+      System.out.println(m);
    }
 }

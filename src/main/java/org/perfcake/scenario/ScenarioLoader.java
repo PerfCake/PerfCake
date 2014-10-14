@@ -53,7 +53,7 @@ public class ScenarioLoader {
 
       final URL scenarioUrl;
       try {
-         scenarioUrl = Utils.locationToUrl(scenario, PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"), ".xml");
+         scenarioUrl = Utils.locationToUrlWithCheck(scenario, PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"), ".xml", ".dsl");
       } catch (MalformedURLException e) {
          throw new PerfCakeException("Cannot parse scenario configuration location: ", e);
       }

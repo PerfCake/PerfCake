@@ -27,9 +27,13 @@ import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.util.ObjectFactory;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;
 
+import org.apache.commons.beanutils.BeanUtils;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -49,8 +53,43 @@ public class ScenarioBuilder {
     *       RunInfo specifying the test run time.
     * @param messageGenerator
     *       Message generator to be used to generate messages during test.
-    * @param senderTemplate
-    *       Sender template which will be cloned to create all sender instances.
+    * @param messageSender
+    *       Sender template which will be copied to create all sender instances. Only the bean properties with proper get methods will be set on the new sender instances.
+    * @throws PerfCakeException
+    *       When any of the parameters are not set or creation of the underlying classes fails.
+    */
+   public ScenarioBuilder(final RunInfo runInfo, final AbstractMessageGenerator messageGenerator, final MessageSender messageSender) throws PerfCakeException {
+      if (runInfo == null) {
+         throw new PerfCakeException("RunInfo is not set.");
+      }
+      if (messageGenerator == null) {
+         throw new PerfCakeException("Generator is not set.");
+      }
+      if (messageSender == null) {
+         throw new PerfCakeException("Sender is not set.");
+      }
+
+      Properties props = new Properties();
+      try {
+         props = ObjectFactory.getObjectProperties(messageSender);
+      } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+         throw new PerfCakeException(String.format("Cannot access properties of the message sender template '%s':", messageSender.toString()), e);
+      }
+
+      initScenario(runInfo, messageGenerator, messageSender.getClass().getName(), props);
+   }
+
+   /**
+    * Gets a new ScenarioBuilder instance. Mandatory objects must be passed in. Sender can be described as a class name and properties.
+    *
+    * @param runInfo
+    *       RunInfo specifying the test run time.
+    * @param messageGenerator
+    *       Message generator to be used to generate messages during test.
+    * @param senderClass
+    *       Name of the sender class, instances will be used to send message in the scenario.
+    * @param senderProperties
+    *       Properties that will be set on the sender instances.
     * @throws PerfCakeException
     *       When any of the parameters are not set or creation of the underlying classes fails.
     */
@@ -65,6 +104,10 @@ public class ScenarioBuilder {
          throw new PerfCakeException("Sender is not set.");
       }
 
+      initScenario(runInfo, messageGenerator, senderClass, senderProperties);
+   }
+
+   private void initScenario(final RunInfo runInfo, final AbstractMessageGenerator messageGenerator, final String senderClass, final Properties senderProperties) throws PerfCakeException {
       scenario = new Scenario();
       messageGenerator.setRunInfo(runInfo);
       scenario.setGenerator(messageGenerator);

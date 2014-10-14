@@ -33,6 +33,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -172,18 +175,88 @@ public class Utils {
     * @throws MalformedURLException
     *       when the location cannot be converted to a URL
     */
-   public static URL locationToUrl(String location, final String defaultLocationProperty, final String defaultLocation, final String defaultSuffix) throws MalformedURLException {
+   public static URL locationToUrl(final String location, final String defaultLocationProperty, final String defaultLocation, final String defaultSuffix) throws MalformedURLException {
+      String uri;
+
       // if we are looking for a file and there is no path specified, remove the prefix for later automatic directory insertion
       if (location.startsWith("file://") && !location.substring(7).contains(File.separator)) {
-         location = location.substring(7);
+         uri = location.substring(7);
+      } else {
+         uri = location;
       }
 
-      // is there a protocol specified? suppose just scenario name
-      if (location.indexOf("://") < 0) {
-         location = "file://" + Utils.getProperty(defaultLocationProperty, defaultLocation) + "/" + (location.contains(".") ? location : location + defaultSuffix);
+      // if there is no protocol specified, try some file locations
+      if (!uri.contains("://")) {
+         Path  p = Paths.get(Utils.getProperty(defaultLocationProperty, defaultLocation), uri + defaultSuffix);
+         uri = "file://" + p.toString();
       }
 
-      return new URL(location);
+      return new URL(uri);
+   }
+
+   /**
+    * Convert location to URL with check for the location existence. If location specifies a protocol, it is immediately converted. Without a protocol specified, the following paths
+    * are checked for the existence:
+    * 1. file://location
+    * 2. file://$defaultLocationProperty/location or file://defaultLocation/location (when the property is not set)
+    * 3. file://$defaultLocationProperty/location.suffix or file://defaultLocation/location.suffix (when the property is not set) with all the provided suffixes
+    * If the file was not found, the result is simply file://location
+    *
+    * @param location
+    *       Location of the resource.
+    * @param defaultLocationProperty
+    *       Property to read the default location prefix.
+    * @param defaultLocation
+    *       Default value for defaultLocationProperty if this property is undefined.
+    * @param defaultSuffix
+    *       Array of default default suffixes to try when searching for the resource.
+    * @return URL representing the location.
+    * @throws MalformedURLException
+    *       When the location cannot be converted to an URL.
+    */
+   public static URL locationToUrlWithCheck(final String location, final String defaultLocationProperty, final String defaultLocation, final String... defaultSuffix) throws MalformedURLException {
+      String uri;
+
+      // if we are looking for a file and there is no path specified, remove the prefix for later automatic directory insertion
+      if (location.startsWith("file://")) {
+         uri = location.substring(7);
+      } else {
+         uri = location;
+      }
+
+      // if there is no protocol specified, try some file locations
+      if (!uri.contains("://")) {
+         Path p = Paths.get(uri);
+
+         if (!Files.exists(p)) {
+            p = Paths.get(Utils.getProperty(defaultLocationProperty, defaultLocation), uri);
+
+            if (!Files.exists(p)) {
+               if (defaultSuffix != null && defaultSuffix.length > 0) {
+                  boolean found = false;
+
+                  for (String suffix : defaultSuffix) {
+                     p = Paths.get(Utils.getProperty(defaultLocationProperty, defaultLocation), uri + suffix);
+                     if (Files.exists(p)) {
+                        found = true;
+                        break;
+                     }
+                  }
+
+                  if (found) {
+                     uri = p.toString();
+                  }
+               }
+            } else {
+               uri = p.toString();
+            }
+
+         }
+
+         uri = "file://" + uri;
+      }
+
+      return new URL(uri);
    }
 
    /**
