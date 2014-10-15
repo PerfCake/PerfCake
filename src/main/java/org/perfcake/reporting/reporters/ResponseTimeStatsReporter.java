@@ -23,7 +23,7 @@ import org.perfcake.reporting.MeasurementUnit;
 
 /**
  * The reporter is able to report statistics of response time.
- *
+ * 
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @see StatsReporter Details about the actual statistic metrics.
  */
@@ -32,5 +32,10 @@ public class ResponseTimeStatsReporter extends StatsReporter {
    @Override
    protected Double computeResult(MeasurementUnit mu) {
       return mu.getLastTime();
+   }
+
+   @Override
+   protected String getResultUnit() {
+      return "ms";
    }
 }
