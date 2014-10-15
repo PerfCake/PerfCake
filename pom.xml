@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE htmlEntities [
-<!ENTITY nbsp "&#xa0;">
-]>
+      <!ENTITY nbsp "&#xa0;">
+      ]>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
@@ -108,6 +108,16 @@
             <updatePolicy>never</updatePolicy>
          </snapshots>
       </repository>
+      <repository>
+         <id>repo1 gmaven</id>
+         <url>http://repo1.maven.org/maven2</url>
+         <snapshots>
+            <enabled>true</enabled>
+         </snapshots>
+         <releases>
+            <enabled>false</enabled>
+         </releases>
+      </repository>
    </repositories>
    <pluginRepositories>
       <pluginRepository>
@@ -123,6 +133,16 @@
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
          </snapshots>
+      </pluginRepository>
+      <pluginRepository>
+         <id>repo1 gmaven</id>
+         <url>http://repo1.maven.org/maven2</url>
+         <snapshots>
+            <enabled>true</enabled>
+         </snapshots>
+         <releases>
+            <enabled>false</enabled>
+         </releases>
       </pluginRepository>
    </pluginRepositories>
    <dependencyManagement>
@@ -326,7 +346,7 @@
                <processStartTag>-----------------------------------------------------------------------\</processStartTag>
                <processEndTag>-----------------------------------------------------------------------/</processEndTag>
                <sectionDelimiter> 
-         </sectionDelimiter>
+               </sectionDelimiter>
                <organizationName>the original author or authors.</organizationName>
                <licenseName>apache_v2</licenseName>
                <roots>
@@ -460,9 +480,9 @@
                <groupId>org.codehaus.gmaven</groupId>
                <artifactId>gmaven-plugin</artifactId>
                <version>1.2</version>
-               <configuration> 
-                  <providerSelection>1.7</providerSelection> 
-               </configuration> 
+               <configuration>
+                  <providerSelection>1.7</providerSelection>
+               </configuration>
                <dependencies>
                   <dependency>
                      <groupId>org.codehaus.gmaven.runtime</groupId>
@@ -507,7 +527,7 @@
                      <argument>-Dlog4j.configuration=file://${basedir}/src/main/resources/log4j.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath />
+                     <classpath/>
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
@@ -585,7 +605,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <ignore />
+                              <ignore/>
                            </action>
                         </pluginExecution>
                         <pluginExecution>
@@ -598,7 +618,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <execute />
+                              <execute/>
                            </action>
                         </pluginExecution>
                         <pluginExecution>
@@ -611,7 +631,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <execute />
+                              <execute/>
                            </action>
                         </pluginExecution>
                      </pluginExecutions>

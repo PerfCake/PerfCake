@@ -1,3 +1,22 @@
+/*
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -----------------------------------------------------------------------/
+ */
 package org.perfcake.scenario.dsl
 
 import static org.codehaus.groovy.syntax.Types.*
@@ -8,7 +27,6 @@ import org.perfcake.common.Period
 import org.perfcake.common.PeriodType
 import org.perfcake.message.MessageTemplate
 import org.perfcake.message.generator.AbstractMessageGenerator
-import org.perfcake.message.sender.MessageSender
 import org.perfcake.scenario.Scenario
 import org.perfcake.scenario.ScenarioBuilder
 import org.perfcake.scenario.ScenarioFactory
@@ -24,6 +42,19 @@ import groovy.transform.TupleConstructor
 import java.nio.file.Files
 import java.nio.file.Paths
 
+/**
+ * Implementation of DSL scenario specification support for PerfCake.
+ * The scenario in the DSL format is a Groovy script. A set of ugly classes in this file
+ * permits the use of various wild language constructs.
+ *
+ * @author Martin Večeřa <marvenec@gmail.com>
+ */
+
+/**
+ *  Any call to a non existing method on this class is stored in a map in the form of methodName -> parameter.
+ *  Parameters of Time type are automatically converted to a number in milliseconds (which allows passing in time values for senders and destinations).
+ *  Multiple parameters are converted to an array stored in the value.
+ */
 class PropertiesBacked {
    def properties = [:]
 
@@ -44,6 +75,24 @@ class PropertiesBacked {
    }
 }
 
+/**
+ * Furthermore, the object can have a class name and the automatic properties.
+ */
+class ObjectWithClassName extends PropertiesBacked {
+   def className
+
+   ObjectWithClassName(def className) {
+      this.className = className
+   }
+
+   String toString() {
+      "class: $className, ${super.toString()}"
+   }
+}
+
+/**
+ * Class holding all values needed to construct the real scenario.
+ */
 class DslScenario extends PropertiesBacked {
    def description
    def generator
@@ -80,6 +129,7 @@ class DslScenario extends PropertiesBacked {
    }
 
    def methodMissing(String name, args) {
+      // this catches the definition of the scenario description right after the 'scenario' keyword
       if (name == "call") {
          this.description = args[0]
       } else {
@@ -88,29 +138,38 @@ class DslScenario extends PropertiesBacked {
       this
    }
 
+   // new generator
    def generator(def className) {
       this.generator = new Generator(className)
       this.generator
    }
 
+   // new sender
    def sender(def className) {
       this.sender = new Sender(className)
       this.sender
    }
 
+   // new reporter
    def reporter(def className) {
       def r = new Reporter(className)
       this.reporters.add(r)
       r
    }
 
+   // new destination
    def destination(def className) {
       this.reporters.last().destination(className)
    }
 
+   // new message
    def message(def location) {
       def m = new Message()
       this.messages.add(m)
+
+      // the location can be specified as type:"location" where type can be
+      // uri,file,from,in to lookup for a file (either local or remote), or
+      // content,text,body for direct textual content specification in the scenario file
       if (location instanceof Map) {
          Map map = (Map) location
          if (map.containsKey('uri') || map.containsKey('file') || map.containsKey('from') || map.containsKey('in')) {
@@ -120,7 +179,7 @@ class DslScenario extends PropertiesBacked {
          } else {
             throw new PerfCakeException("Message content not defined.")
          }
-      } else if (location instanceof String) {
+      } else if (location instanceof String) { // in case of a simple string (i.e. "location"), approach it as a file location
          String s = (String) location
          if (s.indexOf('://') >= 0 || Files.exists(Paths.get(s)) || Files.exists(Paths.get(Utils.DEFAULT_RESOURCES_DIR.getAbsolutePath(), 'scenarios', s))) {
             m.uri = s
@@ -133,6 +192,7 @@ class DslScenario extends PropertiesBacked {
       m
    }
 
+   // configuration of validation, takes two parameters
    def validation(boolean enabled, boolean fast) {
       this.validation = new Validation()
       this.validation.enabled = enabled
@@ -140,26 +200,34 @@ class DslScenario extends PropertiesBacked {
       this.validation
    }
 
+   // new validator
    def validator(def className) {
       def v = new Validator(className)
       this.validators.add(v)
       v
    }
 
+   // new run info based on time
    def run(Time time) {
+      if (this.runInfo != null) {
+         throw new PerfCakeException("The 'run' keyword can be used only once in the scenario.")
+      }
       this.runInfo = new RunInfo(time)
       this.runInfo
    }
 
+   // new run info based on interations
    def run(Iterations iterations) {
       this.runInfo = new RunInfo(iterations)
       this.runInfo
    }
 
+   // builds the complete PerfCake scenario
    def Scenario buildScenario() {
       AbstractMessageGenerator g = generator.buildMessageGenerator()
-      g.setThreads((int) runInfo.getThreads())
+      g.setThreads((int) runInfo.getThreads()) // get the number of threads from DSL run info
       ScenarioBuilder builder = new ScenarioBuilder(runInfo.buildRunInfo(), g, sender.messageSenderClassName, sender.messageSenderProperties)
+
       if (reporters) {
          reporters.each {
             builder.addReporter(it.buildReporter())
@@ -172,7 +240,7 @@ class DslScenario extends PropertiesBacked {
             if (!it.id) {
                throw new PerfCakeException("The following validator is missing its 'id': ${it.toString()}")
             }
-            validatorIds.add(it.id)
+            validatorIds.add(it.id) // remember the validator id for later binding with messages
             builder.putMessageValidator(it.id, it.buildValidator())
          }
       }
@@ -184,7 +252,7 @@ class DslScenario extends PropertiesBacked {
 
             // this must be done after building the message, as array of validators may need to be obtained
             // from properties during the message template creation
-            it.validators.each { validatorId ->
+            it.validators.each {validatorId ->
                if (!validatorIds.contains(validatorId)) {
                   throw new PerfCakeException("Reference '$validatorId' to non-existing validator.")
                }
@@ -193,6 +261,8 @@ class DslScenario extends PropertiesBacked {
       }
 
       Scenario s = builder.build()
+
+      // copy the validator configuration parameters
       s.getValidationManager().setFastForward(validation.fastForward)
       s.getValidationManager().setEnabled(validation.getEnabledValue())
 
@@ -231,18 +301,6 @@ class RunInfo extends PropertiesBacked {
       }
 
       new org.perfcake.RunInfo(new Period(time ? PeriodType.TIME : PeriodType.ITERATION, time ? time.ms : iterations.amount))
-   }
-}
-
-class ObjectWithClassName extends PropertiesBacked {
-   def className
-
-   ObjectWithClassName(def className) {
-      this.className = className
-   }
-
-   String toString() {
-      "class: $className, ${super.toString()}"
    }
 }
 
@@ -304,16 +362,19 @@ class Reporter extends ObjectWithClassName {
             "         ${super.toString()}, enabled: $enabled\n      }"
    }
 
+   // this provides 'enabled' keyword that could be used at the end of the line
    def getEnabled() {
       enabled = true
       this
    }
 
+   // this provides 'disabled' keyword that could be used at the end of the line
    def getDisabled() {
       enabled = false
       this
    }
 
+   // new destination under this reporter
    def destination(def className) {
       def d = new Destination(className)
       destinations.add(d)
@@ -327,7 +388,7 @@ class Reporter extends ObjectWithClassName {
 
       if (destinations) {
          destinations.each {
-            if (it.getEnabledValue()) {
+            if (it.getEnabledValue()) { // skip disabled destinations completely
                def p = null
                if (it.period instanceof Time) {
                   p = new Period(PeriodType.TIME, it.period.ms)
@@ -367,15 +428,18 @@ class Destination extends ObjectWithClassName {
       this
    }
 
+   // getEnabled is already used for something else, this method is needed to actually obtain the value of the enabled field
    def getEnabledValue() {
       enabled
    }
 
+   // this provides 'enabled' keyword that could be used at the end of the line
    def getEnabled() {
       enabled = true
       this
    }
 
+   // this provides 'disabled' keyword that could be used at the end of the line
    def getDisabled() {
       enabled = false
       this
@@ -400,16 +464,19 @@ class Message extends PropertiesBacked {
       this.multiplicity = multiplicity
    }
 
+   // validator ids can be specified as a list (handled later) or as a string separated by commas or semicolons
    def validate(String validator) {
       this.validators.addAll(validator.tokenize(" ,;\t\n\r\f"))
       this
    }
 
+   // specify headers as a map
    def headers(def headers) {
       this.headers = headers
       this
    }
 
+   // specify a single header value (actually more values can be set at a time and nothing breaks)
    def header(def header) {
       this.headers.putAll(header)
       this
@@ -424,6 +491,7 @@ class Message extends PropertiesBacked {
          throw new PerfCakeException("Both 'uri' and 'content' cannot be set at the same time on message ${this.toString()}.")
       }
 
+      // if validator ids were specified as a list, they ended up in the object properties
       if (properties.get('validate')) {
          validators.addAll(properties.get('validate'))
          properties.remove('validate')
@@ -466,15 +534,18 @@ class Validation {
       this
    }
 
+   // getEnabled is already used for something else, this method is needed to actually obtain the value of the enabled field
    def getEnabledValue() {
       enabled
    }
 
+   // this provides 'enabled' keyword that could be used at the end of the line
    def getEnabled() {
       enabled = true
       this
    }
 
+   // this provides 'disabled' keyword that could be used at the end of the line
    def getDisabled() {
       enabled = false
       this
@@ -505,8 +576,12 @@ class Validator extends ObjectWithClassName {
    }
 }
 
+/**
+ * Parent script for all the DSL scenarios which defines some built-in methods.
+ */
 abstract class BaseDslScriptClass extends Script {
 
+   // set the metaclasses for both integers and longs (large numbers are likely to be used in the configuration)
    static {
       Integer.metaClass.getS = {-> new Time((Integer) delegate, TimeUnit.second)}
       Integer.metaClass.getM = {-> new Time((Integer) delegate, TimeUnit.minute)}
@@ -531,6 +606,7 @@ abstract class BaseDslScriptClass extends Script {
       Long.metaClass.getTimes = {-> delegate}
    }
 
+   // all missing method calls are stored as generic scenario properties
    def methodMissing(String name, args) {
       def scenario = this.binding.scenario
       scenario.properties[name] = args[0]
@@ -538,67 +614,88 @@ abstract class BaseDslScriptClass extends Script {
       scenario
    }
 
+   // pass the call to the DSL scenario
    def generator(def className) {
       scenario.generator(className)
    }
 
+   // pass the call to the DSL scenario
    def sender(def className) {
       scenario.sender(className)
    }
 
+   // pass the call to the DSL scenario
    def reporter(def className) {
       scenario.reporter(className)
    }
 
+   // pass the call to the DSL scenario
    def destination(def className) {
       scenario.destination(className)
    }
 
+   // pass the call to the DSL scenario
    def message(def location) {
       scenario.message(location)
    }
 
+   // pass the call to the DSL scenario
    def validation(int enabled) {
       scenario.validation(enabled == 101, false)
    }
 
+   // pass the call to the DSL scenario
    def validation(String fast) {
       scenario.validation(true, true)
    }
 
+   // this provides the 'validation' keyword
    def getValidation() {
       scenario.validation(true, false)
    }
 
+   // this provides a generic 'enabled' keyword in the scenario, used for validation configuration,
+   // we want to distinguish between regular booleans and method calls and this one, this is why we use the number
    def getEnabled() {
       101
    }
 
+   // this provides a generic 'disabled' keyword in the scenario, used for validation configuration,
+   // we want to distinguish between regular booleans and method calls and this one, this is why we use the number
    def getDisabled() {
       100
    }
 
+   // this provides a generic 'fast' keyword in the scenario, used for validation configuration,
+   // we want to distinguish between regular booleans and method calls and this one, this is why we use the string value
    def getFast() {
       "fast"
    }
 
+   // pass the call to the DSL scenario
    def validator(def className) {
       scenario.validator(className)
    }
 
+   // pass the call to the DSL scenario
    def run(Time time) {
       scenario.run(time)
    }
 
+   // pass the call to the DSL scenario
    def run(Iterations iterations) {
       scenario.run(iterations)
    }
 
+   // this provides the end keyword which is now voluntary
    def getEnd() {
       scenario
    }
 }
 
+/**
+ * Specification of a time unit.
+ */
 enum TimeUnit {
    millisecond('ms', 1L),
    second('s', 1000L),
@@ -619,6 +716,9 @@ enum TimeUnit {
    }
 }
 
+/**
+ * Binds time unit and a value.
+ */
 @TupleConstructor
 class Time {
    Long amount
@@ -633,6 +733,9 @@ class Time {
    }
 }
 
+/**
+ * Binds value with percents.
+ */
 @TupleConstructor
 class Percents {
    Integer amount
@@ -642,6 +745,9 @@ class Percents {
    }
 }
 
+/**
+ * Binds value with iterations.
+ */
 @TupleConstructor
 class Iterations {
    Long amount
@@ -651,13 +757,13 @@ class Iterations {
    }
 }
 
-//   DslScenario.metaClass.getMetaProperty(name).setProperty(scenario, args)
-
+// creates new scenario upon request
 def getNewScenario() {
    scenario = new DslScenario()
    scenario
 }
 
+// configuration of the script compiler, automatic imports and security
 def configuration = new CompilerConfiguration()
 
 def imports = new ImportCustomizer()
@@ -683,18 +789,21 @@ secure.with {
 }
 
 configuration.addCompilationCustomizers(imports, secure)
-configuration.scriptBaseClass = BaseDslScriptClass.getName()
+configuration.scriptBaseClass = BaseDslScriptClass.getName() // set the script parent class
 
 def scenarioBinding = new Binding([
-      scenario: getNewScenario(),
+      scenario: getNewScenario(), // 'scenario' keyword is bound to the request for a new DSL scenario, therefore the keyword is mandatory
 ])
 
+// evaluate the script, the return value is ignored, we have the link to the DSL scenario object anyway
 def shell = new GroovyShell(scenarioBinding, configuration)
 shell.evaluate(dslScript as String)
 
+// print out the completely parsed scenario
 def log = Logger.getLogger(ScenarioDelegate.class)
 if (log.isDebugEnabled()) {
    log.debug(scenario.toString())
 }
 
+// return PerfCake scenario made of the DSL one
 return scenario.buildScenario()

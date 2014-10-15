@@ -21,20 +21,25 @@ package org.perfcake.scenario;
 
 import org.perfcake.PerfCakeConst;
 import org.perfcake.RunInfo;
+import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.PeriodType;
+import org.perfcake.message.Message;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.DefaultMessageGenerator;
 import org.perfcake.message.sender.DummySender;
-import org.perfcake.message.sender.JmsSender;
 import org.perfcake.message.sender.MessageSender;
-import org.perfcake.message.sender.RequestResponseJmsSender;
+import org.perfcake.reporting.destinations.CsvDestination;
+import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.reporters.ResponseTimeStatsReporter;
+import org.perfcake.reporting.reporters.ThroughputStatsReporter;
+import org.perfcake.reporting.reporters.WarmUpReporter;
+import org.perfcake.util.Utils;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;
-import java.util.Map;
+import java.util.Collections;
 
 /**
  * Verifies the correct parsing of DSL scenarios.
@@ -47,6 +52,7 @@ public class DSLFactoryTest {
    public void testDslScenarioParsing() throws Exception {
       System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, getClass().getResource("/scenarios").getPath());
       System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
+      System.setProperty(PerfCakeConst.SCENARIO_PROPERTY, "test-scenario");
 
       Scenario s = ScenarioLoader.load("stub_test_scenario");
       s.init();
@@ -69,15 +75,68 @@ public class DSLFactoryTest {
       Assert.assertEquals(((DummySender) ms).getDelay(), 12 * 1000);
       Assert.assertEquals(((DummySender) ms).getTarget(), "httpbin.org");
 
-   }
+      Reporter[] reporters = s.getReportManager().getReporters().toArray(new Reporter[1]);
+      Assert.assertEquals(reporters.length, 3);
+      Assert.assertTrue(reporters[0] instanceof WarmUpReporter);
+      Assert.assertTrue(reporters[1] instanceof ThroughputStatsReporter);
+      Assert.assertTrue(reporters[2] instanceof ResponseTimeStatsReporter);
+      Assert.assertFalse(((ThroughputStatsReporter) reporters[1]).isMinimumEnabled());
 
-   @Test
-   public void testDescribe() throws Exception {
-      MessageSender ms = new RequestResponseJmsSender();
-      ((JmsSender) ms).setPassword("abc");
+      // only one destination should appear here as the other one is disabled
+      BoundPeriod[] periods = reporters[1].getReportingPeriods().toArray(new BoundPeriod[1]);
+      Assert.assertEquals(periods.length, 1);
+      Assert.assertTrue(periods[0].getBinding() instanceof CsvDestination);
+      Assert.assertEquals(((CsvDestination) periods[0].getBinding()).getPath(), "test-scenario-stats.csv");
+      Assert.assertEquals(periods[0].getPeriodType(), PeriodType.TIME);
+      Assert.assertEquals(periods[0].getPeriod(), 3 * 1000);
 
-      Map m = BeanUtils.describe(ms);
+      periods = reporters[2].getReportingPeriods().toArray(new BoundPeriod[1]);
+      Assert.assertEquals(periods.length, 1);
+      Assert.assertEquals(periods[0].getPeriodType(), PeriodType.PERCENTAGE);
+      Assert.assertEquals(periods[0].getPeriod(), 10);
 
-      System.out.println(m);
+      Assert.assertEquals(s.getMessageStore().size(), 4);
+      Assert.assertEquals(s.getMessageStore().get(0).getMessage().getPayload(), Utils.readFilteredContent(Utils.locationToUrl("message1.xml", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", "")));
+      Assert.assertEquals((long) s.getMessageStore().get(0).getMultiplicity(), 10);
+      Assert.assertEquals(s.getMessageStore().get(0).getMessage().getProperties().size(), 0);
+      Assert.assertEquals(s.getMessageStore().get(0).getMessage().getHeaders().size(), 0);
+      Assert.assertEquals(s.getMessageStore().get(0).getValidatorIds().size(), 0);
+
+      Assert.assertEquals(s.getMessageStore().get(1).getMessage().getPayload(), "Hello World");
+      Assert.assertEquals(s.getMessageStore().get(1).getMessage().getProperties().size(), 1);
+      Assert.assertEquals(s.getMessageStore().get(1).getMessage().getProperties().get("values"), new int[] { 1, 2, 3 });
+      Assert.assertEquals(s.getMessageStore().get(1).getMessage().getHeaders().size(), 0);
+      Assert.assertEquals(s.getMessageStore().get(1).getValidatorIds().size(), 0);
+
+      Assert.assertEquals(s.getMessageStore().get(2).getMessage().getPayload(), Utils.readFilteredContent(Utils.locationToUrl("message2.txt", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", "")));
+      Assert.assertEquals(s.getMessageStore().get(2).getMessage().getProperties().size(), 0);
+      Assert.assertEquals(s.getMessageStore().get(2).getMessage().getHeaders().size(), 0);
+      Assert.assertEquals(s.getMessageStore().get(2).getValidatorIds().size(), 2);
+      Assert.assertEquals(s.getMessageStore().get(2).getValidatorIds().get(0), "text1");
+      Assert.assertEquals(s.getMessageStore().get(2).getValidatorIds().get(1), "text2");
+
+      Assert.assertEquals(s.getMessageStore().get(3).getMessage().getPayload(), "Simple text");
+      Assert.assertEquals(s.getMessageStore().get(3).getMessage().getProperties().size(), 1);
+      Assert.assertEquals(s.getMessageStore().get(3).getMessage().getProperty("propA"), "kukuk");
+      Assert.assertEquals(s.getMessageStore().get(3).getMessage().getHeaders().size(), 2);
+      Assert.assertEquals(s.getMessageStore().get(3).getMessage().getHeader("name"), "Franta");
+      Assert.assertEquals(s.getMessageStore().get(3).getMessage().getHeaders().get("count"), 10);
+      Assert.assertEquals(s.getMessageStore().get(3).getValidatorIds().size(), 2);
+      Assert.assertEquals(s.getMessageStore().get(3).getValidatorIds().get(0), "text1");
+      Assert.assertEquals(s.getMessageStore().get(3).getValidatorIds().get(1), "text2");
+
+      Assert.assertFalse(s.getValidationManager().isEnabled());
+      Assert.assertTrue(s.getValidationManager().isFastForward());
+
+      Message toValidate = new Message();
+      toValidate.setPayload("I am a fish!");
+      Assert.assertTrue(s.getValidationManager().getValidators(Collections.singletonList("text1")).get(0).isValid(null, toValidate));
+
+      toValidate.setPayload("I was a fish!");
+      Assert.assertTrue(s.getValidationManager().getValidators(Collections.singletonList("text2")).get(0).isValid(null, toValidate));
+
+      System.clearProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY);
+      System.clearProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY);
+      System.clearProperty(PerfCakeConst.SCENARIO_PROPERTY);
    }
 }
