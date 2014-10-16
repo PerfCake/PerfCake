@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@
  */
 package org.perfcake.util;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.util.properties.DefaultPropertyGetter;
 
 import org.testng.Assert;
@@ -94,7 +95,7 @@ public class UtilsTest {
    }
 
    @Test
-   public void testLocationToURL() throws MalformedURLException {
+   public void testLocationToUrl() throws MalformedURLException {
       URL url1 = Utils.locationToUrl("foo", PROPERTY_LOCATION, "bar", ".bak");
       Assert.assertEquals(url1.getProtocol(), "file");
       Assert.assertEquals(url1.toExternalForm(), "file://bar/foo.bak");
@@ -103,6 +104,28 @@ public class UtilsTest {
       URL url2 = Utils.locationToUrl("http://foo", PROPERTY_LOCATION, "bar", ".bak");
       Assert.assertEquals(url2.getProtocol(), "http");
       Assert.assertEquals(url2.toExternalForm(), "http://foo");
+   }
+
+   @Test
+   public void testLocationToUrlWithCheck() throws Exception {
+      System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, getClass().getResource("/scenarios").getPath());
+      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
+
+      URL url = Utils.locationToUrlWithCheck("message1", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", ".txt", ".xml");
+      Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
+      url = Utils.locationToUrlWithCheck("subdir/subfile", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", ".txt", ".xml");
+      Assert.assertTrue(url.getPath().endsWith("/messages/subdir/subfile.txt"));
+      url = Utils.locationToUrlWithCheck("message1.xml", "wrong.and.non.existing.property", getClass().getResource("/messages").getPath());
+      Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
+      url = Utils.locationToUrlWithCheck("file://message1.xml", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", ".never.used");
+      Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
+      url = Utils.locationToUrlWithCheck("file://src/test/resources/messages/message1.xml", "wrong.and.non.existing.property", "bad.value");
+      Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
+      url = Utils.locationToUrlWithCheck("non.existing.file.name", "wrong.and.non.existing.property", "bad.value");
+      Assert.assertEquals(url.toString(), "file://non.existing.file.name"); // this is not a valid location so the path field of URL doesn't get filled
+
+      System.clearProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY);
+      System.clearProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY);
    }
 
    @Test

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package org.perfcake.util;
 
 import org.perfcake.PerfCakeConst;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.FluentPropertyBeanIntrospector;
@@ -49,18 +50,6 @@ public class ObjectFactory {
 
    private static final Logger log = Logger.getLogger(ObjectFactory.class);
    private static ClassLoader pluginClassLoader = null;
-
-   private static class EnumConvertUtilsBean extends ConvertUtilsBean {
-      @SuppressWarnings({ "rawtypes", "unchecked" })
-      @Override
-      public Object convert(final String value, final Class clazz) {
-         if (clazz.isEnum()) {
-            return Enum.valueOf(clazz, Utils.camelCaseToEnum(value));
-         } else {
-            return super.convert(value, clazz);
-         }
-      }
-   }
 
    /**
     * Lookup for a set method on a bean that is able to accept Element
@@ -118,6 +107,13 @@ public class ObjectFactory {
       return object;
    }
 
+   public static Properties getObjectProperties(Object object) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+      Properties properties = new Properties();
+      properties.putAll(BeanUtils.describe(object));
+
+      return properties;
+   }
+
    protected static ClassLoader getPluginClassLoader() {
       if (pluginClassLoader == null) {
          final ClassLoader currentClassLoader = ObjectFactory.class.getClassLoader();
@@ -151,6 +147,18 @@ public class ObjectFactory {
       }
 
       return pluginClassLoader;
+   }
+
+   private static class EnumConvertUtilsBean extends ConvertUtilsBean {
+      @SuppressWarnings({ "rawtypes", "unchecked" })
+      @Override
+      public Object convert(final String value, final Class clazz) {
+         if (clazz.isEnum()) {
+            return Enum.valueOf(clazz, Utils.camelCaseToEnum(value));
+         } else {
+            return super.convert(value, clazz);
+         }
+      }
    }
 
    private static class FileExtensionFilter implements FilenameFilter {
