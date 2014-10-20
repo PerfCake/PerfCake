@@ -25,6 +25,7 @@ import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
@@ -173,18 +174,19 @@ public class ReporterContractTest {
 
          private boolean first = true;
 
+         @SuppressWarnings("unchecked")
          @Override
          public void report(final Measurement m) {
             if (first) {
                Assert.assertEquals(m.getIteration(), 0L);
-               Assert.assertEquals(((Double) m.get()).longValue(), 10);
+               Assert.assertEquals(((Quantity<Number>) m.get()).getNumber().longValue(), 10);
                Assert.assertEquals(m.get("avg"), 0d);
                Assert.assertEquals(m.get("it"), "1");
 
                first = false;
             } else {
                Assert.assertEquals(m.getIteration(), 99L);
-               Assert.assertEquals(((Double) m.get()).longValue(), 10);
+               Assert.assertEquals(((Quantity<Number>) m.get()).getNumber().longValue(), 10);
                Assert.assertEquals(m.get("avg"), 49.5d);
                Assert.assertEquals(m.get("it"), "100");
                crc.incrementAndGet(); // this block will be executed twice, first for iteration, second for time
@@ -196,23 +198,24 @@ public class ReporterContractTest {
 
          private int run = 0;
 
+         @SuppressWarnings("unchecked")
          @Override
          public void report(final Measurement m) {
             if (run == 0) {
                Assert.assertEquals(m.getPercentage(), 0);
-               Assert.assertEquals(((Double) m.get()).longValue(), 10);
+               Assert.assertEquals(((Quantity<Number>) m.get()).getNumber().longValue(), 10);
                Assert.assertEquals(m.get("avg"), 0d);
 
                run = 1;
             } else if (run == 1) {
                Assert.assertEquals(m.getPercentage(), 8);
-               Assert.assertEquals(((Double) m.get()).longValue(), 10);
+               Assert.assertEquals(((Quantity<Number>) m.get()).getNumber().longValue(), 10);
                Assert.assertEquals(m.get("avg"), 39.5d);
                crc.incrementAndGet();
                run = 2;
             } else {
                Assert.assertEquals(m.getPercentage(), 10);
-               Assert.assertEquals(((Double) m.get()).longValue(), 10);
+               Assert.assertEquals(((Quantity<Number>) m.get()).getNumber().longValue(), 10);
                Assert.assertEquals(m.get("avg"), 49.5d);
                crc.incrementAndGet();
                run = 3;

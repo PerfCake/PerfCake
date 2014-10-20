@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE htmlEntities [
-<!ENTITY nbsp "&#xa0;">
-]>
+      <!ENTITY nbsp "&#xa0;">
+      ]>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake</artifactId>
-   <version>3.2</version>
+   <version>3.3</version>
    <parent>
       <groupId>org.sonatype.oss</groupId>
       <artifactId>oss-parent</artifactId>
@@ -25,7 +25,7 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-      <tag>v3.2</tag>
+      <tag>v3.3</tag>
    </scm>
    <developers>
       <developer>
@@ -88,6 +88,7 @@
       <jboss-as.version>7.1.1.Final</jboss-as.version>
       <jacoco.version>0.7.1.201405082137</jacoco.version>
       <drools.version>6.1.0.Beta3</drools.version>
+      <groovy.version>2.3.6</groovy.version>
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
       <server.port>8080</server.port>
@@ -151,6 +152,11 @@
       </dependencies>
    </dependencyManagement>
    <dependencies>
+      <dependency>
+         <groupId>org.codehaus.groovy</groupId>
+         <artifactId>groovy-all</artifactId>
+         <version>${groovy.version}</version>
+      </dependency>
       <!-- JMS 1.1 API -->
       <dependency>
          <groupId>javax.jms</groupId>
@@ -321,7 +327,7 @@
                <processStartTag>-----------------------------------------------------------------------\</processStartTag>
                <processEndTag>-----------------------------------------------------------------------/</processEndTag>
                <sectionDelimiter> 
-         </sectionDelimiter>
+               </sectionDelimiter>
                <organizationName>the original author or authors.</organizationName>
                <licenseName>apache_v2</licenseName>
                <roots>
@@ -423,6 +429,32 @@
                </dependency>
             </dependencies>
          </plugin>
+         <plugin>
+            <groupId>org.codehaus.gmaven</groupId>
+            <artifactId>gmaven-plugin</artifactId>
+            <version>1.5</version>
+            <configuration>
+               <providerSelection>2.0</providerSelection>
+               <sourceEncoding>UTF-8</sourceEncoding>
+            </configuration>
+            <dependencies>
+               <dependency>
+                  <groupId>org.codehaus.groovy</groupId>
+                  <artifactId>groovy-all</artifactId>
+                  <version>${groovy.version}</version>
+               </dependency>
+            </dependencies>
+            <executions>
+               <execution>
+                  <goals>
+                     <goal>generateStubs</goal>
+                     <goal>compile</goal>
+                     <goal>generateTestStubs</goal>
+                     <goal>testCompile</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
       </plugins>
       <pluginManagement>
          <plugins>
@@ -472,7 +504,7 @@
                      <argument>-Dlog4j.configuration=file://${basedir}/src/main/resources/log4j.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath />
+                     <classpath/>
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
@@ -550,7 +582,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <ignore />
+                              <ignore/>
                            </action>
                         </pluginExecution>
                         <pluginExecution>
@@ -563,7 +595,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <execute />
+                              <execute/>
                            </action>
                         </pluginExecution>
                         <pluginExecution>
@@ -576,7 +608,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <execute />
+                              <execute/>
                            </action>
                         </pluginExecution>
                      </pluginExecutions>

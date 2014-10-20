@@ -197,7 +197,7 @@ public class ScenarioExecution {
       String scenarioFile = Utils.getProperty(PerfCakeConst.SCENARIO_PROPERTY);
 
       try {
-         scenario = new ScenarioLoader().load(scenarioFile);
+         scenario = ScenarioLoader.load(scenarioFile);
       } catch (Exception e) {
          log.fatal(String.format("Cannot load scenario '%s': ", scenarioFile), e);
          System.exit(3);

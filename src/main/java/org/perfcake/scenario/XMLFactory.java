@@ -81,11 +81,6 @@ import javax.xml.validation.SchemaFactory;
 public class XMLFactory implements ScenarioFactory {
 
    public static final Logger log = Logger.getLogger(XMLFactory.class);
-   private static final String DEFAULT_GENERATOR_PACKAGE = "org.perfcake.message.generator";
-   private static final String DEFAULT_SENDER_PACKAGE = "org.perfcake.message.sender";
-   private static final String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
-   private static final String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
-   private static final String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
    private org.perfcake.model.Scenario scenarioModel;
    private String scenarioConfig;
    private Scenario scenario = null;
