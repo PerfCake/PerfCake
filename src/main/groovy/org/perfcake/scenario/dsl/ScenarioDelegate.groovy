@@ -262,9 +262,11 @@ class DslScenario extends PropertiesBacked {
 
       Scenario s = builder.build()
 
-      // copy the validator configuration parameters
-      s.getValidationManager().setFastForward(validation.fastForward)
-      s.getValidationManager().setEnabled(validation.getEnabledValue())
+      if (validation) {
+         // copy the validator configuration parameters
+         s.getValidationManager().setFastForward(validation.fastForward)
+         s.getValidationManager().setEnabled(validation.getEnabledValue())
+      }
 
       s
    }
