@@ -15,6 +15,7 @@ Release 3.3
 
 Features
 --------
+* https://github.com/PerfCake/PerfCake/issues/94 - First Technical Preview of DSL scenario specification support
 
 Bug Fixes
 ---------
