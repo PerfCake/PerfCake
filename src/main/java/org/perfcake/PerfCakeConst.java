@@ -24,7 +24,7 @@ package org.perfcake;
  * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public final class PerfCakeConst {
-   public static final String VERSION = "3.2";
+   public static final String VERSION = "3.3";
    public static final String XSD_SCHEMA_VERSION = "3.0";
 
    public static final String MESSAGE_NUMBER_HEADER = "PerfCake_Performance_Message_Number";
