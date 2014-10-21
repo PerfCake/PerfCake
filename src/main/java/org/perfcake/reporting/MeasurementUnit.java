@@ -67,7 +67,7 @@ public class MeasurementUnit implements Serializable {
    private final Map<String, Object> measurementResults = new HashMap<>();
 
    /**
-    * When the measurement was first started in real time (timestamp value from {@link System.currentTimeMillis()}).
+    * When the measurement was first started in real time (timestamp value from {@link System#currentTimeMillis()}).
     */
    private long timeStarted = -1;
 

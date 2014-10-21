@@ -90,7 +90,7 @@ abstract public class AbstractSender implements MessageSender {
     * message, since this method is being measured
     *
     * @param message
-    * @return
+    * @return Result received by the sender 
     * @throws Exception
     */
    final public Serializable doSend(final Message message, final MeasurementUnit mu) throws Exception {
@@ -103,7 +103,7 @@ abstract public class AbstractSender implements MessageSender {
     *
     * @param message
     * @param properties
-    * @return
+    * @return Result received by the sender 
     * @throws Exception
     */
    abstract public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception;
