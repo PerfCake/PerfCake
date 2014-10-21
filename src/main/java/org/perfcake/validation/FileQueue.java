@@ -200,9 +200,8 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
    }
 
    /**
-    * Returns first item in queue
-    *
-    * @return
+    * 
+    * @return The first item in queue
     */
    @SuppressWarnings("unchecked")
    protected T getItem() {

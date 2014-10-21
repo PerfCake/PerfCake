@@ -57,7 +57,7 @@ public class ObjectFactory {
     * @param object
     * @param propertyName
     * @param value
-    * @return
+    * @return <code>true</code> if operation has succeeded, <code>false</code> otherwise
     * @throws InvocationTargetException
     * @throws IllegalAccessException
     */

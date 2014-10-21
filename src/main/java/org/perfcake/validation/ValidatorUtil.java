@@ -127,9 +127,6 @@ public final class ValidatorUtil {
     *       Message position in the list.
     * @param part
     *       Validated message part.
-    * @param partValue
-    *       Actual value of the parametrized message part (e.g. when <code>part</code> is a body part, this value specifies which
-    *       one). If it is not provided, make it <code>null</code>.
     * @param operator
     *       Operator for validation.
     * @param value
@@ -341,7 +338,7 @@ public final class ValidatorUtil {
     * @param value
     *       Valid value of validated message part.
     * @return Number of messages in the list that match the criteria (pass the validation).
-    * @see #validateMessage(java.util.List, int, org.jboss.soa.esb.qa.perfcake.validation.ValidatorUtil.MessagePart, java.lang.String, org.jboss.soa.esb.qa.perfcake.validation.ValidatorUtil.Operator,
+    * @see #validateMessage(java.util.List, int, org.perfcake.validation.ValidatorUtil.MessagePart, java.lang.String, org.perfcake.validation.ValidatorUtil.Operator,
     * java.lang.String)
     */
    private static int countMessages(final List<Message> list, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {

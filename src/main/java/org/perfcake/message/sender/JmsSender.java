@@ -426,7 +426,7 @@ public class JmsSender extends AbstractSender {
    /**
     * Get the value of messageType.
     *
-    * @return
+    * @return The type of the payload
     */
    public MessageType getMessageType() {
       return messageType;

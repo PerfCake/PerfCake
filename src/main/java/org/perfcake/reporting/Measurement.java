@@ -120,7 +120,7 @@ public class Measurement {
 
    /**
     * @param name
-    * @return
+    * @return The result name
     */
    public Object get(final String name) {
       return results.get(name);

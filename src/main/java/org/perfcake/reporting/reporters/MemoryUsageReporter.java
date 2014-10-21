@@ -315,7 +315,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    /**
     * Used to set the value of timeWindowSize.
     *
-    * @param usedMemoryTimeWindowSize
+    * @param timeWindowSize
     *       The usedMemoryTimeWindowSize value to set.
     */
    public MemoryUsageReporter setUsedMemoryTimeWindowSize(int timeWindowSize) {
