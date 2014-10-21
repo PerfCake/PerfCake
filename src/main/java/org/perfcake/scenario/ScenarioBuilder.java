@@ -129,7 +129,7 @@ public class ScenarioBuilder {
    /**
     * Adds a {@link Reporter}, which will be used in {@link org.perfcake.scenario.Scenario} for reporting results. More reporters can be added
     *
-    * @param Reporter
+    * @param r
     *       implementation
     * @return this
     */
@@ -141,7 +141,7 @@ public class ScenarioBuilder {
    /**
     * Adds a {@link MessageTemplate}, which will be used in the {@link org.perfcake.scenario.Scenario}
     *
-    * @param MessageTemplate
+    * @param messageTemplate
     *       A message template to be added to the list of messages to be send during in one sender cycle.
     * @return this
     */
