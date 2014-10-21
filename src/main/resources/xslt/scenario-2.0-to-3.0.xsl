@@ -110,7 +110,6 @@
                   </xsl:attribute>
                </property>
             </xsl:if>
-            <property></property>
          </sender>
          <xsl:if test="pc2:scenario/pc2:reporting">
             <reporting>
