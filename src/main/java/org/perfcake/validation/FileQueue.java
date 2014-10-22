@@ -181,8 +181,9 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
                file.seek(0);
                if (pointer == channel.size()) {
                   clear();
+               } else {
+                  queueSize--;
                }
-               queueSize--;
                file.writeLong(queueSize);
                file.writeLong(pointer);
                return result;

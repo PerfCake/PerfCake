@@ -37,6 +37,10 @@ public class DummyValidator implements MessageValidator {
     */
    private Message lastResponse;
    /**
+    * When was the validator called for the last time before the last time.
+    */
+   private long preLastCalledTimestamp;
+   /**
     * When was the validator called for the last time.
     */
    private long lastCalledTimestamp;
@@ -49,6 +53,7 @@ public class DummyValidator implements MessageValidator {
    public boolean isValid(Message originalMessage, Message response) {
       lastOriginalMessage = originalMessage;
       lastResponse = response;
+      preLastCalledTimestamp = lastCalledTimestamp;
       lastCalledTimestamp = System.currentTimeMillis();
 
       return returnValue;
@@ -90,6 +95,15 @@ public class DummyValidator implements MessageValidator {
     */
    public long getLastCalledTimestamp() {
       return lastCalledTimestamp;
+   }
+
+   /**
+    * Gets the last timestamp of moment the validation method was called before the last time.
+    *
+    * @return When was the validation method called for the last time before the last time.
+    */
+   public long getPreLastCalledTimestamp() {
+      return preLastCalledTimestamp;
    }
 
    /**

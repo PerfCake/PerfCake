@@ -259,7 +259,8 @@ public class ValidationManager {
          }
 
          try {
-            while (!validationThread.isInterrupted() && (!expectLastMessage || (receivedMessage = resultMessages.poll()) != null)) {
+            while (!validationThread.isInterrupted() && (!expectLastMessage || !resultMessages.isEmpty())) {
+               receivedMessage = resultMessages.poll();
                if (receivedMessage != null) {
                   for (final MessageValidator validator : getValidators(receivedMessage.getSentMessageTemplate().getValidatorIds())) {
                      isMessageValid = validator.isValid(receivedMessage.getSentMessage(), new Message(receivedMessage.getResponse()));
