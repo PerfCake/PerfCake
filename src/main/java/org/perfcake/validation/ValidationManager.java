@@ -71,6 +71,10 @@ public class ValidationManager {
     */
    private boolean fastForward = false;
    /**
+    * When true, the validation thread just waits for the input queue to become empty and ends.
+    */
+   private boolean expectLastMessage = false;
+   /**
     * A queue with the message responses.
     */
    private Queue<ReceivedMessage> resultMessages;
@@ -152,6 +156,7 @@ public class ValidationManager {
     */
    public void startValidation() {
       if (validationThread == null || !validationThread.isAlive()) {
+         expectLastMessage = false;
          validationThread = new Thread(new ValidationThread());
          validationThread.setDaemon(true); // we do not want to block JVM
          validationThread.start();
@@ -168,6 +173,7 @@ public class ValidationManager {
    public void waitForValidation() throws InterruptedException {
       if (validationThread != null) {
          fastForward = true;
+         expectLastMessage = true;
          validationThread.join();
       }
    }
@@ -253,7 +259,7 @@ public class ValidationManager {
          }
 
          try {
-            while (!validationThread.isInterrupted() && (receivedMessage = resultMessages.poll()) != null) {
+            while (!validationThread.isInterrupted() && (expectLastMessage && (receivedMessage = resultMessages.poll()) != null)) {
                for (final MessageValidator validator : getValidators(receivedMessage.getSentMessageTemplate().getValidatorIds())) {
                   isMessageValid = validator.isValid(receivedMessage.getSentMessage(), new Message(receivedMessage.getResponse()));
                   if (log.isTraceEnabled()) {
