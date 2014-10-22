@@ -37,7 +37,7 @@ import java.lang.reflect.Field;
  */
 public class ValidationIntegrationTest {
 
-   @Test(enabled = false)
+   @Test(enabled = true)
    public void basicIntegrationTest() throws Exception {
       System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, getClass().getResource("/scenarios").getPath());
       System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
