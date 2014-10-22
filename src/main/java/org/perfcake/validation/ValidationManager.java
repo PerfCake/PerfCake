@@ -259,16 +259,18 @@ public class ValidationManager {
          }
 
          try {
-            while (!validationThread.isInterrupted() && (expectLastMessage && (receivedMessage = resultMessages.poll()) != null)) {
-               for (final MessageValidator validator : getValidators(receivedMessage.getSentMessageTemplate().getValidatorIds())) {
-                  isMessageValid = validator.isValid(receivedMessage.getSentMessage(), new Message(receivedMessage.getResponse()));
-                  if (log.isTraceEnabled()) {
-                     log.trace(String.format("Message response %s validated with %s returns %s.", receivedMessage.getResponse().toString(), validator.toString(), String.valueOf(isMessageValid)));
-                  }
+            while (!validationThread.isInterrupted() && (!expectLastMessage || (receivedMessage = resultMessages.poll()) != null)) {
+               if (receivedMessage != null) {
+                  for (final MessageValidator validator : getValidators(receivedMessage.getSentMessageTemplate().getValidatorIds())) {
+                     isMessageValid = validator.isValid(receivedMessage.getSentMessage(), new Message(receivedMessage.getResponse()));
+                     if (log.isTraceEnabled()) {
+                        log.trace(String.format("Message response %s validated with %s returns %s.", receivedMessage.getResponse().toString(), validator.toString(), String.valueOf(isMessageValid)));
+                     }
 
-                  allMessagesValid &= isMessageValid;
+                     allMessagesValid &= isMessageValid;
+                  }
                }
-               if (!fastForward) {
+               if (!fastForward || receivedMessage == null) {
                   Thread.sleep(500); // we do not want to block senders
                }
             }
