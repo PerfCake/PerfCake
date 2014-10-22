@@ -136,7 +136,9 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    @Override
    protected void doReset() {
-      // nop
+      if (usedMemoryTimeWindow != null) {
+         usedMemoryTimeWindow.clear();
+      }
    }
 
    @Override
@@ -315,7 +317,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    /**
     * Used to set the value of timeWindowSize.
     *
-    * @param timeWindowSize
+    * @param usedMemoryTimeWindowSize
     *       The usedMemoryTimeWindowSize value to set.
     */
    public MemoryUsageReporter setUsedMemoryTimeWindowSize(int timeWindowSize) {

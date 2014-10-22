@@ -10,6 +10,7 @@ Features
 Bug Fixes
 ---------
 * https://github.com/PerfCake/PerfCake/issues/156 - XSLT transformation adds an empty property to sender
+* https://github.com/PerfCake/PerfCake/issues/157 - MemoryUsageReporter does not reset correctly
 
 Release 3.3
 ==========================
