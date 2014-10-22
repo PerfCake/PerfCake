@@ -266,18 +266,22 @@ public class HttpSender extends AbstractSender {
       } else {
          rcis = requestConnection.getErrorStream();
       }
-      char[] cbuf = new char[10 * 1024];
-      InputStreamReader read = new InputStreamReader(rcis, Utils.getDefaultEncoding());
-      // note that Content-Length is available at this point
-      StringBuilder sb = new StringBuilder();
-      int ch = read.read(cbuf);
-      while (ch != -1) {
-         sb.append(cbuf, 0, ch);
-         ch = read.read(cbuf);
+
+      String payload = null;
+      if (rcis != null) {
+         char[] cbuf = new char[10 * 1024];
+         InputStreamReader read = new InputStreamReader(rcis, Utils.getDefaultEncoding());
+         // note that Content-Length is available at this point
+         StringBuilder sb = new StringBuilder();
+         int ch = read.read(cbuf);
+         while (ch != -1) {
+            sb.append(cbuf, 0, ch);
+            ch = read.read(cbuf);
+         }
+         read.close();
+         rcis.close();
+         payload = sb.toString();
       }
-      read.close();
-      rcis.close();
-      String payload = sb.toString();
 
       return payload;
    }
