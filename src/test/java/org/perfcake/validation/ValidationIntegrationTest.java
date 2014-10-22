@@ -69,14 +69,15 @@ public class ValidationIntegrationTest {
       Assert.assertTrue(timeDiff >= 450, "Validator called to often during running measurement.");
 
       // after we stop the measurement, the validation must switch to full speed
-      scenario.stop();
-      lastCalled = v.getLastCalledTimestamp();
-      Thread.sleep(10);
+      scenario.close();
+
+      Assert.assertTrue(validationManager.isFastForward(), "Validation did not switch to fast forward.");
+
+      lastCalled = v.getPreLastCalledTimestamp();
       lastCalled2 = v.getLastCalledTimestamp();
       timeDiff = lastCalled2 - lastCalled;
 
-      Assert.assertTrue(timeDiff > 1 && timeDiff < 20, "Validator did not switch to normal speed operation.");
+      Assert.assertTrue(timeDiff > 1 && timeDiff < 20, "Validation did not switch to normal speed operation.");
 
-      scenario.close();
    }
 }
