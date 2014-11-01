@@ -1,0 +1,61 @@
+/*
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -----------------------------------------------------------------------/
+ */
+package org.perfcake.util;
+
+import org.apache.commons.lang.StringUtils;
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import java.util.Properties;
+
+public class StringTemplateTest {
+
+   @Test
+   public void testStringTemplateLarge() {
+      String message = StringUtils.repeat("Galia est omnis divisa in partes tres quarum unam incolunt Belgae, aliam Aquitanii, tertiam qui lingua ipsorum Celtae, nostra Gali appelantur.", 5 * 1024 / 140);
+      String expression = "${hello} ${1+1} ${ahoj||1} ${hello - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}";
+
+      Properties vars = new Properties();
+      vars.setProperty("hello", "4"); // set int as string
+
+      String result = StringTemplate.parseTemplate(message + expression, vars); // this passes variables into constructor immediately
+
+      Assert.assertEquals(result, message + "4 2 1 3 " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"));
+   }
+
+   @Test
+   public void testStringTemplateBasic() {
+      String expression = "${hello} ${1+1} ${ahoj||1} ${hello - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}";
+      StringTemplate template = new StringTemplate(expression);
+
+      Properties vars = new Properties();
+      vars.put("hello", 4); // entered directly as int - usually, we should use setProperty() here
+
+      String result = template.toString(vars); // pass the variables later
+
+      Assert.assertEquals(result, "4 2 1 3 " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"));
+   }
+
+   @Test
+   public void testNoTemplate() {
+      final String noTemplate = "Karel Pilka";
+      Assert.assertEquals(new StringTemplate(noTemplate).toString(), noTemplate);
+   }
+}
