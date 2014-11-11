@@ -29,6 +29,7 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.util.Utils;
+import org.perfcake.util.agent.AgentThread;
 import org.perfcake.util.agent.PerfCakeAgent;
 import org.perfcake.util.agent.PerfCakeAgent.Memory;
 
@@ -122,6 +123,11 @@ public class MemoryUsageReporter extends AbstractReporter {
    private boolean memoryLeakDetected = false;
 
    /**
+    * A flag that indicates that a heap dump was saved after a possible memory leak has been detected.
+    */
+   private boolean heapDumpSaved = false;
+
+   /**
     * Tha latest computed used memory trend slope value.
     */
    private float memoryTrendSlope = 0;
@@ -139,6 +145,7 @@ public class MemoryUsageReporter extends AbstractReporter {
       if (usedMemoryTimeWindow != null) {
          usedMemoryTimeWindow.clear();
       }
+      heapDumpSaved = false;
    }
 
    @Override
@@ -237,6 +244,15 @@ public class MemoryUsageReporter extends AbstractReporter {
             memoryTrendSlope = (float) Utils.computeRegressionTrend(usedMemoryTimeWindow);
             if (usedMemoryTimeWindow.size() == usedMemoryTimeWindowSize && memoryTrendSlope > memoryLeakSlopeThreshold) {
                memoryLeakDetected = true;
+               if (!heapDumpSaved) {
+                  try {
+                     sendAgentCommand(AgentThread.Commands.HEAPDUMP);
+                     heapDumpSaved = true;
+                  } catch (IOException e) {
+                     e.printStackTrace();
+                  }
+               }
+
             }
             try {
                Thread.sleep(memoryLeakDetectionMonitoringPeriod);
@@ -263,6 +279,22 @@ public class MemoryUsageReporter extends AbstractReporter {
    private long getMemoryUsage(final Memory type) throws IOException {
       requestWriter.println(type.toString());
       return Long.valueOf(responseReader.readLine());
+   }
+
+   /**
+    * Sends a command to the {@link PerfCakeAgent} the reporter is connected to.
+    *
+    * @param command
+    *       {@link org.perfcake.util.agent.AgentThread.Commands} command.
+    * @return Command response code.
+    * @throws IOException
+    */
+   private long sendAgentCommand(final AgentThread.Commands command) throws IOException {
+      log.info("sending " + command.toString());
+      requestWriter.println(command.toString());
+      long retVal = Long.valueOf(responseReader.readLine());
+      log.info("received " + retVal);
+      return retVal;
    }
 
    /**
@@ -315,9 +347,9 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Used to set the value of timeWindowSize.
+    * Used to set the value of usedMemoryTimeWindowSize.
     *
-    * @param usedMemoryTimeWindowSize
+    * @param timeWindowSize
     *       The usedMemoryTimeWindowSize value to set.
     */
    public MemoryUsageReporter setUsedMemoryTimeWindowSize(int timeWindowSize) {
