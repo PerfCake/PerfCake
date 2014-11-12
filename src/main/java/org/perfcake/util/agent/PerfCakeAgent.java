@@ -53,12 +53,12 @@ public class PerfCakeAgent {
    public static final int DEFAULT_PORT = 8850;
 
    /**
-    * The memory type.
+    * The command type.
     *
     * @author Pavel Macík <pavel.macik@gmail.com>
     */
-   public enum Memory {
-      FREE, USED, TOTAL, MAX
+   public enum Command {
+      FREE, USED, TOTAL, MAX, DUMP
    }
 
    /**

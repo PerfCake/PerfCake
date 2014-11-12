@@ -19,9 +19,10 @@
  */
 package org.perfcake.util.agent;
 
-import org.perfcake.util.agent.PerfCakeAgent.Memory;
+import sun.management.ManagementFactoryHelper;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,6 +31,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -42,6 +45,15 @@ public class AgentThread implements Runnable {
     * Agent's arguments.
     */
    private final String agentArgs;
+
+   private static final List<String> memoryCommands;
+
+   static {
+      memoryCommands = new ArrayList<>();
+      for (PerfCakeAgent.Command commandType : PerfCakeAgent.Command.values()) {
+         memoryCommands.add(commandType.name().toUpperCase());
+      }
+   }
 
    /**
     * @param agentArgs
@@ -90,26 +102,34 @@ public class AgentThread implements Runnable {
             socket = ssocket.accept();
             log("Client connected from " + socket.getInetAddress().getHostAddress());
             is = socket.getInputStream();
-            String input = null;
-            BufferedReader br = new BufferedReader(new InputStreamReader(is, PerfCakeAgent.DEFAULT_ENCODING));
-            PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), PerfCakeAgent.DEFAULT_ENCODING), true);
-            while ((input = br.readLine()) != null) {
+            String command;
+            final BufferedReader br = new BufferedReader(new InputStreamReader(is, PerfCakeAgent.DEFAULT_ENCODING));
+            final PrintWriter pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), PerfCakeAgent.DEFAULT_ENCODING), true);
+            while ((command = br.readLine()) != null) {
                String response = "Unrecognized command!";
-               Runtime rt = Runtime.getRuntime();
+               final Runtime rt = Runtime.getRuntime();
                try {
-                  switch (Memory.valueOf(input.toUpperCase())) {
-                     case FREE:
-                        response = String.valueOf(rt.freeMemory());
-                        break;
-                     case MAX:
-                        response = String.valueOf(rt.maxMemory());
-                        break;
-                     case TOTAL:
-                        response = String.valueOf(rt.totalMemory());
-                        break;
-                     case USED:
-                        response = String.valueOf(rt.totalMemory() - rt.freeMemory());
-                        break;
+                  if (PerfCakeAgent.Command.FREE.name().equals(command)) {
+                     response = String.valueOf(rt.freeMemory());
+                  } else if (PerfCakeAgent.Command.MAX.name().equals(command)) {
+                     response = String.valueOf(rt.maxMemory());
+                  } else if (PerfCakeAgent.Command.TOTAL.name().equals(command)) {
+                     response = String.valueOf(rt.totalMemory());
+                  } else if (PerfCakeAgent.Command.USED.name().equals(command)) {
+                     response = String.valueOf(rt.totalMemory() - rt.freeMemory());
+                  } else if (command.startsWith(PerfCakeAgent.Command.DUMP.name())) {
+                     final String[] tokens = command.split(":");
+                     String dumpName;
+                     if (tokens.length > 1) {
+                        dumpName = tokens[1];
+                     } else {
+                        dumpName = "dump-" + System.currentTimeMillis() + ".bin";
+                     }
+                     final File dumpFile = new File(dumpName);
+                     log("Saving a heap dump to " + dumpFile.getAbsolutePath());
+                     ManagementFactoryHelper.getDiagnosticMXBean().dumpHeap(dumpName, true);
+                     log("Heap dump saved to " + dumpFile.getAbsolutePath());
+                     response = "0";
                   }
                } catch (IllegalArgumentException iae) {
                   err(iae.getLocalizedMessage());
