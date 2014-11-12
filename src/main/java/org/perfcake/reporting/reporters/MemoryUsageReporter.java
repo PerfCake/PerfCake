@@ -19,6 +19,7 @@
  */
 package org.perfcake.reporting.reporters;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
 import org.perfcake.common.TimestampedRecord;
 import org.perfcake.reporting.Measurement;
@@ -29,9 +30,8 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.util.Utils;
-import org.perfcake.util.agent.AgentThread;
 import org.perfcake.util.agent.PerfCakeAgent;
-import org.perfcake.util.agent.PerfCakeAgent.Memory;
+import org.perfcake.util.agent.PerfCakeAgent.Command;
 
 import org.apache.log4j.Logger;
 
@@ -132,6 +132,20 @@ public class MemoryUsageReporter extends AbstractReporter {
     */
    private float memoryTrendSlope = 0;
 
+   /**
+    * The property to make a memory dump, when possible memory leak is detected. The {@link org.perfcake.reporting.reporters.MemoryUsageReporter}
+    * will send a command to {@link org.perfcake.util.agent.PerfCakeAgent} that will create a heap dump.
+    */
+   private boolean dumpMemoryOnLeak = false;
+
+   /**
+    * The name of the memory dump file created by {@link org.perfcake.util.agent.PerfCakeAgent}.
+    */
+   private String memoryDumpFile = null;
+
+   /**
+    * A task that gathers memory data for memory leak detection analysis.
+    */
    private MemoryDataGatheringTask memoryDataGatheringTask = null;
 
    @SuppressWarnings("rawtypes")
@@ -197,10 +211,10 @@ public class MemoryUsageReporter extends AbstractReporter {
    public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       try {
          final Measurement m = newMeasurement();
-         final long used = getMemoryUsage(Memory.USED);
+         final long used = sendAgentCommand(Command.USED.name());
          m.set("Used", (new Quantity<Number>((double) used / BYTES_IN_MIB, "MiB")));
-         m.set("Total", (new Quantity<Number>((double) getMemoryUsage(Memory.TOTAL) / BYTES_IN_MIB, "MiB")));
-         m.set("Max", (new Quantity<Number>((double) getMemoryUsage(Memory.MAX) / BYTES_IN_MIB, "MiB")));
+         m.set("Total", (new Quantity<Number>((double) sendAgentCommand(Command.TOTAL.name()) / BYTES_IN_MIB, "MiB")));
+         m.set("Max", (new Quantity<Number>((double) sendAgentCommand(Command.MAX.name()) / BYTES_IN_MIB, "MiB")));
          if (memoryLeakDetectionEnabled) {
             if (usedMemoryTimeWindow.size() == usedMemoryTimeWindowSize) {
                m.set("UsedTrend", new Quantity<Number>(memoryTrendSlope, "B/s"));
@@ -232,7 +246,7 @@ public class MemoryUsageReporter extends AbstractReporter {
          long used = -1L;
          while (running) {
             try {
-               used = getMemoryUsage(Memory.USED);
+               used = sendAgentCommand(Command.USED.name());
             } catch (IOException e) {
                e.printStackTrace();
             }
@@ -244,9 +258,17 @@ public class MemoryUsageReporter extends AbstractReporter {
             memoryTrendSlope = (float) Utils.computeRegressionTrend(usedMemoryTimeWindow);
             if (usedMemoryTimeWindow.size() == usedMemoryTimeWindowSize && memoryTrendSlope > memoryLeakSlopeThreshold) {
                memoryLeakDetected = true;
-               if (!heapDumpSaved) {
+               if (dumpMemoryOnLeak && !heapDumpSaved) {
                   try {
-                     sendAgentCommand(AgentThread.Commands.HEAPDUMP);
+                     StringBuffer cmd = new StringBuffer();
+                     cmd.append(Command.DUMP.name());
+                     cmd.append(":");
+                     if (memoryDumpFile != null) {
+                        cmd.append(memoryDumpFile);
+                     } else {
+                        cmd.append("dump-" + System.getProperty(PerfCakeConst.TIMESTAMP_PROPERTY) + ".bin");
+                     }
+                     sendAgentCommand(cmd.toString());
                      heapDumpSaved = true;
                   } catch (IOException e) {
                      e.printStackTrace();
@@ -263,37 +285,31 @@ public class MemoryUsageReporter extends AbstractReporter {
 
       }
 
+      /**
+       * Stops the task from running.
+       */
       public void stop() {
          this.running = false;
       }
    }
 
    /**
-    * Gets the memory usage information from the {@link PerfCakeAgent} the reporter is connected to.
-    *
-    * @param type
-    *       {@link Memory} type.
-    * @return Amount of memory type in bytes.
-    * @throws IOException
-    */
-   private long getMemoryUsage(final Memory type) throws IOException {
-      requestWriter.println(type.toString());
-      return Long.valueOf(responseReader.readLine());
-   }
-
-   /**
     * Sends a command to the {@link PerfCakeAgent} the reporter is connected to.
     *
     * @param command
-    *       {@link org.perfcake.util.agent.AgentThread.Commands} command.
+    *       {@link org.perfcake.util.agent.PerfCakeAgent.Command} command.
     * @return Command response code.
     * @throws IOException
     */
-   private long sendAgentCommand(final AgentThread.Commands command) throws IOException {
-      log.info("sending " + command.toString());
-      requestWriter.println(command.toString());
+   private long sendAgentCommand(final String command) throws IOException {
+      if (log.isDebugEnabled()) {
+         log.debug("sending " + command);
+      }
+      requestWriter.println(command);
       long retVal = Long.valueOf(responseReader.readLine());
-      log.info("received " + retVal);
+      if (log.isDebugEnabled()) {
+         log.debug("received " + retVal);
+      }
       return retVal;
    }
 
@@ -415,5 +431,45 @@ public class MemoryUsageReporter extends AbstractReporter {
    public MemoryUsageReporter setMemoryLeakDetectionMonitoringPeriod(long memoryLeakDetectionMonitoringPeriod) {
       this.memoryLeakDetectionMonitoringPeriod = memoryLeakDetectionMonitoringPeriod;
       return this;
+   }
+
+   /**
+    * Returns a the name of the memory dump file created by {@link org.perfcake.util.agent.PerfCakeAgent}.
+    *
+    * @return Name of the memory dump file.
+    */
+   public String getMemoryDumpFile() {
+      return memoryDumpFile;
+   }
+
+   /**
+    * Sets a the name of the memory dump file created by {@link org.perfcake.util.agent.PerfCakeAgent}.
+    *
+    * @param memoryDumpFile
+    *       Memory dump file name.
+    */
+   public void setMemoryDumpFile(final String memoryDumpFile) {
+      this.memoryDumpFile = memoryDumpFile;
+   }
+
+   /**
+    * Returns a value of the property to make a memory dump, when possible memory leak is detected. The {@link org.perfcake.reporting.reporters.MemoryUsageReporter}
+    * will send a command to {@link org.perfcake.util.agent.PerfCakeAgent} that will create a heap dump.
+    *
+    * @return <code>true</code> if the memory dump on leak is enabled. <code>false</code> otherwise.
+    */
+   public boolean isDumpMemoryOnLeak() {
+      return dumpMemoryOnLeak;
+   }
+
+   /**
+    * Sets the value of the property to make a memory dump, when possible memory leak is detected. The {@link org.perfcake.reporting.reporters.MemoryUsageReporter}
+    * will send a command to {@link org.perfcake.util.agent.PerfCakeAgent} that will create a heap dump.
+    *
+    * @param dumpMemoryOnLeak
+    *       Enables or disables the memory dump on leak.
+    */
+   public void setDumpMemoryOnLeak(final boolean dumpMemoryOnLeak) {
+      this.dumpMemoryOnLeak = dumpMemoryOnLeak;
    }
 }
