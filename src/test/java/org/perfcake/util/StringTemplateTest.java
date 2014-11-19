@@ -23,7 +23,10 @@ import org.apache.commons.lang.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Field;
 import java.util.Properties;
+
+import httl.Template;
 
 public class StringTemplateTest {
 
@@ -61,26 +64,49 @@ public class StringTemplateTest {
 
    @Test
    public void testEscapeAtStringBeginningAndDuplicateNames() {
-      // make sure that escaped pattern at the string beginning is properly ignored
-      final String expression = "\\@{hello} @{hello}";
-      final StringTemplate template = new StringTemplate(expression);
+      // make sure that escaped pattern at the string beginning is properly ignored and that escaped duplicates are skipped too
+      String expression = "\\@{hello} @{hello} \\@{hello}";
+      StringTemplate template = new StringTemplate(expression);
       final Properties vars = new Properties();
 
       vars.setProperty("hello", "42");
-      final String result = template.toString(vars); // pass the variables later
-      Assert.assertEquals(result, "\\@{hello} 42");
+      String result = template.toString(vars); // pass the variables later
+      Assert.assertEquals(result, "@{hello} 42 @{hello}");
+
+      // the same for the dollar sign
+      System.setProperty("test_prop", "42");
+      expression = "\\${hello} ${props.test_prop} \\${hello}";
+      template = new StringTemplate(expression);
+      result = template.toString(vars);
+      Assert.assertEquals(result, "${hello} 42 ${hello}");
    }
 
    @Test
-   public void testDuplicateNames() {
+   public void testPatternEscaping() {
       // make sure that escaped pattern at the string beginning is properly ignored
       System.setProperty("test_prop", "kuk");
-      final String expression = "\\${hello} @{hello} ${props.test_prop}";
+      final String expression = "\\${hello} @{hello} ${props.test_prop} \\@{hello}";
       final StringTemplate template = new StringTemplate(expression);
       final Properties vars = new Properties();
 
       vars.setProperty("hello", "42");
       final String result = template.toString(vars); // pass the variables later
-      Assert.assertEquals(result, "\\${hello} 42 kuk");
+      Assert.assertEquals(result, "${hello} 42 kuk @{hello}");
+   }
+
+   @Test
+   public void testPatternEfficiency() throws NoSuchFieldException, IllegalAccessException {
+      final String expression = "${1 + 1}";
+      final StringTemplate template = new StringTemplate(expression);
+      String result = template.toString();
+
+      Assert.assertEquals(result, "2");
+      Field templateField = StringTemplate.class.getDeclaredField("template");
+      templateField.setAccessible(true);
+      Assert.assertNull(templateField.get(template));
+
+      // subsequent calls must return the same without using the template engine as we did not use any @{property}
+      result = template.toString();
+      Assert.assertEquals(result, "2");
    }
 }

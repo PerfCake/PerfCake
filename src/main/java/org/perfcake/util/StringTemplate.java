@@ -48,6 +48,8 @@ public class StringTemplate {
    private static final String PREFIX = "#set(Map env)#set(Map props)";
    private static final int PREFIX_TOKENS = 2;
    private static final String PROPERTY_PATTERN = "[^\\\\](@\\{([^@\\$\\{]+)})";
+   private static final String ESCAPED_PROPERTY_PATTERN = "([\\\\](@\\{[^@\\$\\{]+}))";
+   private static final String ESCAPED_PATTERN = "(\\$(\\{[^\\$\\{]+}))";
    private static final Logger log = Logger.getLogger(StringTemplate.class);
 
    private Template template = null;
@@ -70,41 +72,28 @@ public class StringTemplate {
       }
 
       try {
-         final String firstPassTemplate = firstPass(template);
-         final Template tmpTemplate = parseTemplate(firstPassTemplate);
-
-         if (hasPlaceholders(tmpTemplate)) {
-            this.template = tmpTemplate;
-         } else {
-            this.originalTemplate = firstPassTemplate;
-         }
+         preParse(template);
       } catch (ParseException pe) {
          log.error("Unable to parse template. Continue with un-parsed content: ", pe);
       }
    }
 
-   /**
-    * During the first pass, the values of ${property} placeholders are replaced immediately.
-    * All occurrences of #{property} are replaced with ${property} and the resulting string is returned for the second pass.
-    * @param template The original template
-    * @return The template with first pass placeholders replaced and second pass placeholders ready for further parsing.
-    */
-   private String firstPass(final String template) throws ParseException {
-      final Template tmpTemplate = parseTemplate(template);
-
-      String parsed = renderTemplate(tmpTemplate, vars);
-      final Matcher matcher = Pattern.compile(PROPERTY_PATTERN).matcher(parsed);
-
-      matcher.reset();
-      while (matcher.find()) {
-         parsed = parsed.substring(0, matcher.start(1)) + "${" + matcher.group(2) + "}" + parsed.substring(matcher.end(1));
-      }
-
-      return parsed;
+   public String toString() {
+      return renderTemplate(vars);
    }
 
-   private boolean hasPlaceholders(final Template template) {
-      return template.getChildren().size() > PREFIX_TOKENS + 1;
+   @SuppressWarnings("unchecked")
+   public String toString(Properties properties) {
+      Map localVars = new HashMap(vars);
+      if (properties != null) {
+         localVars.putAll(properties);
+      }
+
+      return renderTemplate(localVars);
+   }
+
+   public static String parseTemplate(final String template, final Properties properties) {
+      return new StringTemplate(template, properties).toString(properties);
    }
 
    private Template parseTemplate(final String template) throws ParseException {
@@ -126,29 +115,56 @@ public class StringTemplate {
       return originalTemplate;
    }
 
-   public String toString() {
-      return renderTemplate(vars);
-   }
-
-   @SuppressWarnings("unchecked")
-   public String toString(Properties properties) {
-      Map localVars = new HashMap(vars);
-      if (properties != null) {
-         localVars.putAll(properties);
-      }
-
-      return renderTemplate(localVars);
-   }
-
-   public static String parseTemplate(final String template, final Properties properties) {
-      return new StringTemplate(template, properties).toString(properties);
-   }
-
    private Engine getEngine() {
       Properties config = new Properties();
       config.setProperty("value.filters", "");
       config.setProperty("preload", "false");
 
       return Engine.getEngine(config);
+   }
+
+   /**
+    * During the first pass, the values of ${property} placeholders are replaced immediately.
+    * All occurrences of #{property} are replaced with ${property} and the resulting string is returned for the second pass.
+    * @param template The original template
+    * @return The template with first pass placeholders replaced and second pass placeholders ready for further parsing.
+    */
+   private void preParse(final String template) throws ParseException {
+      final Template tmpTemplate = parseTemplate(template);
+
+      // first replace all ${property} with their values
+      String parsed = " " + renderTemplate(tmpTemplate, vars); // patterns need to check one character ahead, if this was the string beginning, the first property could have been skipped
+
+      // are there any @{property} patterns? if not, we are done and the result can stay as is, else we must handle the @ sign
+      Pattern propertyPattern = Pattern.compile(PROPERTY_PATTERN);
+      Matcher propertyMatcher = propertyPattern.matcher(parsed);
+      if (propertyMatcher.find()) {
+
+         // after the first render, we must return back the escape sign to original \${property} as these backslashes were removed
+         Matcher matcher = Pattern.compile(ESCAPED_PATTERN).matcher(parsed);
+         int correction = 0; // we are adding characters to the string, while the matcher works with the original version
+         while (matcher.find()) {
+            parsed = parsed.substring(0, matcher.start(1) + correction) + "\\$" + matcher.group(2) + parsed.substring(matcher.end(1) + correction);
+            correction++;
+         }
+         // now switch @{property} to ${property}
+         propertyMatcher = propertyPattern.matcher(parsed); // refresh to the updated string
+         while (propertyMatcher.find()) {
+            parsed = parsed.substring(0, propertyMatcher.start(1)) + "${" + propertyMatcher.group(2) + "}" + parsed.substring(propertyMatcher.end(1));
+         }
+
+         // also change \@{property} to @{property} to achieve the same behaviour as for \${property}
+         matcher = Pattern.compile(ESCAPED_PROPERTY_PATTERN).matcher(parsed);
+         matcher.reset();
+         correction = 0; // we are removing characters from the string, while the matcher works with the original version
+         while (matcher.find()) {
+            parsed = parsed.substring(0, matcher.start(1) - correction) + matcher.group(2) + parsed.substring(matcher.end(1) - correction);
+            correction++; // we removed one character, this must be considered during the next loop
+         }
+
+         this.template = parseTemplate(parsed.substring(1)); // remove the space we added at the beginning
+      } else {
+         this.originalTemplate = parsed.substring(1); // remove the space we added at the beginning
+      }
    }
 }
