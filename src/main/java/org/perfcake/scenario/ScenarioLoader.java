@@ -35,7 +35,7 @@ import java.net.URL;
  */
 public class ScenarioLoader {
 
-   public static final Logger log = Logger.getLogger(ScenarioBuilder.class);
+   private static final Logger log = Logger.getLogger(ScenarioBuilder.class);
 
    /**
     * Loads {@link org.perfcake.scenario.Scenario} from the location specified with the system property <code>-Dscenario=<scenario name></code>

@@ -39,7 +39,7 @@ import groovy.lang.Binding;
  */
 public class DSLFactory implements ScenarioFactory {
 
-   public static final Logger log = Logger.getLogger(DSLFactory.class);
+   private static final Logger log = Logger.getLogger(DSLFactory.class);
    private String scenarioDefinition;
    private Scenario scenario = null;
 

@@ -42,7 +42,7 @@ public class StringTemplateTest {
 
    @Test
    public void testStringTemplateBasic() {
-      String expression = "${hello} ${1+1} ${ahoj||1} ${hello - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}";
+      String expression = "@{hello} ${1+1} @{ahoj||1} @{hello - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}";
       StringTemplate template = new StringTemplate(expression);
 
       Properties vars = new Properties();
@@ -57,5 +57,30 @@ public class StringTemplateTest {
    public void testNoTemplate() {
       final String noTemplate = "Karel Pilka";
       Assert.assertEquals(new StringTemplate(noTemplate).toString(), noTemplate);
+   }
+
+   @Test
+   public void testEscapeAtStringBeginningAndDuplicateNames() {
+      // make sure that escaped pattern at the string beginning is properly ignored
+      final String expression = "\\@{hello} @{hello}";
+      final StringTemplate template = new StringTemplate(expression);
+      final Properties vars = new Properties();
+
+      vars.setProperty("hello", "42");
+      final String result = template.toString(vars); // pass the variables later
+      Assert.assertEquals(result, "\\@{hello} 42");
+   }
+
+   @Test
+   public void testDuplicateNames() {
+      // make sure that escaped pattern at the string beginning is properly ignored
+      System.setProperty("test_prop", "kuk");
+      final String expression = "\\${hello} @{hello} ${props.test_prop}";
+      final StringTemplate template = new StringTemplate(expression);
+      final Properties vars = new Properties();
+
+      vars.setProperty("hello", "42");
+      final String result = template.toString(vars); // pass the variables later
+      Assert.assertEquals(result, "\\${hello} 42 kuk");
    }
 }
