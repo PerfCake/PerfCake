@@ -80,7 +80,7 @@ import javax.xml.validation.SchemaFactory;
  */
 public class XMLFactory implements ScenarioFactory {
 
-   public static final Logger log = Logger.getLogger(XMLFactory.class);
+   private static final Logger log = Logger.getLogger(XMLFactory.class);
    private org.perfcake.model.Scenario scenarioModel;
    private String scenarioConfig;
    private Scenario scenario = null;

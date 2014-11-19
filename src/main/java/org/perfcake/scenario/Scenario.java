@@ -38,7 +38,7 @@ import java.util.List;
  */
 public class Scenario {
 
-   public static final Logger log = Logger.getLogger(Scenario.class);
+   private static final Logger log = Logger.getLogger(Scenario.class);
    private AbstractMessageGenerator generator;
    private MessageSenderManager messageSenderManager;
    private ReportManager reportManager;
