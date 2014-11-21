@@ -124,7 +124,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * the memory usage is measured because it will have a significant impact on the measured system and naturally the
     * measured results too. It is disabled (set to <code>false</code>) by default.
     */
-   private boolean performGCOnMemoryUsage = false;
+   private boolean performGcOnMemoryUsage = false;
 
    /**
     * A flag that indicates that a possible memory leak has been detected.
@@ -220,7 +220,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       try {
          final Measurement m = newMeasurement();
-         if(performGCOnMemoryUsage){
+         if(performGcOnMemoryUsage){
             sendAgentCommand(Command.GC.name());
          }
          final long used = sendAgentCommand(Command.USED.name());
@@ -491,8 +491,8 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * @return <code>true</code> if the garbage collection feature is enabled, <code>false</code> otherwise.
     */
-   public boolean isPerformGCOnMemoryUsage() {
-      return performGCOnMemoryUsage;
+   public boolean isPerformGcOnMemoryUsage() {
+      return performGcOnMemoryUsage;
    }
 
    /**
@@ -504,10 +504,10 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * It is disabled by default.
     *
-    * @param performGCOnMemoryUsage
+    * @param performGcOnMemoryUsage
     *       <code>true</code> to enable the feature. The <code>false</code> otherwise.
     */
-   public void setPerformGCOnMemoryUsage(final boolean performGCOnMemoryUsage) {
-      this.performGCOnMemoryUsage = performGCOnMemoryUsage;
+   public void setPerformGcOnMemoryUsage(final boolean performGcOnMemoryUsage) {
+      this.performGcOnMemoryUsage = performGcOnMemoryUsage;
    }
 }
