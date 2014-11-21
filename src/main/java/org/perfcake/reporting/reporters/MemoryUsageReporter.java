@@ -118,6 +118,15 @@ public class MemoryUsageReporter extends AbstractReporter {
    private long memoryLeakDetectionMonitoringPeriod = 500L;
 
    /**
+    * The property is used to enable/disable performing garbage collection each time the memory usage of the
+    * tested system is measured and published.
+    * Since the garbage collection is CPU intensive operation be careful to enable it and to how often
+    * the memory usage is measured because it will have a significant impact on the measured system and naturally the
+    * measured results too. It is disabled (set to <code>false</code>) by default.
+    */
+   private boolean performGCOnMemoryUsage = false;
+
+   /**
     * A flag that indicates that a possible memory leak has been detected.
     */
    private boolean memoryLeakDetected = false;
@@ -211,6 +220,9 @@ public class MemoryUsageReporter extends AbstractReporter {
    public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       try {
          final Measurement m = newMeasurement();
+         if(performGCOnMemoryUsage){
+            sendAgentCommand(Command.GC.name());
+         }
          final long used = sendAgentCommand(Command.USED.name());
          m.set("Used", (new Quantity<Number>((double) used / BYTES_IN_MIB, "MiB")));
          m.set("Total", (new Quantity<Number>((double) sendAgentCommand(Command.TOTAL.name()) / BYTES_IN_MIB, "MiB")));
@@ -297,7 +309,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * Sends a command to the {@link PerfCakeAgent} the reporter is connected to.
     *
     * @param command
-    *       {@link org.perfcake.util.agent.PerfCakeAgent.Command} command.
+    *       {@link org.perfcake.util.agent.PerfCakeAgent} command.
     * @return Command response code.
     * @throws IOException
     */
@@ -471,5 +483,31 @@ public class MemoryUsageReporter extends AbstractReporter {
     */
    public void setDumpMemoryOnLeak(final boolean dumpMemoryOnLeak) {
       this.dumpMemoryOnLeak = dumpMemoryOnLeak;
+   }
+
+   /**
+    * Return the value of the property that indicate if performing garbage collection (each time the memory usage of the
+    * tested system is measured and published) is enabled or disabled.
+    *
+    * @return <code>true</code> if the garbage collection feature is enabled, <code>false</code> otherwise.
+    */
+   public boolean isPerformGCOnMemoryUsage() {
+      return performGCOnMemoryUsage;
+   }
+
+   /**
+    * The property is used to enable/disable performing garbage collection each time the memory usage of the
+    * tested system is measured and published.
+    * Since the garbage collection is CPU intensive operation be careful to enable it and to how often
+    * the memory usage is measured because it will have a significant impact on the measured system and naturally the
+    * measured results too.
+    *
+    * It is disabled by default.
+    *
+    * @param performGCOnMemoryUsage
+    *       <code>true</code> to enable the feature. The <code>false</code> otherwise.
+    */
+   public void setPerformGCOnMemoryUsage(final boolean performGCOnMemoryUsage) {
+      this.performGCOnMemoryUsage = performGCOnMemoryUsage;
    }
 }
