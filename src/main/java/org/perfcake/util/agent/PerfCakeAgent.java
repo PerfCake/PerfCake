@@ -58,7 +58,7 @@ public class PerfCakeAgent {
     * @author Pavel Macík <pavel.macik@gmail.com>
     */
    public enum Command {
-      FREE, USED, TOTAL, MAX, DUMP
+      FREE, USED, TOTAL, MAX, DUMP, GC
    }
 
    /**
