@@ -116,6 +116,31 @@ public class MemoryUsageReporterTest {
    }
 
    @Test
+   public void testMemoryUsageReporterWithoutMemoryLeakDetectionWithGC() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+      final Properties reporterProperties = new Properties();
+      reporterProperties.put("agentHostname", AGENT_HOSTNAME);
+      reporterProperties.put("agentPort", AGENT_PORT);
+      reporterProperties.put("performGCOnMemoryUsage", "true");
+
+      final List<Measurement> measurementList = testMemoryUsageReporter(reporterProperties);
+
+      final int mls = measurementList.size();
+      Assert.assertEquals(mls, 11, "Number of Measurement sent to destination");
+      for (final Measurement m : measurementList) {
+         Assert.assertNotNull(m.get("Used"), "Used memory result");
+         Assert.assertNotNull(m.get("Total"), "Total memory result");
+         Assert.assertNotNull(m.get("Max"), "Max memory result");
+      }
+      final Measurement firstM = measurementList.get(0);
+      final Measurement lastM = measurementList.get(mls - 1);
+
+      Assert.assertNull(firstM.get("UsedTrend"), "No used memory trend (first measurement)");
+      Assert.assertNull(firstM.get("MemoryLeak"), "No memory leak detection (first measurement)");
+      Assert.assertNull(lastM.get("UsedTrend"), "No used memory trend (last measurement)");
+      Assert.assertNull(lastM.get("MemoryLeak"), "No memory leak detection (last measurement)");
+   }
+
+   @Test
    public void testMemoryUsageReporterWithMemoryLeakDetectionWithHeapDump() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
