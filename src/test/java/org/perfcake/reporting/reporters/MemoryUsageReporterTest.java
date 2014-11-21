@@ -148,7 +148,7 @@ public class MemoryUsageReporterTest {
       reporterProperties.put("memoryLeakSlopeThreshold", "1"); // 1 byte per second (that should cause positive memory leak detection)
       reporterProperties.put("usedMemoryTimeWindowSize", "3");
       reporterProperties.put("memoryLeakDetectionEnabled", "true");
-      reporterProperties.put("dumpMemoryOnLeak", "true");
+      reporterProperties.put("memoryDumpOnLeak", "true");
 
       final File dumpFile = new File("test-output/heapdump-" + System.currentTimeMillis() + ".bin");
       reporterProperties.put("memoryDumpFile", dumpFile.getAbsoluteFile());
