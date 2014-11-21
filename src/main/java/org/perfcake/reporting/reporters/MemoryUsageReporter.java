@@ -145,7 +145,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * The property to make a memory dump, when possible memory leak is detected. The {@link org.perfcake.reporting.reporters.MemoryUsageReporter}
     * will send a command to {@link org.perfcake.util.agent.PerfCakeAgent} that will create a heap dump.
     */
-   private boolean dumpMemoryOnLeak = false;
+   private boolean memoryDumpOnLeak = false;
 
    /**
     * The name of the memory dump file created by {@link org.perfcake.util.agent.PerfCakeAgent}.
@@ -270,7 +270,7 @@ public class MemoryUsageReporter extends AbstractReporter {
             memoryTrendSlope = (float) Utils.computeRegressionTrend(usedMemoryTimeWindow);
             if (usedMemoryTimeWindow.size() == usedMemoryTimeWindowSize && memoryTrendSlope > memoryLeakSlopeThreshold) {
                memoryLeakDetected = true;
-               if (dumpMemoryOnLeak && !heapDumpSaved) {
+               if (memoryDumpOnLeak && !heapDumpSaved) {
                   try {
                      StringBuffer cmd = new StringBuffer();
                      cmd.append(Command.DUMP.name());
@@ -470,19 +470,19 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * @return <code>true</code> if the memory dump on leak is enabled. <code>false</code> otherwise.
     */
-   public boolean isDumpMemoryOnLeak() {
-      return dumpMemoryOnLeak;
+   public boolean isMemoryDumpOnLeak() {
+      return memoryDumpOnLeak;
    }
 
    /**
     * Sets the value of the property to make a memory dump, when possible memory leak is detected. The {@link org.perfcake.reporting.reporters.MemoryUsageReporter}
     * will send a command to {@link org.perfcake.util.agent.PerfCakeAgent} that will create a heap dump.
     *
-    * @param dumpMemoryOnLeak
+    * @param memoryDumpOnLeak
     *       Enables or disables the memory dump on leak.
     */
-   public void setDumpMemoryOnLeak(final boolean dumpMemoryOnLeak) {
-      this.dumpMemoryOnLeak = dumpMemoryOnLeak;
+   public void setMemoryDumpOnLeak(final boolean memoryDumpOnLeak) {
+      this.memoryDumpOnLeak = memoryDumpOnLeak;
    }
 
    /**
