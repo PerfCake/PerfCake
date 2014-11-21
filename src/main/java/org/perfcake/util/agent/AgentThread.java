@@ -130,9 +130,13 @@ public class AgentThread implements Runnable {
                      ManagementFactoryHelper.getDiagnosticMXBean().dumpHeap(dumpName, true);
                      log("Heap dump saved to " + dumpFile.getAbsolutePath());
                      response = "0";
+                  } else if (PerfCakeAgent.Command.GC.name().equals(command)) {
+                     System.gc();
+                     response = "0";
                   }
                } catch (IllegalArgumentException iae) {
                   err(iae.getLocalizedMessage());
+                  response = "-1";
                }
                pw.println(response);
             }
