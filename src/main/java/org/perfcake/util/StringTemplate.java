@@ -104,6 +104,10 @@ public class StringTemplate {
       return renderTemplate(this.template, variables);
    }
 
+   public boolean hasPlaceholders() {
+      return template != null;
+   }
+
    private String renderTemplate(final Template template, final Map variables) {
       if (template != null) {
          try {

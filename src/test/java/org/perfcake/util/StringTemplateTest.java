@@ -26,8 +26,6 @@ import org.testng.annotations.Test;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
-import httl.Template;
-
 public class StringTemplateTest {
 
    @Test
@@ -59,7 +57,9 @@ public class StringTemplateTest {
    @Test
    public void testNoTemplate() {
       final String noTemplate = "Karel Pilka";
-      Assert.assertEquals(new StringTemplate(noTemplate).toString(), noTemplate);
+      final StringTemplate template = new StringTemplate(noTemplate);
+      Assert.assertEquals(template.toString(), noTemplate);
+      Assert.assertFalse(template.hasPlaceholders());
    }
 
    @Test
@@ -68,6 +68,8 @@ public class StringTemplateTest {
       String expression = "\\@{hello} @{hello} \\@{hello}";
       StringTemplate template = new StringTemplate(expression);
       final Properties vars = new Properties();
+
+      Assert.assertTrue(template.hasPlaceholders());
 
       vars.setProperty("hello", "42");
       String result = template.toString(vars); // pass the variables later
@@ -89,6 +91,8 @@ public class StringTemplateTest {
       final StringTemplate template = new StringTemplate(expression);
       final Properties vars = new Properties();
 
+      Assert.assertTrue(template.hasPlaceholders());
+
       vars.setProperty("hello", "42");
       final String result = template.toString(vars); // pass the variables later
       Assert.assertEquals(result, "${hello} 42 kuk @{hello}");
@@ -100,6 +104,8 @@ public class StringTemplateTest {
       final StringTemplate template = new StringTemplate(expression);
       String result = template.toString();
 
+      Assert.assertFalse(template.hasPlaceholders());
+
       Assert.assertEquals(result, "2");
       Field templateField = StringTemplate.class.getDeclaredField("template");
       templateField.setAccessible(true);
@@ -108,5 +114,14 @@ public class StringTemplateTest {
       // subsequent calls must return the same without using the template engine as we did not use any @{property}
       result = template.toString();
       Assert.assertEquals(result, "2");
+   }
+
+   @Test
+   public void testNotYetDefinedProperty() {
+      final String expression = "${1 + 1} @{undefined}";
+      final StringTemplate template = new StringTemplate(expression);
+
+      Assert.assertTrue(template.hasPlaceholders());
+      // we cannot do more as the property is not defined, anything else would lead to an error
    }
 }
