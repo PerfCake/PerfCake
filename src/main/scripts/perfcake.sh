@@ -34,7 +34,7 @@ mingw=false
 case "`uname`" in
   CYGWIN*) cygwin=true ;;
   MINGW*) mingw=true;;
-  Darwin*) darwin=true 
+  Darwin*) darwin=true
            if [ -z "$JAVA_VERSION" ] ; then
              JAVA_VERSION="CurrentJDK"
            fi
@@ -147,6 +147,6 @@ cd "$PERFCAKE_HOME"
 
 # Run PerfCake
 exec "$JAVACMD" \
-  -Djava.ext.dirs="${JAVA_HOME}/lib/ext:${JAVA_HOME}/jre/lib/ext:$PERFCAKE_HOME"/lib/ext \
+  -Djava.ext.dirs="${JAVA_HOME}/lib/ext:${JAVA_HOME}/jre/lib/ext:$PERFCAKE_HOME/lib/ext" \
   -jar "${PERFCAKE_HOME}"/lib/perfcake*.jar \
   "$@"
