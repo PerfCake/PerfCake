@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@
  */
 package org.perfcake.message;
 
+import org.perfcake.util.StringTemplate;
 import org.perfcake.util.Utils;
 import org.perfcake.util.properties.DefaultPropertyGetter;
 
@@ -39,22 +40,20 @@ import java.util.regex.Pattern;
 public class MessageTemplate implements Serializable {
    private static final long serialVersionUID = 6172258079690233417L;
 
-   private static final String propertyPattern = "[^\\\\](#\\{([^#\\{:]+)(:[^#\\{:]*)?})";
-
    private transient Logger log = Logger.getLogger(MessageTemplate.class);
 
    private final Message message;
    private final long multiplicity;
    private final List<String> validatorIds;
-   private transient Pattern pattern;
-
-   public Matcher getMatcher(String text) {
-      return pattern != null ? pattern.matcher(text) : null;
-   }
+   private final boolean isStringMessage;
+   private transient StringTemplate template;
 
    public MessageTemplate(final Message message, final long multiplicity, final List<String> validatorIds) {
       this.message = message;
-      preparePattern();
+      this.isStringMessage = message.getPayload() instanceof String;
+      if (isStringMessage) {
+         prepareTemplate();
+      }
       this.multiplicity = multiplicity;
       this.validatorIds = validatorIds;
    }
@@ -64,12 +63,10 @@ public class MessageTemplate implements Serializable {
    }
 
    public Message getFilteredMessage(final Properties props) {
-      if (pattern != null) {
+      if (isStringMessage && template.hasPlaceholders()) {
          final Message m = MessageFactory.getMessage();
-         String text = this.getMessage().getPayload().toString();
-         text = Utils.filterProperties(text, getMatcher(text), new DefaultPropertyGetter(props));
 
-         m.setPayload(text);
+         m.setPayload(template.toString(props));
          m.setHeaders(message.getHeaders());
          m.setProperties(message.getProperties());
 
@@ -79,22 +76,19 @@ public class MessageTemplate implements Serializable {
       }
    }
 
-   private void preparePattern() {
-      this.pattern = null;
-
+   private void prepareTemplate() {
       // find out if there are any attributes in the text message to be replaced
-      if (message.getPayload() instanceof String) {
-         final String filteredString = (String) message.getPayload();
-         final Pattern pattern = Pattern.compile(propertyPattern);
-         final Matcher matcher = pattern.matcher(filteredString);
-         if (matcher.find()) {
-            if (log.isDebugEnabled()) {
-               log.debug("Created matching pattern for the message payload with properties.");
-            }
-            this.pattern = pattern;
-         }
-      }
+      final StringTemplate tmpTemplate = new StringTemplate((String) message.getPayload());
 
+      if (tmpTemplate.hasPlaceholders()) {
+         if (log.isDebugEnabled()) {
+            log.debug("Created matching pattern for the message payload with properties.");
+         }
+         this.template = tmpTemplate;
+      } else {
+         // return the rendered template back, it might not have any placeholders now, but there could have been some math replacements etc.
+         message.setPayload(tmpTemplate.toString());
+      }
    }
 
    public Long getMultiplicity() {
@@ -103,5 +97,13 @@ public class MessageTemplate implements Serializable {
 
    public List<String> getValidatorIds() {
       return validatorIds;
+   }
+
+   // fill in the transient field
+   private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
+      stream.defaultReadObject();
+      if (isStringMessage) {
+         prepareTemplate();
+      }
    }
 }

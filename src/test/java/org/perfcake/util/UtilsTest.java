@@ -67,6 +67,11 @@ public class UtilsTest {
 
       Assert.assertEquals(Utils.getProperty(TEST_KEY, DEFAULT_VALUE), TEST_VALUE);
 
+      Assert.assertEquals(Utils.getProperty("props." + TEST_KEY), TEST_VALUE);
+      Assert.assertEquals(Utils.getProperty("env.JAVA_HOME"), System.getenv("JAVA_HOME"));
+      Assert.assertEquals(Utils.getProperty("env." + TEST_KEY, "non"), "non");
+      Assert.assertEquals(Utils.getProperty("props.JAVA_HOME", "non"), "non");
+
       Map<String, String> env = System.getenv();
       if (!env.isEmpty()) {
          Entry<String, String> first = env.entrySet().iterator().next();
