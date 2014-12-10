@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 
 import java.util.List;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
@@ -107,6 +108,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    @Override
    public void generate() throws Exception {
       log.info("Starting to generate...");
+      semaphore = new Semaphore(threadQueueSize);
       executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(preThreadCount);
       currentPhase = Phase.PRE;
       setThreads(preThreadCount);
