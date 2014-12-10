@@ -276,12 +276,12 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
       return this;
    }
 
-   public int getMaxThreadCount() {
+   public int getMainThreadCount() {
       return mainThreadCount;
    }
 
-   public RampUpDownGenerator setMaxThreadCount(int maxThreadCount) {
-      this.mainThreadCount = maxThreadCount;
+   public RampUpDownGenerator setMainThreadCount(int mainThreadCount) {
+      this.mainThreadCount = mainThreadCount;
       return this;
    }
 }
