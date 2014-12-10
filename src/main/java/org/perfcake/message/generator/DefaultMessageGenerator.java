@@ -59,7 +59,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     */
    protected int threadQueueSize = 1000; // default
 
-   private Semaphore semaphore;
+   protected Semaphore semaphore;
 
    @Override
    public void setReportManager(final ReportManager reportManager) {
