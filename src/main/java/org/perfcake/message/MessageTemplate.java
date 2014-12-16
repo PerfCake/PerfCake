@@ -63,7 +63,7 @@ public class MessageTemplate implements Serializable {
    }
 
    public Message getFilteredMessage(final Properties props) {
-      if (isStringMessage && template.hasPlaceholders()) {
+      if (isStringMessage && template != null && template.hasPlaceholders()) {
          final Message m = MessageFactory.getMessage();
 
          m.setPayload(template.toString(props));
