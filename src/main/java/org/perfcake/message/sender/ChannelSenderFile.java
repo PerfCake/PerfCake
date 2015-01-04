@@ -19,9 +19,15 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
+import org.perfcake.message.Message;
+import org.perfcake.reporting.MeasurementUnit;
+
+import java.io.Serializable;
+import java.util.Map;
+
 /**
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  */
-public class ChannelSenderFile {
-
+public class ChannelSenderFile extends ChannelSender {
 }
