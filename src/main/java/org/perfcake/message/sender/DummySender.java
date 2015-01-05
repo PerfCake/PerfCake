@@ -19,13 +19,13 @@
  */
 package org.perfcake.message.sender;
 
+import org.apache.log4j.Logger;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
-import org.apache.log4j.Logger;
-
 import java.io.Serializable;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * This sender is intended to work as a dummy sender and to be used for
@@ -41,6 +41,11 @@ public class DummySender extends AbstractSender {
     * The sender's logger.
     */
    private static final Logger log = Logger.getLogger(DummySender.class);
+
+   /**
+    * Iteration counter (how many times the doSend method has been called).
+    */
+   private static AtomicLong counter = new AtomicLong(0);
 
    /**
     * The delay duration to simulate a asonchronous waiting.
@@ -80,11 +85,23 @@ public class DummySender extends AbstractSender {
     */
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
+      final long count = counter.incrementAndGet();
+
       if (log.isDebugEnabled()) {
          log.debug("Sending to " + target + "...");
+         log.debug("Dummy counter: " + count);
       }
+
       if (delay > 0) {
-         Thread.sleep(delay);
+         final long sleepStart = System.currentTimeMillis();
+         try {
+            Thread.sleep(delay);
+         } catch (InterruptedException ie) { // Snooze
+            final long snooze = delay - (System.currentTimeMillis() - sleepStart);
+            if (snooze > 0) {
+               Thread.sleep(snooze);
+            }
+         }
       }
       // nop
       return (message == null) ? message : message.getPayload();
@@ -110,4 +127,17 @@ public class DummySender extends AbstractSender {
       return this;
    }
 
+   /**
+    * Resets the iteration counter (how many times the doSend method has been called).
+    */
+   public void resetCounter() {
+      counter.set(0);
+   }
+
+   /**
+    * Gets the iteration counter (how many times the doSend method has been called).
+    */
+   public long getCounter() {
+      return counter.get();
+   }
 }

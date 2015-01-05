@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:3.0">
+   <generator class="DefaultMessageGenerator" threads="10">
+      <run type="iteration" value="1"/>
+   </generator>
+   <sender class="DummySender">
+      <property name="target" value="Out there!"/>
+      <property name="delay" value="10000" />
+   </sender>
+   <!--reporting>
+      <reporter class="DummyReporter">
+         <destination class="DummyDestination">
+            <period type="time" value="1000"/>
+         </destination>
+      </reporter>
+   </reporting-->
+   <messages>
+      <message uri="message1.xml"/>
+   </messages>
+</scenario>

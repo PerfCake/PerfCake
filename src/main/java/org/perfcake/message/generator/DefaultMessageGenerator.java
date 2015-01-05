@@ -19,15 +19,12 @@
  */
 package org.perfcake.message.generator;
 
+import org.apache.log4j.Logger;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.ReportManager;
 
-import org.apache.log4j.Logger;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p>
@@ -66,20 +63,43 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       super.setReportManager(reportManager);
    }
 
+   static class DaemonThreadFactory implements ThreadFactory {
+      private static final AtomicInteger poolNumber = new AtomicInteger(1);
+      private final ThreadGroup group;
+      private final AtomicInteger threadNumber = new AtomicInteger(1);
+      private final String namePrefix;
+
+      DaemonThreadFactory() {
+         SecurityManager s = System.getSecurityManager();
+         group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
+         namePrefix = "PerfCake-" + poolNumber.getAndIncrement() + "-sender-thread-";
+      }
+
+      public Thread newThread(final Runnable r) {
+         Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
+         t.setDaemon(true);
+         t.setPriority(8);
+         return t;
+      }
+   }
+
    /**
     * Place a new {@link SenderTask} implementing the message sending to an internal thread queue.
     *
-    * @throws java.lang.InterruptedException
-    *       When it was not possible to place another task because the queue was empty
+    * @return True if and only if the task has been successfully submitted.
+    * @throws java.lang.InterruptedException When it was not possible to place another task because the queue was empty
     */
-   protected void prepareTask() throws InterruptedException {
+   protected boolean prepareTask() throws InterruptedException {
       if (log.isTraceEnabled()) {
          log.trace("Preparing a sender task");
       }
 
       if (semaphore.tryAcquire(monitoringPeriod, TimeUnit.MILLISECONDS)) {
          executorService.submit(newSenderTask(semaphore));
+         return true;
       }
+
+      return false;
    }
 
    /**
@@ -105,8 +125,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    /**
     * Takes care of gentle shutdown of the generator based on the period type.
     *
-    * @throws java.lang.InterruptedException
-    *       When waiting for the termination was interrupted.
+    * @throws java.lang.InterruptedException When waiting for the termination was interrupted.
     */
    protected void shutdown() throws InterruptedException {
       if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // in case of iterations, we wait for the tasks to be finished first
@@ -126,12 +145,22 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    public void generate() throws Exception {
       log.info("Starting to generate...");
       semaphore = new Semaphore(threadQueueSize);
-      executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(getThreads());
+      executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(getThreads(), new DaemonThreadFactory());
       runInfo.setThreads(getThreads());
       setStartTime();
 
-      while (runInfo.isRunning()) {
-         prepareTask();
+      if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) {
+         long i = 0;
+         final long max = runInfo.getDuration().getPeriod();
+         while (i < max) {
+            if (prepareTask()) {
+               i = i + 1; // long does not work with i++
+            }
+         }
+      } else {
+         while (runInfo.isRunning()) {
+            prepareTask();
+         }
       }
 
       log.info("Reached test end.");
@@ -150,8 +179,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    /**
     * Sets the value of monitoringPeriod.
     *
-    * @param monitoringPeriod
-    *       The monitoringPeriod to set.
+    * @param monitoringPeriod The monitoringPeriod to set.
     * @return this
     */
    public DefaultMessageGenerator setMonitoringPeriod(final long monitoringPeriod) {
@@ -180,8 +208,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    /**
     * Sets the the size of the internal thread queue.
     *
-    * @param threadQueueSize
-    *       The thread queue size.
+    * @param threadQueueSize The thread queue size.
     * @return this
     */
    public DefaultMessageGenerator setThreadQueueSize(final int threadQueueSize) {
