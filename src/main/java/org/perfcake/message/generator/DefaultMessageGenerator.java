@@ -91,7 +91,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       executorService.shutdown();
       int active = executorService.getActiveCount(), lastActive = 0;
 
-      while (active > 0 && lastActive != active) { // make sure the threads arSubmitinge finishing
+      while (active > 0 && lastActive != active) { // make sure the threads are finishing
          lastActive = active;
          executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
          active = executorService.getActiveCount();
