@@ -220,7 +220,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
       try {
          final Measurement m = newMeasurement();
-         if(performGcOnMemoryUsage){
+         if (performGcOnMemoryUsage) {
             sendAgentCommand(Command.GC.name());
          }
          final long used = sendAgentCommand(Command.USED.name());
@@ -460,8 +460,9 @@ public class MemoryUsageReporter extends AbstractReporter {
     * @param memoryDumpFile
     *       Memory dump file name.
     */
-   public void setMemoryDumpFile(final String memoryDumpFile) {
+   public MemoryUsageReporter setMemoryDumpFile(final String memoryDumpFile) {
       this.memoryDumpFile = memoryDumpFile;
+      return this;
    }
 
    /**
@@ -481,8 +482,9 @@ public class MemoryUsageReporter extends AbstractReporter {
     * @param memoryDumpOnLeak
     *       Enables or disables the memory dump on leak.
     */
-   public void setMemoryDumpOnLeak(final boolean memoryDumpOnLeak) {
+   public MemoryUsageReporter setMemoryDumpOnLeak(final boolean memoryDumpOnLeak) {
       this.memoryDumpOnLeak = memoryDumpOnLeak;
+      return this;
    }
 
    /**
@@ -507,7 +509,8 @@ public class MemoryUsageReporter extends AbstractReporter {
     * @param performGcOnMemoryUsage
     *       <code>true</code> to enable the feature. The <code>false</code> otherwise.
     */
-   public void setPerformGcOnMemoryUsage(final boolean performGcOnMemoryUsage) {
+   public MemoryUsageReporter setPerformGcOnMemoryUsage(final boolean performGcOnMemoryUsage) {
       this.performGcOnMemoryUsage = performGcOnMemoryUsage;
+      return this;
    }
 }
