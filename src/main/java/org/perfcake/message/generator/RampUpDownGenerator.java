@@ -111,11 +111,14 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
       semaphore = new Semaphore(threadQueueSize);
       executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(preThreadCount);
       currentPhase = Phase.PRE;
+      boolean phaseChanged = true;
       setThreads(preThreadCount);
+      boolean threadCountChanged = true;
       setStartTime();
       long last = 0;
       PeriodType runTimeType = runInfo.getDuration().getPeriodType();
       runInfo.addTag("");
+
 
       mainLoop:
       while (runInfo.isRunning()) {
@@ -135,6 +138,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
             case PRE:
                if (runTime >= preDuration) {
                   currentPhase = Phase.RAMP_UP;
+                  phaseChanged = true;
                   setThreads(getThreads() + rampUpStep);
                   resizeExecutorService(getThreads());
                   last = runTime;
@@ -146,16 +150,19 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
                   if (newThreadCount >= mainThreadCount) {
                      setThreads(mainThreadCount);
                      currentPhase = Phase.MAIN;
+                     phaseChanged = true;
                   } else {
                      setThreads(newThreadCount);
                   }
                   last = runTime;
                   resizeExecutorService(getThreads());
+                  threadCountChanged = true;
                }
                break;
             case MAIN:
                if (runTime - last >= mainDuration) {
                   currentPhase = Phase.RAMP_DOWN;
+                  phaseChanged = true;
                   setThreads(getThreads() - rampDownStep);
                   resizeExecutorService(getThreads());
                   last = runTime;
@@ -174,29 +181,30 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
                         newThreadCount = postThreadCount;
                      }
                      currentPhase = Phase.POST;
+                     phaseChanged = true;
                   }
                   last = runTime;
                   setThreads(newThreadCount);
                   resizeExecutorService(getThreads());
+                  threadCountChanged = true;
                }
                break;
             case POST:
             default:
                break;
          }
-
-         logCurrentPhase(getThreads());
+         if (phaseChanged || threadCountChanged) {
+            if (log.isDebugEnabled()) {
+               log.debug(currentPhase.toString() + " phase [" + getThreads() + " threads]");
+            }
+            phaseChanged = false;
+            threadCountChanged = false;
+         }
          super.prepareTask();
       }
       log.info("Reached test end. Shutting down execution...");
       super.shutdown();
 
-   }
-
-   private void logCurrentPhase(int threads) {
-      if (log.isInfoEnabled()) {
-         log.info(currentPhase.toString() + " phase [" + threads + " threads]");
-      }
    }
 
    private void resizeExecutorService(int threads) throws InterruptedException {
