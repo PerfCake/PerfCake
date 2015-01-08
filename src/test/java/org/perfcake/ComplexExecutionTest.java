@@ -28,13 +28,10 @@ import org.testng.annotations.Test;
  *
  * @author Martin Večera <marvenec@gmail.com>
  */
-public class ComplexExecutionTest {
+public class ComplexExecutionTest extends TestSetup {
 
    @Test
    public void iterationScenarioTest() throws PerfCakeException {
-      System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, getClass().getResource("/scenarios").getPath());
-      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
-
       final Scenario scenario;
       scenario = ScenarioLoader.load("test-iteration-scenario");
       scenario.init();

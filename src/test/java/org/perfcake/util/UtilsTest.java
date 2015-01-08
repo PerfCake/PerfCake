@@ -20,6 +20,7 @@
 package org.perfcake.util;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.TestSetup;
 import org.perfcake.util.properties.DefaultPropertyGetter;
 
 import org.testng.Assert;
@@ -35,7 +36,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class UtilsTest {
+public class UtilsTest extends TestSetup {
 
    private static final String PROPERTY_LOCATION = "property.location";
    private static final String TEST_VALUE = "test.value";
@@ -114,9 +115,6 @@ public class UtilsTest {
 
    @Test
    public void testLocationToUrlWithCheck() throws Exception {
-      System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, new File(getClass().getResource("/scenarios").toURI()).getAbsolutePath());
-      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, new File(getClass().getResource("/messages").toURI()).getAbsolutePath());
-
       URL url = Utils.locationToUrlWithCheck("message1", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", ".txt", ".xml");
       Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
       url = Utils.locationToUrlWithCheck("subdir/subfile", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", ".txt", ".xml");
@@ -129,9 +127,6 @@ public class UtilsTest {
       Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
       url = Utils.locationToUrlWithCheck("non.existing.file.name", "wrong.and.non.existing.property", "bad.value");
       Assert.assertEquals(url.toString(), "file://non.existing.file.name"); // this is not a valid location so the path field of URL doesn't get filled
-
-      System.clearProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY);
-      System.clearProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY);
    }
 
    @Test

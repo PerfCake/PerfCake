@@ -20,6 +20,7 @@
 package org.perfcake.validation;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.TestSetup;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 
@@ -35,12 +36,10 @@ import java.lang.reflect.Field;
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class ValidationIntegrationTest {
+public class ValidationIntegrationTest extends TestSetup {
 
    @Test(enabled = true)
    public void basicIntegrationTest() throws Exception {
-      System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, getClass().getResource("/scenarios").getPath());
-      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
       Scenario scenario = ScenarioLoader.load("test-validation-integration");
 
       // to avoid complicated scenario construction, we relay on public API and dig into it then
@@ -78,6 +77,5 @@ public class ValidationIntegrationTest {
       timeDiff = lastCalled2 - lastCalled;
 
       Assert.assertTrue(timeDiff > 1 && timeDiff < 20, "Validation did not switch to normal speed operation.");
-
    }
 }
