@@ -32,6 +32,8 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
+ * Sender that can send messages through NIO DatagramChannel.
+ *
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  * @author Dominik Hanák <domin.hanak@gmail.com>
  */
