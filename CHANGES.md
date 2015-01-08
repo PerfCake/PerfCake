@@ -7,6 +7,7 @@ Release 4.0 (next release)
 Features
 --------
 * https://github.com/PerfCake/PerfCake/issues/160 - Enable possibility to perform a garbage collection for MemoryUsageReporter (via **performGcOnMemoryUsage** boolean property)
+* https://github.com/PerfCake/PerfCake/issues/167 - Extend RegExpValidator to be able to configure Pattern.compile flags
 
 Bug Fixes
 ---------
