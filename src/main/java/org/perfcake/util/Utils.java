@@ -226,6 +226,7 @@ public class Utils {
 
       // if there is no protocol specified, try some file locations
       if (!uri.contains("://")) {
+         boolean found = false;
          Path p = Paths.get(uri);
 
          if (!Files.exists(p)) {
@@ -233,7 +234,7 @@ public class Utils {
 
             if (!Files.exists(p)) {
                if (defaultSuffix != null && defaultSuffix.length > 0) {
-                  boolean found = false;
+//                  boolean found = false;
 
                   for (String suffix : defaultSuffix) {
                      p = Paths.get(Utils.getProperty(defaultLocationProperty, defaultLocation), uri + suffix);
@@ -242,18 +243,19 @@ public class Utils {
                         break;
                      }
                   }
-
-                  if (found) {
-                     uri = p.toString();
-                  }
                }
             } else {
-               uri = p.toString();
+               found = true;
             }
-
+         } else {
+            found = true;
          }
 
-         uri = "file://" + uri;
+         if (found) {
+            uri = p.toUri().toString();
+         } else {
+            uri = "file://" + uri;
+         }
       }
 
       return new URL(uri);

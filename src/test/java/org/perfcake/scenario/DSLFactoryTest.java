@@ -21,6 +21,7 @@ package org.perfcake.scenario;
 
 import org.perfcake.PerfCakeConst;
 import org.perfcake.RunInfo;
+import org.perfcake.TestSetup;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
@@ -46,12 +47,10 @@ import java.util.Collections;
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class DSLFactoryTest {
+public class DSLFactoryTest extends TestSetup {
 
    @Test
    public void testDslScenarioParsing() throws Exception {
-      System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, getClass().getResource("/scenarios").getPath());
-      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
       System.setProperty(PerfCakeConst.SCENARIO_PROPERTY, "test-scenario");
 
       Scenario s = ScenarioLoader.load("stub_test_scenario");
@@ -135,8 +134,6 @@ public class DSLFactoryTest {
       toValidate.setPayload("I was a fish!");
       Assert.assertTrue(s.getValidationManager().getValidators(Collections.singletonList("text2")).get(0).isValid(null, toValidate));
 
-      System.clearProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY);
-      System.clearProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY);
       System.clearProperty(PerfCakeConst.SCENARIO_PROPERTY);
    }
 }

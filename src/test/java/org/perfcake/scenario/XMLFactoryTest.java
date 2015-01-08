@@ -22,6 +22,7 @@ package org.perfcake.scenario;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
+import org.perfcake.TestSetup;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
@@ -52,7 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class XMLFactoryTest {
+public class XMLFactoryTest extends TestSetup {
    private static final int THREADS = 10;
    private static final String MESSAGE1_CONTENT = "Stupid is as supid does! :)";
    private static final String MESSAGE2_CONTENT = "I'm the fish!";
@@ -62,7 +63,6 @@ public class XMLFactoryTest {
 
    @BeforeClass
    public void prepareScenarioParser() throws PerfCakeException, URISyntaxException, IOException {
-      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
       System.setProperty("test.filtered.property", FILTERED_PROPERTY_VALUE);
    }
 

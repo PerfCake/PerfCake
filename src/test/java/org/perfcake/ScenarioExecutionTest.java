@@ -23,20 +23,19 @@ import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ScenarioExecutionTest {
+public class ScenarioExecutionTest extends TestSetup {
    private Scenario scenario;
    private ExecutorService es;
 
-   @BeforeTest
-   public void prepareScenario() throws PerfCakeException, Exception {
-      System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, getClass().getResource("/scenarios").getPath());
-      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
+   @BeforeMethod
+   public void prepareScenario() throws Exception {
       scenario = ScenarioLoader.load("test-dummy-scenario");
    }
 
