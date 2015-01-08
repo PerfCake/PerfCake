@@ -25,17 +25,115 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class RegExpValidatorTest {
-
    @Test
    public void validationTest() {
-      RegExpValidator tv = new RegExpValidator();
+      RegExpValidator rev = new RegExpValidator();
       Message m = new Message();
 
       m.setPayload("né pětku");
-      tv.setPattern(".*pět[^k].");
-      Assert.assertFalse(tv.isValid(null, m));
+      rev.setPattern(".*pět[^k].");
+      Assert.assertFalse(rev.isValid(null, m));
 
       m.setPayload("zpětné");
-      Assert.assertTrue(tv.isValid(null, m));
+      Assert.assertTrue(rev.isValid(null, m));
+   }
+
+   @Test
+   public void patternFlagCaseInsensitiveTest() {
+      final RegExpValidator testedValidator = new RegExpValidator();
+      final Message m = new Message();
+      m.setPayload("Velké věci mají malé začátky.");
+      testedValidator.setPattern("velké.*");
+
+      Assert.assertFalse(testedValidator.isValid(null, m));
+      testedValidator.setCaseInsensitive(true);
+      Assert.assertTrue(testedValidator.isValid(null, m));
+   }
+
+   @Test
+   public void patternFlagMultilineTest() {
+      final RegExpValidator testedValidator = new RegExpValidator();
+      final Message m = new Message();
+      m.setPayload("první řádek\ndruhý řádek");
+      testedValidator.setPattern("^první .*$.*^druhý.*$");
+
+      Assert.assertFalse(testedValidator.isValid(null, m));
+      testedValidator.setMultiline(true);
+      testedValidator.setDotall(true);
+      Assert.assertTrue(testedValidator.isValid(null, m));
+   }
+
+   @Test
+   public void patternFlagDotAllTest() {
+      final RegExpValidator testedValidator = new RegExpValidator();
+      final Message m = new Message();
+      m.setPayload("první řádek\ndruhý řádek\ntřetí řádek");
+      testedValidator.setPattern(".*druhý řádek.*");
+
+      Assert.assertFalse(testedValidator.isValid(null, m));
+      testedValidator.setDotall(true);
+      Assert.assertTrue(testedValidator.isValid(null, m));
+   }
+
+   @Test
+   public void patternFlagUnicodeCaseTest() {
+      final RegExpValidator testedValidator = new RegExpValidator();
+      final Message m = new Message();
+      m.setPayload("Velke VĚCI mají malé začátky.");
+      testedValidator.setPattern(".*věci.*");
+
+      Assert.assertFalse(testedValidator.isValid(null, m));
+      testedValidator.setCaseInsensitive(true);
+      Assert.assertFalse(testedValidator.isValid(null, m));
+      testedValidator.setUnicodeCase(true);
+      Assert.assertTrue(testedValidator.isValid(null, m));
+   }
+
+   @Test
+   public void patternFlagCanonEq() {
+      final RegExpValidator testedValidator = new RegExpValidator();
+      final Message m = new Message();
+      m.setPayload("Vidím město veliké, jehož sláva hvězd se dotýká.");
+      testedValidator.setPattern(".*me\u030csto.*");
+
+      Assert.assertFalse(testedValidator.isValid(null, m));
+      testedValidator.setCanonEq(true);
+      Assert.assertTrue(testedValidator.isValid(null, m));
+   }
+
+   @Test
+   public void patternFlagTestLiteral() {
+      final RegExpValidator testedValidator = new RegExpValidator();
+      final Message m = new Message();
+      m.setPayload("[a-bA-Z].*");
+      testedValidator.setPattern("[a-bA-Z].*");
+
+      Assert.assertFalse(testedValidator.isValid(null, m));
+      testedValidator.setLiteral(true);
+      Assert.assertTrue(testedValidator.isValid(null, m));
+   }
+
+   @Test
+   public void patternFlagTestUnicodeCharacterClass() {
+      final RegExpValidator testedValidator = new RegExpValidator();
+      final Message m = new Message();
+      m.setPayload("Bedřich 3.");
+      testedValidator.setPattern("\\w+ \\d+\\.");
+
+      Assert.assertFalse(testedValidator.isValid(null, m));
+      testedValidator.setUnicodeCharacterClass(true);
+      Assert.assertTrue(testedValidator.isValid(null, m));
+   }
+
+   @Test
+   public void patternFlagCommentsTest() {
+      final RegExpValidator testedValidator = new RegExpValidator();
+      final Message m = new Message();
+      m.setPayload("Vidím město veliké, jehož sláva hvězd se dotýká.");
+      testedValidator.setPattern(".*město.*,.*# comment");
+
+      Assert.assertFalse(testedValidator.isValid(null, m));
+      testedValidator.setComments(true);
+      Assert.assertTrue(testedValidator.isValid(null, m));
    }
 }
