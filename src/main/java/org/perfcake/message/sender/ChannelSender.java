@@ -19,254 +19,105 @@
  */
 package org.perfcake.message.sender;
 
-
 import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
-import org.perfcake.reporting.MeasurementUnit;
-
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.io.Serializable;
-import java.net.InetSocketAddress;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
-import java.nio.channels.*;
 import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * TODO: Provide implementation. This should write to NIO channels.
+ * Common ancestor to all sender's sending messages through NIO channels.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
+ * @author Dominik Hanák <domin.hanak@gmail.com>
  */
-public class ChannelSender extends AbstractSender {
-
-    /**
-     * The sender's logger.
-     */
-    private static final Logger log = Logger.getLogger(ChannelSender.class);
+abstract public class ChannelSender extends AbstractSender {
 
    /**
-    * Channel target destination.
+    * The sender's logger.
     */
-   private String destination;
-
-   /**
-    * UDP or TCP port number
-    */
-   private int port;
-
-   /**
-    * Selector for Datagram or Socket channel
-    */
-   private Selector selector;
+   protected static final Logger log = Logger.getLogger(ChannelSender.class);
 
    /**
     * Buffer for writing to and reading from NIO channel.
     */
-   private ByteBuffer rwBuffer;
-
-   /**
-    * Channel types that are implemented.
-    */
-   public static enum ChannelType {
-        SOCKET, DATAGRAM, FILE
-    }
-
-    /**
-     * Type of NIO channel
-     */
-   private ChannelType channelType;
-
-   /**
-    * Senders channel
-    */
-   private Channel sendersChannel;
+   protected ByteBuffer rwBuffer;
 
    /**
     * Message payload
     */
-   private String payload;
+   protected String payload;
+
+   /**
+    *  Target of channel.
+    *  Not the same as {@link #target} when working with Socket or DatagramChannel.
+    */
+   protected String channelTarget;
 
 
    @Override
-   public void init() throws Exception {
-      if (this.getTarget().contains(":")) {
-         String[] parts = target.split(":", 2);
-         destination = parts[0];
-         port = Integer.valueOf(parts[1]);
-      } else {
-         destination = getTarget();
-      }
-   }
+   abstract public void init() throws Exception;
 
    @Override
-   public void close() throws PerfCakeException {
-      try {
-          selector.close();
-          sendersChannel.close();
-      } catch (IOException e) {
-          throw new PerfCakeException("Can't close the channel.");
-      }
-   }
+   abstract  public void close() throws PerfCakeException;
 
 
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
-      log.debug("Encoding the message into buffer.");
-      if (message != null) {
-         payload =  message.getPayload().toString();
+      if (log.isDebugEnabled()) {
+          log.debug("Encoding message into buffer.");
+      }
+
+      // Encode message payload into buffer
+      if (message != null && message.getPayload() != null) {
+         payload = message.getPayload().toString();
          CharBuffer c = CharBuffer.wrap(payload);
          Charset charset = Charset.forName("UTF-8");
          rwBuffer = charset.encode(c);
       } else {
          payload = null;
       }
-
-      log.debug("Setting channelType.");
-      switch (properties.get("channelType")) {
-         case "file" :
-             this.channelType = ChannelType.FILE;
-             sendersChannel = new RandomAccessFile(destination, "rw").getChannel();
-
-             if (!sendersChannel.isOpen()) {
-                 throw new PerfCakeException("File was not opened.");
-             }
-             break;
-         case "socket" :
-             this.channelType = ChannelType.SOCKET;
-             selector = Selector.open();
-
-             // Open the Socket channel in non-blocking mode
-             sendersChannel = SocketChannel.open();
-             ((SocketChannel) sendersChannel).configureBlocking(false);
-             ((SocketChannel) sendersChannel).connect(new InetSocketAddress(destination, port));
-
-             while (!((SocketChannel)sendersChannel).finishConnect()) {
-                log.debug("Waiting for channel to finish connection.");
-             }
-
-             if (!((SocketChannel) sendersChannel).isConnected()) {
-                log.error("Can't connect to target destination.");
-                throw new PerfCakeException("Connection to " + getTarget() + " unsuccessful.");
-             }
-             break;
-         case "datagram" :
-             this.channelType = ChannelType.DATAGRAM;
-             selector = Selector.open();
-
-             // Open the Datagram channel in non-blocking mode
-             sendersChannel = DatagramChannel.open();
-             ((DatagramChannel) sendersChannel).configureBlocking(false);
-             ((DatagramChannel) sendersChannel).connect(new InetSocketAddress(destination, port));
-
-             if (!((DatagramChannel) sendersChannel).isConnected()) {
-                 log.error("Can't connect to target destination.");
-                 throw new PerfCakeException("Connection to " + getTarget() + " unsuccessful.");
-             }
-             break;
-         default :
-             throw new IllegalStateException("Unknown or undefined channel type. Please use file, socket, datagram.");
-      }
-   }
-
-   @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
-      if (payload != null && channelType == ChannelType.FILE) {
-         FileChannel fChannel = (FileChannel) sendersChannel;
-
-         fChannel.write(rwBuffer);
-
-         rwBuffer.flip();
-
-         fChannel.read(rwBuffer);
-
-         Charset charset = Charset.forName("UTF-8");
-         CharBuffer charBuffer = charset.decode(rwBuffer);
-
-         return charBuffer.toString();
-      }
-
-      if (payload != null && channelType == ChannelType.SOCKET) {
-         SocketChannel sChannel = (SocketChannel) sendersChannel;
-
-         int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
-         SelectionKey key = sChannel.register(selector, interestSet);
-
-         if (key.isWritable()) {
-            while(rwBuffer.hasRemaining()) {
-               sChannel.write(rwBuffer);
-            }
-         }
-
-         rwBuffer.flip();
-
-         if (key.isReadable()) {
-            int bytesRead = 0;
-            while (bytesRead != -1) {
-                bytesRead = sChannel.read(rwBuffer);
-            }
-         }
-
-         Charset charset = Charset.forName("UTF-8");
-         CharBuffer charBuffer = charset.decode(rwBuffer);
-
-         return charBuffer.toString();
-      }
-
-      if (payload != null && channelType == ChannelType.DATAGRAM) {
-         DatagramChannel dChannel = (DatagramChannel) sendersChannel;
-
-         int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
-         SelectionKey key = dChannel.register(selector, interestSet);
-
-         if (key.isWritable()) {
-             while(rwBuffer.hasRemaining()) {
-                 dChannel.write(rwBuffer);
-             }
-         }
-
-         rwBuffer.flip();
-         if (key.isReadable()) {
-             int bytesRead = 0;
-             while (bytesRead != -1) {
-                 bytesRead = dChannel.read(rwBuffer);
-             }
-         }
-
-         Charset charset = Charset.forName("UTF-8");
-         CharBuffer charBuffer = charset.decode(rwBuffer);
-
-         return charBuffer.toString();
-      }
-      return null;
    }
 
    /**
-    * Sets the type of NIO channel
+    * Sets the channelTarget for data sending.
     *
-    * @param channelType type of NIO chanel.
-    * @return type of channel ChannelSender use.
-    *
-   */
-   public ChannelSender setChannelType(final String channelType) {
-       switch (channelType) {
-           case "file":
-               this.channelType = ChannelType.FILE;
-               break;
-           case "socket":
-               this.channelType = ChannelType.SOCKET;
-               break;
-           case "datagram":
-               this.channelType = ChannelType.DATAGRAM;
-               break;
-           default:
-               throw new IllegalStateException("Unknown or undefined channel type. Please use file, socket, datagram.");
-       }
-
+    * @param channelTarget {@link #target}
+    * @return ChannelSender with new target.
+    */
+   public ChannelSender setChannelTarget(final String channelTarget) {
+      this.channelTarget = channelTarget;
       return this;
+   }
+
+    /**
+     * Sets the payload attribute
+     *
+     * @param payload message payload
+     * @return ChannelSender with new payload
+     */
+   public ChannelSender setPayload(final String payload) {
+      this.payload = payload;
+      return this;
+   }
+
+   /**
+    * Returns channelTarget.
+    * @return channelTarget
+    */
+   public String getChannelTarget() {
+       return this.channelTarget;
+   }
+
+   /**
+    * Returns payload of message
+    * @return payload
+    */
+   public String getPayload() {
+      return this.payload;
    }
 }
