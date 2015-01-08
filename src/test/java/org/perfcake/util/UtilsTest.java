@@ -25,6 +25,7 @@ import org.perfcake.util.properties.DefaultPropertyGetter;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -113,14 +114,14 @@ public class UtilsTest {
 
    @Test
    public void testLocationToUrlWithCheck() throws Exception {
-      System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, getClass().getResource("/scenarios").getPath());
-      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, getClass().getResource("/messages").getPath());
+      System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, new File(getClass().getResource("/scenarios").toURI()).getAbsolutePath());
+      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, new File(getClass().getResource("/messages").toURI()).getAbsolutePath());
 
       URL url = Utils.locationToUrlWithCheck("message1", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", ".txt", ".xml");
       Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
       url = Utils.locationToUrlWithCheck("subdir/subfile", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", ".txt", ".xml");
       Assert.assertTrue(url.getPath().endsWith("/messages/subdir/subfile.txt"));
-      url = Utils.locationToUrlWithCheck("message1.xml", "wrong.and.non.existing.property", getClass().getResource("/messages").getPath());
+      url = Utils.locationToUrlWithCheck("message1.xml", "wrong.and.non.existing.property", new File(getClass().getResource("/messages").toURI()).getAbsolutePath());
       Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
       url = Utils.locationToUrlWithCheck("file://message1.xml", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", ".never.used");
       Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
