@@ -19,9 +19,107 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
+import org.perfcake.message.Message;
+import org.perfcake.reporting.MeasurementUnit;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.net.InetSocketAddress;
+import java.nio.CharBuffer;
+import java.nio.channels.DatagramChannel;
+import java.nio.charset.Charset;
+import java.util.Map;
+
 /**
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
+ * @author Dominik Hanák <domin.hanak@gmail.com>
  */
-public class ChannelSenderDatagram {
+public class ChannelSenderDatagram extends ChannelSender {
 
+   /**
+    * Sender's Datagram Channel
+    */
+   private DatagramChannel datagramChannel;
+
+   /**
+    * TCP or UDP port
+    */
+   private int port;
+
+   @Override
+   public void init() throws Exception {
+      if (target != null) {
+         String[] parts = target.split(":", 2);
+         channelTarget = parts[0];
+         port = Integer.valueOf(parts[1]);
+      } else {
+         throw new IllegalStateException("Target not set. Please set the target property.");
+      }
+   }
+
+   @Override
+   public void close() throws PerfCakeException {
+      try {
+         datagramChannel.close();
+      } catch (IOException e) {
+         throw new PerfCakeException("Error while closing SocketChannel.", e.getCause());
+      }
+   }
+
+   @Override
+   public void preSend(Message message, Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
+
+      // Open the Datagram channel in non-blocking mode
+      datagramChannel = DatagramChannel.open();
+      datagramChannel.configureBlocking(false);
+      datagramChannel.connect(new InetSocketAddress(channelTarget, port));
+
+      if (!datagramChannel.isConnected()) {
+         StringBuilder errorMes = new StringBuilder();
+         errorMes.append("Connection to ").append(getTarget()).append(" unsuccessful.");
+
+         log.error("Can't connect to target destination.");
+         throw new PerfCakeException(errorMes.toString());
+      }
+
+   }
+
+   @Override
+   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws Exception {
+      if (payload != null) {
+         // write data into channel
+         try {
+            while (rwBuffer.hasRemaining()) {
+               datagramChannel.write(rwBuffer);
+            }
+         } catch (IOException e) {
+            StringBuilder errorMes = new StringBuilder();
+            errorMes.append("Problem while writing into Datagram Channel.").append(e.getMessage());
+
+            throw new PerfCakeException(errorMes.toString(), e.getCause());
+         }
+
+         // flip the buffer so we can read
+         rwBuffer.flip();
+
+         // read data from into buffer
+         try {
+            datagramChannel.read(rwBuffer);
+         } catch (IOException e) {
+            StringBuilder errorMes = new StringBuilder();
+            errorMes.append("Problem while reading from Datagram Channel.").append(e.getMessage());
+
+            throw new PerfCakeException(errorMes.toString());
+         }
+
+         Charset charset = Charset.forName("UTF-8");
+         CharBuffer charBuffer = charset.decode(rwBuffer);
+
+         return charBuffer.toString();
+      }
+
+      return null;
+   }
 }
