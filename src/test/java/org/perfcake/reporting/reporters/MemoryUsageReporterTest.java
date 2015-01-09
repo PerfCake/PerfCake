@@ -35,6 +35,7 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
@@ -171,6 +172,27 @@ public class MemoryUsageReporterTest {
       Assert.assertNotNull(lastM.get("MemoryLeak"), "Command leak detection (last measurement)");
 
       Assert.assertTrue(dumpFile.exists(), "Dump file " + dumpFile.getAbsolutePath() + " should exist.");
+   }
+
+   @Test
+   public void testMemoryUsageReporterWithMemoryLeakDetectionWithHeapDumpExistingFile() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+      final Properties reporterProperties = new Properties();
+      reporterProperties.put("agentHostname", AGENT_HOSTNAME);
+      reporterProperties.put("agentPort", AGENT_PORT);
+      reporterProperties.put("memoryLeakSlopeThreshold", "1"); // 1 byte per second (that should cause positive memory leak detection)
+      reporterProperties.put("usedMemoryTimeWindowSize", "3");
+      reporterProperties.put("memoryLeakDetectionEnabled", "true");
+      reporterProperties.put("memoryDumpOnLeak", "true");
+
+      final File dumpFile = new File("test-output/heapdump-" + System.currentTimeMillis() + ".bin");
+      Assert.assertTrue(dumpFile.createNewFile());
+      reporterProperties.put("memoryDumpFile", dumpFile.getAbsoluteFile());
+
+      final List<Measurement> measurementList = testMemoryUsageReporter(reporterProperties);
+
+      Assert.assertTrue(dumpFile.exists(), "Dump file " + dumpFile.getAbsolutePath() + " should exist.");
+      final File dumpFile0 = new File(dumpFile.getAbsolutePath() + ".0");
+      Assert.assertTrue(dumpFile0.exists(), "Dump file " + dumpFile0.getAbsolutePath() + " should exist.");
    }
 
    private List<Measurement> testMemoryUsageReporter(Properties reporterProperties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {

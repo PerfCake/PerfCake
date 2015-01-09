@@ -280,7 +280,9 @@ public class MemoryUsageReporter extends AbstractReporter {
                      } else {
                         cmd.append("dump-" + System.getProperty(PerfCakeConst.TIMESTAMP_PROPERTY) + ".bin");
                      }
-                     sendAgentCommand(cmd.toString());
+                     if (sendAgentCommand(cmd.toString()) < 0) {
+                        throw new RuntimeException("An exception occured at " + PerfCakeAgent.class.getSimpleName() + " side.");
+                     }
                      heapDumpSaved = true;
                   } catch (IOException e) {
                      e.printStackTrace();
