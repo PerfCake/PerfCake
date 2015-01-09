@@ -118,10 +118,10 @@ public class AgentThread implements Runnable {
                   } else if (PerfCakeAgent.Command.USED.name().equals(command)) {
                      response = String.valueOf(rt.totalMemory() - rt.freeMemory());
                   } else if (command.startsWith(PerfCakeAgent.Command.DUMP.name())) {
-                     final String[] tokens = command.split(":");
+                     final int colonIndex = command.indexOf(":");
                      String dumpFileName;
-                     if (tokens.length > 1) {
-                        dumpFileName = tokens[1];
+                     if (colonIndex >= 0) {
+                        dumpFileName = command.substring(colonIndex + 1);
                      } else {
                         dumpFileName = "dump-" + System.currentTimeMillis() + ".bin";
                      }
@@ -129,12 +129,11 @@ public class AgentThread implements Runnable {
                      File dumpFile = new File(dumpFileName);
                      while (dumpFile.exists()) {
                         log("WARNING: File " + dumpFileName + " already exists. Trying another file name.");
-                        dumpFileName = dumpFileName + "." + (dumpNameIndex++);
-                        dumpFile = new File(dumpFileName);
+                        dumpFile = new File(dumpFileName + "." + (dumpNameIndex++));
                      }
                      log("Saving a heap dump to " + dumpFile.getAbsolutePath());
                      try {
-                        ManagementFactoryHelper.getDiagnosticMXBean().dumpHeap(dumpFileName, true);
+                        ManagementFactoryHelper.getDiagnosticMXBean().dumpHeap(dumpFile.getAbsolutePath(), true);
                         log("Heap dump saved to " + dumpFile.getAbsolutePath());
                         response = "0";
                      } catch (IOException ioe) {
