@@ -20,9 +20,7 @@
 package org.perfcake;
 
 import org.testng.annotations.AfterClass;
-import org.testng.annotations.AfterSuite;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeSuite;
 
 import java.io.File;
 
@@ -42,6 +40,6 @@ public class TestSetup {
    @AfterClass(alwaysRun = true)
    public void unsetLocations() {
       System.clearProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY);
-      System.clearProperty(PerfCakeConst.MESSAGE_NUMBER_PROPERTY);
+      System.clearProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY);
    }
 }
