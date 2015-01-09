@@ -129,7 +129,7 @@ SET PERFCAKE_JAVA_EXE="%JAVA_HOME%\bin\java.exe"
 
 @REM Start PerfCake
 :runPERFCAKE
-for /f "delims=" %%i in ('dir /s /b %PERFCAKE_HOME%\lib\perfcake*.jar') do set PERFCAKE_JAR=%%i && goto pcJarFound
+for /f "delims=" %%i in ('dir /s /b "%PERFCAKE_HOME%"\lib\perfcake*.jar') do set PERFCAKE_JAR=%%i && goto pcJarFound
 :pcJarFound
 if not "%PERFCAKE_JAR%"=="" goto execPerfCake
 echo ERROR: could not find PerfCake jar file (%PERFCAKE_HOME%\lib\perfcake*.jar)
