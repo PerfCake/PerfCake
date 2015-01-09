@@ -19,6 +19,8 @@
  */
 package org.perfcake.scenario;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
@@ -30,12 +32,8 @@ import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.model.Header;
 import org.perfcake.model.Property;
-import org.perfcake.model.Scenario.Generator;
-import org.perfcake.model.Scenario.Messages;
+import org.perfcake.model.Scenario.*;
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
-import org.perfcake.model.Scenario.Reporting;
-import org.perfcake.model.Scenario.Sender;
-import org.perfcake.model.Scenario.Validation;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
@@ -43,26 +41,9 @@ import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
-import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -71,6 +52,16 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
+import java.io.ByteArrayInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * TODO review logging
@@ -134,7 +125,7 @@ public class XMLFactory implements ScenarioFactory {
          Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes(Utils.getDefaultEncoding())));
          String schemaFileName = "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd";
 
-         URL scenarioXsdUrl = getClass().getResource("/schemas/" + schemaFileName);
+         URL scenarioXsdUrl = Utils.getResourceAsURL("/schemas/" + schemaFileName);
          if (scenarioXsdUrl == null) { // backup taken from web
             scenarioXsdUrl = new URL("http://schema.perfcake.org/" + schemaFileName);
          }

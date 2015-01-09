@@ -22,11 +22,9 @@ package org.perfcake.util;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.TestSetup;
 import org.perfcake.util.properties.DefaultPropertyGetter;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -119,7 +117,7 @@ public class UtilsTest extends TestSetup {
       Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
       url = Utils.locationToUrlWithCheck("subdir/subfile", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", ".txt", ".xml");
       Assert.assertTrue(url.getPath().endsWith("/messages/subdir/subfile.txt"));
-      url = Utils.locationToUrlWithCheck("message1.xml", "wrong.and.non.existing.property", new File(getClass().getResource("/messages").toURI()).getAbsolutePath());
+      url = Utils.locationToUrlWithCheck("message1.xml", "wrong.and.non.existing.property", Utils.getResource("/messages"));
       Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
       url = Utils.locationToUrlWithCheck("file://message1.xml", PerfCakeConst.MESSAGES_DIR_PROPERTY, "", ".never.used");
       Assert.assertTrue(url.getPath().endsWith("/messages/message1.xml"));
