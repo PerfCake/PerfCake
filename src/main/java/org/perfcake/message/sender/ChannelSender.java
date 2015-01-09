@@ -55,11 +55,6 @@ abstract public class ChannelSender extends AbstractSender {
     */
    protected Boolean waitResponse;
 
-   /**
-    * Determines how long to wait for response
-    */
-   protected int responseTimeout = 10000; // 10s
-
 
    @Override
    abstract public void init() throws PerfCakeException;
@@ -84,13 +79,6 @@ abstract public class ChannelSender extends AbstractSender {
          switch (waitResponseTmp) {
             case "true":
                waitResponse = true;
-               if (properties.containsKey("responseTimeout")) {
-                  try {
-                     responseTimeout = Integer.valueOf(properties.get("responseTimeout"));
-                  } catch (NumberFormatException e ) {
-                     responseTimeout = 10000;
-                  }
-               }
                break;
             case "false":
                waitResponse = false;
@@ -112,10 +100,6 @@ abstract public class ChannelSender extends AbstractSender {
          payload = null;
       }
    }
-
-  /* @Override
-   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws Exception {
-   }*/
 
     @Override
    public void postSend(Message message) throws Exception {

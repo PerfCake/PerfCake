@@ -73,7 +73,6 @@ public class ChannelSenderDatagram extends ChannelSender {
       datagramChannel = DatagramChannel.open();
       if (waitResponse) {
          // wait for response, so open in blocking
-         datagramChannel.socket().setSoTimeout(responseTimeout);
          datagramChannel.configureBlocking(true);
       } else {
          datagramChannel.configureBlocking(false);

@@ -74,7 +74,6 @@ public class ChannelSenderSocket extends ChannelSender {
       socketChannel = SocketChannel.open();
       if (waitResponse) {
          // we should wait for response, so open in blocking mode
-         socketChannel.socket().setSoTimeout(responseTimeout);
          socketChannel.configureBlocking(true);
       } else {
          socketChannel.configureBlocking(false);
