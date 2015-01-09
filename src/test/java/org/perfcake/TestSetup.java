@@ -19,10 +19,9 @@
  */
 package org.perfcake;
 
+import org.perfcake.util.Utils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-
-import java.io.File;
 
 /**
  * Does the necessary configurations for the tests to work.
@@ -33,8 +32,8 @@ public class TestSetup {
 
    @BeforeClass(alwaysRun = true)
    public void configureLocations() throws Exception {
-      System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, new File(getClass().getResource("/scenarios").toURI()).getAbsolutePath());
-      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, new File(getClass().getResource("/messages").toURI()).getAbsolutePath());
+      System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.getResource("/scenarios"));
+      System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.getResource("/messages"));
    }
 
    @AfterClass(alwaysRun = true)
