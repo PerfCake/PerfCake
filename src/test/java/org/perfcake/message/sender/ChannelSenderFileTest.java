@@ -35,6 +35,12 @@ public class ChannelSenderFileTest  {
          Serializable response = sender.doSend(message, null, null);
          Assert.assertEquals(response, "fish");
 
+         try {
+             sender.postSend(message);
+         } catch (Exception e) {
+             // error while closing, exception thrown - ok
+         }
+
       } catch (Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
       }

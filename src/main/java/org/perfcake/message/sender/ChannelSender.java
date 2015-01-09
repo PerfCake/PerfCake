@@ -19,9 +19,10 @@
  */
 package org.perfcake.message.sender;
 
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
+
+import org.apache.log4j.Logger;
 
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -83,7 +84,12 @@ abstract public class ChannelSender extends AbstractSender {
       }
    }
 
-   /**
+   @Override
+   public void postSend(Message message) throws Exception {
+      super.postSend(message);
+   }
+
+    /**
     * Sets the channelTarget for data sending.
     *
     * @param channelTarget {@link #target}

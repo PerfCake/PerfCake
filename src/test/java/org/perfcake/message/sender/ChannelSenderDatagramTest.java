@@ -50,7 +50,7 @@ public class ChannelSenderDatagramTest {
          Assert.assertEquals(response, "fish");
 
          try {
-            sender.close();
+            sender.postSend(message);
          } catch (Exception e) {
             // error while closing, exception thrown - ok
          }
@@ -77,7 +77,7 @@ public class ChannelSenderDatagramTest {
          Assert.assertNull(response);
 
          try {
-            sender.close();
+            sender.postSend(null);
          } catch (Exception e) {
             // error while closing, exception thrown - ok
          }
