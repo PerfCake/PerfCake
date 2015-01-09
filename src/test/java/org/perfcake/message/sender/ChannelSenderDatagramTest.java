@@ -64,38 +64,6 @@ public class ChannelSenderDatagramTest {
    }
 
    @Test
-   public void testNormalMessageWaitResponse() {
-      final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", target);
-
-      final Message message = new Message();
-      message.setPayload(tPAYLOAD);
-
-      try {
-         final ChannelSender sender = (ChannelSenderDatagram) ObjectFactory.summonInstance(ChannelSenderDatagram.class.getName(), senderProperties);
-
-         sender.init();
-
-         final Map<String, String> additionalMessageProperties = new HashMap<>();
-         additionalMessageProperties.put("waitResponse", "true");
-
-         sender.preSend(message, additionalMessageProperties);
-         Assert.assertEquals(sender.getPayload(), tPAYLOAD);
-
-         Serializable response = sender.doSend(message, null, null);
-         Assert.assertEquals(response, "fish");
-
-         try {
-            sender.postSend(message);
-         } catch (Exception e) {
-            // error while closing, exception thrown - ok
-         }
-      } catch (Exception e) {
-         Assert.fail(e.getMessage(), e.getCause());
-      }
-   }
-
-   @Test
    public void testNullMessage() {
       final Properties senderProperties = new Properties();
       senderProperties.setProperty("target", target);

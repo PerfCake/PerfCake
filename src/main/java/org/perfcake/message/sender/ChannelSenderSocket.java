@@ -74,7 +74,6 @@ public class ChannelSenderSocket extends ChannelSender {
       socketChannel = SocketChannel.open();
       if (waitResponse) {
          // we should wait for response, so open in blocking mode
-         socketChannel.socket().setSoTimeout(responseTimeout);
          socketChannel.configureBlocking(true);
       } else {
          socketChannel.configureBlocking(false);
@@ -122,8 +121,8 @@ public class ChannelSenderSocket extends ChannelSender {
          // read the response
          try {
             int bytesRead = socketChannel.read(rwBuffer);
-            if (bytesRead == -1 ) {
-                throw new IOException("Host closed the connection or end of stream reached.");
+            if (bytesRead == -1) {
+               throw new IOException("Host closed the connection or end of stream reached.");
             }
          } catch (IOException e) {
             StringBuilder errorMes = new StringBuilder();
