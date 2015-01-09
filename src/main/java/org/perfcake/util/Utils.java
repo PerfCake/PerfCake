@@ -174,8 +174,8 @@ public class Utils {
 
       // if there is no protocol specified, try some file locations
       if (!uri.contains("://")) {
-         final File f = new File(Utils.getProperty(defaultLocationProperty, defaultLocation), uri + defaultSuffix);
-         uri = "file://" + f.getPath();
+         final Path p = Paths.get(Utils.getProperty(defaultLocationProperty, defaultLocation), uri + defaultSuffix);
+         uri = p.toUri().toString();
       }
 
       return new URL(uri);
