@@ -43,6 +43,7 @@ public class ChannelSenderFile extends ChannelSender {
     */
    private FileChannel fileChannel;
 
+
    @Override
    public void init() throws Exception {
       if (this.getTarget() != null) {
