@@ -339,12 +339,12 @@ public class Utils {
    }
 
    /**
-    * Obtains the needed resource with full-path as URI. Works safely on all platforms.
+    * Obtains the needed resource with full-path as URL. Works safely on all platforms.
     * @param resource The name of the resource to obtain
     * @return The fully qualified resource URL location
     * @throws PerfCakeException in the case of wrong resource name.
     */
-   public static URL getResourceAsURL(final String resource) throws PerfCakeException {
+   public static URL getResourceAsUrl(final String resource) throws PerfCakeException {
       try {
          return Utils.class.getResource(resource).toURI().toURL();
       } catch (URISyntaxException | MalformedURLException e) {

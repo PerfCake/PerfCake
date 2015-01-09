@@ -47,7 +47,7 @@ import java.util.Collections;
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class DSLFactoryTest extends TestSetup {
+public class DslFactoryTest extends TestSetup {
 
    @Test
    public void testDslScenarioParsing() throws Exception {

@@ -69,14 +69,14 @@ import java.util.Properties;
  * @author Pavel Macík <pavel.macik@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class XMLFactory implements ScenarioFactory {
+public class XmlFactory implements ScenarioFactory {
 
-   private static final Logger log = Logger.getLogger(XMLFactory.class);
+   private static final Logger log = Logger.getLogger(XmlFactory.class);
    private org.perfcake.model.Scenario scenarioModel;
    private String scenarioConfig;
    private Scenario scenario = null;
 
-   protected XMLFactory() {
+   protected XmlFactory() {
 
    }
 
@@ -125,7 +125,7 @@ public class XMLFactory implements ScenarioFactory {
          Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes(Utils.getDefaultEncoding())));
          String schemaFileName = "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd";
 
-         URL scenarioXsdUrl = Utils.getResourceAsURL("/schemas/" + schemaFileName);
+         URL scenarioXsdUrl = Utils.getResourceAsUrl("/schemas/" + schemaFileName);
          if (scenarioXsdUrl == null) { // backup taken from web
             scenarioXsdUrl = new URL("http://schema.perfcake.org/" + schemaFileName);
          }

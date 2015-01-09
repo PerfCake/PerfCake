@@ -19,16 +19,14 @@
  */
 package org.perfcake.scenario;
 
+import groovy.lang.Binding;
+import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.scenario.dsl.ScenarioDelegate;
 import org.perfcake.util.Utils;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.net.URL;
-
-import groovy.lang.Binding;
 
 /**
  * Loads the scenario from a DSL script.
@@ -37,9 +35,9 @@ import groovy.lang.Binding;
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class DSLFactory implements ScenarioFactory {
+public class DslFactory implements ScenarioFactory {
 
-   private static final Logger log = Logger.getLogger(DSLFactory.class);
+   private static final Logger log = Logger.getLogger(DslFactory.class);
    private String scenarioDefinition;
    private Scenario scenario = null;
 
