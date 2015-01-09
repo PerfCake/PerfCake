@@ -121,8 +121,8 @@ public class ChannelSenderSocket extends ChannelSender {
          // read the response
          try {
             int bytesRead = socketChannel.read(rwBuffer);
-            if (bytesRead == -1 ) {
-                throw new IOException("Host closed the connection or end of stream reached.");
+            if (bytesRead == -1) {
+               throw new IOException("Host closed the connection or end of stream reached.");
             }
          } catch (IOException e) {
             StringBuilder errorMes = new StringBuilder();
