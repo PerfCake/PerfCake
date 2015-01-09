@@ -32,11 +32,9 @@ import java.util.Map;
 /**
  * Common ancestor to all sender's sending messages through NIO channels.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
  * @author Dominik Hanák <domin.hanak@gmail.com>
  */
 abstract public class ChannelSender extends AbstractSender {
-
    /**
     * The sender's logger.
     */
@@ -53,14 +51,18 @@ abstract public class ChannelSender extends AbstractSender {
    protected String payload;
 
    /**
-    *  Target of channel.
-    *  Not the same as {@link #target} when working with Socket or DatagramChannel.
+    * Determines if we open channels in non-blocking or blocking mode
     */
-   protected String channelTarget;
+   protected Boolean waitResponse;
+
+   /**
+    * Determines how long to wait for response
+    */
+   protected int responseTimeout = 10000; // 10s
 
 
    @Override
-   abstract public void init() throws Exception;
+   abstract public void init() throws PerfCakeException;
 
    @Override
    abstract  public void close() throws PerfCakeException;
@@ -71,6 +73,33 @@ abstract public class ChannelSender extends AbstractSender {
       super.preSend(message, properties);
       if (log.isDebugEnabled()) {
           log.debug("Encoding message into buffer.");
+      }
+
+      // check if we should wait for response
+      String waitResponseTmp = null;
+      if (properties != null && properties.containsKey("waitResponse")){
+         waitResponseTmp = properties.get("waitResponse");
+      }
+      if (waitResponseTmp != null) {
+         switch (waitResponseTmp) {
+            case "true":
+               waitResponse = true;
+               if (properties.containsKey("responseTimeout")) {
+                  try {
+                     responseTimeout = Integer.valueOf(properties.get("responseTimeout"));
+                  } catch (NumberFormatException e ) {
+                     responseTimeout = 10000;
+                  }
+               }
+               break;
+            case "false":
+               waitResponse = false;
+               break;
+            default:
+               throw new IllegalStateException("Undefined or invalid property waitResponse. Please use true or false.");
+         }
+      } else {
+          waitResponse = false;
       }
 
       // Encode message payload into buffer
@@ -84,39 +113,24 @@ abstract public class ChannelSender extends AbstractSender {
       }
    }
 
-   @Override
+  /* @Override
+   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws Exception {
+   }*/
+
+    @Override
    public void postSend(Message message) throws Exception {
       super.postSend(message);
    }
 
-    /**
-    * Sets the channelTarget for data sending.
+   /**
+    * Sets the payload attribute
     *
-    * @param channelTarget {@link #target}
-    * @return ChannelSender with new target.
+    * @param payload message payload
+    * @return ChannelSender with new payload
     */
-   public ChannelSender setChannelTarget(final String channelTarget) {
-      this.channelTarget = channelTarget;
-      return this;
-   }
-
-    /**
-     * Sets the payload attribute
-     *
-     * @param payload message payload
-     * @return ChannelSender with new payload
-     */
    public ChannelSender setPayload(final String payload) {
       this.payload = payload;
       return this;
-   }
-
-   /**
-    * Returns channelTarget.
-    * @return channelTarget
-    */
-   public String getChannelTarget() {
-       return this.channelTarget;
    }
 
    /**

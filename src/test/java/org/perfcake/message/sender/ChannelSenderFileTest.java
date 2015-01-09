@@ -6,6 +6,8 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -27,9 +29,12 @@ public class ChannelSenderFileTest  {
          final ChannelSender sender = (ChannelSenderFile) ObjectFactory.summonInstance(ChannelSenderFile.class.getName(), senderProperties);
 
          sender.init();
-         Assert.assertEquals(sender.getChannelTarget(), tFILE);
+         Assert.assertEquals(sender.getTarget(), tFILE);
 
-         sender.preSend(message, null);
+         final Map<String, String> additionalMessageProperties = new HashMap<>();
+         additionalMessageProperties.put("waitResponse", "false");
+
+         sender.preSend(message, additionalMessageProperties);
          Assert.assertEquals(sender.getPayload(), tPAYLOAD);
 
          Serializable response = sender.doSend(message, null, null);

@@ -26,7 +26,6 @@ import org.perfcake.reporting.MeasurementUnit;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
-import java.nio.CharBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.UnresolvedAddressException;
 import java.nio.charset.Charset;
@@ -50,15 +49,16 @@ public class ChannelSenderSocket extends ChannelSender {
     */
    private int port;
 
+   /**
+    * Host adrress
+    */
+   private String host;
+
    @Override
-   public void init() throws Exception {
-      if (target != null) {
-         String[] parts = target.split(":", 2);
-         channelTarget = parts[0];
-         port = Integer.valueOf(parts[1]);
-      } else {
-         throw new IllegalStateException("Target not set. Please set the target property.");
-      }
+   public void init() {
+      String[] parts = target.split(":", 2);
+      host = parts[0];
+      port = Integer.valueOf(parts[1]);
    }
 
    @Override
@@ -72,10 +72,16 @@ public class ChannelSenderSocket extends ChannelSender {
 
       // Open the Socket channel in non-blocking mode
       socketChannel = SocketChannel.open();
-      socketChannel.configureBlocking(false);
+      if (waitResponse) {
+         // we should wait for response, so open in blocking mode
+         socketChannel.socket().setSoTimeout(responseTimeout);
+         socketChannel.configureBlocking(true);
+      } else {
+         socketChannel.configureBlocking(false);
+      }
 
       try {
-         socketChannel.connect(new InetSocketAddress(channelTarget, port));
+         socketChannel.connect(new InetSocketAddress(host, port));
       } catch (UnresolvedAddressException e) {
          throw new PerfCakeException(e.getMessage(), e.getCause());
       }
@@ -115,7 +121,10 @@ public class ChannelSenderSocket extends ChannelSender {
 
          // read the response
          try {
-            socketChannel.read(rwBuffer);
+            int bytesRead = socketChannel.read(rwBuffer);
+            if (bytesRead == -1 ) {
+                throw new IOException("Host closed the connection or end of stream reached.");
+            }
          } catch (IOException e) {
             StringBuilder errorMes = new StringBuilder();
             errorMes.append("Problem while reading from Socket Channel.").append(e.getMessage());
@@ -123,12 +132,8 @@ public class ChannelSenderSocket extends ChannelSender {
             throw new PerfCakeException(errorMes.toString(), e.getCause());
          }
 
-         Charset charset = Charset.forName("UTF-8");
-         CharBuffer charBuffer = charset.decode(rwBuffer);
-
-         return charBuffer.toString();
+         return new String(rwBuffer.array(), Charset.forName("UTF-8"));
       }
-
       return null;
    }
 
