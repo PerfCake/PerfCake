@@ -63,11 +63,7 @@ public class ChannelSenderSocket extends ChannelSender {
 
    @Override
    public void close() throws PerfCakeException {
-      try {
-         socketChannel.close();
-      } catch (IOException e) {
-         throw new PerfCakeException("Error while closing SocketChannel.", e.getCause());
-      }
+      // no
    }
 
     @Override
@@ -85,7 +81,9 @@ public class ChannelSenderSocket extends ChannelSender {
       }
 
       while (!socketChannel.finishConnect()) {
-         log.debug("Waiting for connection to finish.");
+         if (log.isDebugEnabled()) {
+            log.debug("Waiting for connection to finish.");
+         }
       }
 
       if (!socketChannel.isConnected()) {
@@ -132,5 +130,15 @@ public class ChannelSenderSocket extends ChannelSender {
       }
 
       return null;
+   }
+
+   @Override
+   public void postSend(Message message) throws Exception {
+      super.postSend(message);
+      try {
+         socketChannel.close();
+      } catch (IOException e) {
+         throw new PerfCakeException("Error while closing SocketChannel.", e.getCause());
+      }
    }
 }
