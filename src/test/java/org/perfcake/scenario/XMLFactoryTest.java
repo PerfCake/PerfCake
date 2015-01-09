@@ -19,7 +19,6 @@
  */
 package org.perfcake.scenario;
 
-import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.TestSetup;
@@ -40,18 +39,13 @@ import org.perfcake.reporting.reporters.WarmUpReporter;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.RegExpValidator;
 import org.perfcake.validation.ValidationManager;
-
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 public class XMLFactoryTest extends TestSetup {
    private static final int THREADS = 10;
@@ -201,10 +195,10 @@ public class XMLFactoryTest extends TestSetup {
    }
 
    @Test
-   public void parseReportingTest() {
+   public void parseReportingTest() throws Exception {
       try {
          final XMLFactory scenarioFactory = new XMLFactory();
-         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml"));
+         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml").toURI().toURL());
          final ReportManager reportManager = scenarioFactory.parseReporting();
          Assert.assertNotNull(reportManager);
          Assert.assertEquals(reportManager.getReporters().size(), 2, "reportManager's number of reporters");
@@ -265,7 +259,7 @@ public class XMLFactoryTest extends TestSetup {
    @Test
    public void parseValidationTest() throws Exception {
       final XMLFactory validationScenarioFactory = new XMLFactory();
-      validationScenarioFactory.init(getClass().getResource("/scenarios/test-validator-load.xml"));
+      validationScenarioFactory.init(getClass().getResource("/scenarios/test-validator-load.xml").toURI().toURL());
       ValidationManager vm = validationScenarioFactory.parseValidation();
       List<MessageTemplate> mts = validationScenarioFactory.parseMessages(vm);
 
@@ -281,7 +275,7 @@ public class XMLFactoryTest extends TestSetup {
 
       // validation is optional
       final XMLFactory noValidationScenarioFactory = new XMLFactory();
-      noValidationScenarioFactory.init(getClass().getResource("/scenarios/test-scenario-no-validation.xml"));
+      noValidationScenarioFactory.init(getClass().getResource("/scenarios/test-scenario-no-validation.xml").toURI().toURL());
       vm = noValidationScenarioFactory.parseValidation();
       Assert.assertEquals(vm.messagesToBeValidated(), 0);
    }
