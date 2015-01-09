@@ -26,7 +26,6 @@ import org.perfcake.reporting.MeasurementUnit;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
-import java.nio.CharBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -49,15 +48,16 @@ public class ChannelSenderDatagram extends ChannelSender {
     */
    private int port;
 
+   /**
+    * Host adrress
+    */
+   private String host;
+
    @Override
-   public void init() throws Exception {
-      if (target != null) {
-         String[] parts = target.split(":", 2);
-         channelTarget = parts[0];
-         port = Integer.valueOf(parts[1]);
-      } else {
-         throw new IllegalStateException("Target not set. Please set the target property.");
-      }
+   public void init() {
+      String[] parts = target.split(":", 2);
+      host = parts[0];
+      port = Integer.valueOf(parts[1]);
    }
 
    @Override
@@ -71,8 +71,19 @@ public class ChannelSenderDatagram extends ChannelSender {
 
       // Open the Datagram channel in non-blocking mode
       datagramChannel = DatagramChannel.open();
-      datagramChannel.configureBlocking(false);
-      datagramChannel.connect(new InetSocketAddress(channelTarget, port));
+      if (waitResponse) {
+         // wait for response, so open in blocking
+         datagramChannel.socket().setSoTimeout(responseTimeout);
+         datagramChannel.configureBlocking(true);
+      } else {
+         datagramChannel.configureBlocking(false);
+      }
+
+      try {
+         datagramChannel.connect(new InetSocketAddress(host, port));
+      } catch (Exception e) {
+         throw new PerfCakeException("Exception thrown when connecting to target.");
+      }
 
       if (!datagramChannel.isConnected()) {
          StringBuilder errorMes = new StringBuilder();
@@ -104,20 +115,18 @@ public class ChannelSenderDatagram extends ChannelSender {
 
          // read data from into buffer
          try {
-            datagramChannel.read(rwBuffer);
+            int bytesRead = datagramChannel.read(rwBuffer);
+            if (bytesRead == -1) {
+                throw new IOException("Host closed the connection or end of stream reached.");
+            }
          } catch (IOException e) {
             StringBuilder errorMes = new StringBuilder();
-            errorMes.append("Problem while reading from Datagram Channel.").append(e.getMessage());
+            errorMes.append("Problem while reading from Datagram Channel.").append(e.getCause());
 
             throw new PerfCakeException(errorMes.toString());
          }
-
-         Charset charset = Charset.forName("UTF-8");
-         CharBuffer charBuffer = charset.decode(rwBuffer);
-
-         return charBuffer.toString();
+         return new String(rwBuffer.array(), Charset.forName("UTF-8"));
       }
-
       return null;
    }
 

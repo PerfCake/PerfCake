@@ -9,6 +9,8 @@ import org.testng.annotations.Test;
 
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -43,9 +45,11 @@ public class ChannelSenderSocketTest {
          final ChannelSender sender = (ChannelSenderSocket) ObjectFactory.summonInstance(ChannelSenderSocket.class.getName(), senderProperties);
 
          sender.init();
-         Assert.assertEquals(sender.getChannelTarget(), hostAdress.getHostAddress());
 
-         sender.preSend(message, null);
+         final Map<String, String> additionalMessageProperties = new HashMap<>();
+         additionalMessageProperties.put("waitResponse", "false");
+
+         sender.preSend(message, additionalMessageProperties);
          Assert.assertEquals(sender.getPayload(), tPAYLOAD);
 
          Serializable response = sender.doSend(message, null, null);
@@ -71,8 +75,6 @@ public class ChannelSenderSocketTest {
          final ChannelSender sender = (ChannelSenderSocket) ObjectFactory.summonInstance(ChannelSenderSocket.class.getName(), senderProperties);
 
          sender.init();
-         Assert.assertEquals(sender.getChannelTarget(), hostAdress.getHostAddress());
-
          sender.preSend(null, null);
          Assert.assertEquals(sender.getPayload(), null);
 
@@ -81,6 +83,38 @@ public class ChannelSenderSocketTest {
 
          try {
              sender.postSend(null);
+         } catch (Exception e) {
+            // error while closing, exception thrown - ok
+         }
+
+      } catch (Exception e) {
+         Assert.fail(e.getMessage(), e.getCause());
+      }
+   }
+
+   @Test
+   public void testNormalMessageWaitResponse() {
+      final Properties senderProperties = new Properties();
+      senderProperties.setProperty("target", target);
+
+      final Message message = new Message();
+      message.setPayload(tPAYLOAD);
+
+      try {
+         final ChannelSender sender = (ChannelSenderSocket) ObjectFactory.summonInstance(ChannelSenderSocket.class.getName(), senderProperties);
+         sender.init();
+
+         final Map<String, String> additionalMessageProperties = new HashMap<>();
+         additionalMessageProperties.put("waitResponse", "true");
+
+         sender.preSend(message, additionalMessageProperties);
+         Assert.assertEquals(sender.getPayload(), tPAYLOAD);
+
+         Serializable response = sender.doSend(message, null, null);
+         Assert.assertEquals(response, "fish");
+
+         try {
+            sender.postSend(message);
          } catch (Exception e) {
             // error while closing, exception thrown - ok
          }

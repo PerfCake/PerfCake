@@ -26,7 +26,6 @@ import org.perfcake.reporting.MeasurementUnit;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.io.Serializable;
-import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -45,21 +44,11 @@ public class ChannelSenderFile extends ChannelSender {
 
 
    @Override
-   public void init() throws Exception {
-      if (this.getTarget() != null) {
-          setChannelTarget(this.getTarget());
-      } else {
-          throw new IllegalStateException("Target not set. Please set the target property.");
-      }
-   }
+   public void init() {}
 
    @Override
    public void close() throws PerfCakeException {
-      try {
-         fileChannel.close();
-      } catch (IOException e) {
-         throw new PerfCakeException("Error while closing the FileChannel.", e.getCause());
-      }
+      // no
    }
 
    @Override
@@ -69,10 +58,10 @@ public class ChannelSenderFile extends ChannelSender {
       fileChannel = new RandomAccessFile(getTarget(), "rw").getChannel();
 
       if (!fileChannel.isOpen()) {
-          StringBuilder errorMes = new StringBuilder();
-          errorMes.append("Opening of fileChannel to ").append(getTarget()).append(" unsuccessful.");
+         StringBuilder errorMes = new StringBuilder();
+         errorMes.append("Opening of fileChannel to ").append(getTarget()).append(" unsuccessful.");
 
-          throw new PerfCakeException(errorMes.toString());
+         throw new PerfCakeException(errorMes.toString());
       }
    }
 
@@ -83,10 +72,7 @@ public class ChannelSenderFile extends ChannelSender {
          rwBuffer.flip();
          fileChannel.read(rwBuffer);
 
-         Charset charset = Charset.forName("UTF-8");
-         CharBuffer charBuffer = charset.decode(rwBuffer);
-
-         return charBuffer.toString();
+         return new String(rwBuffer.array(), Charset.forName("UTF-8"));
       }
       return null;
    }
@@ -95,9 +81,9 @@ public class ChannelSenderFile extends ChannelSender {
    public void postSend(Message message) throws Exception {
       super.postSend(message);
       try {
-          fileChannel.close();
+         fileChannel.close();
       } catch (IOException e) {
-          throw new PerfCakeException("Error while closing FileChannel.", e.getCause());
+         throw new PerfCakeException("Error while closing FileChannel.", e.getCause());
       }
    }
 }
