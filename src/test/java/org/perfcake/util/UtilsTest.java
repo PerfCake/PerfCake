@@ -25,6 +25,7 @@ import org.perfcake.util.properties.DefaultPropertyGetter;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -103,7 +104,7 @@ public class UtilsTest extends TestSetup {
    public void testLocationToUrl() throws MalformedURLException {
       URL url1 = Utils.locationToUrl("foo", PROPERTY_LOCATION, "bar", ".bak");
       Assert.assertEquals(url1.getProtocol(), "file");
-      Assert.assertEquals(url1.toExternalForm(), "file://bar/foo.bak");
+      Assert.assertEquals(url1.toExternalForm(), new File("bar", "foo.bak").toURI().toString());
 
       System.setProperty(PROPERTY_LOCATION, "barbar");
       URL url2 = Utils.locationToUrl("http://foo", PROPERTY_LOCATION, "bar", ".bak");
