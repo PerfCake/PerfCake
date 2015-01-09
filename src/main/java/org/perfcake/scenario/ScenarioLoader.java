@@ -79,9 +79,9 @@ public class ScenarioLoader {
    private static ScenarioFactory getFactory(final String extension) throws PerfCakeException {
       switch (extension) {
          case "xml":
-            return new XMLFactory();
+            return new XmlFactory();
          case "dsl":
-            return new DSLFactory();
+            return new DslFactory();
          default:
             throw new PerfCakeException(String.format("Unknown scenario type %s", extension));
       }
