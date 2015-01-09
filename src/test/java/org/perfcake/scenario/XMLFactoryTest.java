@@ -61,10 +61,10 @@ public class XMLFactoryTest extends TestSetup {
    }
 
    @Test
-   public void parseScenarioPropertiesTest() {
+   public void parseScenarioPropertiesTest() throws Exception {
       try {
          final XMLFactory scenarioFactory = new XMLFactory();
-         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml"));
+         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml").toURI().toURL());
          final Hashtable<Object, Object> scenarioProperties = scenarioFactory.parseScenarioProperties();
          Assert.assertEquals(scenarioProperties.get("quickstartName"), "testQS", "quickstartName property");
          Assert.assertEquals(scenarioProperties.get("filteredProperty"), FILTERED_PROPERTY_VALUE, "filteredProperty property");
@@ -76,10 +76,10 @@ public class XMLFactoryTest extends TestSetup {
    }
 
    @Test
-   public void parseSenderTest() {
+   public void parseSenderTest() throws Exception {
       try {
          final XMLFactory scenarioFactory = new XMLFactory();
-         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml"));
+         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml").toURI().toURL());
          final MessageSenderManager senderManager = scenarioFactory.parseSender(THREADS);
          Assert.assertEquals(senderManager.getSenderClass(), SENDER_CLASS, "senderClass");
          Assert.assertEquals(senderManager.getSenderPoolSize(), THREADS, "senderPoolSize");
@@ -91,10 +91,10 @@ public class XMLFactoryTest extends TestSetup {
    }
 
    @Test
-   public void parseGeneratorTest() {
+   public void parseGeneratorTest() throws Exception {
       try {
          final XMLFactory scenarioFactory = new XMLFactory();
-         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml"));
+         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml").toURI().toURL());
          AbstractMessageGenerator generator = scenarioFactory.parseGenerator();
          Assert.assertTrue(generator instanceof DefaultMessageGenerator, "The generator is not an instance of " + DefaultMessageGenerator.class.getName());
          final DefaultMessageGenerator dmg = (DefaultMessageGenerator) generator;
@@ -108,10 +108,10 @@ public class XMLFactoryTest extends TestSetup {
    }
 
    @Test
-   public void parseMessagesTest() {
+   public void parseMessagesTest() throws Exception {
       try {
          final XMLFactory scenarioFactory = new XMLFactory();
-         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml"));
+         scenarioFactory.init(getClass().getResource("/scenarios/test-scenario.xml").toURI().toURL());
          // Message store
          ValidationManager validationManager = scenarioFactory.parseValidation();
          final List<MessageTemplate> messageStore = scenarioFactory.parseMessages(validationManager);
@@ -183,7 +183,7 @@ public class XMLFactoryTest extends TestSetup {
 
          // Messages section is optional
          final XMLFactory noMessagesScenarioFactory = new XMLFactory();
-         noMessagesScenarioFactory.init(getClass().getResource("/scenarios/test-scenario-no-messages.xml"));
+         noMessagesScenarioFactory.init(getClass().getResource("/scenarios/test-scenario-no-messages.xml").toURI().toURL());
          validationManager = noMessagesScenarioFactory.parseValidation();
          final List<MessageTemplate> emptyMessageStore = noMessagesScenarioFactory.parseMessages(validationManager);
          Assert.assertTrue(emptyMessageStore.isEmpty(), "empty message store with no messages in scenario");
