@@ -119,17 +119,29 @@ public class AgentThread implements Runnable {
                      response = String.valueOf(rt.totalMemory() - rt.freeMemory());
                   } else if (command.startsWith(PerfCakeAgent.Command.DUMP.name())) {
                      final String[] tokens = command.split(":");
-                     String dumpName;
+                     String dumpFileName;
                      if (tokens.length > 1) {
-                        dumpName = tokens[1];
+                        dumpFileName = tokens[1];
                      } else {
-                        dumpName = "dump-" + System.currentTimeMillis() + ".bin";
+                        dumpFileName = "dump-" + System.currentTimeMillis() + ".bin";
                      }
-                     final File dumpFile = new File(dumpName);
+                     int dumpNameIndex = 0;
+                     File dumpFile = new File(dumpFileName);
+                     while (dumpFile.exists()) {
+                        log("WARNING: File " + dumpFileName + " already exists. Trying another file name.");
+                        dumpFileName = dumpFileName + "." + (dumpNameIndex++);
+                        dumpFile = new File(dumpFileName);
+                     }
                      log("Saving a heap dump to " + dumpFile.getAbsolutePath());
-                     ManagementFactoryHelper.getDiagnosticMXBean().dumpHeap(dumpName, true);
-                     log("Heap dump saved to " + dumpFile.getAbsolutePath());
-                     response = "0";
+                     try {
+                        ManagementFactoryHelper.getDiagnosticMXBean().dumpHeap(dumpFileName, true);
+                        log("Heap dump saved to " + dumpFile.getAbsolutePath());
+                        response = "0";
+                     } catch (IOException ioe) {
+                        log("Error saving heap dump!");
+                        ioe.printStackTrace();
+                        response = "-1";
+                     }
                   } else if (PerfCakeAgent.Command.GC.name().equals(command)) {
                      System.gc();
                      response = "0";
@@ -162,6 +174,7 @@ public class AgentThread implements Runnable {
     * @param msg
     *       Message to be logged.
     */
+
    private static void log(String msg) {
       System.out.println(PerfCakeAgent.class.getSimpleName() + " > " + msg);
    }
