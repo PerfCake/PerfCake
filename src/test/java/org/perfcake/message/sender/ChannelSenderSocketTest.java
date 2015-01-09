@@ -25,6 +25,7 @@ public class ChannelSenderSocketTest {
    @BeforeMethod
    public void setUp() throws Exception {
       hostAdress = InetAddress.getLocalHost();
+
       StringBuilder sb = new StringBuilder();
       sb.append(hostAdress.getHostAddress()).append(":").append(tPORT);
       target = sb.toString();
@@ -51,7 +52,7 @@ public class ChannelSenderSocketTest {
          Assert.assertEquals(response, "fish");
 
          try {
-            sender.close();
+            sender.postSend(message);
          } catch (Exception e) {
             // error while closing, exception thrown - ok
          }
@@ -66,7 +67,6 @@ public class ChannelSenderSocketTest {
       final Properties senderProperties = new Properties();
       senderProperties.setProperty("target", target);
 
-
       try {
          final ChannelSender sender = (ChannelSenderSocket) ObjectFactory.summonInstance(ChannelSenderSocket.class.getName(), senderProperties);
 
@@ -80,7 +80,7 @@ public class ChannelSenderSocketTest {
          Assert.assertNull(response);
 
          try {
-            sender.close();
+             sender.postSend(null);
          } catch (Exception e) {
             // error while closing, exception thrown - ok
          }

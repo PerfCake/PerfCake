@@ -62,11 +62,7 @@ public class ChannelSenderDatagram extends ChannelSender {
 
    @Override
    public void close() throws PerfCakeException {
-      try {
-         datagramChannel.close();
-      } catch (IOException e) {
-         throw new PerfCakeException("Error while closing SocketChannel.", e.getCause());
-      }
+     // no
    }
 
    @Override
@@ -123,5 +119,15 @@ public class ChannelSenderDatagram extends ChannelSender {
       }
 
       return null;
+   }
+
+   @Override
+   public void postSend(Message message) throws Exception {
+      super.postSend(message);
+      try {
+         datagramChannel.close();
+      } catch (IOException e) {
+         throw new PerfCakeException("Error while closing DatagramChannel.", e.getCause());
+      }
    }
 }

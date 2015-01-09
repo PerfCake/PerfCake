@@ -38,58 +38,65 @@ import java.util.Map;
  * @author Dominik Hanák <domin.hanak@gmail.com>
  */
 public class ChannelSenderFile extends ChannelSender {
+   /**
+    * Sender's fileChannel
+    */
+   private FileChannel fileChannel;
 
-    /**
-     * Sender's fileChannel
-     */
-    private FileChannel fileChannel;
+   @Override
+   public void init() throws Exception {
+      if (this.getTarget() != null) {
+          setChannelTarget(this.getTarget());
+      } else {
+          throw new IllegalStateException("Target not set. Please set the target property.");
+      }
+   }
 
-    @Override
-    public void init() throws Exception {
-       if (this.getTarget() != null) {
-           setChannelTarget(this.getTarget());
-       } else {
-           throw new IllegalStateException("Target not set. Please set the target property.");
-       }
-    }
+   @Override
+   public void close() throws PerfCakeException {
+      try {
+         fileChannel.close();
+      } catch (IOException e) {
+         throw new PerfCakeException("Error while closing the FileChannel.", e.getCause());
+      }
+   }
 
-    @Override
-    public void close() throws PerfCakeException {
-       try {
+   @Override
+   public void preSend(Message message, Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
+
+      fileChannel = new RandomAccessFile(getTarget(), "rw").getChannel();
+
+      if (!fileChannel.isOpen()) {
+          StringBuilder errorMes = new StringBuilder();
+          errorMes.append("Opening of fileChannel to ").append(getTarget()).append(" unsuccessful.");
+
+          throw new PerfCakeException(errorMes.toString());
+      }
+   }
+
+   @Override
+   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws Exception {
+      if (payload != null) {
+         fileChannel.write(rwBuffer);
+         rwBuffer.flip();
+         fileChannel.read(rwBuffer);
+
+         Charset charset = Charset.forName("UTF-8");
+         CharBuffer charBuffer = charset.decode(rwBuffer);
+
+         return charBuffer.toString();
+      }
+      return null;
+   }
+
+   @Override
+   public void postSend(Message message) throws Exception {
+      super.postSend(message);
+      try {
           fileChannel.close();
-       } catch (IOException e) {
-          throw new PerfCakeException("Error while closing the FileChannel.", e.getCause());
-       }
-    }
-
-    @Override
-    public void preSend(Message message, Map<String, String> properties) throws Exception {
-       super.preSend(message, properties);
-
-       fileChannel = new RandomAccessFile(getTarget(), "rw").getChannel();
-
-       if (!fileChannel.isOpen()) {
-           StringBuilder errorMes = new StringBuilder();
-           errorMes.append("Opening of fileChannel to ").append(getTarget()).append(" unsuccessful.");
-
-           throw new PerfCakeException(errorMes.toString());
-       }
-    }
-
-    @Override
-    public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws Exception {
-       if (payload != null) {
-          fileChannel.write(rwBuffer);
-          rwBuffer.flip();
-          rwBuffer.clear();
-          fileChannel.read(rwBuffer);
-
-          Charset charset = Charset.forName("UTF-8");
-          CharBuffer charBuffer = charset.decode(rwBuffer);
-
-          return charBuffer.toString();
-       }
-
-       return null;
-    }
+      } catch (IOException e) {
+          throw new PerfCakeException("Error while closing FileChannel.", e.getCause());
+      }
+   }
 }
