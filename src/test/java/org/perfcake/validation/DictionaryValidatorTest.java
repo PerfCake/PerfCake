@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,6 +27,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
@@ -76,6 +77,18 @@ public class DictionaryValidatorTest {
          + "jsou možná hezčí řeky, mají větší třpyt,\n"
          + "však ty jsi moje vlast, má vlast, má věčná matka.";
 
+   final static private boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
+
+   private String createTempDir(final String name) throws IOException {
+      if (isPosix) {
+         Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-xr--");
+         FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
+         return Files.createTempDirectory(name, attr).toString();
+      } else {
+         return Files.createTempDirectory(name).toString();
+      }
+   }
+
    @Test
    public void testBasicOperation() throws IOException {
       Message m1 = new Message();
@@ -83,10 +96,7 @@ public class DictionaryValidatorTest {
       Message m2 = new Message();
       m2.setPayload("Čau");
 
-      Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-xr--");
-      FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
-      String dir = Files.createTempDirectory("PerfCakeDictionaryValidator", attr).toString();
-      System.out.println(dir);
+      String dir = createTempDir("PerfCakeDictionaryValidator");
       try {
          // first record some sample data
          DictionaryValidator dv = new DictionaryValidator();
@@ -119,10 +129,7 @@ public class DictionaryValidatorTest {
       Message m2 = new Message();
       m2.setPayload(SVRATKA + SVRATKA + SVRATKA);
 
-      Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-xr--");
-      FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
-      String dir = Files.createTempDirectory("PerfCakeDictionaryValidator", attr).toString();
-      System.out.println(dir);
+      String dir = createTempDir("PerfCakeDictionaryValidator");
       try {
          // first record some sample data
          DictionaryValidator dv = new DictionaryValidator();
@@ -149,10 +156,7 @@ public class DictionaryValidatorTest {
       Message m2 = new Message();
       m2.setPayload("Čau");
 
-      Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-xr--");
-      FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
-      String dir = Files.createTempDirectory("PerfCakeDictionaryValidator", attr).toString();
-      System.out.println(dir);
+      String dir = createTempDir("PerfCakeDictionaryValidator");
       try {
          // first record some sample data
          DictionaryValidator dv = new DictionaryValidator();
