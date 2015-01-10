@@ -42,17 +42,7 @@ public class ComplexExecutionTest extends TestSetup {
       scenario.run();
       scenario.close();
 
-/*      Thread.sleep(100); // wait for the senders to get back into the pool
-      ScenarioRetractor retractor = new ScenarioRetractor(scenario);
-      long calls = 0;
-      for (int i = 0; i < retractor.getGenerator().getThreads(); i++) {
-         DummySender ds = (DummySender) retractor.getMessageSenderManager().acquireSender();
-         System.out.println(i + ": " + ds);
-         calls = calls + ds.getCounter();
-      }
-
-      // we suppose only a single message has been sent
-      Assert.assertEquals(calls, 1);*/
+      Assert.assertEquals(DummySender.getCounter(), 1);
    }
 
 }
