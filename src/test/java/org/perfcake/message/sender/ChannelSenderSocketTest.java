@@ -23,13 +23,18 @@ import org.perfcake.message.Message;
 import org.perfcake.util.ObjectFactory;
 
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import org.vertx.java.core.Handler;
+import org.vertx.java.core.Vertx;
+import org.vertx.java.core.VertxFactory;
+import org.vertx.java.core.buffer.Buffer;
+import org.vertx.java.core.net.NetSocket;
+import org.vertx.java.platform.Verticle;
 
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -38,15 +43,40 @@ import java.util.Properties;
 public class ChannelSenderSocketTest {
 
    private static final String PAYLOAD = "fish";
-   private static final String PORT = "4444";
+   private static final int PORT = 4444;
 
    private String target;
+   private EchoSocketVerticle vert = new EchoSocketVerticle();
+   private static String host;
 
-   @BeforeMethod
+   static class EchoSocketVerticle extends Verticle {
+      @Override
+      public void start() {
+         vertx.createNetServer().connectHandler(new Handler<NetSocket>() {
+            public void handle(final NetSocket sock) {
+               sock.dataHandler(new Handler<Buffer>() {
+                  public void handle(final Buffer buffer) {
+                     sock.write(buffer);
+                  }
+               });
+            }
+         }).listen(PORT, host);
+      }
+   }
+
+   @BeforeClass
    public void setUp() throws Exception {
-      final InetAddress hostAddress = InetAddress.getLocalHost();
+      host = InetAddress.getLocalHost().getHostAddress();
+      target = host + ":" + PORT;
 
-      target = hostAddress.getHostAddress() + ":" + PORT;
+      Vertx vertx = VertxFactory.newVertx();
+      vert.setVertx(vertx);
+      vert.start();
+   }
+
+   @AfterClass
+   public void tearDown() {
+      vert.stop();
    }
 
    @Test
