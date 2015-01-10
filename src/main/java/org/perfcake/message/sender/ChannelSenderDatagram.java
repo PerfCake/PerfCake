@@ -75,11 +75,8 @@ public class ChannelSenderDatagram extends ChannelSender {
       }
 
       if (!datagramChannel.isConnected()) {
-         StringBuilder errorMes = new StringBuilder();
-         errorMes.append("Connection to ").append(getTarget()).append(" unsuccessful.");
-
          log.error("Can't connect to target destination.");
-         throw new PerfCakeException(errorMes.toString());
+         throw new PerfCakeException("Connection to " + getTarget() + " unsuccessful.");
       }
 
    }

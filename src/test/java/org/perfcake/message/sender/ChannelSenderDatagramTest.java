@@ -23,8 +23,21 @@ import org.perfcake.message.Message;
 import org.perfcake.util.ObjectFactory;
 
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.vertx.java.core.AsyncResult;
+import org.vertx.java.core.AsyncResultHandler;
+import org.vertx.java.core.Handler;
+import org.vertx.java.core.Vertx;
+import org.vertx.java.core.VertxFactory;
+import org.vertx.java.core.buffer.Buffer;
+import org.vertx.java.core.datagram.DatagramPacket;
+import org.vertx.java.core.datagram.DatagramSocket;
+import org.vertx.java.core.datagram.InternetProtocolFamily;
+import org.vertx.java.core.net.NetSocket;
+import org.vertx.java.platform.Verticle;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -39,17 +52,54 @@ import java.util.Properties;
 public class ChannelSenderDatagramTest {
 
    private static final String PAYLOAD = "fish";
-   private static final String PORT = "4444";
+   private static final int PORT = 4444;
 
    private String target;
+   private static String host;
+   private DatagramSocketVerticle vert = new DatagramSocketVerticle();
 
-   @BeforeMethod
+   static class DatagramSocketVerticle extends Verticle {
+      @Override
+      public void start() {
+         final DatagramSocket socket = vertx.createDatagramSocket(InternetProtocolFamily.IPv4);
+         final DatagramSocket responseSocket = vertx.createDatagramSocket(InternetProtocolFamily.IPv4);
+         socket.listen(host, PORT, new AsyncResultHandler<DatagramSocket>() {
+            public void handle(AsyncResult<DatagramSocket> asyncResult) {
+               if (asyncResult.succeeded()) {
+                  socket.dataHandler(new Handler<DatagramPacket>() {
+                     public void handle(DatagramPacket packet) {
+                        socket.send(packet.data(), host, PORT,  new AsyncResultHandler<DatagramSocket>() {
+                           public void handle(AsyncResult<DatagramSocket> asyncResult) {
+                              if (!asyncResult.succeeded()) {
+                                 throw new IllegalStateException("Cannot send test response: ", asyncResult.cause());
+                              }
+                           }
+                        });
+                     }
+                  });
+               } else {
+                  throw new IllegalStateException("Listen failed: ", asyncResult.cause());
+               }
+            }
+         });
+      }
+   }
+   @BeforeClass
    public void setUp() throws Exception {
-      final InetAddress hostAddress = InetAddress.getLocalHost();
-      target = hostAddress.getHostAddress() + ":" + PORT;
+      host = InetAddress.getLocalHost().getHostAddress();
+      target = host + ":" + PORT;
+
+      Vertx vertx = VertxFactory.newVertx();
+      vert.setVertx(vertx);
+      vert.start();
    }
 
-   @Test
+   @AfterClass
+   public void tearDown() {
+      vert.stop();
+   }
+
+   @Test(enabled = false)
    public void testNormalMessage() {
       final Properties senderProperties = new Properties();
       senderProperties.setProperty("target", target);
