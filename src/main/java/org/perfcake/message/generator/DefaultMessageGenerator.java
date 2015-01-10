@@ -52,6 +52,34 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    protected long monitoringPeriod = 1000; // default 1s
 
    /**
+    * Gets the shutdown period.
+    * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
+    * It the same amount of threads keeps running for this period, they are forcefully stopped.
+    *
+    * @return Current shutdown period in ms.
+    */
+   public long getShutdownPeriod() {
+      return shutdownPeriod;
+   }
+
+   /**
+    * Sets the shutdown period which tells how frequently we should check for threads finishing their work.
+    * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
+    * It the same amount of threads keeps running for this period, they are forcefully stopped.
+    *
+    * @param shutdownPeriod The new shutdown period to be set.
+    */
+   public void setShutdownPeriod(final long shutdownPeriod) {
+      this.shutdownPeriod = shutdownPeriod;
+   }
+
+   /**
+    * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
+    * It the same amount of threads keeps running for this period, they are forcefully stopped.
+    */
+   protected long shutdownPeriod = 1000; //default 1s
+
+   /**
     * The size of internal thread queue.
     */
    protected int threadQueueSize = 1000; // default
@@ -113,7 +141,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
       while (active > 0 && lastActive != active) { // make sure the threads are finishing
          lastActive = active;
-         executorService.awaitTermination(monitoringPeriod, TimeUnit.MILLISECONDS);
+         executorService.awaitTermination(shutdownPeriod, TimeUnit.MILLISECONDS);
          active = executorService.getActiveCount();
 
          if (log.isDebugEnabled()) {
