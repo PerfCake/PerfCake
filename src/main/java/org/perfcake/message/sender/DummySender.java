@@ -87,6 +87,8 @@ public class DummySender extends AbstractSender {
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
       final long count = counter.incrementAndGet();
 
+      System.out.println("Sending from: " + this.toString());
+
       if (log.isDebugEnabled()) {
          log.debug("Sending to " + target + "...");
          log.debug("Dummy counter: " + count);

@@ -19,8 +19,12 @@
  */
 package org.perfcake;
 
+import org.perfcake.message.sender.DummySender;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
+import org.perfcake.scenario.ScenarioRetractor;
+
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
@@ -31,12 +35,24 @@ import org.testng.annotations.Test;
 public class ComplexExecutionTest extends TestSetup {
 
    @Test
-   public void iterationScenarioTest() throws PerfCakeException {
+   public void iterationScenarioTest() throws Exception {
       final Scenario scenario;
       scenario = ScenarioLoader.load("test-iteration-scenario");
       scenario.init();
       scenario.run();
       scenario.close();
+
+/*      Thread.sleep(100); // wait for the senders to get back into the pool
+      ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+      long calls = 0;
+      for (int i = 0; i < retractor.getGenerator().getThreads(); i++) {
+         DummySender ds = (DummySender) retractor.getMessageSenderManager().acquireSender();
+         System.out.println(i + ": " + ds);
+         calls = calls + ds.getCounter();
+      }
+
+      // we suppose only a single message has been sent
+      Assert.assertEquals(calls, 1);*/
    }
 
 }
