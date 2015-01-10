@@ -33,8 +33,8 @@ import java.util.Map;
 /**
  * Sender can send message through NIO FileChannel.
  *
- * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  * @author Dominik Hanák <domin.hanak@gmail.com>
+ * @author Martin Večera <marvenec@gmail.com>
  */
 public class ChannelSenderFile extends ChannelSender {
    /**
@@ -42,13 +42,8 @@ public class ChannelSenderFile extends ChannelSender {
     */
    private FileChannel fileChannel;
 
-
    @Override
-   public void init() {}
-
-   @Override
-   public void close() throws PerfCakeException {
-      // no
+   public void init() {
    }
 
    @Override
@@ -58,10 +53,7 @@ public class ChannelSenderFile extends ChannelSender {
       fileChannel = new RandomAccessFile(getTarget(), "rw").getChannel();
 
       if (!fileChannel.isOpen()) {
-         StringBuilder errorMes = new StringBuilder();
-         errorMes.append("Opening of fileChannel to ").append(getTarget()).append(" unsuccessful.");
-
-         throw new PerfCakeException(errorMes.toString());
+         throw new PerfCakeException("Opening of fileChannel to " + getTarget() + " unsuccessful.");
       }
    }
 
