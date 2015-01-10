@@ -19,32 +19,109 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
-import org.perfcake.reporting.MeasurementUnit;
 
-import java.io.Serializable;
+import org.apache.log4j.Logger;
+
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * TODO: Provide implementation. This should write to NIO channels.
+ * Common ancestor to all sender's sending messages through NIO channels.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author Dominik Hanák <domin.hanak@gmail.com>
  */
-public class ChannelSender extends AbstractSender {
+abstract public class ChannelSender extends AbstractSender {
+   /**
+    * The sender's logger.
+    */
+   protected static final Logger log = Logger.getLogger(ChannelSender.class);
+
+   /**
+    * Buffer for writing to and reading from NIO channel.
+    */
+   protected ByteBuffer rwBuffer;
+
+   /**
+    * Message payload
+    */
+   protected String payload;
+
+   /**
+    * Determines if we open channels in non-blocking or blocking mode
+    */
+   protected Boolean waitResponse;
+
 
    @Override
-   public void init() throws Exception {
-      // TODO Auto-generated method stub
+   abstract public void init() throws PerfCakeException;
+
+   @Override
+   abstract  public void close() throws PerfCakeException;
+
+
+   @Override
+   public void preSend(Message message, Map<String, String> properties) throws Exception {
+      super.preSend(message, properties);
+      if (log.isDebugEnabled()) {
+          log.debug("Encoding message into buffer.");
+      }
+
+      // check if we should wait for response
+      String waitResponseTmp = null;
+      if (properties != null && properties.containsKey("waitResponse")){
+         waitResponseTmp = properties.get("waitResponse");
+      }
+      if (waitResponseTmp != null) {
+         switch (waitResponseTmp) {
+            case "true":
+               waitResponse = true;
+               break;
+            case "false":
+               waitResponse = false;
+               break;
+            default:
+               throw new IllegalStateException("Undefined or invalid property waitResponse. Please use true or false.");
+         }
+      } else {
+          waitResponse = false;
+      }
+
+      // Encode message payload into buffer
+      if (message != null && message.getPayload() != null) {
+         payload = message.getPayload().toString();
+         CharBuffer c = CharBuffer.wrap(payload);
+         Charset charset = Charset.forName("UTF-8");
+         rwBuffer = charset.encode(c);
+      } else {
+         payload = null;
+      }
    }
 
-   @Override
-   public void close() {
-      // TODO Auto-generated method stub
+    @Override
+   public void postSend(Message message) throws Exception {
+      super.postSend(message);
    }
 
-   @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   /**
+    * Sets the payload attribute
+    *
+    * @param payload message payload
+    * @return ChannelSender with new payload
+    */
+   public ChannelSender setPayload(final String payload) {
+      this.payload = payload;
+      return this;
+   }
+
+   /**
+    * Returns payload of message
+    * @return payload
+    */
+   public String getPayload() {
+      return this.payload;
    }
 }
