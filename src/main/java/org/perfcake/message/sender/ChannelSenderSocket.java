@@ -34,23 +34,22 @@ import java.util.Map;
 /**
  * Sender that can send messages through NIO SocketChannel.
  *
- * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  * @author Dominik Hanák <domin.hanak@gmail.com>
  */
 public class ChannelSenderSocket extends ChannelSender {
 
    /**
-    * Sender's SocketChannel
+    * Sender's SocketChannel.
     */
    private SocketChannel socketChannel;
 
    /**
-    * TCP or UDP port
+    * TCP or UDP port.
     */
    private int port;
 
    /**
-    * Host adrress
+    * Host address.
     */
    private String host;
 
@@ -62,11 +61,6 @@ public class ChannelSenderSocket extends ChannelSender {
    }
 
    @Override
-   public void close() throws PerfCakeException {
-      // no
-   }
-
-    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
 
@@ -105,7 +99,7 @@ public class ChannelSenderSocket extends ChannelSender {
       if (payload != null) {
          // write the message into channel
          try {
-            while(rwBuffer.hasRemaining()) {
+            while (rwBuffer.hasRemaining()) {
                socketChannel.write(rwBuffer);
             }
          } catch (IOException e) {

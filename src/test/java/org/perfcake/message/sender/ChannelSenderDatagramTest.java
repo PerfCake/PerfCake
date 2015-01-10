@@ -1,7 +1,27 @@
+/*
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -----------------------------------------------------------------------/
+ */
 package org.perfcake.message.sender;
 
 import org.perfcake.message.Message;
 import org.perfcake.util.ObjectFactory;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -14,41 +34,37 @@ import java.util.Properties;
 
 /**
  * @author Dominik Hanák <domin.hanak@gmail.com>
+ * @author Martin Večera <marvenec@gmail.com>
  */
 public class ChannelSenderDatagramTest {
 
-    private final String tPAYLOAD = "fish";
-    private final String tPORT = "4444";
+   private static final String PAYLOAD = "fish";
+   private static final String PORT = "4444";
 
-    private InetAddress hostAdress;
-    private String target;
+   private String target;
 
-    @BeforeMethod
-    public void setUp() throws Exception {
-        hostAdress = InetAddress.getLocalHost();
-        StringBuilder sb = new StringBuilder();
-        sb.append(hostAdress.getHostAddress()).append(":").append(tPORT);
-        target = sb.toString();
-    }
+   @BeforeMethod
+   public void setUp() throws Exception {
+      final InetAddress hostAddress = InetAddress.getLocalHost();
+      target = hostAddress.getHostAddress() + ":" + PORT;
+   }
 
    @Test
    public void testNormalMessage() {
       final Properties senderProperties = new Properties();
       senderProperties.setProperty("target", target);
+      senderProperties.setProperty("waitResponse", "false");
 
       final Message message = new Message();
-      message.setPayload(tPAYLOAD);
+      message.setPayload(PAYLOAD);
 
       try {
          final ChannelSender sender = (ChannelSenderDatagram) ObjectFactory.summonInstance(ChannelSenderDatagram.class.getName(), senderProperties);
 
          sender.init();
 
-         final Map<String, String> additionalMessageProperties = new HashMap<>();
-         additionalMessageProperties.put("waitResponse", "false");
-
-         sender.preSend(message, additionalMessageProperties);
-         Assert.assertEquals(sender.getPayload(), tPAYLOAD);
+         sender.preSend(message, null);
+         Assert.assertEquals(sender.getPayload(), PAYLOAD);
 
          Serializable response = sender.doSend(message, null, null);
          Assert.assertEquals(response, "fish");
@@ -85,7 +101,7 @@ public class ChannelSenderDatagramTest {
          }
 
       } catch (Exception e) {
-        Assert.fail(e.getMessage(), e.getCause());
+         Assert.fail(e.getMessage(), e.getCause());
       }
    }
 

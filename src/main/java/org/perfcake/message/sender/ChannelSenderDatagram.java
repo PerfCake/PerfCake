@@ -33,23 +33,23 @@ import java.util.Map;
 /**
  * Sender that can send messages through NIO DatagramChannel.
  *
- * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  * @author Dominik Hanák <domin.hanak@gmail.com>
+ * @author Martin Večera <marvenec@gmail.com>
  */
 public class ChannelSenderDatagram extends ChannelSender {
 
    /**
-    * Sender's Datagram Channel
+    * Sender's Datagram Channel.
     */
    private DatagramChannel datagramChannel;
 
    /**
-    * TCP or UDP port
+    * TCP or UDP port.
     */
    private int port;
 
    /**
-    * Host adrress
+    * Host address.
     */
    private String host;
 
@@ -61,22 +61,12 @@ public class ChannelSenderDatagram extends ChannelSender {
    }
 
    @Override
-   public void close() throws PerfCakeException {
-     // no
-   }
-
-   @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
 
       // Open the Datagram channel in non-blocking mode
       datagramChannel = DatagramChannel.open();
-      if (waitResponse) {
-         // wait for response, so open in blocking
-         datagramChannel.configureBlocking(true);
-      } else {
-         datagramChannel.configureBlocking(false);
-      }
+      datagramChannel.configureBlocking(true);
 
       try {
          datagramChannel.connect(new InetSocketAddress(host, port));
@@ -103,10 +93,7 @@ public class ChannelSenderDatagram extends ChannelSender {
                datagramChannel.write(rwBuffer);
             }
          } catch (IOException e) {
-            StringBuilder errorMes = new StringBuilder();
-            errorMes.append("Problem while writing into Datagram Channel.").append(e.getMessage());
-
-            throw new PerfCakeException(errorMes.toString(), e.getCause());
+            throw new PerfCakeException("Problem while writing into Datagram Channel: ", e);
          }
 
          // flip the buffer so we can read
@@ -116,13 +103,10 @@ public class ChannelSenderDatagram extends ChannelSender {
          try {
             int bytesRead = datagramChannel.read(rwBuffer);
             if (bytesRead == -1) {
-                throw new IOException("Host closed the connection or end of stream reached.");
+               throw new IOException("Host closed the connection or end of stream reached.");
             }
          } catch (IOException e) {
-            StringBuilder errorMes = new StringBuilder();
-            errorMes.append("Problem while reading from Datagram Channel.").append(e.getCause());
-
-            throw new PerfCakeException(errorMes.toString());
+            throw new PerfCakeException("Problem while reading from Datagram Channel: ", e);
          }
          return new String(rwBuffer.array(), Charset.forName("UTF-8"));
       }

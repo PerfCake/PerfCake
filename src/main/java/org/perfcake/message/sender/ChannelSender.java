@@ -33,6 +33,7 @@ import java.util.Map;
  * Common ancestor to all sender's sending messages through NIO channels.
  *
  * @author Dominik Hanák <domin.hanak@gmail.com>
+ * @author Martin Večera <marvenec@gmail.com>
  */
 abstract public class ChannelSender extends AbstractSender {
    /**
@@ -46,33 +47,33 @@ abstract public class ChannelSender extends AbstractSender {
    protected ByteBuffer rwBuffer;
 
    /**
-    * Message payload
+    * Message payload.
     */
    protected String payload;
 
    /**
-    * Determines if we open channels in non-blocking or blocking mode
+    * Determines if we open channels in non-blocking or blocking mode.
     */
    protected Boolean waitResponse;
-
 
    @Override
    abstract public void init() throws PerfCakeException;
 
    @Override
-   abstract  public void close() throws PerfCakeException;
-
+   public void close() throws PerfCakeException {
+      // no-op
+   }
 
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
       if (log.isDebugEnabled()) {
-          log.debug("Encoding message into buffer.");
+         log.debug("Encoding message into buffer.");
       }
 
       // check if we should wait for response
       String waitResponseTmp = null;
-      if (properties != null && properties.containsKey("waitResponse")){
+      if (properties != null && properties.containsKey("waitResponse")) {
          waitResponseTmp = properties.get("waitResponse");
       }
       if (waitResponseTmp != null) {
@@ -87,7 +88,7 @@ abstract public class ChannelSender extends AbstractSender {
                throw new IllegalStateException("Undefined or invalid property waitResponse. Please use true or false.");
          }
       } else {
-          waitResponse = false;
+         waitResponse = false;
       }
 
       // Encode message payload into buffer
@@ -101,16 +102,17 @@ abstract public class ChannelSender extends AbstractSender {
       }
    }
 
-    @Override
+   @Override
    public void postSend(Message message) throws Exception {
       super.postSend(message);
    }
 
    /**
-    * Sets the payload attribute
+    * Sets the payload attribute.
     *
-    * @param payload message payload
-    * @return ChannelSender with new payload
+    * @param payload
+    *       Message payload.
+    * @return ChannelSender with new payload.
     */
    public ChannelSender setPayload(final String payload) {
       this.payload = payload;
@@ -118,10 +120,27 @@ abstract public class ChannelSender extends AbstractSender {
    }
 
    /**
-    * Returns payload of message
-    * @return payload
+    * Returns the payload of message.
+    *
+    * @return The message payload.
     */
    public String getPayload() {
       return this.payload;
+   }
+
+   /**
+    * Gets the status of waiting for response on the channel.
+    * @return True if and only if the sender awaits response.
+    */
+   public Boolean getWaitResponse() {
+      return waitResponse;
+   }
+
+   /**
+    * Specifies whether to wait for a response.
+    * @param waitResponse True to make the sender to wait for a response.
+    */
+   public void setWaitResponse(final Boolean waitResponse) {
+      this.waitResponse = waitResponse;
    }
 }
