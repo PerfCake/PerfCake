@@ -39,6 +39,7 @@ import java.util.Properties;
 
 /**
  * @author Dominik Hanák <domin.hanak@gmail.com>
+ * @author Martin Večera <marvenec@gmail.com>
  */
 public class ChannelSenderSocketTest {
 
@@ -67,7 +68,7 @@ public class ChannelSenderSocketTest {
    public void testNormalMessage() {
       final Properties senderProperties = new Properties();
       senderProperties.setProperty("target", target);
-      senderProperties.setProperty("awaitResponse", "false");
+      senderProperties.setProperty("awaitResponse", "true");
 
       final Message message = new Message();
       message.setPayload(PAYLOAD);
@@ -76,17 +77,12 @@ public class ChannelSenderSocketTest {
          final ChannelSender sender = (ChannelSenderSocket) ObjectFactory.summonInstance(ChannelSenderSocket.class.getName(), senderProperties);
 
          sender.init();
-
          sender.preSend(message, null);
 
          Serializable response = sender.doSend(message, null, null);
          Assert.assertEquals(response, "fish");
 
-         try {
-            sender.postSend(message);
-         } catch (Exception e) {
-            // error while closing, exception thrown - ok
-         }
+         sender.postSend(message);
 
       } catch (Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
@@ -107,12 +103,7 @@ public class ChannelSenderSocketTest {
          Serializable response = sender.doSend(null, null, null);
          Assert.assertNull(response);
 
-         try {
-            sender.postSend(null);
-         } catch (Exception e) {
-            // error while closing, exception thrown - ok
-         }
-
+         sender.postSend(null);
       } catch (Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
       }

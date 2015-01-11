@@ -44,12 +44,22 @@ abstract public class ChannelSender extends AbstractSender {
    /**
     * Buffer for writing to and reading from NIO channel.
     */
-   protected ByteBuffer rwBuffer = null;
+   protected ByteBuffer messageBuffer = null;
 
    /**
     * Determines whether we should wait for the response from the channel.
     */
-   protected Boolean awaitResponse;
+   protected boolean awaitResponse;
+
+   /**
+    * Expected maximum response size. Defaults to -1 which means to instantiate the buffer of the same size as the request messages.
+    */
+   protected int maxResponseSize = -1;
+
+   /**
+    * A byte buffer to store the response.
+    */
+   protected ByteBuffer responseBuffer;
 
    @Override
    abstract public void init() throws PerfCakeException;
@@ -62,17 +72,20 @@ abstract public class ChannelSender extends AbstractSender {
    @Override
    public void preSend(Message message, Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
-      if (log.isDebugEnabled()) {
-         log.debug("Encoding message into buffer.");
-      }
 
       // Encode message payload into buffer
       if (message != null && message.getPayload() != null) {
          CharBuffer c = CharBuffer.wrap(message.getPayload().toString());
          Charset charset = Charset.forName("UTF-8");
-         rwBuffer = charset.encode(c);
+         messageBuffer = charset.encode(c);
       } else {
-         rwBuffer = null;
+         messageBuffer = null;
+      }
+
+      if (maxResponseSize == -1 && messageBuffer == null) {
+         responseBuffer = null;
+      } else {
+         responseBuffer = ByteBuffer.allocate(maxResponseSize == -1 ? messageBuffer.capacity() : maxResponseSize);
       }
    }
 
@@ -86,7 +99,7 @@ abstract public class ChannelSender extends AbstractSender {
     *
     * @return True if and only if the sender awaits response.
     */
-   public Boolean getAwaitResponse() {
+   public boolean getAwaitResponse() {
       return awaitResponse;
    }
 
@@ -96,7 +109,26 @@ abstract public class ChannelSender extends AbstractSender {
     * @param awaitResponse
     *       True to make the sender to wait for a response.
     */
-   public void setAwaitResponse(final Boolean awaitResponse) {
+   public void setAwaitResponse(final boolean awaitResponse) {
       this.awaitResponse = awaitResponse;
+   }
+
+   /**
+    * Gets the expected response maximum size. If set to -1, the response buffer will have the same size as the original message.
+    *
+    * @return The maximum configured buffer size.
+    */
+   public int getMaxResponseSize() {
+      return maxResponseSize;
+   }
+
+   /**
+    * Sets the expected response maximum size. Set to -1 for the response buffer to have the same size as the original message.
+    *
+    * @param maxResponseSize
+    *       The desired maximum response size.
+    */
+   public void setMaxResponseSize(final int maxResponseSize) {
+      this.maxResponseSize = maxResponseSize;
    }
 }

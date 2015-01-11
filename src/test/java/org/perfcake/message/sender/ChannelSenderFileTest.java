@@ -27,6 +27,8 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
@@ -35,13 +37,16 @@ import java.util.Properties;
  */
 public class ChannelSenderFileTest {
    private static final String PAYLOAD = "fish";
+   private static final String originalContent = "xxxxlion";
+   private static final String finalContent = "fishlion";
 
    @Test
    public void testNormalMessage() throws Exception {
       final Properties senderProperties = new Properties();
-      final String file = File.createTempFile("perfcake-", "message.txt").getAbsolutePath();
-      senderProperties.setProperty("target", file);
-      senderProperties.setProperty("awaitResponse", "false");
+      final File file = File.createTempFile("perfcake-", "message.txt");
+      Files.write(file.toPath(), originalContent.getBytes());
+      senderProperties.setProperty("target", file.getAbsolutePath());
+      senderProperties.setProperty("awaitResponse", "true");
 
       final Message message = new Message();
       message.setPayload(PAYLOAD);
@@ -50,19 +55,16 @@ public class ChannelSenderFileTest {
          final ChannelSender sender = (ChannelSenderFile) ObjectFactory.summonInstance(ChannelSenderFile.class.getName(), senderProperties);
 
          sender.init();
-         Assert.assertEquals(sender.getTarget(), file);
+         Assert.assertEquals(sender.getTarget(), file.getAbsolutePath());
 
          sender.preSend(message, null);
 
          Serializable response = sender.doSend(message, null, null);
-         Assert.assertEquals(response, "fish");
+         Assert.assertEquals(response, "lion");
 
-         try {
-            sender.postSend(message);
-         } catch (Exception e) {
-            // error while closing, exception thrown - ok
-         }
+         Assert.assertEquals(new String(Files.readAllBytes(file.toPath())), finalContent);
 
+         sender.postSend(message);
       } catch (Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
       }
