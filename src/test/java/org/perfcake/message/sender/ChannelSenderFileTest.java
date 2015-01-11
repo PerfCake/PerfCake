@@ -33,7 +33,7 @@ import java.util.Properties;
  * @author Dominik Hanák <domin.hanak@gmail.com>
  * @author Martin Večera <marvenec@gmail.com>
  */
-public class ChannelSenderFileTest  {
+public class ChannelSenderFileTest {
    private static final String PAYLOAD = "fish";
 
    @Test
@@ -41,7 +41,7 @@ public class ChannelSenderFileTest  {
       final Properties senderProperties = new Properties();
       final String file = File.createTempFile("perfcake-", "message.txt").getAbsolutePath();
       senderProperties.setProperty("target", file);
-      senderProperties.setProperty("waitResponse", "false");
+      senderProperties.setProperty("awaitResponse", "false");
 
       final Message message = new Message();
       message.setPayload(PAYLOAD);
@@ -53,15 +53,14 @@ public class ChannelSenderFileTest  {
          Assert.assertEquals(sender.getTarget(), file);
 
          sender.preSend(message, null);
-         Assert.assertEquals(sender.getPayload(), PAYLOAD);
 
          Serializable response = sender.doSend(message, null, null);
          Assert.assertEquals(response, "fish");
 
          try {
-             sender.postSend(message);
+            sender.postSend(message);
          } catch (Exception e) {
-             // error while closing, exception thrown - ok
+            // error while closing, exception thrown - ok
          }
 
       } catch (Exception e) {
