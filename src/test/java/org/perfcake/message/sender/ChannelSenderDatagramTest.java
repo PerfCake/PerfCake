@@ -71,7 +71,8 @@ public class ChannelSenderDatagramTest {
    public void testNormalMessage() {
       final Properties senderProperties = new Properties();
       senderProperties.setProperty("target", target);
-      senderProperties.setProperty("awaitResponse", "false");
+      senderProperties.setProperty("awaitResponse", "true");
+      senderProperties.setProperty("maxResponseSize", "5");
 
       final Message message = new Message();
       message.setPayload(PAYLOAD);
@@ -79,18 +80,16 @@ public class ChannelSenderDatagramTest {
       try {
          final ChannelSender sender = (ChannelSenderDatagram) ObjectFactory.summonInstance(ChannelSenderDatagram.class.getName(), senderProperties);
 
-         sender.init();
+         Assert.assertEquals(sender.getAwaitResponse(), true);
+         Assert.assertEquals(sender.maxResponseSize, 5);
 
+         sender.init();
          sender.preSend(message, null);
 
          Serializable response = sender.doSend(message, null, null);
          Assert.assertEquals(response, "fish2");
 
-         try {
-            sender.postSend(message);
-         } catch (Exception e) {
-            // error while closing, exception thrown - ok
-         }
+         sender.postSend(message);
       } catch (Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
       }
@@ -110,12 +109,7 @@ public class ChannelSenderDatagramTest {
          Serializable response = sender.doSend(null, null, null);
          Assert.assertNull(response);
 
-         try {
-            sender.postSend(null);
-         } catch (Exception e) {
-            // error while closing, exception thrown - ok
-         }
-
+         sender.postSend(null);
       } catch (Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
       }
@@ -131,7 +125,6 @@ public class ChannelSenderDatagramTest {
                if (asyncResult.succeeded()) {
                   socket.dataHandler(new Handler<DatagramPacket>() {
                      public void handle(DatagramPacket packet) {
-                        System.out.println("Resending to " + packet.sender());
                         socket.send(packet.data().appendString("2"), packet.sender().getHostName(), packet.sender().getPort(), new AsyncResultHandler<DatagramSocket>() {
                            public void handle(AsyncResult<DatagramSocket> asyncResult) {
                               if (!asyncResult.succeeded()) {

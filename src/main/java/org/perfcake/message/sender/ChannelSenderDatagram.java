@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.charset.Charset;
 import java.util.Map;
@@ -50,16 +49,6 @@ public class ChannelSenderDatagram extends ChannelSender {
     */
    private SocketAddress address;
 
-   /**
-    * Expected maximum response size. Defaults to -1 which means to instantiate the buffer of the same size as the request messages.
-    */
-   private int maxResponseSize = -1;
-
-   /**
-    * A byte buffer to store the response.
-    */
-   private ByteBuffer responseBuffer;
-
    @Override
    public void init() {
       final String[] parts = target.split(":", 2);
@@ -76,30 +65,31 @@ public class ChannelSenderDatagram extends ChannelSender {
       // Open the Datagram channel in blocking mode
       datagramChannel = DatagramChannel.open();
       datagramChannel.configureBlocking(true);
-
-      responseBuffer = ByteBuffer.allocate(maxResponseSize < 0 ? rwBuffer.capacity() : maxResponseSize);
    }
 
    @Override
    public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws PerfCakeException {
-      if (rwBuffer != null) {
+      if (messageBuffer != null) {
          // write data into channel
          try {
-            datagramChannel.send(rwBuffer, address);
+            datagramChannel.send(messageBuffer, address);
          } catch (IOException e) {
             throw new PerfCakeException("Problem while writing to the datagram channel: ", e);
          }
 
-         // flip the buffer so we can read
-         rwBuffer.flip();
-
-         // read data from into buffer
-         try {
-            SocketAddress from = datagramChannel.receive(responseBuffer);
-         } catch (IOException e) {
-            throw new PerfCakeException("Problem while reading from the datagram channel: ", e);
+         // read response
+         if (awaitResponse) {
+            if (responseBuffer != null) {
+               try {
+                  datagramChannel.receive(responseBuffer);
+               } catch (IOException e) {
+                  throw new PerfCakeException("Problem while reading from the datagram channel: ", e);
+               }
+               return new String(responseBuffer.array(), Charset.forName("UTF-8"));
+            } else {
+               throw new PerfCakeException("Cannot read response with automatic buffer size configuration for an empty message.");
+            }
          }
-         return new String(responseBuffer.array(), Charset.forName("UTF-8"));
       }
       return null;
    }
@@ -110,26 +100,8 @@ public class ChannelSenderDatagram extends ChannelSender {
       try {
          datagramChannel.close();
       } catch (IOException e) {
-         throw new PerfCakeException("Error while closing DatagramChannel.", e.getCause());
+         throw new PerfCakeException("Error while closing the datagram channel: ", e);
       }
    }
 
-   /**
-    * Gets the expected response maximum size. If set to -1, the response buffer will have the same size as the original message.
-    *
-    * @return The maximum configured buffer size.
-    */
-   public int getMaxResponseSize() {
-      return maxResponseSize;
-   }
-
-   /**
-    * Sets the expected response maximum size. Set to -1 for the response buffer to have the same size as the original message.
-    *
-    * @param maxResponseSize
-    *       The desired maximum response size.
-    */
-   public void setMaxResponseSize(final int maxResponseSize) {
-      this.maxResponseSize = maxResponseSize;
-   }
 }

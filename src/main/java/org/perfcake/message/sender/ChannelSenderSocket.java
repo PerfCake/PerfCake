@@ -66,57 +66,41 @@ public class ChannelSenderSocket extends ChannelSender {
 
       // Open the Socket channel in non-blocking mode
       socketChannel = SocketChannel.open();
-      if (awaitResponse) {
-         // we should wait for response, so open in blocking mode
-         socketChannel.configureBlocking(true);
-      } else {
-         socketChannel.configureBlocking(false);
-      }
+      socketChannel.configureBlocking(true);
 
       try {
          socketChannel.connect(new InetSocketAddress(host, port));
       } catch (UnresolvedAddressException e) {
-         throw new PerfCakeException(e.getMessage(), e.getCause());
-      }
-
-      while (!socketChannel.finishConnect()) {
-         if (log.isDebugEnabled()) {
-            log.debug("Waiting for connection to finish.");
-         }
-      }
-
-      if (!socketChannel.isConnected()) {
-         log.error("Can't connect to target destination.");
-         throw new PerfCakeException("Connection to " + getTarget() + " unsuccessful.");
+         throw new PerfCakeException("Cannot connect to the socket channel: ", e);
       }
    }
 
    @Override
    public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws Exception {
-      if (rwBuffer != null) {
+      if (messageBuffer != null) {
          // write the message into channel
          try {
-            while (rwBuffer.hasRemaining()) {
-               socketChannel.write(rwBuffer);
+            while (messageBuffer.hasRemaining()) {
+               socketChannel.write(messageBuffer);
             }
          } catch (IOException e) {
-            throw new PerfCakeException("Problem while writing into Socket Channel." + e.getMessage(), e.getCause());
+            throw new PerfCakeException("Problem while writing to the socket channel: ", e);
          }
-
-         // flip the buffer so we can read
-         rwBuffer.flip();
 
          // read the response
-         try {
-            int bytesRead = socketChannel.read(rwBuffer);
-            if (bytesRead == -1) {
-               throw new IOException("Host closed the connection or end of stream reached.");
-            }
-         } catch (IOException e) {
-            throw new PerfCakeException("Problem while reading from Socket Channel." + e.getMessage(), e.getCause());
-         }
+         if (awaitResponse) {
+            if (responseBuffer != null) {
+               try {
+                  socketChannel.read(responseBuffer);
+               } catch (IOException e) {
+                  throw new PerfCakeException("Problem while reading from the socket channel: ", e);
+               }
 
-         return new String(rwBuffer.array(), Charset.forName("UTF-8"));
+               return new String(responseBuffer.array(), Charset.forName("UTF-8"));
+            } else {
+               throw new PerfCakeException("Cannot read response with automatic buffer size configuration for an empty message.");
+            }
+         }
       }
       return null;
    }
@@ -127,7 +111,7 @@ public class ChannelSenderSocket extends ChannelSender {
       try {
          socketChannel.close();
       } catch (IOException e) {
-         throw new PerfCakeException("Error while closing SocketChannel.", e.getCause());
+         throw new PerfCakeException("Error while closing the socket channel: ", e);
       }
    }
 }

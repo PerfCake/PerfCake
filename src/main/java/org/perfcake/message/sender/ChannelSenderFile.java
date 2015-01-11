@@ -53,18 +53,23 @@ public class ChannelSenderFile extends ChannelSender {
       fileChannel = new RandomAccessFile(getTarget(), "rw").getChannel();
 
       if (!fileChannel.isOpen()) {
-         throw new PerfCakeException("Opening of fileChannel to " + getTarget() + " unsuccessful.");
+         throw new PerfCakeException("Cannot open a file channel to target: " + getTarget());
       }
    }
 
    @Override
    public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws Exception {
-      if (rwBuffer != null) {
-         fileChannel.write(rwBuffer);
-         rwBuffer.flip();
-         fileChannel.read(rwBuffer);
+      if (messageBuffer != null) {
+         fileChannel.write(messageBuffer);
 
-         return new String(rwBuffer.array(), Charset.forName("UTF-8"));
+         if (awaitResponse) {
+            if (responseBuffer != null) {
+               fileChannel.read(responseBuffer);
+               return new String(responseBuffer.array(), Charset.forName("UTF-8"));
+            } else {
+               throw new PerfCakeException("Cannot read response with automatic buffer size configuration for an empty message.");
+            }
+         }
       }
       return null;
    }
@@ -75,7 +80,7 @@ public class ChannelSenderFile extends ChannelSender {
       try {
          fileChannel.close();
       } catch (IOException e) {
-         throw new PerfCakeException("Error while closing FileChannel.", e.getCause());
+         throw new PerfCakeException("Error while closing the file channel: ", e);
       }
    }
 }
