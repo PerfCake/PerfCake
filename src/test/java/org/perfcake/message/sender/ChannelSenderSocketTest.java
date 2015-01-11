@@ -44,25 +44,9 @@ public class ChannelSenderSocketTest {
 
    private static final String PAYLOAD = "fish";
    private static final int PORT = 4444;
-
+   private static String host;
    private String target;
    private EchoSocketVerticle vert = new EchoSocketVerticle();
-   private static String host;
-
-   static class EchoSocketVerticle extends Verticle {
-      @Override
-      public void start() {
-         vertx.createNetServer().connectHandler(new Handler<NetSocket>() {
-            public void handle(final NetSocket sock) {
-               sock.dataHandler(new Handler<Buffer>() {
-                  public void handle(final Buffer buffer) {
-                     sock.write(buffer);
-                  }
-               });
-            }
-         }).listen(PORT, host);
-      }
-   }
 
    @BeforeClass
    public void setUp() throws Exception {
@@ -83,7 +67,7 @@ public class ChannelSenderSocketTest {
    public void testNormalMessage() {
       final Properties senderProperties = new Properties();
       senderProperties.setProperty("target", target);
-      senderProperties.setProperty("waitResponse", "false");
+      senderProperties.setProperty("awaitResponse", "false");
 
       final Message message = new Message();
       message.setPayload(PAYLOAD);
@@ -94,7 +78,6 @@ public class ChannelSenderSocketTest {
          sender.init();
 
          sender.preSend(message, null);
-         Assert.assertEquals(sender.getPayload(), PAYLOAD);
 
          Serializable response = sender.doSend(message, null, null);
          Assert.assertEquals(response, "fish");
@@ -120,7 +103,6 @@ public class ChannelSenderSocketTest {
 
          sender.init();
          sender.preSend(null, null);
-         Assert.assertEquals(sender.getPayload(), null);
 
          Serializable response = sender.doSend(null, null, null);
          Assert.assertNull(response);
@@ -133,6 +115,21 @@ public class ChannelSenderSocketTest {
 
       } catch (Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
+      }
+   }
+
+   static class EchoSocketVerticle extends Verticle {
+      @Override
+      public void start() {
+         vertx.createNetServer().connectHandler(new Handler<NetSocket>() {
+            public void handle(final NetSocket sock) {
+               sock.dataHandler(new Handler<Buffer>() {
+                  public void handle(final Buffer buffer) {
+                     sock.write(buffer);
+                  }
+               });
+            }
+         }).listen(PORT, host);
       }
    }
 }

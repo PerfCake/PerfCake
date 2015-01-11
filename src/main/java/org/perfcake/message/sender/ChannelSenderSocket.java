@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,7 +66,7 @@ public class ChannelSenderSocket extends ChannelSender {
 
       // Open the Socket channel in non-blocking mode
       socketChannel = SocketChannel.open();
-      if (waitResponse) {
+      if (awaitResponse) {
          // we should wait for response, so open in blocking mode
          socketChannel.configureBlocking(true);
       } else {
@@ -86,27 +86,21 @@ public class ChannelSenderSocket extends ChannelSender {
       }
 
       if (!socketChannel.isConnected()) {
-         StringBuilder errorMes = new StringBuilder();
-         errorMes.append("Connection to ").append(getTarget()).append(" unsuccessful.");
-
          log.error("Can't connect to target destination.");
-         throw new PerfCakeException(errorMes.toString());
+         throw new PerfCakeException("Connection to " + getTarget() + " unsuccessful.");
       }
    }
 
    @Override
    public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws Exception {
-      if (payload != null) {
+      if (rwBuffer != null) {
          // write the message into channel
          try {
             while (rwBuffer.hasRemaining()) {
                socketChannel.write(rwBuffer);
             }
          } catch (IOException e) {
-            StringBuilder errorMes = new StringBuilder();
-            errorMes.append("Problem while writing into Socket Channel.").append(e.getMessage());
-
-            throw new PerfCakeException(errorMes.toString(), e.getCause());
+            throw new PerfCakeException("Problem while writing into Socket Channel." + e.getMessage(), e.getCause());
          }
 
          // flip the buffer so we can read
@@ -119,10 +113,7 @@ public class ChannelSenderSocket extends ChannelSender {
                throw new IOException("Host closed the connection or end of stream reached.");
             }
          } catch (IOException e) {
-            StringBuilder errorMes = new StringBuilder();
-            errorMes.append("Problem while reading from Socket Channel.").append(e.getMessage());
-
-            throw new PerfCakeException(errorMes.toString(), e.getCause());
+            throw new PerfCakeException("Problem while reading from Socket Channel." + e.getMessage(), e.getCause());
          }
 
          return new String(rwBuffer.array(), Charset.forName("UTF-8"));

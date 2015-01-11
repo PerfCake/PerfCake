@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,17 +44,12 @@ abstract public class ChannelSender extends AbstractSender {
    /**
     * Buffer for writing to and reading from NIO channel.
     */
-   protected ByteBuffer rwBuffer;
+   protected ByteBuffer rwBuffer = null;
 
    /**
-    * Message payload.
+    * Determines whether we should wait for the response from the channel.
     */
-   protected String payload;
-
-   /**
-    * Determines if we open channels in non-blocking or blocking mode.
-    */
-   protected Boolean waitResponse;
+   protected Boolean awaitResponse;
 
    @Override
    abstract public void init() throws PerfCakeException;
@@ -71,34 +66,13 @@ abstract public class ChannelSender extends AbstractSender {
          log.debug("Encoding message into buffer.");
       }
 
-      // check if we should wait for response
-      String waitResponseTmp = null;
-      if (properties != null && properties.containsKey("waitResponse")) {
-         waitResponseTmp = properties.get("waitResponse");
-      }
-      if (waitResponseTmp != null) {
-         switch (waitResponseTmp) {
-            case "true":
-               waitResponse = true;
-               break;
-            case "false":
-               waitResponse = false;
-               break;
-            default:
-               throw new IllegalStateException("Undefined or invalid property waitResponse. Please use true or false.");
-         }
-      } else {
-         waitResponse = false;
-      }
-
       // Encode message payload into buffer
       if (message != null && message.getPayload() != null) {
-         payload = message.getPayload().toString();
-         CharBuffer c = CharBuffer.wrap(payload);
+         CharBuffer c = CharBuffer.wrap(message.getPayload().toString());
          Charset charset = Charset.forName("UTF-8");
          rwBuffer = charset.encode(c);
       } else {
-         payload = null;
+         rwBuffer = null;
       }
    }
 
@@ -108,39 +82,21 @@ abstract public class ChannelSender extends AbstractSender {
    }
 
    /**
-    * Sets the payload attribute.
-    *
-    * @param payload
-    *       Message payload.
-    * @return ChannelSender with new payload.
-    */
-   public ChannelSender setPayload(final String payload) {
-      this.payload = payload;
-      return this;
-   }
-
-   /**
-    * Returns the payload of message.
-    *
-    * @return The message payload.
-    */
-   public String getPayload() {
-      return this.payload;
-   }
-
-   /**
     * Gets the status of waiting for response on the channel.
+    *
     * @return True if and only if the sender awaits response.
     */
-   public Boolean getWaitResponse() {
-      return waitResponse;
+   public Boolean getAwaitResponse() {
+      return awaitResponse;
    }
 
    /**
     * Specifies whether to wait for a response.
-    * @param waitResponse True to make the sender to wait for a response.
+    *
+    * @param awaitResponse
+    *       True to make the sender to wait for a response.
     */
-   public void setWaitResponse(final Boolean waitResponse) {
-      this.waitResponse = waitResponse;
+   public void setAwaitResponse(final Boolean awaitResponse) {
+      this.awaitResponse = awaitResponse;
    }
 }
