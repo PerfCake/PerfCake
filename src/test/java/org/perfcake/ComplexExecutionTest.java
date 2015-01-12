@@ -22,8 +22,6 @@ package org.perfcake;
 import org.perfcake.message.sender.DummySender;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
-import org.perfcake.scenario.ScenarioRetractor;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,6 +35,9 @@ public class ComplexExecutionTest extends TestSetup {
    @Test
    public void iterationScenarioTest() throws Exception {
       final Scenario scenario;
+
+      DummySender.resetCounter();
+
       scenario = ScenarioLoader.load("test-iteration-scenario");
       scenario.init();
       scenario.run();
