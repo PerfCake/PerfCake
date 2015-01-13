@@ -19,6 +19,7 @@
  */
 package org.perfcake.validation;
 
+import org.perfcake.TestSetup;
 import org.perfcake.message.Message;
 
 import org.apache.commons.io.FileUtils;
@@ -27,12 +28,6 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.attribute.FileAttribute;
-import java.nio.file.attribute.PosixFilePermission;
-import java.nio.file.attribute.PosixFilePermissions;
-import java.util.Set;
 
 public class DictionaryValidatorTest {
    final static String SVRATKA = "Na břehu řeky Svratky kvete rozrazil,\n"
@@ -77,18 +72,6 @@ public class DictionaryValidatorTest {
          + "jsou možná hezčí řeky, mají větší třpyt,\n"
          + "však ty jsi moje vlast, má vlast, má věčná matka.";
 
-   final static private boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
-
-   private String createTempDir(final String name) throws IOException {
-      if (isPosix) {
-         Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-xr--");
-         FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
-         return Files.createTempDirectory(name, attr).toString();
-      } else {
-         return Files.createTempDirectory(name).toString();
-      }
-   }
-
    @Test
    public void testBasicOperation() throws IOException {
       Message m1 = new Message();
@@ -96,7 +79,7 @@ public class DictionaryValidatorTest {
       Message m2 = new Message();
       m2.setPayload("Čau");
 
-      String dir = createTempDir("PerfCakeDictionaryValidator");
+      String dir = TestSetup.createTempDir("PerfCakeDictionaryValidator");
       try {
          // first record some sample data
          DictionaryValidator dv = new DictionaryValidator();
@@ -129,7 +112,7 @@ public class DictionaryValidatorTest {
       Message m2 = new Message();
       m2.setPayload(SVRATKA + SVRATKA + SVRATKA);
 
-      String dir = createTempDir("PerfCakeDictionaryValidator");
+      String dir = TestSetup.createTempDir("PerfCakeDictionaryValidator");
       try {
          // first record some sample data
          DictionaryValidator dv = new DictionaryValidator();
@@ -156,7 +139,7 @@ public class DictionaryValidatorTest {
       Message m2 = new Message();
       m2.setPayload("Čau");
 
-      String dir = createTempDir("PerfCakeDictionaryValidator");
+      String dir = TestSetup.createTempDir("PerfCakeDictionaryValidator");
       try {
          // first record some sample data
          DictionaryValidator dv = new DictionaryValidator();

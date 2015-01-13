@@ -23,12 +23,25 @@ import org.perfcake.util.Utils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
+import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.Set;
+
 /**
  * Does the necessary configurations for the tests to work.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class TestSetup {
+
+   /**
+    * Determines whether the system running this application is POSIX compliant.
+    */
+   final static private boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
    @BeforeClass(alwaysRun = true)
    public void configureLocations() throws Exception {
@@ -41,4 +54,22 @@ public class TestSetup {
       System.clearProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY);
       System.clearProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY);
    }
+
+   /**
+    * Creates a temporary directory based on the given name. It also sets correct rights on POSIX compliant systems. The directory gets deleted at the end of this application process.
+    * @param name Name of the temporary directory.
+    * @return The full path of the created directory.
+    * @throws IOException When it was not possible to create the directory.
+    */
+   public static String createTempDir(final String name) throws IOException {
+      if (isPosix) {
+         Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-xr--");
+         FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
+         return Files.createTempDirectory(name, attr).toString();
+      } else {
+         return Files.createTempDirectory(name).toString();
+      }
+   }
+
+
 }
