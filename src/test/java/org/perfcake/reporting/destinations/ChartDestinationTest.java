@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
  */
 public class ChartDestinationTest {
 
-   @Test(enabled = false)
+   @Test(enabled = true)
    public void basicTest() throws Exception {
       System.setProperty(PerfCakeConst.TIMESTAMP_PROPERTY, String.valueOf(System.currentTimeMillis()));
 

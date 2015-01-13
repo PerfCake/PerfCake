@@ -122,6 +122,9 @@ public class StringTemplate {
    private Engine getEngine() {
       Properties config = new Properties();
       config.setProperty("value.filters", "");
+      config.setProperty("script.value.filters", "");
+      config.setProperty("style.value.filters", "");
+      config.setProperty("text.filters", "");
       config.setProperty("preload", "false");
 
       return Engine.getEngine(config);
