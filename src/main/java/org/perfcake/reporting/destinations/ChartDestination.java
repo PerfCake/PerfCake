@@ -67,10 +67,19 @@ public class ChartDestination implements Destination {
 
    private File dataFile;
 
+   private boolean successInit = false;
+
    private boolean createOutputFileStructure() {
-      if (!target.toFile().mkdirs()) {
-         log.error("Could not create output directory: " + target.toFile().getAbsolutePath());
-         return false;
+      if (!target.toFile().exists()) {
+         if (!target.toFile().mkdirs()) {
+            log.error("Could not create output directory: " + target.toFile().getAbsolutePath());
+            return false;
+         }
+      } else {
+         if (!target.toFile().isDirectory()) {
+            log.error("Could not create output directory. It already exists as a file: " + target.toFile().getAbsolutePath());
+            return false;
+         }
       }
 
       File dir = Paths.get(target.toString(), "data").toFile();
@@ -95,94 +104,68 @@ public class ChartDestination implements Destination {
       return true;
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.destinations.Destination#open()
-    */
-   @Override
-   public void open() {
-      boolean res = true;
-
-      if (!target.toFile().exists()) {
-         res = createOutputFileStructure();
-      } else {
-         if (!target.toFile().isDirectory()) {
-            log.error("Could not create output directory. It already exists as a file: " + target.toFile().getAbsolutePath());
-            res = false;
-         }
+   private boolean writeDataFileHeader() {
+      final StringBuilder dataHeader = new StringBuilder("var ");
+      dataHeader.append(baseName);
+      dataHeader.append(" = [ [ 'Time'");
+      for (String attr : attributes) {
+         dataHeader.append(", '");
+         dataHeader.append(attr);
+         dataHeader.append("'");
+      }
+      dataHeader.append("] ];\n\n");
+      try {
+         Files.write(dataFile.toPath(), dataHeader.toString().getBytes(Utils.getDefaultEncoding()));
+      } catch (IOException e) {
+         log.error(String.format("Cannot write the data header to the chart data file %s: ", dataFile.getAbsolutePath()), e);
+         return false;
       }
 
-      if (res) {
-         baseName = group + System.getProperty(PerfCakeConst.TIMESTAMP_PROPERTY);
-         dataFile = Paths.get(target.toString(), "data", baseName + ".js").toFile();
-
-         // write beginning of the data file
-         final StringBuilder dataHeader = new StringBuilder("var ");
-         dataHeader.append(baseName);
-         dataHeader.append(" = [ [ 'Time'");
-         for (String attr : attributes) {
-            dataHeader.append(", '");
-            dataHeader.append(attr);
-            dataHeader.append("'");
-         }
-         dataHeader.append("] ];\n\n");
-         try {
-            Files.write(dataFile.toPath(), dataHeader.toString().getBytes(Utils.getDefaultEncoding()));
-         } catch (IOException e) {
-            log.error(String.format("Cannot write the data header to the chart data file %s: ", dataFile.getAbsolutePath()), e);
-            return;
-         }
-
-         // write .dat file for later use by loader
-         final Path instructionsFile = Paths.get(target.toString(), "data", baseName + ".dat");
-         final StringBuilder instructions = new StringBuilder("drawChart(");
-         instructions.append(baseName);
-         instructions.append(", 'chart_");
-         instructions.append(baseName);
-         instructions.append("_div', [0");
-         for (int i = 1; i <= attributes.size(); i++) {
-            instructions.append(", ");
-            instructions.append(i);
-         }
-         instructions.append("], '");
-         instructions.append(xAxis);
-         instructions.append("', '");
-         instructions.append(yAxis);
-         instructions.append("', '");
-         instructions.append(name);
-         instructions.append("');\n");
-         try {
-            Files.write(instructionsFile, instructions.toString().getBytes(Utils.getDefaultEncoding()));
-         } catch (IOException e) {
-            log.error(String.format("Cannot write instructions file %s: ", instructionsFile.toFile().getAbsolutePath()), e);
-            return;
-         }
-
-         // write a quick view file
-         final Path quickViewFile = Paths.get(target.toString(), "data", baseName + ".html");
-         final Properties quickViewProps = new Properties();
-         quickViewProps.setProperty("baseName", baseName);
-         quickViewProps.setProperty("loader", instructions.toString());
-         try {
-            StringTemplate quickView = new StringTemplate(new String(Files.readAllBytes(Paths.get(Utils.getResourceAsUrl("/charts/quick-view.html").toURI())), Utils.getDefaultEncoding()), quickViewProps);
-            Files.write(quickViewFile, quickView.toString().getBytes(Utils.getDefaultEncoding()));
-         } catch (IOException | PerfCakeException | URISyntaxException e) {
-            log.error("Cannot store quick view file: ", e);
-         }
-      }
-
-      // nop
+      return true;
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.destinations.Destination#close()
-    */
-   @Override
-   public void close() {
-      // nop
+   private String writeChartDatFile() {
+      final Path instructionsFile = Paths.get(target.toString(), "data", baseName + ".dat");
+      final StringBuilder instructions = new StringBuilder("drawChart(");
+      instructions.append(baseName);
+      instructions.append(", 'chart_");
+      instructions.append(baseName);
+      instructions.append("_div', [0");
+      for (int i = 1; i <= attributes.size(); i++) {
+         instructions.append(", ");
+         instructions.append(i);
+      }
+      instructions.append("], '");
+      instructions.append(xAxis);
+      instructions.append("', '");
+      instructions.append(yAxis);
+      instructions.append("', '");
+      instructions.append(name);
+      instructions.append("');\n");
+      try {
+         Files.write(instructionsFile, instructions.toString().getBytes(Utils.getDefaultEncoding()));
+      } catch (IOException e) {
+         log.error(String.format("Cannot write instructions file %s: ", instructionsFile.toFile().getAbsolutePath()), e);
+         return null;
+      }
+
+      return instructions.toString();
+   }
+
+   private boolean writeQuickView(final String loaderLine) {
+      final Path quickViewFile = Paths.get(target.toString(), "data", baseName + ".html");
+      final Properties quickViewProps = new Properties();
+      quickViewProps.setProperty("baseName", baseName);
+      quickViewProps.setProperty("loader", loaderLine);
+      try {
+         StringTemplate quickView = new StringTemplate(new String(Files.readAllBytes(Paths.get(Utils.getResourceAsUrl("/charts/quick-view.html").toURI())), Utils.getDefaultEncoding()), quickViewProps);
+         Files.write(quickViewFile, quickView.toString().getBytes(Utils.getDefaultEncoding()));
+      } catch (IOException | PerfCakeException | URISyntaxException e) {
+         log.error("Cannot store quick view file: ", e);
+         return false;
+      }
+
+      return true;
    }
 
    private String getResultLine(final Measurement m) {
@@ -218,10 +201,51 @@ public class ChartDestination implements Destination {
    /*
     * (non-Javadoc)
     *
+    * @see org.perfcake.reporting.destinations.Destination#open()
+    */
+   @Override
+   public void open() {
+      successInit = createOutputFileStructure();
+
+      if (successInit) {
+         baseName = group + System.getProperty(PerfCakeConst.TIMESTAMP_PROPERTY);
+         dataFile = Paths.get(target.toString(), "data", baseName + ".js").toFile();
+
+         // write beginning of the data file
+         successInit = writeDataFileHeader(); // successInit was already true
+
+         // write .dat file for later use by loader
+         final String loaderLine = writeChartDatFile();
+         successInit = successInit && (loaderLine != null);
+
+         // write a quick view file
+         successInit = successInit && writeQuickView(loaderLine);
+      }
+
+      // nop
+   }
+
+   /*
+    * (non-Javadoc)
+    *
+    * @see org.perfcake.reporting.destinations.Destination#close()
+    */
+   @Override
+   public void close() {
+      // nop
+   }
+
+   /*
+    * (non-Javadoc)
+    *
     * @see org.perfcake.reporting.destinations.Destination#report(org.perfcake.reporting.Measurement)
     */
    @Override
    public void report(final Measurement m) throws ReportingException {
+      if (!successInit) {
+         throw new ReportingException("Chart destination was not properly initialized.");
+      }
+
       String line = getResultLine(m);
 
       if (line != null && !"".equals(line)) {
