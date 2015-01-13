@@ -37,8 +37,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -74,6 +76,27 @@ public class ScenarioExecution {
    private ScenarioExecution(final String[] args) {
       parseCommandLine(args);
       loadScenario();
+   }
+
+   /**
+    * The main method which creates an instance of ScenarioExecution and executes the scenario.
+    *
+    * @param args
+    *       Command line arguments.
+    */
+   public static void main(final String[] args) {
+      ScenarioExecution se = new ScenarioExecution(args);
+
+      log.info(String.format("=== Welcome to PerfCake %s ===", PerfCakeConst.VERSION));
+
+      if (log.isEnabledFor(Level.TRACE)) {
+         // Print system properties
+         se.printTraceInformation();
+      }
+
+      se.executeScenario();
+
+      log.info("=== Goodbye! ===");
    }
 
    /**
@@ -162,6 +185,7 @@ public class ScenarioExecution {
       parseUserProperties();
 
       System.setProperty(PerfCakeConst.TIMESTAMP_PROPERTY, String.valueOf(Calendar.getInstance().getTimeInMillis()));
+      System.setProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY, (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date()));
    }
 
    /**
@@ -220,26 +244,5 @@ public class ScenarioExecution {
             log.fatal("Scenario did not finish properly: ", e);
          }
       }
-   }
-
-   /**
-    * The main method which creates an instance of ScenarioExecution and executes the scenario.
-    *
-    * @param args
-    *       Command line arguments.
-    */
-   public static void main(final String[] args) {
-      ScenarioExecution se = new ScenarioExecution(args);
-
-      log.info(String.format("=== Welcome to PerfCake %s ===", PerfCakeConst.VERSION));
-
-      if (log.isEnabledFor(Level.TRACE)) {
-         // Print system properties
-         se.printTraceInformation();
-      }
-
-      se.executeScenario();
-
-      log.info("=== Goodbye! ===");
    }
 }

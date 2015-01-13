@@ -20,9 +20,14 @@
 package org.perfcake.reporting.destinations;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.TestSetup;
 import org.perfcake.reporting.Measurement;
 
+import org.apache.log4j.Logger;
 import org.testng.annotations.Test;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Chart destination tests.
@@ -31,12 +36,16 @@ import org.testng.annotations.Test;
  */
 public class ChartDestinationTest {
 
-   @Test(enabled = true)
+   private static final Logger log = Logger.getLogger(ChartDestinationTest.class);
+
+   @Test(enabled = false)
    public void basicTest() throws Exception {
-      System.setProperty(PerfCakeConst.TIMESTAMP_PROPERTY, String.valueOf(System.currentTimeMillis()));
+      System.setProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY, (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date()));
+      final String tempDir = TestSetup.createTempDir("test-chart");
+      log.info("Created temp directory for chart: " + tempDir);
 
       ChartDestination cd = new ChartDestination();
-      cd.setTarget("test-chart");
+      cd.setTarget(tempDir);
       cd.setXAxis("Time of test");
       cd.setYAxis("Iterations per second");
       cd.setName("Performance");
