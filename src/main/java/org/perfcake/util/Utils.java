@@ -19,14 +19,15 @@
  */
 package org.perfcake.util;
 
-import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.common.TimestampedRecord;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
+
+import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +38,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.NoSuchElementException;
+import java.util.Properties;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -57,7 +62,8 @@ public class Utils {
     * It takes a string and replaces all ${&lt;property.name&gt;} placeholders
     * by respective value of the property named &lt;property.name&gt; using {@link SystemPropertyGetter}.
     *
-    * @param text Original string.
+    * @param text
+    *       Original string.
     * @return Filtered string with.
     * @throws IOException
     */
@@ -81,7 +87,7 @@ public class Utils {
          }
          pValue = pg.getProperty(pName, defaultValue);
          if (pValue != null) {
-            filteredString = filteredString.replaceAll(Pattern.quote(matcher.group(1)), pValue);
+            filteredString = filteredString.replaceAll(Pattern.quote(matcher.group(1)), Matcher.quoteReplacement(pValue));
          }
       }
 
@@ -93,7 +99,8 @@ public class Utils {
     * it looks at environment variables using {@link System#getenv(String)}. If
     * the variable does not exist the method returns a <code>null</code>.
     *
-    * @param name Property name
+    * @param name
+    *       Property name
     * @return Property value or <code>null</code>.
     */
    public static String getProperty(final String name) {
@@ -105,8 +112,10 @@ public class Utils {
     * it looks at environment variables using {@link System#getenv(String)}. If
     * the variable does not exist the method returns <code>defautValue</code>.
     *
-    * @param name         Property name
-    * @param defaultValue Default property value
+    * @param name
+    *       Property name
+    * @param defaultValue
+    *       Default property value
     * @return Property value or <code>defaultValue</code>.
     */
    public static String getProperty(final String name, final String defaultValue) {
@@ -135,7 +144,8 @@ public class Utils {
    /**
     * Reads file content into a string. The file content is processed as an UTF-8 encoded text.
     *
-    * @param url specifies the file location as a URL
+    * @param url
+    *       specifies the file location as a URL
     * @return the file contents
     * @throws IOException
     */
@@ -155,12 +165,17 @@ public class Utils {
     * file://${&lt;defaultLocationProperty&gt;}/&lt;location&gt;&lt;defaultSuffix&gt; using defaultLocation as a default value for the defaultLocationProperty
     * when the property is undefined.
     *
-    * @param location                location of the resource
-    * @param defaultLocationProperty property to read the default location prefix
-    * @param defaultLocation         default value for defaultLocationProperty if this property is undefined
-    * @param defaultSuffix           default suffix of the location
+    * @param location
+    *       location of the resource
+    * @param defaultLocationProperty
+    *       property to read the default location prefix
+    * @param defaultLocation
+    *       default value for defaultLocationProperty if this property is undefined
+    * @param defaultSuffix
+    *       default suffix of the location
     * @return URL representing the location
-    * @throws MalformedURLException when the location cannot be converted to a URL
+    * @throws MalformedURLException
+    *       when the location cannot be converted to a URL
     */
    public static URL locationToUrl(final String location, final String defaultLocationProperty, final String defaultLocation, final String defaultSuffix) throws MalformedURLException {
       String uri;
@@ -189,12 +204,17 @@ public class Utils {
     * 3. file://$defaultLocationProperty/location.suffix or file://defaultLocation/location.suffix (when the property is not set) with all the provided suffixes
     * If the file was not found, the result is simply file://location
     *
-    * @param location                Location of the resource.
-    * @param defaultLocationProperty Property to read the default location prefix.
-    * @param defaultLocation         Default value for defaultLocationProperty if this property is undefined.
-    * @param defaultSuffix           Array of default default suffixes to try when searching for the resource.
+    * @param location
+    *       Location of the resource.
+    * @param defaultLocationProperty
+    *       Property to read the default location prefix.
+    * @param defaultLocation
+    *       Default value for defaultLocationProperty if this property is undefined.
+    * @param defaultSuffix
+    *       Array of default default suffixes to try when searching for the resource.
     * @return URL representing the location.
-    * @throws MalformedURLException When the location cannot be converted to an URL.
+    * @throws MalformedURLException
+    *       When the location cannot be converted to an URL.
     */
    public static URL locationToUrlWithCheck(final String location, final String defaultLocationProperty, final String defaultLocation, final String... defaultSuffix) throws MalformedURLException {
       String uri;
@@ -246,7 +266,8 @@ public class Utils {
    /**
     * Determines the default location of resources based on the resourcesDir constant.
     *
-    * @param locationSuffix Optional suffix to be added to the path
+    * @param locationSuffix
+    *       Optional suffix to be added to the path
     * @return the location based on the resourcesDir constant
     */
    public static String determineDefaultLocation(final String locationSuffix) {
@@ -256,7 +277,8 @@ public class Utils {
    /**
     * Converts camelCaseStringsWithACRONYMS to CAMEL_CASE_STRINGS_WITH_ACRONYMS
     *
-    * @param camelCase a camelCase string
+    * @param camelCase
+    *       a camelCase string
     * @return the same string in equivalent format for Java enum values
     */
    public static String camelCaseToEnum(final String camelCase) {
@@ -269,7 +291,8 @@ public class Utils {
    /**
     * Converts time in milliseconds to H:MM:SS format, where H is unbound.
     *
-    * @param time Timestamp in milliseconds.
+    * @param time
+    *       Timestamp in milliseconds.
     * @return String representing the timestamp in H:MM:SS format.
     */
    public static String timeToHMS(final long time) {
@@ -311,9 +334,12 @@ public class Utils {
    /**
     * Sets the property value to the first not-null value from the list.
     *
-    * @param props    Properties instance.
-    * @param propName Name of the property to be set.
-    * @param values   List of possibilities, the first not-null is used to set the property value.
+    * @param props
+    *       Properties instance.
+    * @param propName
+    *       Name of the property to be set.
+    * @param values
+    *       List of possibilities, the first not-null is used to set the property value.
     */
    public static void setFirstNotNullProperty(Properties props, String propName, String... values) {
       String notNull = getFirstNotNull(values);
@@ -325,7 +351,8 @@ public class Utils {
    /**
     * Returns the first not-null string in the provided list.
     *
-    * @param values The list of possible values.
+    * @param values
+    *       The list of possible values.
     * @return The first non-null value in the list.
     */
    public static String getFirstNotNull(String... values) {
@@ -340,9 +367,12 @@ public class Utils {
 
    /**
     * Obtains the needed resource with full-path as URL. Works safely on all platforms.
-    * @param resource The name of the resource to obtain
+    *
+    * @param resource
+    *       The name of the resource to obtain
     * @return The fully qualified resource URL location
-    * @throws PerfCakeException in the case of wrong resource name.
+    * @throws PerfCakeException
+    *       in the case of wrong resource name.
     */
    public static URL getResourceAsUrl(final String resource) throws PerfCakeException {
       try {
@@ -354,9 +384,12 @@ public class Utils {
 
    /**
     * Obtains the needed resource with full-path. Works safely on all platforms.
-    * @param resource The name of the resource to obtain
+    *
+    * @param resource
+    *       The name of the resource to obtain
     * @return The fully qualified resource location
-    * @throws PerfCakeException in the case of wrong resource name.
+    * @throws PerfCakeException
+    *       in the case of wrong resource name.
     */
    public static String getResource(final String resource) throws PerfCakeException {
       try {
