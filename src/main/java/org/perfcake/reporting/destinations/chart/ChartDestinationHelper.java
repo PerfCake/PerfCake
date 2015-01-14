@@ -19,6 +19,7 @@
  */
 package org.perfcake.reporting.destinations.chart;
 
+import org.apache.commons.lang.StringUtils;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
@@ -290,6 +291,74 @@ public class ChartDestinationHelper {
       return result;
    }
 
+   private String combineResults(final String[] data, final Integer[] columns, final String chartName) throws PerfCakeException {
+      final String base = StringUtils.join(data, "_");
+      final String baseFile = "data-array-" + base + ".js";
+      final String charts = StringUtils.join(data, ", ");
+      StringBuilder cols = new StringBuilder();
+      for (int col : columns) {
+         if (cols.length() > 0) {
+            cols.append(", ");
+         }
+         cols.append(col);
+      }
+
+      StringBuilder lens = new StringBuilder();
+      StringBuilder quoted = new StringBuilder();
+      for (String name : data) {
+         if (lens.length() > 0) {
+            lens.append(", ");
+            quoted.append(", ");
+         }
+         lens.append(name);
+         lens.append(".length");
+         quoted.append("'");
+         quoted.append(name);
+         quoted.append("'");
+      }
+
+      final Path dataFile = Paths.get(target.toString(), "data", baseFile);
+      final Properties dataProps = new Properties();
+      dataProps.setProperty("baseName", base);
+      dataProps.setProperty("chartCols", cols.toString());
+      dataProps.setProperty("chartLen", lens.toString());
+      dataProps.setProperty("chartsQuoted", quoted.toString());
+      dataProps.setProperty("charts", charts);
+      try {
+         StringTemplate index = new StringTemplate(new String(Files.readAllBytes(Paths.get(Utils.getResourceAsUrl("/charts/data-array.js").toURI())), Utils.getDefaultEncoding()), dataProps);
+         Files.write(dataFile, index.toString().getBytes(Utils.getDefaultEncoding()));
+      } catch (IOException | URISyntaxException e) {
+         throw new PerfCakeException("Unable to write combined data file: ", e);
+      }
+
+      return base;
+   }
+
+   private void analyzeMatchingCharts(final Map<String, String> names, final Map<String, String> loaderEntries, final Map<String, List<String>> columns) throws PerfCakeException {
+      final List<String> matches = findMatchingAttributes(columns);
+
+      for (String match : matches) {
+         final List<String> data = new ArrayList<>();
+         final List<String> colNames = new ArrayList<>();
+         final List<Integer> cols = new ArrayList<>();
+         final String chartName = "Results for " + match;
+         colNames.add("Time");
+
+         for (Map.Entry<String, List<String>> entry : columns.entrySet()) {
+            if (entry.getValue().contains(match)) {
+               data.add(entry.getKey());
+               cols.add(entry.getValue().indexOf(match));
+               colNames.add(names.get(entry.getKey()));
+            }
+         }
+
+         String base = combineResults(data.toArray(new String[data.size()]), cols.toArray(new Integer[cols.size()]), chartName);
+         names.put(base, chartName);
+         loaderEntries.put(base, "loadit");
+         columns.put(base, colNames);
+      }
+   }
+
    /**
     * Creates the main index.html file based on all previously generated reports in the same directory.
     *
@@ -298,9 +367,9 @@ public class ChartDestinationHelper {
     */
    public void compileResults() throws PerfCakeException {
       final File outputDir = Paths.get(target.toString(), "data").toFile();
-      final Map<String, String> names = new HashMap<>();
-      final Map<String, String> loaderEntries = new HashMap<>();
-      final Map<String, List<String>> columns = new HashMap<>();
+      final Map<String, String> names = new HashMap<>(); // baseId -> chart title
+      final Map<String, String> loaderEntries = new HashMap<>(); // baseId -> loader entry
+      final Map<String, List<String>> columns = new HashMap<>(); // baseId -> [columns]
 
       final List<File> files = Arrays.asList(outputDir.listFiles(new FileFilter() {
          @Override
@@ -313,6 +382,8 @@ public class ChartDestinationHelper {
          for (final File f : files) {
             parseEntry(f, names, loaderEntries, columns);
          }
+
+         analyzeMatchingCharts(names, loaderEntries, columns);
       } catch (IOException e) {
          throw new PerfCakeException("Unable to parse stored results: ", e);
       }
