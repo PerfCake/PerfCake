@@ -32,7 +32,16 @@ public final class PerfCakeConst {
 
    public static final String SCENARIO_PROPERTY = "perfcake.scenario";
    public static final String DEFAULT_ENCODING_PROPERTY = "perfcake.encoding";
+
+   /**
+    * Stores Unix timestamp number.
+    */
    public static final String TIMESTAMP_PROPERTY = "perfcake.run.timestamp";
+
+   /**
+    * Stores timestamp in the format yyyyMMddHHmmss.
+    */
+   public static final String NICE_TIMESTAMP_PROPERTY = "perfcake.run.nice.timestamp";
    public static final String SCENARIOS_DIR_PROPERTY = "perfcake.scenarios.dir";
    public static final String MESSAGES_DIR_PROPERTY = "perfcake.messages.dir";
    public static final String PLUGINS_DIR_PROPERTY = "perfcake.plugins.dir";

@@ -124,4 +124,18 @@ public class StringTemplateTest {
       Assert.assertTrue(template.hasPlaceholders());
       // we cannot do more as the property is not defined, anything else would lead to an error
    }
+
+   @Test
+   public void testSpecialChars() {
+      final String function = "array.add(var, [0, 1, 2], 'name');\n";
+      final String expression = "<script>$(function() {\n ${1 + 1} 'ahoj' ${ohmy} @{my}\n });</script>";
+      final Properties vars = new Properties();
+      vars.setProperty("ohmy", function);
+      final StringTemplate template = new StringTemplate(expression, vars);
+      final Properties vars2 = new Properties();
+      vars2.setProperty("my", function);
+
+      Assert.assertEquals(template.toString(vars2), "<script>$(function() {\n 2 'ahoj' " + function + " " + function + "\n });</script>");
+   }
+
 }
