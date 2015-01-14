@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:3.0">
+   <properties>
+      <property name="nonExistingProperty" value="${i.do.not.exist}"/>
+      <property name="filteredProperty" value="${test.filtered.property:default1}"/>
+      <property name="defaultProperty" value="${test.missing.property:default-property-value}"/>
+   </properties>
+   <generator class="DefaultMessageGenerator" threads="10">
+      <run type="iteration" value="100"/>
+   </generator>
+   <sender class="DummySender">
+      <property name="target" value="http://${server.host}:${server.port}/HTTPGateway/http/PerformanceTest/HTTPGateway"/>
+   </sender>
+   <reporting>
+      <reporter class="ResponseTimeStatsReporter">
+         <destination class="ConsoleDestination">
+            <period type="iteration" value="1"/>
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message uri="unfiltered-message.txt"/>
+      <message content="@{number + 1}@{missing1}"/>
+      <message content="@{missing2}"/>
+      <message content="${missing3}"/>
+      <message content="@{missing4a}${missing4b}"/>
+      <message content="${missing5a}@{missing5b}"/>
+   </messages>
+</scenario>
