@@ -7,12 +7,16 @@ Release 4.0 (next release)
 Features
 --------
 * https://github.com/PerfCake/PerfCake/issues/160 - Enable possibility to perform a garbage collection for MemoryUsageReporter (via **performGcOnMemoryUsage** boolean property)
+* https://github.com/PerfCake/PerfCake/issues/163 - Extend tests to cover message templating
 * https://github.com/PerfCake/PerfCake/issues/167 - Extend RegExpValidator to be able to configure Pattern.compile flags
 
 Bug Fixes
 ---------
 * https://github.com/PerfCake/PerfCake/issues/156 - XSLT transformation adds an empty property to sender
 * https://github.com/PerfCake/PerfCake/issues/157 - MemoryUsageReporter does not reset correctly
+* https://github.com/PerfCake/PerfCake/issues/164 - RampUpDownGenerator produces NPE
+* https://github.com/PerfCake/PerfCake/issues/165 - RampUpDownGenerator does not have implemented mainThreadCount getters/setters
+* https://github.com/PerfCake/PerfCake/issues/166 - RampUpDownGenerator logs current phase too often
 
 Release 3.3
 ==========================
