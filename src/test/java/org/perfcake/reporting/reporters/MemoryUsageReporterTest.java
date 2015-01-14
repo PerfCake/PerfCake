@@ -20,6 +20,7 @@
 package org.perfcake.reporting.reporters;
 
 import org.perfcake.RunInfo;
+import org.perfcake.TestSetup;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
@@ -29,14 +30,15 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.agent.AgentThread;
-
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -50,7 +52,7 @@ public class MemoryUsageReporterTest {
    private static final long ITERATION_COUNT = 1000l;
    private static final String AGENT_HOSTNAME = "localhost";
    private static final String AGENT_PORT = "19266";
-   private static final File TEST_OUTPUT_DIR = new File("test-output");
+   private static final File TEST_OUTPUT_DIR = new File(TestSetup.createTempDir("perfcake-memory-usage"));
 
    @BeforeClass
    public void startPerfCakeAgent() {
@@ -63,6 +65,17 @@ public class MemoryUsageReporterTest {
       } else {
          TEST_OUTPUT_DIR.mkdir();
       }
+   }
+
+   @AfterClass
+   public void tearDown() throws IOException {
+      File[] files = TEST_OUTPUT_DIR.listFiles();
+      if (files != null) {
+         for (File f : files) {
+            f.delete();
+         }
+      }
+      Files.delete(TEST_OUTPUT_DIR.toPath());
    }
 
    @Test
@@ -151,7 +164,7 @@ public class MemoryUsageReporterTest {
       reporterProperties.put("memoryLeakDetectionEnabled", "true");
       reporterProperties.put("memoryDumpOnLeak", "true");
 
-      final File dumpFile = new File("test-output/heapdump-" + System.currentTimeMillis() + ".bin");
+      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdump-" + System.currentTimeMillis() + ".bin");
       reporterProperties.put("memoryDumpFile", dumpFile.getAbsoluteFile());
 
       final List<Measurement> measurementList = testMemoryUsageReporter(reporterProperties);
@@ -184,7 +197,7 @@ public class MemoryUsageReporterTest {
       reporterProperties.put("memoryLeakDetectionEnabled", "true");
       reporterProperties.put("memoryDumpOnLeak", "true");
 
-      final File dumpFile = new File("test-output/heapdump-" + System.currentTimeMillis() + ".bin");
+      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdump-" + System.currentTimeMillis() + ".bin");
       Assert.assertTrue(dumpFile.createNewFile());
       reporterProperties.put("memoryDumpFile", dumpFile.getAbsoluteFile());
 
