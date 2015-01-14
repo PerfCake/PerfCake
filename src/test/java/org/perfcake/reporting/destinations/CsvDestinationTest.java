@@ -19,13 +19,13 @@
  */
 package org.perfcake.reporting.destinations;
 
+import org.apache.log4j.Logger;
 import org.perfcake.PerfCakeConst;
+import org.perfcake.TestSetup;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.ObjectFactory;
-
-import org.apache.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -34,6 +34,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Properties;
 import java.util.Scanner;
@@ -47,25 +49,26 @@ import java.util.Scanner;
 public class CsvDestinationTest {
 
    private static final long ITERATION = 12345;
-   private static final String TEST_OUTPUT_DIR = "test-output";
-   private static final File CSV_OUTPUT_PATH = new File(TEST_OUTPUT_DIR);
-   private static final String PATH = TEST_OUTPUT_DIR + "/out.csv";
+   private File csvFile;
    private static final String TIMESTAMP = String.valueOf(Calendar.getInstance().getTimeInMillis());
    private static final String DEFAULT_PATH = "perfcake-results-" + TIMESTAMP + ".csv";
    private static final Logger log = Logger.getLogger(CsvDestinationTest.class);
 
    @BeforeClass
-   public void beforeClass() {
+   public void beforeClass() throws IOException {
       System.setProperty(PerfCakeConst.TIMESTAMP_PROPERTY, TIMESTAMP);
+      File csvOutputDir = new File(TestSetup.createTempDir("csvdestination"));
+      csvOutputDir.deleteOnExit();
+      csvFile = Paths.get(csvOutputDir.getAbsolutePath(), "out.csv").toFile();
    }
 
    @Test
    public void testDestinationReport() {
       final Properties destinationProperties = new Properties();
       destinationProperties.put("delimiter", ",");
-      destinationProperties.put("path", PATH);
+      destinationProperties.put("path", csvFile.getAbsolutePath());
 
-      final File csvFile = getNewFile(CSV_OUTPUT_PATH, "out.csv");
+      prepareFile(csvFile);
 
       try {
          final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
@@ -120,7 +123,7 @@ public class CsvDestinationTest {
    @Test
    public void testPathChange() {
       final Properties destinationProperties = new Properties();
-      destinationProperties.put("path", PATH);
+      destinationProperties.put("path", csvFile.getAbsolutePath());
 
       final String CHANGED_PATH = "second-path.csv";
       final File secondPath = new File(CHANGED_PATH);
@@ -130,7 +133,7 @@ public class CsvDestinationTest {
          secondPath.delete();
       }
 
-      final File csvFile = getNewFile(CSV_OUTPUT_PATH, "out.csv");
+      prepareFile(csvFile);
       try {
          final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
@@ -138,7 +141,7 @@ public class CsvDestinationTest {
          measurementWithoutDefault.set("singleResult", new Quantity<Number>(100, "units"));
 
          destination.open();
-         Assert.assertEquals(destination.getPath(), PATH);
+         Assert.assertEquals(destination.getPath(), csvFile.getAbsolutePath());
          Assert.assertFalse(secondPath.exists());
          destination.report(measurementWithoutDefault);
          boolean except = false;
@@ -167,9 +170,9 @@ public class CsvDestinationTest {
    @Test
    public void testMultipleRecords() {
       final Properties destinationProperties = new Properties();
-      destinationProperties.setProperty("path", PATH);
+      destinationProperties.setProperty("path", csvFile.getAbsolutePath());
 
-      final File csvFile = getNewFile(CSV_OUTPUT_PATH, "out.csv");
+      prepareFile(csvFile);
 
       try {
          final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
@@ -198,9 +201,9 @@ public class CsvDestinationTest {
    @Test
    public void testNoDefaultResultMeasurement() {
       final Properties destinationProperties = new Properties();
-      destinationProperties.put("path", PATH);
+      destinationProperties.put("path", csvFile.getAbsolutePath());
 
-      final File csvFile = getNewFile(CSV_OUTPUT_PATH, "out.csv");
+      prepareFile(csvFile);
 
       try {
          final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
@@ -222,9 +225,9 @@ public class CsvDestinationTest {
    @Test
    public void testStringResultMeasurement() {
       final Properties destinationProperties = new Properties();
-      destinationProperties.put("path", PATH);
+      destinationProperties.put("path", csvFile.getAbsolutePath());
 
-      final File csvFile = getNewFile(CSV_OUTPUT_PATH, "out.csv");
+      prepareFile(csvFile);
 
       try {
          final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
@@ -265,8 +268,8 @@ public class CsvDestinationTest {
    }
 
    @Test
-   public void testReadOnlyFile() throws ReportingException {
-      final File readOnlyFile = getNewFile(CSV_OUTPUT_PATH, "read-only.file");
+   public void testReadOnlyFile() throws IOException, ReportingException {
+      final File readOnlyFile = Files.createTempFile("perfcake", "csvdestination-read-only.file").toFile();
       readOnlyFile.setReadOnly();
       readOnlyFile.deleteOnExit();
 
@@ -416,15 +419,13 @@ public class CsvDestinationTest {
       }
    }
 
-   private File getNewFile(File path, String name) {
-      if (!path.exists()) {
-         path.mkdir();
+   private void prepareFile(File file) {
+      if (!file.getParentFile().exists()) {
+         file.getParentFile().mkdirs();
       }
-      final File file = new File(path, name);
       if (file.exists()) {
          file.delete();
       }
-      return file;
    }
 
    private void delete(File f) {

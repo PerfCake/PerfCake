@@ -19,6 +19,7 @@
  */
 package org.perfcake;
 
+import org.apache.log4j.Logger;
 import org.perfcake.util.Utils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -38,10 +39,12 @@ import java.util.Set;
  */
 public class TestSetup {
 
+   private static final Logger log = Logger.getLogger(TestSetup.class);
+
    /**
     * Determines whether the system running this application is POSIX compliant.
     */
-   final static private boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
+   private static final boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
    @BeforeClass(alwaysRun = true)
    public void configureLocations() throws Exception {
@@ -57,17 +60,22 @@ public class TestSetup {
 
    /**
     * Creates a temporary directory based on the given name. It also sets correct rights on POSIX compliant systems. The directory gets deleted at the end of this application process.
+    *
     * @param name Name of the temporary directory.
     * @return The full path of the created directory.
-    * @throws IOException When it was not possible to create the directory.
     */
-   public static String createTempDir(final String name) throws IOException {
-      if (isPosix) {
-         Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-xr--");
-         FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
-         return Files.createTempDirectory(name, attr).toString();
-      } else {
-         return Files.createTempDirectory(name).toString();
+   public static String createTempDir(final String name) {
+      try {
+         if (isPosix) {
+            Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-xr--");
+            FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
+            return Files.createTempDirectory(name, attr).toString();
+         } else {
+            return Files.createTempDirectory(name).toString();
+         }
+      } catch (IOException e) {
+         log.error(String.format("Cannot create temporary directory %s: ", name), e);
+         return null;
       }
    }
 
