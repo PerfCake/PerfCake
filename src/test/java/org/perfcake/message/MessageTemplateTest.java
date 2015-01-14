@@ -1,13 +1,29 @@
+/*
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -----------------------------------------------------------------------/
+ */
 package org.perfcake.message;
 
 import org.perfcake.PerfCakeException;
-import org.perfcake.ScenarioExecution;
 import org.perfcake.TestSetup;
-import org.perfcake.message.sender.DummySender;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
-
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -15,25 +31,21 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * @author Pavel Macík <pavel.macik@gmail.com
+ * @author Pavel Macík <pavel.macik@gmail.com>
  */
 public class MessageTemplateTest extends TestSetup {
    private static final String HELLO_NAME = "hello";
    private static final String HELLO_VALUE = "hello.value";
    private static final String NUMBER_NAME = "number";
-   private static final String NUMBER_VALUE = "1";
+   private static final int NUMBER_VALUE = 1;
 
-   private static final String EXPECTED_MESSAGE_FROM_URI = NUMBER_VALUE + " 2 " + HELLO_VALUE + " 1 " + (Integer.valueOf(NUMBER_VALUE) - 1) + " " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name") + "I'm a fish!";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_1 = (Integer.valueOf(NUMBER_VALUE) + 1) + "@{missing1}";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_2 = "@{missing2}";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_3 = "${missing3}";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_4 = "@{missing4a}${missing4b}";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_5 = "${missing5a}@{missing5b}";
-
-
-   private ScenarioExecution execution;
-   private Scenario scenario;
-   private DummySender dummySender;
+   private static final String EXPECTED_MESSAGE_FROM_URI = NUMBER_VALUE + " 2 " + HELLO_VALUE + " 1 " + (NUMBER_VALUE - 1) + " " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name") + "I'm a fish!";
+   private static final String EXPECTED_MESSAGE_FROM_CONTENT_1 = (NUMBER_VALUE + 1) + "null";
+   private static final String EXPECTED_MESSAGE_FROM_CONTENT_1B = (NUMBER_VALUE + 2) + "null";
+   private static final String EXPECTED_MESSAGE_FROM_CONTENT_2 = "null";
+   private static final String EXPECTED_MESSAGE_FROM_CONTENT_3 = "null";
+   private static final String EXPECTED_MESSAGE_FROM_CONTENT_4 = "nullnull";
+   private static final String EXPECTED_MESSAGE_FROM_CONTENT_5 = "nullnull";
 
    @Test
    public void messageTemplateFilteringTest() throws PerfCakeException {
@@ -44,30 +56,28 @@ public class MessageTemplateTest extends TestSetup {
       Assert.assertEquals(messageStore.size(), 6);
 
       Properties propertiesToBeFiltered = new Properties();
-      propertiesToBeFiltered.put(HELLO_NAME, HELLO_VALUE);
-      propertiesToBeFiltered.put(NUMBER_NAME, NUMBER_VALUE) ;
+      propertiesToBeFiltered.setProperty(HELLO_NAME, HELLO_VALUE);
+      propertiesToBeFiltered.setProperty(NUMBER_NAME, String.valueOf(NUMBER_VALUE));
       Message m0 = messageStore.get(0).getFilteredMessage(propertiesToBeFiltered);
-      System.out.println(m0.getPayload());
       Assert.assertEquals(m0.getPayload(), EXPECTED_MESSAGE_FROM_URI);
 
       Message m1 = messageStore.get(1).getFilteredMessage(propertiesToBeFiltered);
-      System.out.println("M1:" + m1.getPayload());
       Assert.assertEquals(m1.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_1);
 
+      propertiesToBeFiltered.setProperty(NUMBER_NAME, String.valueOf(NUMBER_VALUE + 1));
+      m1 = messageStore.get(1).getFilteredMessage(propertiesToBeFiltered);
+      Assert.assertEquals(m1.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_1B);
+
       Message m2 = messageStore.get(2).getFilteredMessage(propertiesToBeFiltered);
-      System.out.println("M2:" + m2.getPayload());
-      //Assert.assertEquals(m2.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_2);
+      Assert.assertEquals(m2.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_2);
 
       Message m3 = messageStore.get(3).getFilteredMessage(propertiesToBeFiltered);
-      System.out.println("M3:" + m3.getPayload());
-      //Assert.assertEquals(m3.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_3);
+      Assert.assertEquals(m3.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_3);
 
       Message m4 = messageStore.get(4).getFilteredMessage(propertiesToBeFiltered);
-      System.out.println("M4:" + m4.getPayload());
-      //Assert.assertEquals(m4.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_4);
+      Assert.assertEquals(m4.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_4);
 
       Message m5 = messageStore.get(5).getFilteredMessage(propertiesToBeFiltered);
-      System.out.println("M5:" + m3.getPayload());
-      //Assert.assertEquals(m5.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_5);
+      Assert.assertEquals(m5.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_5);
    }
 }
