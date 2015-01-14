@@ -122,7 +122,7 @@ public class StringTemplateTest {
       final StringTemplate template = new StringTemplate(expression);
 
       Assert.assertTrue(template.hasPlaceholders());
-      // we cannot do more as the property is not defined, anything else would lead to an error
+      Assert.assertEquals(template.toString(), "2 null");
    }
 
    @Test

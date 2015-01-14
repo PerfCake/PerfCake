@@ -19,6 +19,8 @@
  */
 package org.perfcake.util;
 
+import httl.Engine;
+import httl.Template;
 import org.apache.log4j.Logger;
 
 import java.text.ParseException;
@@ -27,9 +29,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import httl.Engine;
-import httl.Template;
 
 /**
  * A string template that can quickly replace properties in form of ${property} and #{property} to their values.
@@ -126,13 +125,42 @@ public class StringTemplate {
       config.setProperty("style.value.filters", "");
       config.setProperty("text.filters", "");
       config.setProperty("preload", "false");
+      config.setProperty("null.value", "null");
 
       return Engine.getEngine(config);
+   }
+
+   private boolean isUnescapedAtSign(final String suspect) {
+      char last = '\0';
+      for (int i = 0; i < suspect.length(); i++) {
+         char c = suspect.charAt(i);
+         if (c == '@' && last != '\\') {
+            return true;
+         }
+         last = c;
+      }
+      return false;
+   }
+
+   private String replaceUnescapedAtSign(final String suspect) {
+      char last = '\0';
+      StringBuilder sb = new StringBuilder();
+      for (int i = 0; i < suspect.length(); i++) {
+         char c = suspect.charAt(i);
+         if (c == '@' && last != '\\') {
+            sb.append("$");
+         } else {
+            sb.append(c);
+         }
+         last = c;
+      }
+      return sb.toString();
    }
 
    /**
     * During the first pass, the values of ${property} placeholders are replaced immediately.
     * All occurrences of #{property} are replaced with ${property} and the resulting string is returned for the second pass.
+    *
     * @param template The original template
     * @return The template with first pass placeholders replaced and second pass placeholders ready for further parsing.
     */
@@ -140,12 +168,10 @@ public class StringTemplate {
       final Template tmpTemplate = parseTemplate(template);
 
       // first replace all ${property} with their values
-      String parsed = " " + renderTemplate(tmpTemplate, vars); // patterns need to check one character ahead, if this was the string beginning, the first property could have been skipped
+      String parsed = renderTemplate(tmpTemplate, vars); // patterns need to check one character ahead, if this was the string beginning, the first property could have been skipped
 
       // are there any @{property} patterns? if not, we are done and the result can stay as is, else we must handle the @ sign
-      Pattern propertyPattern = Pattern.compile(PROPERTY_PATTERN);
-      Matcher propertyMatcher = propertyPattern.matcher(parsed);
-      if (propertyMatcher.find()) {
+      if (isUnescapedAtSign(parsed)) {
 
          // after the first render, we must return back the escape sign to original \${property} as these backslashes were removed
          Matcher matcher = Pattern.compile(ESCAPED_PATTERN).matcher(parsed);
@@ -154,11 +180,9 @@ public class StringTemplate {
             parsed = parsed.substring(0, matcher.start(1) + correction) + "\\$" + matcher.group(2) + parsed.substring(matcher.end(1) + correction);
             correction++;
          }
+
          // now switch @{property} to ${property}
-         propertyMatcher = propertyPattern.matcher(parsed); // refresh to the updated string
-         while (propertyMatcher.find()) {
-            parsed = parsed.substring(0, propertyMatcher.start(1)) + "${" + propertyMatcher.group(2) + "}" + parsed.substring(propertyMatcher.end(1));
-         }
+         parsed = replaceUnescapedAtSign(parsed);
 
          // also change \@{property} to @{property} to achieve the same behaviour as for \${property}
          matcher = Pattern.compile(ESCAPED_PROPERTY_PATTERN).matcher(parsed);
@@ -169,9 +193,9 @@ public class StringTemplate {
             correction++; // we removed one character, this must be considered during the next loop
          }
 
-         this.template = parseTemplate(parsed.substring(1)); // remove the space we added at the beginning
+         this.template = parseTemplate(parsed);
       } else {
-         this.originalTemplate = parsed.substring(1); // remove the space we added at the beginning
+         this.originalTemplate = parsed;
       }
    }
 }
