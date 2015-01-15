@@ -140,7 +140,7 @@ public class ChartDestinationHelper {
       }
       dataHeader.append(" ] ];\n\n");
       try {
-         Files.write(dataFile.toPath(), dataHeader.toString().getBytes(Utils.getDefaultEncoding()));
+         Utils.writeFileContent(dataFile, dataHeader.toString());
       } catch (IOException e) {
          log.error(String.format("Cannot write the data header to the chart data file %s: ", dataFile.getAbsolutePath()), e);
          return false;
@@ -168,7 +168,7 @@ public class ChartDestinationHelper {
       instructions.append(chartDestination.getName());
       instructions.append("');\n");
       try {
-         Files.write(instructionsFile, instructions.toString().getBytes(Utils.getDefaultEncoding()));
+         Utils.writeFileContent(instructionsFile, instructions.toString());
       } catch (IOException e) {
          log.error(String.format("Cannot write instructions file %s: ", instructionsFile.toFile().getAbsolutePath()), e);
          return null;
@@ -184,7 +184,7 @@ public class ChartDestinationHelper {
       quickViewProps.setProperty("loader", loaderLine);
       try {
          StringTemplate quickView = new StringTemplate(new String(Files.readAllBytes(Paths.get(Utils.getResourceAsUrl("/charts/quick-view.html").toURI())), Utils.getDefaultEncoding()), quickViewProps);
-         Files.write(quickViewFile, quickView.toString().getBytes(Utils.getDefaultEncoding()));
+         Utils.writeFileContent(quickViewFile, quickView.toString());
       } catch (IOException | PerfCakeException | URISyntaxException e) {
          log.error("Cannot store quick view file: ", e);
          return false;
@@ -259,7 +259,6 @@ public class ChartDestinationHelper {
    }
 
    private void writeIndex(final String loaders, final String js, final String div) throws PerfCakeException {
-      final Path tmpIndexFile = Paths.get(target.toString(), "index.html" + System.currentTimeMillis());
       final Path indexFile = Paths.get(target.toString(), "index.html");
       final Properties indexProps = new Properties();
       indexProps.setProperty("js", js);
@@ -267,8 +266,7 @@ public class ChartDestinationHelper {
       indexProps.setProperty("chart", div);
       try {
          StringTemplate index = new StringTemplate(new String(Files.readAllBytes(Paths.get(Utils.getResourceAsUrl("/charts/index.html").toURI())), Utils.getDefaultEncoding()), indexProps);
-         Files.write(tmpIndexFile, index.toString().getBytes(Utils.getDefaultEncoding()));
-         Files.move(tmpIndexFile, indexFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+         Utils.writeFileContent(indexFile, index.toString());
       } catch (IOException | URISyntaxException e) {
          throw new PerfCakeException("Unable to write index file: ", e);
       }
@@ -326,7 +324,7 @@ public class ChartDestinationHelper {
       dataProps.setProperty("charts", charts);
       try {
          StringTemplate index = new StringTemplate(new String(Files.readAllBytes(Paths.get(Utils.getResourceAsUrl("/charts/data-array.js").toURI())), Utils.getDefaultEncoding()), dataProps);
-         Files.write(dataFile, index.toString().getBytes(Utils.getDefaultEncoding()));
+         Utils.writeFileContent(dataFile, index.toString());
       } catch (IOException | URISyntaxException e) {
          throw new PerfCakeException("Unable to write combined data file: ", e);
       }

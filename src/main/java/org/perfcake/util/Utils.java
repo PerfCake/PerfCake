@@ -38,6 +38,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map.Entry;
@@ -398,4 +399,37 @@ public class Utils {
          throw new PerfCakeException(String.format("Cannot obtain resource %s:", resource), e);
       }
    }
+
+   /**
+    * Atomically writes given content to a file.
+    * @param fileName Target file name.
+    * @param content Content to be written.
+    * @throws IOException In case of file operations failure.
+    */
+   public static void writeFileContent(final String fileName, final String content) throws IOException {
+      writeFileContent(new File(fileName), content);
+   }
+
+   /**
+    * Atomically writes given content to a file.
+    * @param file Target file.
+    * @param content Content to be written.
+    * @throws IOException In case of file operations failure.
+    */
+   public static void writeFileContent(final File file, final String content) throws IOException  {
+      writeFileContent(file.toPath(), content);
+   }
+
+   /**
+    * Atomically writes given content to a file.
+    * @param path Target file path.
+    * @param content Content to be written.
+    * @throws IOException In case of file operations failure.
+    */
+   public static void writeFileContent(final Path path, final String content) throws IOException  {
+      final Path workFile = Paths.get(path.toString() + ".work");
+      Files.write(workFile, content.getBytes(Utils.getDefaultEncoding()));
+      Files.move(workFile, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+   }
+
 }
