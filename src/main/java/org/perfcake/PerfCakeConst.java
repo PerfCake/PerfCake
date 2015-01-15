@@ -46,12 +46,14 @@ public final class PerfCakeConst {
    public static final String MESSAGES_DIR_PROPERTY = "perfcake.messages.dir";
    public static final String PLUGINS_DIR_PROPERTY = "perfcake.plugins.dir";
    public static final String PROPERTIES_FILE_PROPERTY = "perfcake.properties.file";
+   public static final String LOGGING_LEVEL_PROPERTY = "perfcake.logging.level";
 
    public static final String SCENARIO_OPT = "scenario";
    public static final String SCENARIOS_DIR_OPT = "scenarios-dir";
    public static final String MESSAGES_DIR_OPT = "messages-dir";
    public static final String PLUGINS_DIR_OPT = "plugins-dir";
    public static final String PROPERTIES_FILE_OPT = "properties-file";
+   public static final String LOGGING_LEVEL_OPT = "log-level";
 
    public static final String WARM_UP_TAG = "warmUp";
 }
