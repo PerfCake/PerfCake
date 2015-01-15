@@ -26,8 +26,13 @@ import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.log4j.Appender;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.AsyncAppender;
+import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +45,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
@@ -432,4 +438,32 @@ public class Utils {
       Files.move(workFile, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
    }
 
+   /**
+    * Reconfigures all appenders in the enumeration to the given level. If there are any
+    * AsyncAppenders, all their appenders are recursively reconfigured as well.
+    * @param appenders Enumeration of all appenders.
+    * @param level The desired level.
+    */
+   private static void reconfigureAppenders(final Enumeration appenders, final Level level) {
+      while (appenders.hasMoreElements()) {
+         Object appender = appenders.nextElement();
+
+         if (appender instanceof AppenderSkeleton) {
+            ((AppenderSkeleton) appender).setThreshold(level);
+         }
+
+         if (appender instanceof AsyncAppender) {
+            reconfigureAppenders(((AsyncAppender) appender).getAllAppenders(), level);
+         }
+      }
+   }
+
+   /**
+    * Reconfigures the logging level of the root logger and all suitable appenders.
+    * @param level The desired level.
+    */
+   public static void setLoggingLevel(final Level level) {
+      Logger.getRootLogger().setLevel(level);
+      reconfigureAppenders(Logger.getRootLogger().getAllAppenders(), level);
+   }
 }

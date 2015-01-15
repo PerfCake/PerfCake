@@ -158,6 +158,7 @@ public class ScenarioExecution {
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.MESSAGES_DIR_OPT).withDescription("directory for messages").hasArg().withArgName("MESSAGES_DIR").create("md"));
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.PLUGINS_DIR_OPT).withDescription("directory for plugins").hasArg().withArgName("PLUGINS_DIR").create("pd"));
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.PROPERTIES_FILE_OPT).withDescription("custom system properties file").hasArg().withArgName("PROPERTIES_FILE").create("pf"));
+      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.LOGGING_LEVEL_OPT).withDescription("logging level").hasArg().withArgName("PROPERTIES_FILE").create("log"));
       options.addOption(OptionBuilder.withArgName("property=value").hasArgs(2).withValueSeparator().withDescription("system properties").create("D"));
 
       final CommandLineParser commandLineParser = new GnuParser();
@@ -181,6 +182,10 @@ public class ScenarioExecution {
       parseParameter(PerfCakeConst.MESSAGES_DIR_OPT, PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"));
       parseParameter(PerfCakeConst.PLUGINS_DIR_OPT, PerfCakeConst.PLUGINS_DIR_PROPERTY, Utils.DEFAULT_PLUGINS_DIR.getAbsolutePath());
       parseParameter(PerfCakeConst.PROPERTIES_FILE_OPT, PerfCakeConst.PROPERTIES_FILE_PROPERTY, null);
+      parseParameter(PerfCakeConst.LOGGING_LEVEL_OPT, PerfCakeConst.LOGGING_LEVEL_PROPERTY, null);
+      if (Utils.getProperty(PerfCakeConst.LOGGING_LEVEL_PROPERTY, null) != null) {
+         Utils.setLoggingLevel(Level.toLevel(Utils.getProperty(PerfCakeConst.LOGGING_LEVEL_PROPERTY), Level.INFO));
+      }
 
       parseUserProperties();
 
