@@ -158,7 +158,7 @@ public class ScenarioExecution {
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.MESSAGES_DIR_OPT).withDescription("directory for messages").hasArg().withArgName("MESSAGES_DIR").create("md"));
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.PLUGINS_DIR_OPT).withDescription("directory for plugins").hasArg().withArgName("PLUGINS_DIR").create("pd"));
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.PROPERTIES_FILE_OPT).withDescription("custom system properties file").hasArg().withArgName("PROPERTIES_FILE").create("pf"));
-      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.LOGGING_LEVEL_OPT).withDescription("logging level").hasArg().withArgName("PROPERTIES_FILE").create("log"));
+      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.LOGGING_LEVEL_OPT).withDescription("logging level").hasArg().withArgName("LOG_LEVEL").create("log"));
       options.addOption(OptionBuilder.withArgName("property=value").hasArgs(2).withValueSeparator().withDescription("system properties").create("D"));
 
       final CommandLineParser commandLineParser = new GnuParser();
