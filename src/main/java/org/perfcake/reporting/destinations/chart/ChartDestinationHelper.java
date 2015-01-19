@@ -19,16 +19,15 @@
  */
 package org.perfcake.reporting.destinations.chart;
 
-import org.apache.commons.lang.StringUtils;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.ChartDestination;
-import org.perfcake.util.StringTemplate;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.StringUtil;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.BufferedReader;
@@ -38,7 +37,6 @@ import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -73,48 +71,39 @@ public class ChartDestinationHelper {
    public ChartDestinationHelper(final ChartDestination chartDestination) {
       this.chartDestination = chartDestination;
       target = chartDestination.getTargetAsPath();
+      baseName = chartDestination.getGroup() + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
+      dataFile = Paths.get(target.toString(), "data", baseName + ".js").toFile();
 
-      successInit = createOutputFileStructure();
+      try {
+         createOutputFileStructure();
+         createDataFiles();
 
-      if (successInit) {
-         baseName = chartDestination.getGroup() + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
-         dataFile = Paths.get(target.toString(), "data", baseName + ".js").toFile();
-
-         // write beginning of the data file
-         successInit = writeDataFileHeader(); // successInit was already true
-
-         // write .dat file for later use by loader
-         final String loaderLine = writeChartDatFile();
-         successInit = successInit && (loaderLine != null);
-
-         // write a quick view file
-         successInit = successInit && writeQuickView(loaderLine);
+         successInit = true;
+      } catch (PerfCakeException e) {
+         log.error(String.format("%s did not get initialized properly:", this.getClass().getName()), e);
+         successInit = false;
       }
    }
 
-   private boolean createOutputFileStructure() {
+   private void createOutputFileStructure() throws PerfCakeException {
       if (!target.toFile().exists()) {
          if (!target.toFile().mkdirs()) {
-            log.error("Could not create output directory: " + target.toFile().getAbsolutePath());
-            return false;
+            throw new PerfCakeException("Could not create output directory: " + target.toFile().getAbsolutePath());
          }
       } else {
          if (!target.toFile().isDirectory()) {
-            log.error("Could not create output directory. It already exists as a file: " + target.toFile().getAbsolutePath());
-            return false;
+            throw new PerfCakeException("Could not create output directory. It already exists as a file: " + target.toFile().getAbsolutePath());
          }
       }
 
       File dir = Paths.get(target.toString(), "data").toFile();
       if (!dir.exists() && !dir.mkdirs()) {
-         log.error("Could not create data directory: " + dir.getAbsolutePath());
-         return false;
+         throw new PerfCakeException("Could not create data directory: " + dir.getAbsolutePath());
       }
 
       dir = Paths.get(target.toString(), "src").toFile();
       if (!dir.exists() && !dir.mkdirs()) {
-         log.error("Could not create source directory: " + dir.getAbsolutePath());
-         return false;
+         throw new PerfCakeException("Could not create source directory: " + dir.getAbsolutePath());
       }
 
       try {
@@ -122,14 +111,17 @@ public class ChartDestinationHelper {
          Files.copy(getClass().getResourceAsStream("/charts/google-jsapi.js"), Paths.get(target.toString(), "src", "google-jsapi.js"), StandardCopyOption.REPLACE_EXISTING);
          Files.copy(getClass().getResourceAsStream("/charts/jquery.js"), Paths.get(target.toString(), "src", "jquery.js"), StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
-         log.error("Cannot copy necessary chart resources to the output path: ", e);
-         return false;
+         throw new PerfCakeException("Cannot copy necessary chart resources to the output path: ", e);
       }
-
-      return true;
    }
 
-   private boolean writeDataFileHeader() {
+   private void createDataFiles() throws PerfCakeException {
+      writeDataFileHeader();
+      final String loaderLine = writeChartDatFile();
+      writeQuickView(loaderLine);
+   }
+
+   private void writeDataFileHeader() throws PerfCakeException {
       final StringBuilder dataHeader = new StringBuilder("var ");
       dataHeader.append(baseName);
       dataHeader.append(" = [ [ 'Time'");
@@ -139,58 +131,46 @@ public class ChartDestinationHelper {
          dataHeader.append("'");
       }
       dataHeader.append(" ] ];\n\n");
-      try {
-         Utils.writeFileContent(dataFile, dataHeader.toString());
-      } catch (IOException e) {
-         log.error(String.format("Cannot write the data header to the chart data file %s: ", dataFile.getAbsolutePath()), e);
-         return false;
-      }
-
-      return true;
+      Utils.writeFileContent(dataFile, dataHeader.toString());
    }
 
-   private String writeChartDatFile() {
+   private String createLoaderLine(final String baseName, final int attributesCount, final String xAxis, final String yAxis, final String name) {
+      final StringBuilder line = new StringBuilder("drawChart(");
+      line.append(baseName);
+      line.append(", 'chart_");
+      line.append(baseName);
+      line.append("_div', [0");
+
+      for (int i = 1; i <= attributesCount; i++) {
+         line.append(", ");
+         line.append(i);
+      }
+
+      line.append("], '");
+      line.append(xAxis);
+      line.append("', '");
+      line.append(yAxis);
+      line.append("', '");
+      line.append(name);
+      line.append("');\n");
+
+      return line.toString();
+   }
+
+   private String writeChartDatFile() throws PerfCakeException {
       final Path instructionsFile = Paths.get(target.toString(), "data", baseName + ".dat");
-      final StringBuilder instructions = new StringBuilder("drawChart(");
-      instructions.append(baseName);
-      instructions.append(", 'chart_");
-      instructions.append(baseName);
-      instructions.append("_div', [0");
-      for (int i = 1; i <= chartDestination.getAttributesAsList().size(); i++) {
-         instructions.append(", ");
-         instructions.append(i);
-      }
-      instructions.append("], '");
-      instructions.append(chartDestination.getXAxis());
-      instructions.append("', '");
-      instructions.append(chartDestination.getYAxis());
-      instructions.append("', '");
-      instructions.append(chartDestination.getName());
-      instructions.append("');\n");
-      try {
-         Utils.writeFileContent(instructionsFile, instructions.toString());
-      } catch (IOException e) {
-         log.error(String.format("Cannot write instructions file %s: ", instructionsFile.toFile().getAbsolutePath()), e);
-         return null;
-      }
+      final String loaderLine = createLoaderLine(baseName, chartDestination.getAttributesAsList().size(), chartDestination.getXAxis(), chartDestination.getYAxis(), chartDestination.getName());
+      Utils.writeFileContent(instructionsFile, loaderLine);
 
-      return instructions.toString();
+      return loaderLine;
    }
 
-   private boolean writeQuickView(final String loaderLine) {
+   private void writeQuickView(final String loaderLine) throws PerfCakeException {
       final Path quickViewFile = Paths.get(target.toString(), "data", baseName + ".html");
       final Properties quickViewProps = new Properties();
       quickViewProps.setProperty("baseName", baseName);
       quickViewProps.setProperty("loader", loaderLine);
-      try {
-         StringTemplate quickView = new StringTemplate(new String(Files.readAllBytes(Paths.get(Utils.getResourceAsUrl("/charts/quick-view.html").toURI())), Utils.getDefaultEncoding()), quickViewProps);
-         Utils.writeFileContent(quickViewFile, quickView.toString());
-      } catch (IOException | PerfCakeException | URISyntaxException e) {
-         log.error("Cannot store quick view file: ", e);
-         return false;
-      }
-
-      return true;
+      Utils.copyTemplateFromResource("/charts/quick-view.html", quickViewFile, quickViewProps);
    }
 
    /**
@@ -264,12 +244,7 @@ public class ChartDestinationHelper {
       indexProps.setProperty("js", js);
       indexProps.setProperty("loader", loaders);
       indexProps.setProperty("chart", div);
-      try {
-         StringTemplate index = new StringTemplate(new String(Files.readAllBytes(Paths.get(Utils.getResourceAsUrl("/charts/index.html").toURI())), Utils.getDefaultEncoding()), indexProps);
-         Utils.writeFileContent(indexFile, index.toString());
-      } catch (IOException | URISyntaxException e) {
-         throw new PerfCakeException("Unable to write index file: ", e);
-      }
+      Utils.copyTemplateFromResource("/charts/index.html", indexFile, indexProps);
    }
 
    private List<String> findMatchingAttributes(final Map<String, List<String>> columns) {
@@ -289,6 +264,7 @@ public class ChartDestinationHelper {
       return result;
    }
 
+   // combines data from two charts
    private String combineResults(final String[] data, final Integer[] columns, final String chartName) throws PerfCakeException {
       final String base = StringUtils.join(data, "_");
       final String baseFile = "data-array-" + base + ".js";
@@ -322,12 +298,7 @@ public class ChartDestinationHelper {
       dataProps.setProperty("chartLen", lens.toString());
       dataProps.setProperty("chartsQuoted", quoted.toString());
       dataProps.setProperty("charts", charts);
-      try {
-         StringTemplate index = new StringTemplate(new String(Files.readAllBytes(Paths.get(Utils.getResourceAsUrl("/charts/data-array.js").toURI())), Utils.getDefaultEncoding()), dataProps);
-         Utils.writeFileContent(dataFile, index.toString());
-      } catch (IOException | URISyntaxException e) {
-         throw new PerfCakeException("Unable to write combined data file: ", e);
-      }
+      Utils.copyTemplateFromResource("/charts/data-array.js", dataFile, dataProps);
 
       return base;
    }
@@ -352,7 +323,7 @@ public class ChartDestinationHelper {
 
          String base = combineResults(data.toArray(new String[data.size()]), cols.toArray(new Integer[cols.size()]), chartName);
          names.put(base, chartName);
-         loaderEntries.put(base, "loadit");
+         loaderEntries.put(base, createLoaderLine(base, data.size(), "Time of test", "Iterations per second", chartName));
          columns.put(base, colNames);
       }
    }
@@ -360,7 +331,6 @@ public class ChartDestinationHelper {
    /**
     * Creates the main index.html file based on all previously generated reports in the same directory.
     *
-    * @return True if and only if the whole operation succeeds.
     * @throws java.io.IOException
     */
    public void compileResults() throws PerfCakeException {

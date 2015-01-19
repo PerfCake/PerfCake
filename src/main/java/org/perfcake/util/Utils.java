@@ -26,17 +26,16 @@ import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.AsyncAppender;
-import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -408,41 +407,96 @@ public class Utils {
 
    /**
     * Atomically writes given content to a file.
-    * @param fileName Target file name.
-    * @param content Content to be written.
-    * @throws IOException In case of file operations failure.
+    *
+    * @param fileName
+    *       Target file name.
+    * @param content
+    *       Content to be written.
+    * @throws IOException
+    *       In case of file operations failure.
     */
-   public static void writeFileContent(final String fileName, final String content) throws IOException {
+   public static void writeFileContent(final String fileName, final String content) throws PerfCakeException {
       writeFileContent(new File(fileName), content);
    }
 
    /**
     * Atomically writes given content to a file.
-    * @param file Target file.
-    * @param content Content to be written.
-    * @throws IOException In case of file operations failure.
+    *
+    * @param file
+    *       Target file.
+    * @param content
+    *       Content to be written.
+    * @throws IOException
+    *       In case of file operations failure.
     */
-   public static void writeFileContent(final File file, final String content) throws IOException  {
+   public static void writeFileContent(final File file, final String content) throws PerfCakeException {
       writeFileContent(file.toPath(), content);
    }
 
    /**
     * Atomically writes given content to a file.
-    * @param path Target file path.
-    * @param content Content to be written.
-    * @throws IOException In case of file operations failure.
+    *
+    * @param path
+    *       Target file path.
+    * @param content
+    *       Content to be written.
+    * @throws IOException
+    *       In case of file operations failure.
     */
-   public static void writeFileContent(final Path path, final String content) throws IOException  {
-      final Path workFile = Paths.get(path.toString() + ".work");
-      Files.write(workFile, content.getBytes(Utils.getDefaultEncoding()));
-      Files.move(workFile, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+   public static void writeFileContent(final Path path, final String content) throws PerfCakeException {
+      try {
+         if (log.isDebugEnabled()) {
+            log.debug(String.format("Writing content to the file %s", path.toString()));
+            if (log.isTraceEnabled()) {
+               log.trace(String.format("File content: \"%s\"", content));
+            }
+         }
+
+         final Path workFile = Paths.get(path.toString() + ".work");
+         Files.write(workFile, content.getBytes(Utils.getDefaultEncoding()));
+         Files.move(workFile, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+      } catch (IOException e) {
+         String message = String.format("Could not write content to the file %s:", path.toString());
+         log.error(message, e);
+         throw new PerfCakeException(message, e);
+      }
+   }
+
+   /**
+    * Takes a resource as a StringTemplate, renders the template using the provided properties and stores it to the given path.
+    * @param resource Resource location of a template.
+    * @param target Target path where to store the rendered template file.
+    * @param properties Properties to fill into the template.
+    * @throws PerfCakeException When it is not possible to render the template or store the target file.
+    */
+   public static void copyTemplateFromResource(final String resource, final Path target, final Properties properties) throws PerfCakeException {
+      try {
+         if (log.isDebugEnabled()) {
+            log.debug(String.format("Copying template from resource %s to the file %s", resource, target.toString()));
+            if (log.isTraceEnabled()) {
+               final StringWriter sw = new StringWriter();
+               properties.list(new PrintWriter(sw));
+               log.trace(String.format("Properties for the template: \"%s\"", sw.toString()));
+            }
+         }
+
+         StringTemplate template = new StringTemplate(new String(Files.readAllBytes(Paths.get(Utils.getResourceAsUrl(resource).toURI())), Utils.getDefaultEncoding()), properties);
+         Utils.writeFileContent(target, template.toString());
+      } catch (IOException | URISyntaxException e) {
+         String message = String.format("Could not render template from resource %s:", resource);
+         log.error(message, e);
+         throw new PerfCakeException(message, e);
+      }
    }
 
    /**
     * Reconfigures all appenders in the enumeration to the given level. If there are any
     * AsyncAppenders, all their appenders are recursively reconfigured as well.
-    * @param appenders Enumeration of all appenders.
-    * @param level The desired level.
+    *
+    * @param appenders
+    *       Enumeration of all appenders.
+    * @param level
+    *       The desired level.
     */
    private static void reconfigureAppenders(final Enumeration appenders, final Level level) {
       while (appenders.hasMoreElements()) {
@@ -460,7 +514,9 @@ public class Utils {
 
    /**
     * Reconfigures the logging level of the root logger and all suitable appenders.
-    * @param level The desired level.
+    *
+    * @param level
+    *       The desired level.
     */
    public static void setLoggingLevel(final Level level) {
       Logger.getRootLogger().setLevel(level);
