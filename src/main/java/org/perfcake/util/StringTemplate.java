@@ -21,7 +21,8 @@ package org.perfcake.util;
 
 import httl.Engine;
 import httl.Template;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.text.ParseException;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ public class StringTemplate {
    private static final String PROPERTY_PATTERN = "[^\\\\](@\\{([^@\\$\\{]+)})";
    private static final String ESCAPED_PROPERTY_PATTERN = "([\\\\](@\\{[^@\\$\\{]+}))";
    private static final String ESCAPED_PATTERN = "(\\$(\\{[^\\$\\{]+}))";
-   private static final Logger log = Logger.getLogger(StringTemplate.class);
+   private static final Logger log = LogManager.getLogger(StringTemplate.class);
 
    private Template template = null;
    private String originalTemplate = null;

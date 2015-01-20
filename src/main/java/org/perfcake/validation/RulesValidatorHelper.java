@@ -22,8 +22,8 @@ package org.perfcake.validation;
 import org.perfcake.message.Message;
 import org.perfcake.util.Utils;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
@@ -47,7 +47,7 @@ class RulesValidatorHelper {
    /**
     * A logger for this class.
     */
-   static final Logger log = Logger.getLogger(RulesValidatorHelper.class);
+   static final Logger log = LogManager.getLogger(RulesValidatorHelper.class);
 
    /**
     * Constant to hold the DSL language file name in the virtual Drools file system.
@@ -163,7 +163,7 @@ class RulesValidatorHelper {
 
       // Check the builder for errors
       if (kb.getResults().hasMessages(org.kie.api.builder.Message.Level.ERROR)) {
-         if (log.isEnabledFor(Level.ERROR)) {
+         if (log.isErrorEnabled()) {
             log.error(kb.getResults().getMessages().toString());
          }
          throw new ValidationException("Unable to compile rules.");

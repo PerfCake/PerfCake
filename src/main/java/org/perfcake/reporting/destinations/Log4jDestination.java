@@ -22,7 +22,8 @@ package org.perfcake.reporting.destinations;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * The destination that appends the measurements to Log4j to category org.perfcake.reporting.destinations.Log4jDestination.
@@ -33,7 +34,7 @@ import org.apache.log4j.Logger;
  */
 public class Log4jDestination implements Destination {
 
-   private static final Logger log = Logger.getLogger(Log4jDestination.class);
+   private static final Logger log = LogManager.getLogger(Log4jDestination.class);
 
    /**
     * Level at which we should log the measurements

@@ -33,7 +33,8 @@ import org.perfcake.scenario.ScenarioFactory
 import org.perfcake.util.ObjectFactory
 import org.perfcake.util.Utils
 
-import org.apache.log4j.Logger
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ImportCustomizer
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
@@ -802,7 +803,7 @@ def shell = new GroovyShell(scenarioBinding, configuration)
 shell.evaluate(dslScript as String)
 
 // print out the completely parsed scenario
-def log = Logger.getLogger(ScenarioDelegate.class)
+def log = LogManager.getLogger(ScenarioDelegate.class)
 if (log.isDebugEnabled()) {
    log.debug(scenario.toString())
 }

@@ -22,7 +22,8 @@ package org.perfcake.message.sender;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -45,7 +46,7 @@ public class JdbcSender extends AbstractSender {
    /**
     * The sender's logger.
     */
-   private static final Logger log = Logger.getLogger(JdbcSender.class);
+   private static final Logger log = LogManager.getLogger(JdbcSender.class);
 
    /**
     * JDBC URL string.

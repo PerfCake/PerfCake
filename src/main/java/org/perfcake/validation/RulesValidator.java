@@ -21,7 +21,8 @@ package org.perfcake.validation;
 
 import org.perfcake.message.Message;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.w3c.dom.Element;
 
 import java.io.BufferedReader;
@@ -49,7 +50,7 @@ public class RulesValidator implements MessageValidator {
    /**
     * A logger for this class.
     */
-   private static final Logger log = Logger.getLogger(RulesValidator.class);
+   private static final Logger log = LogManager.getLogger(RulesValidator.class);
 
    /**
     * Rules helper that wraps the Drools logic.

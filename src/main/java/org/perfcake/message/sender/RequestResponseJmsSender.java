@@ -23,7 +23,8 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.util.Utils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class RequestResponseJmsSender extends JmsSender {
    /**
     * Logger.
     */
-   private static final Logger log = Logger.getLogger(RequestResponseJmsSender.class);
+   private static final Logger log = LogManager.getLogger(RequestResponseJmsSender.class);
 
    /**
     * JMS initial context for response reception.

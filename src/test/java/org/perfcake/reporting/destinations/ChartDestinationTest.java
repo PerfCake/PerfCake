@@ -23,7 +23,8 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.TestSetup;
 import org.perfcake.reporting.Measurement;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.testng.annotations.Test;
 
 import java.text.SimpleDateFormat;
@@ -36,7 +37,7 @@ import java.util.Date;
  */
 public class ChartDestinationTest {
 
-   private static final Logger log = Logger.getLogger(ChartDestinationTest.class);
+   private static final Logger log = LogManager.getLogger(ChartDestinationTest.class);
 
    @Test(enabled = false)
    public void basicTest() throws Exception {

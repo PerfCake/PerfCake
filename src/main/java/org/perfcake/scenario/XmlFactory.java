@@ -44,8 +44,9 @@ import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
@@ -80,7 +81,7 @@ import javax.xml.validation.SchemaFactory;
  */
 public class XmlFactory implements ScenarioFactory {
 
-   private static final Logger log = Logger.getLogger(XmlFactory.class);
+   private static final Logger log = LogManager.getLogger(XmlFactory.class);
    private org.perfcake.model.Scenario scenarioModel;
    private String scenarioConfig;
    private Scenario scenario = null;

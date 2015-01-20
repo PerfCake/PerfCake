@@ -21,7 +21,8 @@ package org.perfcake.validation;
 
 import org.perfcake.message.Message;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -57,7 +58,7 @@ public class DictionaryValidator implements MessageValidator {
    /**
     * A logger for this class.
     */
-   private final Logger log = Logger.getLogger(ValidationManager.class);
+   private final Logger log = LogManager.getLogger(ValidationManager.class);
 
    /**
     * The directory where the dictionary is/will be store.

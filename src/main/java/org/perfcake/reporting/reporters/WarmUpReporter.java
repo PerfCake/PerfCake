@@ -28,7 +28,8 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -50,7 +51,7 @@ public class WarmUpReporter extends AbstractReporter {
    /**
     * The reporter's logger.
     */
-   private static final Logger log = Logger.getLogger(WarmUpReporter.class);
+   private static final Logger log = LogManager.getLogger(WarmUpReporter.class);
 
    /**
     * Minimal warm-up period duration in milliseconds.

@@ -28,7 +28,8 @@ import org.perfcake.util.Utils;
 import org.perfcake.validation.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -56,7 +57,7 @@ import java.util.Properties;
  */
 public class ChartDestinationHelper {
 
-   private static final Logger log = Logger.getLogger(ChartDestinationHelper.class);
+   private static final Logger log = LogManager.getLogger(ChartDestinationHelper.class);
 
    private ChartDestination chartDestination;
 

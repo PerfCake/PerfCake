@@ -19,6 +19,8 @@
  */
 package org.perfcake.message.generator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
@@ -28,9 +30,6 @@ import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
-
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -50,7 +49,7 @@ class SenderTask implements Runnable {
    /**
     * Sender task's logger.
     */
-   private Logger log = Logger.getLogger(SenderTask.class);
+   private Logger log = LogManager.getLogger(SenderTask.class);
 
    /**
     * Reference to a message sender manager that is providing the message senders.
@@ -91,7 +90,7 @@ class SenderTask implements Runnable {
       try {
          sender.preSend(message, messageHeaders);
       } catch (Exception e) {
-         if (log.isEnabledFor(Level.ERROR)) {
+         if (log.isErrorEnabled()) {
             log.error("Exception occurred!", e);
          }
       }
@@ -102,7 +101,7 @@ class SenderTask implements Runnable {
       try {
          result = sender.send(message, messageHeaders, mu);
       } catch (Exception e) {
-         if (log.isEnabledFor(Level.ERROR)) {
+         if (log.isErrorEnabled()) {
             log.error("Exception occurred!", e);
          }
       }
@@ -111,7 +110,7 @@ class SenderTask implements Runnable {
       try {
          sender.postSend(message);
       } catch (Exception e) {
-         if (log.isEnabledFor(Level.ERROR)) {
+         if (log.isErrorEnabled()) {
             log.error("Exception occurred!", e);
          }
       }

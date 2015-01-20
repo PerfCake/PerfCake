@@ -26,10 +26,9 @@ import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.AsyncAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +61,7 @@ public class Utils {
 
    public static final File DEFAULT_RESOURCES_DIR = new File("resources");
    public static final File DEFAULT_PLUGINS_DIR = new File("lib/plugins");
-   private static final Logger log = Logger.getLogger(Utils.class);
+   private static final Logger log = LogManager.getLogger(Utils.class);
 
    /**
     * It takes a string and replaces all ${&lt;property.name&gt;} placeholders
@@ -140,7 +139,7 @@ public class Utils {
     * @param prefix
     */
    public static void logProperties(final Logger logger, final Level level, final Properties properties, final String prefix) {
-      if (logger.isEnabledFor(level)) {
+      if (logger.isEnabled(level)) {
          for (Entry<Object, Object> property : properties.entrySet()) {
             logger.log(level, prefix + property.getKey() + "=" + property.getValue());
          }
@@ -159,7 +158,7 @@ public class Utils {
       try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
          return filterProperties(scanner.useDelimiter("\\Z").next());
       } catch (NoSuchElementException nsee) {
-         if (log.isEnabledFor(Level.WARN)) {
+         if (log.isWarnEnabled()) {
             log.warn("The content of " + url + " is empty.");
          }
          return "";
@@ -464,10 +463,15 @@ public class Utils {
 
    /**
     * Takes a resource as a StringTemplate, renders the template using the provided properties and stores it to the given path.
-    * @param resource Resource location of a template.
-    * @param target Target path where to store the rendered template file.
-    * @param properties Properties to fill into the template.
-    * @throws PerfCakeException When it is not possible to render the template or store the target file.
+    *
+    * @param resource
+    *       Resource location of a template.
+    * @param target
+    *       Target path where to store the rendered template file.
+    * @param properties
+    *       Properties to fill into the template.
+    * @throws PerfCakeException
+    *       When it is not possible to render the template or store the target file.
     */
    public static void copyTemplateFromResource(final String resource, final Path target, final Properties properties) throws PerfCakeException {
       try {
@@ -499,7 +503,7 @@ public class Utils {
     *       The desired level.
     */
    private static void reconfigureAppenders(final Enumeration appenders, final Level level) {
-      while (appenders.hasMoreElements()) {
+      /*while (appenders.hasMoreElements()) {
          Object appender = appenders.nextElement();
 
          if (appender instanceof AppenderSkeleton) {
@@ -509,7 +513,7 @@ public class Utils {
          if (appender instanceof AsyncAppender) {
             reconfigureAppenders(((AsyncAppender) appender).getAllAppenders(), level);
          }
-      }
+      }*/
    }
 
    /**
@@ -519,7 +523,7 @@ public class Utils {
     *       The desired level.
     */
    public static void setLoggingLevel(final Level level) {
-      Logger.getRootLogger().setLevel(level);
-      reconfigureAppenders(Logger.getRootLogger().getAllAppenders(), level);
+/*      Logger.getRootLogger().setLevel(level);
+      reconfigureAppenders(Logger.getRootLogger().getAllAppenders(), level);*/
    }
 }

@@ -23,7 +23,8 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -46,7 +47,7 @@ import javax.websocket.WebSocketContainer;
  */
 public class WebSocketSender extends AbstractSender {
 
-   private static final Logger logger = Logger.getLogger(WebSocketSender.class);
+   private static final Logger logger = LogManager.getLogger(WebSocketSender.class);
 
    private WebSocketContainer container;
    private Session session;

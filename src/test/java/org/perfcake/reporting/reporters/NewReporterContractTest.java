@@ -31,7 +31,7 @@ import org.testng.annotations.Test;
 
 public class NewReporterContractTest {
 
-   // private static final Logger log = Logger.getLogger(NewReporterContractTest.class);
+   // private static final Logger log = LogManager.getLogger(NewReporterContractTest.class);
 
    //
    // private final ReportManager rm = new ReportManager();

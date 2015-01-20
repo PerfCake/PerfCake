@@ -26,7 +26,8 @@ import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.FluentPropertyBeanIntrospector;
 import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.w3c.dom.Element;
 
 import java.io.File;
@@ -48,7 +49,7 @@ import java.util.Properties;
  */
 public class ObjectFactory {
 
-   private static final Logger log = Logger.getLogger(ObjectFactory.class);
+   private static final Logger log = LogManager.getLogger(ObjectFactory.class);
    private static ClassLoader pluginClassLoader = null;
 
    /**

@@ -26,7 +26,8 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 /**
  * @author Pavel Macík <pavel.macik@gmail.com>
@@ -39,7 +40,7 @@ public class DummyReporter extends AbstractReporter {
    /**
     * The reporter's loger.
     */
-   private static final Logger log = Logger.getLogger(DummyReporter.class);
+   private static final Logger log = LogManager.getLogger(DummyReporter.class);
 
    @Override
    protected void doReport(final MeasurementUnit mu) throws ReportingException {

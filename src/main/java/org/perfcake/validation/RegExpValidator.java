@@ -21,7 +21,8 @@ package org.perfcake.validation;
 
 import org.perfcake.message.Message;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.w3c.dom.Element;
 
 import java.util.regex.Matcher;
@@ -44,7 +45,7 @@ import java.util.regex.Pattern;
  */
 public class RegExpValidator implements MessageValidator {
 
-   private static final Logger log = Logger.getLogger(RegExpValidator.class);
+   private static final Logger log = LogManager.getLogger(RegExpValidator.class);
 
    private String pattern = "";
 

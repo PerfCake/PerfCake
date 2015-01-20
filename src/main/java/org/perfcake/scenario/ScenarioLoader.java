@@ -23,7 +23,8 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.Utils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -35,7 +36,7 @@ import java.net.URL;
  */
 public class ScenarioLoader {
 
-   private static final Logger log = Logger.getLogger(ScenarioBuilder.class);
+   private static final Logger log = LogManager.getLogger(ScenarioBuilder.class);
 
    /**
     * Loads {@link org.perfcake.scenario.Scenario} from the location specified with the system property <code>-Dscenario=<scenario name></code>

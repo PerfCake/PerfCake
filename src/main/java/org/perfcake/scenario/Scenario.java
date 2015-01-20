@@ -26,7 +26,8 @@ import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.List;
 
@@ -38,7 +39,7 @@ import java.util.List;
  */
 public class Scenario {
 
-   private static final Logger log = Logger.getLogger(Scenario.class);
+   private static final Logger log = LogManager.getLogger(Scenario.class);
    private AbstractMessageGenerator generator;
    private MessageSenderManager messageSenderManager;
    private ReportManager reportManager;

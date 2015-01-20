@@ -21,7 +21,8 @@ package org.perfcake.validation;
 
 import org.perfcake.message.Message;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.w3c.dom.Element;
 
 import java.io.BufferedReader;
@@ -53,7 +54,7 @@ public class ScriptValidator implements MessageValidator {
    private String scriptFile;
    private CompiledScript compiledScript = null;
 
-   private static final Logger log = Logger.getLogger(ScriptValidator.class);
+   private static final Logger log = LogManager.getLogger(ScriptValidator.class);
 
    private CompiledScript getCompiledScript() throws ScriptException, ValidationException {
       if (compiledScript == null) {

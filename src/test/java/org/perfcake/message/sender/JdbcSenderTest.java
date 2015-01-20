@@ -23,12 +23,11 @@ import static org.mockito.Mockito.*;
 
 import org.perfcake.util.ObjectFactory;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.Layout;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.ErrorHandler;
-import org.apache.log4j.spi.Filter;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.ErrorHandler;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LogEvent;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -53,43 +52,13 @@ public class JdbcSenderTest {
       private String lastMessage = null;
 
       @Override
-      public void addFilter(Filter newFilter) {
-      }
-
-      @Override
-      public Filter getFilter() {
-         return null;
-      }
-
-      @Override
-      public void clearFilters() {
-      }
-
-      @Override
-      public void close() {
-      }
-
-      @Override
-      public void doAppend(LoggingEvent event) {
-         lastMessage = event.getMessage().toString();
+      public void append(final LogEvent logEvent) {
+         lastMessage = logEvent.getMessage().getFormattedMessage();
       }
 
       @Override
       public String getName() {
-         return null;
-      }
-
-      @Override
-      public void setErrorHandler(ErrorHandler errorHandler) {
-      }
-
-      @Override
-      public ErrorHandler getErrorHandler() {
-         return null;
-      }
-
-      @Override
-      public void setLayout(Layout layout) {
+         return "DebugAppender";
       }
 
       @Override
@@ -98,11 +67,37 @@ public class JdbcSenderTest {
       }
 
       @Override
-      public void setName(String name) {
+      public boolean ignoreExceptions() {
+         return false;
       }
 
       @Override
-      public boolean requiresLayout() {
+      public ErrorHandler getHandler() {
+         return null;
+      }
+
+      @Override
+      public void setHandler(final ErrorHandler errorHandler) {
+
+      }
+
+      @Override
+      public void start() {
+
+      }
+
+      @Override
+      public void stop() {
+
+      }
+
+      @Override
+      public boolean isStarted() {
+         return true;
+      }
+
+      @Override
+      public boolean isStopped() {
          return false;
       }
    }
@@ -262,7 +257,7 @@ public class JdbcSenderTest {
       logField.setAccessible(true);
       Logger log = (Logger) logField.get(sender);
       DebugLogAppender a = new DebugLogAppender();
-      log.addAppender(a);
+      ((org.apache.logging.log4j.core.Logger) log).addAppender(a);
 
       sender.close();
 

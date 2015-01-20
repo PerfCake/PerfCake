@@ -24,7 +24,8 @@ import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.util.Utils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -54,7 +55,7 @@ public class HttpSender extends AbstractSender {
    /**
     * The sender's logger.
     */
-   private static final Logger log = Logger.getLogger(HttpSender.class);
+   private static final Logger log = LogManager.getLogger(HttpSender.class);
 
    /**
     * The URL where the HTTP request is send.

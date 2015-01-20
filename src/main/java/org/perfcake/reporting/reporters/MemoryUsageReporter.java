@@ -33,7 +33,8 @@ import org.perfcake.util.Utils;
 import org.perfcake.util.agent.PerfCakeAgent;
 import org.perfcake.util.agent.PerfCakeAgent.Command;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -59,7 +60,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    /**
     * The reporter's logger.
     */
-   private static final Logger log = Logger.getLogger(MemoryUsageReporter.class);
+   private static final Logger log = LogManager.getLogger(MemoryUsageReporter.class);
 
    /**
     * Hostname where {@link PerfCakeAgent} is listening on.

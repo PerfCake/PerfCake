@@ -19,7 +19,8 @@
  */
 package org.perfcake.message.sender;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Properties;
 import javax.jms.Connection;
@@ -42,7 +43,7 @@ public class JmsHelper {
 
    public static class Wiretap implements Runnable {
 
-      private static final Logger log = Logger.getLogger(Wiretap.class);
+      private static final Logger log = LogManager.getLogger(Wiretap.class);
 
       private Thread master;
       private final String inQueue;
