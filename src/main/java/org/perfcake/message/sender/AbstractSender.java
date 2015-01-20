@@ -23,7 +23,8 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -37,7 +38,7 @@ abstract public class AbstractSender implements MessageSender {
    /**
     * The sender's logger.
     */
-   private static final Logger log = Logger.getLogger(AbstractSender.class);
+   private static final Logger log = LogManager.getLogger(AbstractSender.class);
 
    /**
     * The sender's target.

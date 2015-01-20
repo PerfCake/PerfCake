@@ -20,7 +20,8 @@
 package org.perfcake.scenario;
 
 import groovy.lang.Binding;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.perfcake.PerfCakeException;
 import org.perfcake.scenario.dsl.ScenarioDelegate;
 import org.perfcake.util.Utils;
@@ -37,7 +38,7 @@ import java.net.URL;
  */
 public class DslFactory implements ScenarioFactory {
 
-   private static final Logger log = Logger.getLogger(DslFactory.class);
+   private static final Logger log = LogManager.getLogger(DslFactory.class);
    private String scenarioDefinition;
    private Scenario scenario = null;
 

@@ -25,7 +25,8 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.chart.ChartDestinationHelper;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -39,7 +40,7 @@ import java.util.List;
  */
 public class ChartDestination implements Destination {
 
-   private static final Logger log = Logger.getLogger(ChartDestination.class);
+   private static final Logger log = LogManager.getLogger(ChartDestination.class);
 
    private List<String> attributes;
 

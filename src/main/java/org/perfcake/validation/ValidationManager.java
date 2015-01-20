@@ -23,7 +23,8 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.message.ReceivedMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class ValidationManager {
    /**
     * A logger.
     */
-   private final Logger log = Logger.getLogger(ValidationManager.class);
+   private final Logger log = LogManager.getLogger(ValidationManager.class);
    /**
     * An internal thread that takes one response after another and validates them.
     */

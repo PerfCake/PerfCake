@@ -19,7 +19,6 @@
  */
 package org.perfcake.validation;
 
-import org.perfcake.PerfCakeConst;
 import org.perfcake.TestSetup;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
@@ -76,6 +75,6 @@ public class ValidationIntegrationTest extends TestSetup {
       lastCalled2 = v.getLastCalledTimestamp();
       timeDiff = lastCalled2 - lastCalled;
 
-      Assert.assertTrue(timeDiff > 1 && timeDiff < 20, "Validation did not switch to normal speed operation.");
+      Assert.assertTrue(timeDiff >= 1 && timeDiff < 20, String.format("Validation did not switch to normal speed operation (timeDiff = %d).", timeDiff));
    }
 }

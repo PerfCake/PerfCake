@@ -24,7 +24,8 @@ import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.util.Utils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -70,7 +71,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
    /**
     * The sender's logger.
     */
-   private final Logger log = Logger.getLogger(AbstractSocketSender.class);
+   private final Logger log = LogManager.getLogger(AbstractSocketSender.class);
 
    /*
     * (non-Javadoc)

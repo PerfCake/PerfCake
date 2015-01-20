@@ -23,8 +23,8 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSenderManager;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -38,7 +38,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    /**
     * The generator's logger.
     */
-   private static final Logger log = Logger.getLogger(RampUpDownGenerator.class);
+   private static final Logger log = LogManager.getLogger(RampUpDownGenerator.class);
 
    /**
     * Phase of the generator.
@@ -119,7 +119,6 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
       PeriodType runTimeType = runInfo.getDuration().getPeriodType();
       runInfo.addTag("");
 
-
       mainLoop:
       while (runInfo.isRunning()) {
          final long runTime;
@@ -173,7 +172,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
                   int newThreadCount = getThreads() - rampDownStep;
                   if (newThreadCount < postThreadCount) {
                      if (newThreadCount <= 1) {
-                        if (log.isEnabledFor(Level.WARN)) {
+                        if (log.isWarnEnabled()) {
                            log.warn("There was an attempt to decrease the thread count below 1 in RAMP_DOWN phase. Setting number of threads to 1.");
                         }
                         newThreadCount = 1;

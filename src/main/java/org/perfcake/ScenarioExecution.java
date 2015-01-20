@@ -30,8 +30,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -55,7 +55,7 @@ import java.util.Properties;
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "DM_EXIT", justification = "This class is allowed to terminate the JVM.")
 public class ScenarioExecution {
 
-   private static final Logger log = Logger.getLogger(ScenarioExecution.class);
+   private static final Logger log = LogManager.getLogger(ScenarioExecution.class);
 
    /**
     * Command line parameters.
@@ -89,7 +89,7 @@ public class ScenarioExecution {
 
       log.info(String.format("=== Welcome to PerfCake %s ===", PerfCakeConst.VERSION));
 
-      if (log.isEnabledFor(Level.TRACE)) {
+      if (log.isTraceEnabled()) {
          // Print system properties
          se.printTraceInformation();
       }

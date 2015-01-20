@@ -25,7 +25,8 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class ReportManager {
 
-   private static final Logger log = Logger.getLogger(ReportManager.class);
+   private static final Logger log = LogManager.getLogger(ReportManager.class);
 
    private volatile boolean resetLastTimes = false;
 

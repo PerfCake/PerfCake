@@ -33,7 +33,8 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ public abstract class AbstractReporter implements Reporter {
    /**
     * The reporter's logger.
     */
-   private static final Logger log = Logger.getLogger(AbstractReporter.class);
+   private static final Logger log = LogManager.getLogger(AbstractReporter.class);
 
    /**
     * ReportManager that owns this reporter.

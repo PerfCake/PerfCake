@@ -23,7 +23,8 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -44,7 +45,7 @@ import javax.naming.ldap.LdapContext;
  */
 public class LdapSender extends AbstractSender {
 
-   private static final Logger logger = Logger.getLogger(LdapSender.class);
+   private static final Logger logger = LogManager.getLogger(LdapSender.class);
 
    private LdapContext ctx = null;
    private String ldapUsername = null;

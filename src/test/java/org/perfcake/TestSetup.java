@@ -21,7 +21,8 @@ package org.perfcake;
 
 import org.perfcake.util.Utils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -40,7 +41,7 @@ import java.util.Set;
  */
 public class TestSetup {
 
-   private static final Logger log = Logger.getLogger(TestSetup.class);
+   private static final Logger log = LogManager.getLogger(TestSetup.class);
 
    /**
     * Determines whether the system running this application is POSIX compliant.

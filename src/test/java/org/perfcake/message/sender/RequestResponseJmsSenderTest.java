@@ -22,7 +22,8 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.ObjectFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -45,7 +46,7 @@ import javax.jms.TextMessage;
  */
 public class RequestResponseJmsSenderTest extends Arquillian {
 
-   private static final Logger log = Logger.getLogger(RequestResponseJmsSenderTest.class);
+   private static final Logger log = LogManager.getLogger(RequestResponseJmsSenderTest.class);
 
    @Resource(mappedName = "queue/test")
    private Queue queue;
@@ -61,7 +62,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
       return ShrinkWrap.create(JavaArchive.class).addPackages(true,
             "org.perfcake",
             "org.apache.commons.beanutils",
-            "org.apache.log4j",
+            "org.apache.logging.log4j",
             "org.apache.commons.collections");
    }
 

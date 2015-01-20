@@ -19,7 +19,8 @@
  */
 package org.perfcake.message.generator;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.ReportManager;
 
@@ -44,7 +45,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    /**
     * The generator's logger.
     */
-   private static final Logger log = Logger.getLogger(DefaultMessageGenerator.class);
+   private static final Logger log = LogManager.getLogger(DefaultMessageGenerator.class);
 
    /**
     * The period in milliseconds in which the thread queue is filled with new tasks.

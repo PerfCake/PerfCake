@@ -19,7 +19,8 @@
  */
 package org.perfcake.message.sender;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
@@ -40,7 +41,7 @@ public class DummySender extends AbstractSender {
    /**
     * The sender's logger.
     */
-   private static final Logger log = Logger.getLogger(DummySender.class);
+   private static final Logger log = LogManager.getLogger(DummySender.class);
 
    /**
     * Iteration counter (how many times the doSend method has been called).

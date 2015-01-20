@@ -25,7 +25,8 @@ import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.Utils;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -62,7 +63,7 @@ public class CsvDestination implements Destination {
    /**
     * Logger.
     */
-   private static final Logger log = Logger.getLogger(CsvDestination.class);
+   private static final Logger log = LogManager.getLogger(CsvDestination.class);
 
    /**
     * The list containing names of results from measurement.

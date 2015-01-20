@@ -26,7 +26,8 @@ import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.ObjectFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -49,10 +50,10 @@ import java.util.Scanner;
  */
 public class CsvDestinationTest {
 
+   private static final Logger log = LogManager.getLogger(CsvDestinationTest.class);
    private static final long ITERATION = 12345;
    private static final String TIMESTAMP = String.valueOf(Calendar.getInstance().getTimeInMillis());
    private static final String DEFAULT_PATH = "perfcake-results-" + TIMESTAMP + ".csv";
-   private static final Logger log = Logger.getLogger(CsvDestinationTest.class);
    private File csvFile;
 
    @BeforeClass

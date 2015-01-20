@@ -19,7 +19,8 @@
  */
 package org.perfcake.reporting;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -39,7 +40,7 @@ public class MeasurementUnit implements Serializable {
    /**
     * Logger.
     */
-   private static final Logger log = Logger.getLogger(MeasurementUnit.class);
+   private static final Logger log = LogManager.getLogger(MeasurementUnit.class);
 
    /**
     * Iteration for which this unit was created.

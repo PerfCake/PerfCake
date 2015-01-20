@@ -21,7 +21,8 @@ package org.perfcake.common;
 
 import org.perfcake.RunInfo;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -31,7 +32,7 @@ import org.testng.annotations.Test;
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class RunInfoTest {
-   private static final Logger log = Logger.getLogger(RunInfoTest.class);
+   private static final Logger log = LogManager.getLogger(RunInfoTest.class);
 
    @Test
    public void runInfoIterationBasedState() throws InterruptedException {

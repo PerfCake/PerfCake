@@ -19,7 +19,8 @@
  */
 package org.perfcake.validation;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -34,7 +35,7 @@ import java.util.regex.Pattern;
  */
 public class StringUtil {
 
-   private static Logger log = Logger.getLogger(StringUtil.class);
+   private static Logger log = LogManager.getLogger(StringUtil.class);
 
    /**
     * Does a string start with a second string ignoring case?

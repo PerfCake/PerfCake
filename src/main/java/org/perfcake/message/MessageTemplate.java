@@ -20,16 +20,13 @@
 package org.perfcake.message;
 
 import org.perfcake.util.StringTemplate;
-import org.perfcake.util.Utils;
-import org.perfcake.util.properties.DefaultPropertyGetter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * TODO logging and javadoc
@@ -40,7 +37,7 @@ import java.util.regex.Pattern;
 public class MessageTemplate implements Serializable {
    private static final long serialVersionUID = 6172258079690233417L;
 
-   private transient Logger log = Logger.getLogger(MessageTemplate.class);
+   private transient Logger log = LogManager.getLogger(MessageTemplate.class);
 
    private final Message message;
    private final long multiplicity;
