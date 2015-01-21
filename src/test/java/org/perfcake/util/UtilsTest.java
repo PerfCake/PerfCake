@@ -22,6 +22,10 @@ package org.perfcake.util;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.TestSetup;
 import org.perfcake.util.properties.DefaultPropertyGetter;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -37,6 +41,7 @@ import java.util.regex.Pattern;
 
 public class UtilsTest extends TestSetup {
 
+   private static final Logger log = LogManager.getLogger(UtilsTest.class);
    private static final String PROPERTY_LOCATION = "property.location";
    private static final String TEST_VALUE = "test.value";
    private static final String TEST_KEY = "test.key";
@@ -153,5 +158,36 @@ public class UtilsTest extends TestSetup {
       Assert.assertEquals(p.getProperty("p3"), "World");
       Assert.assertEquals(p.getProperty("p4"), "Hello");
       Assert.assertNull(p.getProperty("p5"));
+   }
+
+   @Test
+   public void testLogLevels() {
+      Assert.assertFalse(log.isTraceEnabled());
+      Assert.assertFalse(log.isDebugEnabled());
+      Assert.assertTrue(log.isInfoEnabled());
+      Assert.assertTrue(log.isWarnEnabled());
+      Assert.assertTrue(log.isErrorEnabled());
+
+      Logger newLogger = LogManager.getLogger();
+      Assert.assertFalse(newLogger.isTraceEnabled());
+
+      Utils.setLoggingLevel(Level.TRACE);
+
+      newLogger = LogManager.getLogger();
+      Assert.assertTrue(newLogger.isTraceEnabled());
+
+      Assert.assertTrue(log.isTraceEnabled());
+      Assert.assertTrue(log.isDebugEnabled());
+      Assert.assertTrue(log.isInfoEnabled());
+      Assert.assertTrue(log.isWarnEnabled());
+      Assert.assertTrue(log.isErrorEnabled());
+
+      Utils.setLoggingLevel(Level.INFO);
+
+      Assert.assertFalse(log.isTraceEnabled());
+      Assert.assertFalse(log.isDebugEnabled());
+      Assert.assertTrue(log.isInfoEnabled());
+      Assert.assertTrue(log.isWarnEnabled());
+      Assert.assertTrue(log.isErrorEnabled());
    }
 }
