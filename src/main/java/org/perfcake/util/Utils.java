@@ -25,10 +25,12 @@ import org.perfcake.common.TimestampedRecord;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
+import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
 
 import java.io.File;
 import java.io.IOException;
@@ -494,36 +496,25 @@ public class Utils {
    }
 
    /**
-    * Reconfigures all appenders in the enumeration to the given level. If there are any
-    * AsyncAppenders, all their appenders are recursively reconfigured as well.
-    *
-    * @param appenders
-    *       Enumeration of all appenders.
-    * @param level
-    *       The desired level.
-    */
-   private static void reconfigureAppenders(final Enumeration appenders, final Level level) {
-      /*while (appenders.hasMoreElements()) {
-         Object appender = appenders.nextElement();
-
-         if (appender instanceof AppenderSkeleton) {
-            ((AppenderSkeleton) appender).setThreshold(level);
-         }
-
-         if (appender instanceof AsyncAppender) {
-            reconfigureAppenders(((AsyncAppender) appender).getAllAppenders(), level);
-         }
-      }*/
-   }
-
-   /**
     * Reconfigures the logging level of the root logger and all suitable appenders.
     *
     * @param level
     *       The desired level.
     */
    public static void setLoggingLevel(final Level level) {
-/*      Logger.getRootLogger().setLevel(level);
-      reconfigureAppenders(Logger.getRootLogger().getAllAppenders(), level);*/
+      final org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) log;
+      final LoggerContext context = (LoggerContext) coreLogger.getContext();
+
+      coreLogger.setLevel(level);
+
+      for (Logger l : context.getLoggers()) {
+         if (l.getName() != null && l.getName().startsWith("org.perfcake")) {
+            ((org.apache.logging.log4j.core.Logger) l).setLevel(level);
+         }
+      }
+      //((BaseConfiguration) context.getConfiguration()).ge
+      //context.updateLoggers();
+
+      //context.getLogger("org.perfcake").setLevel(level);
    }
 }
