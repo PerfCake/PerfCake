@@ -168,12 +168,12 @@ public class UtilsTest extends TestSetup {
       Assert.assertTrue(log.isWarnEnabled());
       Assert.assertTrue(log.isErrorEnabled());
 
-      Logger newLogger = LogManager.getLogger();
+      Logger newLogger = LogManager.getLogger("org.perfcake.some.other.package");
       Assert.assertFalse(newLogger.isTraceEnabled());
 
       Utils.setLoggingLevel(Level.TRACE);
 
-      newLogger = LogManager.getLogger();
+      newLogger = LogManager.getLogger("org.perfcake.yet.another.package");
       Assert.assertTrue(newLogger.isTraceEnabled());
 
       Assert.assertTrue(log.isTraceEnabled());

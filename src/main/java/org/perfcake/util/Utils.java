@@ -25,7 +25,6 @@ import org.perfcake.common.TimestampedRecord;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
-import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -45,7 +44,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
@@ -505,16 +503,7 @@ public class Utils {
       final org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) log;
       final LoggerContext context = (LoggerContext) coreLogger.getContext();
 
-      coreLogger.setLevel(level);
-
-      for (Logger l : context.getLoggers()) {
-         if (l.getName() != null && l.getName().startsWith("org.perfcake")) {
-            ((org.apache.logging.log4j.core.Logger) l).setLevel(level);
-         }
-      }
-      //((BaseConfiguration) context.getConfiguration()).ge
-      //context.updateLoggers();
-
-      //context.getLogger("org.perfcake").setLevel(level);
+      context.getConfiguration().getLoggers().get("org.perfcake").setLevel(level);
+      context.updateLoggers();
    }
 }
