@@ -59,6 +59,10 @@ public class ChartDestinationHelper {
 
    private static final Logger log = LogManager.getLogger(ChartDestinationHelper.class);
 
+   private static final String DATA_ARRAY_PREFIX = "data_array_";
+
+   private static int fileCounter = 1;
+
    private ChartDestination chartDestination;
 
    private String baseName;
@@ -252,23 +256,33 @@ public class ChartDestinationHelper {
       final List<String> seen = new ArrayList<>();
       final List<String> result = new ArrayList<>();
 
-      for (List<String> cols : columns.values()) {
-         for (String col : cols) {
-            if (seen.contains(col)) {
-               result.add(col);
-            } else {
-               seen.add(col);
+      for (Map.Entry<String, List<String>> cols : columns.entrySet()) {
+         if (!cols.getKey().startsWith(DATA_ARRAY_PREFIX)) { // do not combine existing combinations
+            for (String col : cols.getValue()) {
+               if (seen.contains(col)) {
+                  result.add(col);
+               } else {
+                  seen.add(col);
+               }
             }
          }
       }
+
+      result.remove("Time");
 
       return result;
    }
 
    // combines data from two charts
-   private String combineResults(final String[] data, final Integer[] columns, final String chartName) throws PerfCakeException {
-      final String base = StringUtils.join(data, "_");
-      final String baseFile = "data-array-" + base + ".js";
+   private String combineResults(final String[] data, final Integer[] columns) throws PerfCakeException {
+      String base, baseFile;
+      Path dataFile;
+      do {
+         base = DATA_ARRAY_PREFIX + (fileCounter++);
+         baseFile = base + ".js";
+         dataFile = Paths.get(target.toString(), "data", baseFile);
+      } while (dataFile.toFile().exists());
+
       final String charts = StringUtils.join(data, ", ");
       StringBuilder cols = new StringBuilder();
       for (int col : columns) {
@@ -292,7 +306,6 @@ public class ChartDestinationHelper {
          quoted.append("'");
       }
 
-      final Path dataFile = Paths.get(target.toString(), "data", baseFile);
       final Properties dataProps = new Properties();
       dataProps.setProperty("baseName", base);
       dataProps.setProperty("chartCols", cols.toString());
@@ -322,7 +335,7 @@ public class ChartDestinationHelper {
             }
          }
 
-         String base = combineResults(data.toArray(new String[data.size()]), cols.toArray(new Integer[cols.size()]), chartName);
+         String base = combineResults(data.toArray(new String[data.size()]), cols.toArray(new Integer[cols.size()]));
          names.put(base, chartName);
          loaderEntries.put(base, createLoaderLine(base, data.size(), "Time of test", "Iterations per second", chartName));
          columns.put(base, colNames);
@@ -340,12 +353,8 @@ public class ChartDestinationHelper {
       final Map<String, String> loaderEntries = new HashMap<>(); // baseId -> loader entry
       final Map<String, List<String>> columns = new HashMap<>(); // baseId -> [columns]
 
-      final List<File> files = Arrays.asList(outputDir.listFiles(new FileFilter() {
-         @Override
-         public boolean accept(final File pathname) {
-            return pathname.getName().toLowerCase().endsWith(".dat");
-         }
-      }));
+      final List<File> files = Arrays.asList(outputDir.listFiles(new DatFileFilter(false)));
+      files.addAll(Arrays.asList(outputDir.listFiles(new DatFileFilter(true))));
 
       try {
          for (final File f : files) {
@@ -405,4 +414,19 @@ public class ChartDestinationHelper {
    public boolean isSuccessInit() {
       return successInit;
    }
+
+   private static class DatFileFilter implements FileFilter {
+
+      private final boolean combinedEnabled;
+
+      public DatFileFilter(final boolean combinedEnabled) {
+         this.combinedEnabled = combinedEnabled;
+      }
+
+      @Override
+      public boolean accept(final File pathname) {
+         return pathname.getName().toLowerCase().endsWith(".dat") && (combinedEnabled ^ !pathname.getName().startsWith(DATA_ARRAY_PREFIX));
+      }
+   }
+
 }

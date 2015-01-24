@@ -1,4 +1,4 @@
-var ${baseName} = [ ['Time'${chartsQuoted} ] ];
+var ${baseName} = [ ['Time', ${chartsQuoted} ] ];
 
 var columns = [${chartCols}]; // 2, 2
 var limiter = [${chartLen}]; // arr.length, arrr.length
@@ -12,7 +12,7 @@ for (var i = 0; i < len; i++) {
 
 function countersUnderLimit() {
 	var res = false;
-	
+
 	for (var i = 0; i < len; i++) {
 		res = res || (counter[i] < limiter[i]);
 	}
