@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,8 +22,8 @@ package org.perfcake.reporting.destinations;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * The destination that appends the measurements to Log4j to category org.perfcake.reporting.destinations.Log4jDestination.
@@ -40,10 +40,6 @@ public class Log4jDestination implements Destination {
     * Level at which we should log the measurements
     */
    private Level level = Level.INFO;
-
-   public static enum Level { // Log4j level is not an enum, so this would be hard to handle
-      TRACE, DEBUG, INFO, WARN, ERROR, FATAL;
-   }
 
    /*
     * (non-Javadoc)
@@ -116,6 +112,10 @@ public class Log4jDestination implements Destination {
    public Log4jDestination setLevel(final Level level) {
       this.level = level;
       return this;
+   }
+
+   public static enum Level { // Log4j level is not an enum, so this would be hard to handle
+      TRACE, DEBUG, INFO, WARN, ERROR, FATAL;
    }
 
 }
