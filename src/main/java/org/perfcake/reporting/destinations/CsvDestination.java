@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,8 +25,8 @@ import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.Utils;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -46,6 +46,16 @@ import java.util.Map;
 public class CsvDestination implements Destination {
 
    /**
+    * Logger.
+    */
+   private static final Logger log = LogManager.getLogger(CsvDestination.class);
+
+   /**
+    * The list containing names of results from measurement.
+    */
+   private final List<String> resultNames = new ArrayList<>();
+
+   /**
     * Output CSV file path.
     */
    private String path = "perfcake-results-" + System.getProperty(PerfCakeConst.TIMESTAMP_PROPERTY) + ".csv";
@@ -59,16 +69,6 @@ public class CsvDestination implements Destination {
     * CSV data elements delimiter.
     */
    private String delimiter = ";";
-
-   /**
-    * Logger.
-    */
-   private static final Logger log = LogManager.getLogger(CsvDestination.class);
-
-   /**
-    * The list containing names of results from measurement.
-    */
-   private final List<String> resultNames = new ArrayList<>();
 
    /**
     * Cached headers in the CSV file.
@@ -100,28 +100,6 @@ public class CsvDestination implements Destination {
     * was used by a different destination or scenario run before.
     */
    private AppendStrategy appendStrategy = AppendStrategy.RENAME;
-
-   /**
-    * Strategy that is used in case that the output file exists. {@link AppendStrategy#OVERWRITE} means that the file
-    * is overwritten, {@link AppendStrategy#RENAME} means that the current output file is renamed by adding a number-based
-    * suffix and {@link AppendStrategy#FORCE_APPEND} is for appending new results to the original file.
-    */
-   public enum AppendStrategy {
-      /**
-       * The original file is overwritten.
-       */
-      OVERWRITE,
-
-      /**
-       * The original file is left alone but the output file is renamed according to a number-based pattern.
-       */
-      RENAME,
-
-      /**
-       * The measurements are appended to the original file.
-       */
-      FORCE_APPEND
-   }
 
    @Override
    public void open() {
@@ -414,5 +392,27 @@ public class CsvDestination implements Destination {
    public CsvDestination setSkipHeader(boolean skipHeader) {
       this.skipHeader = skipHeader;
       return this;
+   }
+
+   /**
+    * Strategy that is used in case that the output file exists. {@link AppendStrategy#OVERWRITE} means that the file
+    * is overwritten, {@link AppendStrategy#RENAME} means that the current output file is renamed by adding a number-based
+    * suffix and {@link AppendStrategy#FORCE_APPEND} is for appending new results to the original file.
+    */
+   public enum AppendStrategy {
+      /**
+       * The original file is overwritten.
+       */
+      OVERWRITE,
+
+      /**
+       * The original file is left alone but the output file is renamed according to a number-based pattern.
+       */
+      RENAME,
+
+      /**
+       * The measurements are appended to the original file.
+       */
+      FORCE_APPEND
    }
 }
