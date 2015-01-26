@@ -24,18 +24,24 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.Utils;
+import org.perfcake.validation.StringUtil;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -61,6 +67,14 @@ public class Chart {
    private String yAxis;
 
    private List<String> attributes;
+
+   private Chart(final String baseName, final List<String> attributes, final String name, final String xAxis, final String yAxis) {
+      this.baseName = baseName;
+      this.attributes = attributes;
+      this.name = name;
+      this.xAxis = xAxis;
+      this.yAxis = yAxis;
+   }
 
    public Chart(final Path target, final String group, final List<String> attributes, final String name, final String xAxis, final String yAxis) throws PerfCakeException {
       this.target = target;
@@ -168,5 +182,37 @@ public class Chart {
       }
    }
 
+   public static Chart fromDescriptionFile(final File descriptionFile) throws IOException {
+      final String base = descriptionFile.getName().substring(0, descriptionFile.getName().length() - 4);
+      final String loaderEntry = new String(Files.readAllBytes(Paths.get(descriptionFile.toURI())));
+
+      // drawChart(stats20150124220000, 'chart_stats20150124220000_div', [0, 1, 2], 'Time of test', 'Iterations per second', 'Performance');
+      String name = loaderEntry.substring(loaderEntry.lastIndexOf(", ") + 3);
+      name = name.substring(0, name.lastIndexOf("'"));
+
+      String axises = loaderEntry.substring(loaderEntry.indexOf("], '") + 4, loaderEntry.lastIndexOf("', '"));
+      String xAxis = axises.substring(0, axises.indexOf("', '"));
+      String yAxis = axises.substring(axises.indexOf("', '") + 4);
+
+      final File jsFile = new File(descriptionFile.getAbsolutePath().substring(0, descriptionFile.getAbsolutePath().length() - 4) + ".js");
+      String firstDataLine = "";
+      try (BufferedReader br = Files.newBufferedReader(jsFile.toPath(), Charset.forName(Utils.getDefaultEncoding()));) {
+         firstDataLine = br.readLine();
+      }
+
+      firstDataLine = firstDataLine.substring(firstDataLine.indexOf("[ [ ") + 4);
+      firstDataLine = firstDataLine.substring(0, firstDataLine.indexOf(" ] ]"));
+      String[] columnNames = firstDataLine.split(", ");
+      List<String> columnsList = new ArrayList<>();
+      for (String s : columnNames) {
+         columnsList.add(StringUtil.trim(s, "'"));
+      }
+
+      return new Chart(base, columnsList, name, xAxis, yAxis);
+   }
+
+   public static Chart combineCharts(final Chart... charts) {
+      return null;
+   }
 
 }
