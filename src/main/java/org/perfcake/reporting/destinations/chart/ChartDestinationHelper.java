@@ -19,35 +19,25 @@
  */
 package org.perfcake.reporting.destinations.chart;
 
-import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.ChartDestination;
 import org.perfcake.util.Utils;
-import org.perfcake.validation.StringUtil;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -71,7 +61,10 @@ public class ChartDestinationHelper {
       try {
          createOutputFileStructure();
 
-         mainChart = new Chart(target, chartDestination.getGroup(), chartDestination.getAttributesAsList(), chartDestination.getName(), chartDestination.getXAxis(), chartDestination.getYAxis());
+         List<String> attributes = new ArrayList<>(chartDestination.getAttributesAsList()); // must close to ArrayList, as the current impl. does not support adding at index
+         attributes.add(0, "Time");
+
+         mainChart = new Chart(target, chartDestination.getGroup(), attributes, chartDestination.getName(), chartDestination.getXAxis(), chartDestination.getYAxis());
 
          successInit = true;
       } catch (PerfCakeException e) {
@@ -154,7 +147,7 @@ public class ChartDestinationHelper {
 
       for (Chart c : charts) {
          for (String attribute : c.getAttributes()) {
-            if (seen.contains(attribute)) {
+            if (seen.contains(attribute) && !result.contains(attribute)) {
                result.add(attribute);
             } else {
                seen.add(attribute);
@@ -190,7 +183,7 @@ public class ChartDestinationHelper {
    private void deletePreviousCombinedCharts(final File descriptionsDirectory) throws IOException {
       final StringBuilder issues = new StringBuilder();
 
-      for (File f : descriptionsDirectory.listFiles(new DatFileFilter(true))) {
+      for (File f : descriptionsDirectory.listFiles(new CombinedJsFileFilter())) {
          if (!f.delete()) {
             issues.append(String.format("Cannot delete file %s. \n", f.getAbsolutePath()));
          }
@@ -214,7 +207,7 @@ public class ChartDestinationHelper {
       try {
          deletePreviousCombinedCharts(outputDir);
 
-         final List<File> descriptionFiles = Arrays.asList(outputDir.listFiles(new DatFileFilter(false)));
+         final List<File> descriptionFiles = Arrays.asList(outputDir.listFiles(new DescriptionFileFilter()));
 
          for (final File f : descriptionFiles) {
             Chart c = Chart.fromDescriptionFile(f);
@@ -239,17 +232,19 @@ public class ChartDestinationHelper {
       return successInit;
    }
 
-   private static class DatFileFilter implements FileFilter {
-
-      private final boolean combinedEnabled;
-
-      public DatFileFilter(final boolean combinedEnabled) {
-         this.combinedEnabled = combinedEnabled;
-      }
+   private static class DescriptionFileFilter implements FileFilter {
 
       @Override
       public boolean accept(final File pathname) {
-         return pathname.getName().toLowerCase().endsWith(".dat") && (combinedEnabled ^ !pathname.getName().startsWith(Chart.DATA_ARRAY_PREFIX));
+         return pathname.getName().toLowerCase().endsWith(".dat");
+      }
+   }
+
+   private static class CombinedJsFileFilter implements FileFilter {
+
+      @Override
+      public boolean accept(final File pathname) {
+         return pathname.getName().toLowerCase().endsWith(".js") && pathname.getName().startsWith(Chart.DATA_ARRAY_PREFIX);
       }
    }
 

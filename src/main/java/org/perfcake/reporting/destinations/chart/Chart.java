@@ -187,9 +187,15 @@ public class Chart {
    private void writeDataFileHeader() throws PerfCakeException {
       final StringBuilder dataHeader = new StringBuilder("var ");
       dataHeader.append(baseName);
-      dataHeader.append(" = [ [ 'Time'");
+      dataHeader.append(" = [ [ ");
+      boolean first = true;
       for (String attr : attributes) {
-         dataHeader.append(", '");
+         if (first) {
+            dataHeader.append("'");
+            first = false;
+         } else {
+            dataHeader.append(", '");
+         }
          dataHeader.append(attr);
          dataHeader.append("'");
       }
@@ -217,7 +223,7 @@ public class Chart {
       line.append(baseName);
       line.append("_div', [0");
 
-      for (int i = 1; i <= attributes.size(); i++) {
+      for (int i = 1; i < attributes.size(); i++) {
          line.append(", ");
          line.append(i);
       }
@@ -241,20 +247,22 @@ public class Chart {
       sb.append("'");
 
       for (String attr : attributes) {
-         sb.append(", ");
-         Object data = m.get(attr);
+         if (!attr.equals("Time")) {
+            sb.append(", ");
+            Object data = m.get(attr);
 
-         // we do not have all required attributes, return an empty line
-         if (data == null) {
-            return "";
-         }
+            // we do not have all required attributes, return an empty line
+            if (data == null) {
+               return "";
+            }
 
-         if (data instanceof String) {
-            sb.append("'");
-            sb.append((String) data);
-            sb.append("'");
-         } else {
-            sb.append(data.toString());
+            if (data instanceof String) {
+               sb.append("'");
+               sb.append((String) data);
+               sb.append("'");
+            } else {
+               sb.append(data.toString());
+            }
          }
       }
 
