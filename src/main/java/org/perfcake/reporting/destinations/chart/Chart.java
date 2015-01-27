@@ -26,6 +26,7 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.StringUtil;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,12 +45,14 @@ import java.util.List;
 import java.util.Properties;
 
 /**
+ * Represents a single Google chart data file(s) stored in the file system.
+ *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class Chart {
    private static final Logger log = LogManager.getLogger(Chart.class);
 
-   private static final String DATA_ARRAY_PREFIX = "data_array_";
+   protected static final String DATA_ARRAY_PREFIX = "data_array_";
 
    private static int fileCounter = 1;
 
@@ -60,11 +63,8 @@ public class Chart {
    private Path target;
 
    private String name;
-
    private String xAxis;
-
    private String yAxis;
-
    private List<String> attributes;
 
    private Chart(final String baseName, final List<String> attributes, final String name, final String xAxis, final String yAxis) {
@@ -119,8 +119,69 @@ public class Chart {
       return new Chart(base, columnsList, name, xAxis, yAxis);
    }
 
-   public static Chart combineCharts(final Chart... charts) {
-      return null;
+   public static Chart combineCharts(final Path target, final String match, final List<Chart> charts) throws PerfCakeException {
+      String base, baseFile;
+      Path dataFile;
+      do {
+         base = DATA_ARRAY_PREFIX + (fileCounter++);
+         baseFile = base + ".js";
+         dataFile = Paths.get(target.toString(), "data", baseFile);
+      } while (dataFile.toFile().exists());
+
+      final List<String> columnNames = new ArrayList<>();
+      columnNames.add("Time");
+      final StringBuilder baseNames = new StringBuilder();
+      final StringBuilder columns = new StringBuilder();
+      final StringBuilder lengths = new StringBuilder();
+      final StringBuilder quotedNames = new StringBuilder();
+      for (Chart chart : charts) {
+         if (baseNames.length() > 0) {
+            baseNames.append(", ");
+            columns.append(", ");
+            lengths.append(", ");
+            quotedNames.append(", ");
+         }
+
+         columnNames.add(chart.getBaseName());
+
+         baseNames.append(chart.getBaseName());
+         columns.append(chart.getAttributes().indexOf(match));
+         lengths.append(chart.getBaseName());
+         lengths.append(".length");
+         quotedNames.append("'");
+         quotedNames.append(chart.getBaseName());
+         quotedNames.append("'");
+      }
+
+      final Properties dataProps = new Properties();
+      dataProps.setProperty("baseName", base);
+      dataProps.setProperty("chartCols", columns.toString());
+      dataProps.setProperty("chartLen", lengths.toString());
+      dataProps.setProperty("chartsQuoted", quotedNames.toString());
+      dataProps.setProperty("charts", baseNames.toString());
+      Utils.copyTemplateFromResource("/charts/data-array.js", dataFile, dataProps);
+
+      return new Chart(base, columnNames, "Match of " + match, charts.get(0).getxAxis(), charts.get(0).getyAxis());
+   }
+
+   public String getBaseName() {
+      return baseName;
+   }
+
+   public String getName() {
+      return name;
+   }
+
+   public String getxAxis() {
+      return xAxis;
+   }
+
+   public String getyAxis() {
+      return yAxis;
+   }
+
+   public List<String> getAttributes() {
+      return attributes;
    }
 
    private void writeDataFileHeader() throws PerfCakeException {
