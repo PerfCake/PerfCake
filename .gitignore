@@ -3,6 +3,7 @@
 target
 logs
 *.log
+*.log.*
 test-output
 *.csv
 
