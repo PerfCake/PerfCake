@@ -96,6 +96,7 @@ public class ChartDestinationHelper {
 
       try {
          Files.copy(getClass().getResourceAsStream("/charts/google-chart.js"), Paths.get(target.toString(), "src", "google-chart.js"), StandardCopyOption.REPLACE_EXISTING);
+         Files.copy(getClass().getResourceAsStream("/charts/google-chart-concat.js"), Paths.get(target.toString(), "src", "google-chart-concat.js"), StandardCopyOption.REPLACE_EXISTING);
          Files.copy(getClass().getResourceAsStream("/charts/google-jsapi.js"), Paths.get(target.toString(), "src", "google-jsapi.js"), StandardCopyOption.REPLACE_EXISTING);
          Files.copy(getClass().getResourceAsStream("/charts/jquery.js"), Paths.get(target.toString(), "src", "jquery.js"), StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {

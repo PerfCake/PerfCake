@@ -65,25 +65,27 @@ while (countersUnderLimit()) {
 	}
 
 	var stillWarmUp = isWarmUp();
-	var min = null, minPos = 0;
+	var min = null, minPos = null;
 	for (var i = 0; i < len; i++) {
 		if (!stillWarmUp || isWarmUpFor(i)) {
-			if (min == null || tm[i] < min) {
+			if (min == null || (tm[i] != null && tm[i] < min)) {
 				min = tm[i];
 				minPos = i;
 			}
 		}
 	}
 
-	d[0] = data[minPos][counter[minPos]][0];
-	for (var i = 0; i < len; i++) {
-		if ((!stillWarmUp || isWarmUpFor(i)) && tm[i] == min) {
-			d[i + 1] = data[i][counter[i]][columns[i]];
-			counter[i]++;
-		} else {
-			d[i + 1] = null;
+	if (minPos != null) {
+		d[0] = data[minPos][counter[minPos]][0];
+		for (var i = 0; i < len; i++) {
+			if ((!stillWarmUp || isWarmUpFor(i)) && tm[i] == min) {
+				d[i + 1] = data[i][counter[i]][columns[i]];
+				counter[i]++;
+			} else {
+				d[i + 1] = null;
+			}
 		}
-	}
 
-	${baseName}.push(d);
+		${baseName}.push(d);
+	}
 }

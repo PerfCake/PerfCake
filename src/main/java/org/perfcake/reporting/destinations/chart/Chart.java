@@ -67,6 +67,11 @@ public class Chart {
    private String yAxis;
    private List<String> attributes;
 
+   /**
+    * Was this chart created as a concatenation of other charts?
+    */
+   private boolean concat = false;
+
    private Chart(final String baseName, final List<String> attributes, final String name, final String xAxis, final String yAxis) {
       this.baseName = baseName;
       this.attributes = attributes;
@@ -161,7 +166,10 @@ public class Chart {
       dataProps.setProperty("charts", baseNames.toString());
       Utils.copyTemplateFromResource("/charts/data-array.js", dataFile, dataProps);
 
-      return new Chart(base, columnNames, "Match of " + match, charts.get(0).getxAxis(), charts.get(0).getyAxis());
+      final Chart result = new Chart(base, columnNames, "Match of " + match, charts.get(0).getxAxis(), charts.get(0).getyAxis());
+      result.concat = true;
+
+      return result;
    }
 
    public String getBaseName() {
@@ -217,7 +225,7 @@ public class Chart {
    }
 
    public String getLoaderLine() {
-      final StringBuilder line = new StringBuilder("drawChart(");
+      final StringBuilder line = new StringBuilder(concat ? "drawConcatChart(" : "drawChart(");
       line.append(baseName);
       line.append(", 'chart_");
       line.append(baseName);
