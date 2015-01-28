@@ -47,14 +47,32 @@ import java.util.Properties;
  */
 public class ChartDestinationHelper {
 
+   /**
+    * A logger for this class.
+    */
    private static final Logger log = LogManager.getLogger(ChartDestinationHelper.class);
 
+   /**
+    * Main chart used to stored results of the parent ChartDestination.
+    */
    private Chart mainChart;
 
+   /**
+    * Path specifying the location of the resulting charts.
+    */
    private Path target;
 
+   /**
+    * Is the helper properly initialized without an exception? We cannot proceed on storing any data when this has failed.
+    */
    private boolean successInit = false;
 
+   /**
+    * Creates a new helper for the given ChartDestination.
+    *
+    * @param chartDestination
+    *       The ChartDestination this helper is supposed to serve to.
+    */
    public ChartDestinationHelper(final ChartDestination chartDestination) {
       target = chartDestination.getTargetAsPath();
 
@@ -73,6 +91,12 @@ public class ChartDestinationHelper {
       }
    }
 
+   /**
+    * Creates output files structure including all needed CSS and JS files.
+    *
+    * @throws PerfCakeException
+    *       When it was not possible to create any of the directories or files.
+    */
    private void createOutputFileStructure() throws PerfCakeException {
       if (!target.toFile().exists()) {
          if (!target.toFile().mkdirs()) {
@@ -104,6 +128,13 @@ public class ChartDestinationHelper {
       }
    }
 
+   /**
+    * Generates the JavaScript code to load all the charts in the provided list.
+    *
+    * @param charts
+    *       Charts for which we want to generate the loader code.
+    * @return A string representing the loader code.
+    */
    private String getLoadersHtml(final List<Chart> charts) {
       final StringBuilder sb = new StringBuilder();
       for (final Chart chart : charts) {
@@ -113,6 +144,13 @@ public class ChartDestinationHelper {
       return sb.toString();
    }
 
+   /**
+    * Creates JavaScript imports to load all the data files of the given charts.
+    *
+    * @param charts
+    *       Charts that we want to be loaded in the resulting report.
+    * @return A string representing the piece of HTML that loads the JavaScript data files.
+    */
    private String getJsHtml(final List<Chart> charts) {
       final StringBuilder sb = new StringBuilder();
       for (final Chart chart : charts) {
@@ -123,6 +161,13 @@ public class ChartDestinationHelper {
       return sb.toString();
    }
 
+   /**
+    * Generates an HTML code with 'div' tags that will be placeholders for the given charts.
+    *
+    * @param charts
+    *       Charts for which we want to generate the placeholders.
+    * @return A string representing the piece of HTML with the 'div' placeholders.
+    */
    private String getDivHtml(final List<Chart> charts) {
       final StringBuilder sb = new StringBuilder();
       for (final Chart chart : charts) {
@@ -133,6 +178,18 @@ public class ChartDestinationHelper {
       return sb.toString();
    }
 
+   /**
+    * Writes the master HTML index file.
+    *
+    * @param loaders
+    *       A string representing the loader code.
+    * @param js
+    *       A string representing the piece of HTML that loads the JavaScript data files.
+    * @param div
+    *       A string representing the piece of HTML with the 'div' placeholders.
+    * @throws PerfCakeException
+    *       When it was not possible to generate the index file.
+    */
    private void writeIndex(final String loaders, final String js, final String div) throws PerfCakeException {
       final Path indexFile = Paths.get(target.toString(), "index.html");
       final Properties indexProps = new Properties();
@@ -142,6 +199,13 @@ public class ChartDestinationHelper {
       Utils.copyTemplateFromResource("/charts/index.html", indexFile, indexProps);
    }
 
+   /**
+    * Find all attributes among the given charts that has a match. I.e. that are present at least in two of the charts.
+    *
+    * @param charts
+    *       The charts for inspection.
+    * @return A list of attributes that are present at least twice among the charts.
+    */
    private List<String> findMatchingAttributes(final List<Chart> charts) {
       final List<String> seen = new ArrayList<>();
       final List<String> result = new ArrayList<>();
@@ -162,7 +226,15 @@ public class ChartDestinationHelper {
       return result;
    }
 
-   // return new charts based on matches
+   /**
+    * Generates new charts based on the matching attributes of existing charts.
+    *
+    * @param charts
+    *       Existing chart for inspection.
+    * @return A list of newly created charts.
+    * @throws PerfCakeException
+    *       When it was not possible to store any of the charts.
+    */
    private List<Chart> analyzeMatchingCharts(final List<Chart> charts) throws PerfCakeException {
       final List<String> matches = findMatchingAttributes(charts);
       final List<Chart> newCharts = new ArrayList<>();
@@ -181,6 +253,14 @@ public class ChartDestinationHelper {
       return newCharts;
    }
 
+   /**
+    * Deletes all previsouly generated chart combinations. We are going to refresh them.
+    *
+    * @param descriptionsDirectory
+    *       The directory with existing generated charts.
+    * @throws IOException
+    *       When it was not possible to delete any of the charts.
+    */
    private void deletePreviousCombinedCharts(final File descriptionsDirectory) throws IOException {
       final StringBuilder issues = new StringBuilder();
 
@@ -196,9 +276,10 @@ public class ChartDestinationHelper {
    }
 
    /**
-    * Creates the main index.html file based on all previously generated reports in the same directory.
+    * Creates the final report including generation of the main index.html file based on all previously generated reports in the same directory.
     *
-    * @throws java.io.IOException
+    * @throws org.perfcake.PerfCakeException
+    *       When it was not possible to generate the report.
     */
    public void compileResults() throws PerfCakeException {
       final File outputDir = Paths.get(target.toString(), "data").toFile();
@@ -225,14 +306,30 @@ public class ChartDestinationHelper {
       writeIndex(getLoadersHtml(charts), getJsHtml(charts), getDivHtml(charts));
    }
 
+   /**
+    * Appends the results in the current Measurement to the main chart.
+    *
+    * @param m
+    *       The current measurement.
+    * @throws ReportingException
+    *       When it was not possible to append the results.
+    */
    public void appendResult(final Measurement m) throws ReportingException {
       mainChart.appendResult(m);
    }
 
+   /**
+    * Is the helper properly initialized?
+    *
+    * @return True if and only if the helper was properly initialized.
+    */
    public boolean isSuccessInit() {
       return successInit;
    }
 
+   /**
+    * A file filter for description files.
+    */
    private static class DescriptionFileFilter implements FileFilter {
 
       @Override
@@ -241,6 +338,9 @@ public class ChartDestinationHelper {
       }
    }
 
+   /**
+    * A file filter for chart files created as a combination of existing charts.
+    */
    private static class CombinedJsFileFilter implements FileFilter {
 
       @Override

@@ -26,7 +26,6 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.StringUtil;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -46,25 +45,61 @@ import java.util.Properties;
 
 /**
  * Represents a single Google chart data file(s) stored in the file system.
+ * Charts once read from a description file cannot be further modified and stored again!
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class Chart {
-   private static final Logger log = LogManager.getLogger(Chart.class);
 
+   /**
+    * Prefix of the files of the charts created as a combination of measured results.
+    */
    protected static final String DATA_ARRAY_PREFIX = "data_array_";
 
+   /**
+    * A logger for the class.
+    */
+   private static final Logger log = LogManager.getLogger(Chart.class);
+
+   /**
+    * File counter for the stored combined chart.
+    */
    private static int fileCounter = 1;
 
+   /**
+    * Base of the file name of the chart file. E.g. from '/some/path/data/stats201501272232.js' it is just 'stats201501272232'.
+    */
    private String baseName;
 
+   /**
+    * The JavaScript file representing chart data. This is not set for charts created as a combination of existing ones.
+    */
    private File dataFile;
 
+   /**
+    * Target path for storing all data files related to this chart. These are the data itself (.js), the description file (.dat),
+    * and the quick view file (.html).
+    */
    private Path target;
 
+   /**
+    * Name of this chart.
+    */
    private String name;
+
+   /**
+    * The legend of the X axis of this chart.
+    */
    private String xAxis;
+
+   /**
+    * The legend of the Y axis of this chart.
+    */
    private String yAxis;
+
+   /**
+    * Attributes that should be stored from the Measurement.
+    */
    private List<String> attributes;
 
    /**
@@ -72,6 +107,20 @@ public class Chart {
     */
    private boolean concat = false;
 
+   /**
+    * Create a new chart based on the information loaded from a description file.
+    *
+    * @param baseName
+    *       Base of the data files.
+    * @param attributes
+    *       Attributes stored for the chart.
+    * @param name
+    *       Name of this chart.
+    * @param xAxis
+    *       Legend of the X axis.
+    * @param yAxis
+    *       Legend of the Y axis.
+    */
    private Chart(final String baseName, final List<String> attributes, final String name, final String xAxis, final String yAxis) {
       this.baseName = baseName;
       this.attributes = attributes;
@@ -80,6 +129,24 @@ public class Chart {
       this.yAxis = yAxis;
    }
 
+   /**
+    * Create a new chart instance.
+    *
+    * @param target
+    *       Target path where to store the data.
+    * @param group
+    *       Group of this chart.
+    * @param attributes
+    *       Attributes to be stored for this chart.
+    * @param name
+    *       Name of the chart.
+    * @param xAxis
+    *       Legend of the X axis.
+    * @param yAxis
+    *       Legend of the Y axis.
+    * @throws PerfCakeException
+    *       When it was not possible to create necessary data files.
+    */
    public Chart(final Path target, final String group, final List<String> attributes, final String name, final String xAxis, final String yAxis) throws PerfCakeException {
       this.target = target;
       this.attributes = attributes;
@@ -95,6 +162,16 @@ public class Chart {
       writeQuickView();
    }
 
+   /**
+    * Get a chart instance based on the given description file. The resulting instance will carry all the needed information but cannot
+    * be later changed and stored again.
+    *
+    * @param descriptionFile
+    *       The description file where to read the chart data from.
+    * @return A new chart instance based on the information in the description file.
+    * @throws IOException
+    *       When it was not possible to read the data.
+    */
    public static Chart fromDescriptionFile(final File descriptionFile) throws IOException {
       final String base = descriptionFile.getName().substring(0, descriptionFile.getName().length() - 4);
       final String loaderEntry = new String(Files.readAllBytes(Paths.get(descriptionFile.toURI())));
@@ -124,6 +201,19 @@ public class Chart {
       return new Chart(base, columnsList, name, xAxis, yAxis);
    }
 
+   /**
+    * Creates and saves a new chart as a combination of the given attribute and charts. The result is stored to the given path.
+    *
+    * @param target
+    *       The path where to store the resulting chart.
+    * @param match
+    *       The name of the attribute that all the charts have in common. The resulting chart will display this attributed from all the charts.
+    * @param charts
+    *       The charts to be combined based on the given attribute.
+    * @return The resulting chart representing the combination.
+    * @throws PerfCakeException
+    *       When it was not possible to store the created chart.
+    */
    public static Chart combineCharts(final Path target, final String match, final List<Chart> charts) throws PerfCakeException {
       String base, baseFile;
       Path dataFile;
@@ -172,26 +262,57 @@ public class Chart {
       return result;
    }
 
+   /**
+    * Gets the base name of the data files of this chart.
+    *
+    * @return The base name of the data files of this chart.
+    */
    public String getBaseName() {
       return baseName;
    }
 
+   /**
+    * Gets the name of the chart.
+    *
+    * @return The name of the chart.
+    */
    public String getName() {
       return name;
    }
 
+   /**
+    * Gets the legend of the X axis of the chart.
+    *
+    * @return The legend of the X axis of the chart.
+    */
    public String getxAxis() {
       return xAxis;
    }
 
+   /**
+    * Gets the legend of the Y axis of the chart.
+    *
+    * @return The legend of the Y axis of the chart.
+    */
    public String getyAxis() {
       return yAxis;
    }
 
+   /**
+    * Gets the attributes stored in the chart as a List.
+    *
+    * @return The attributes list.
+    */
    public List<String> getAttributes() {
       return attributes;
    }
 
+   /**
+    * Writes the initial header and array definition to the JavaScript data file.
+    *
+    * @throws PerfCakeException
+    *       When it was not possible to write the data.
+    */
    private void writeDataFileHeader() throws PerfCakeException {
       final StringBuilder dataHeader = new StringBuilder("var ");
       dataHeader.append(baseName);
@@ -211,6 +332,12 @@ public class Chart {
       Utils.writeFileContent(dataFile, dataHeader.toString());
    }
 
+   /**
+    * Writes a quick view HTML file that can display the chart during the test run.
+    *
+    * @throws PerfCakeException
+    *       When it was not possible to store the quick view file.
+    */
    private void writeQuickView() throws PerfCakeException {
       final Path quickViewFile = Paths.get(target.toString(), "data", baseName + ".html");
       final Properties quickViewProps = new Properties();
@@ -219,11 +346,23 @@ public class Chart {
       Utils.copyTemplateFromResource("/charts/quick-view.html", quickViewFile, quickViewProps);
    }
 
+   /**
+    * Writes a description file containing all needed information to draw the chart.
+    *
+    * @throws PerfCakeException
+    *       When it was not possible to store the description file.
+    */
    private void writeDescriptionFile() throws PerfCakeException {
       final Path instructionsFile = Paths.get(target.toString(), "data", baseName + ".dat");
       Utils.writeFileContent(instructionsFile, getLoaderLine());
    }
 
+   /**
+    * Gets the JavaScript instruction line that is used to draw the chart in the result report.
+    * This is exactly what is stored in the description file too.
+    *
+    * @return The JavaScript code to draw the chart.
+    */
    public String getLoaderLine() {
       final StringBuilder line = new StringBuilder(concat ? "drawConcatChart(" : "drawChart(");
       line.append(baseName);
@@ -247,6 +386,15 @@ public class Chart {
       return line.toString();
    }
 
+   /**
+    * Gets a JavaScript line to be written to the data file that represents the current Measurement.
+    * All attributes required by the attributes list of this chart must be present in the measurement for the line to be returned.
+    *
+    * @param m
+    *       The current measurement.
+    * @return The line representing the data in measurement specified by the attributes list of this chart, or null when there was some of
+    * the attributes missing.
+    */
    private String getResultLine(final Measurement m) {
       StringBuilder sb = new StringBuilder();
       sb.append(baseName);
@@ -279,6 +427,14 @@ public class Chart {
       return sb.toString();
    }
 
+   /**
+    * Appends results to this chart based on the given Measurement.
+    *
+    * @param m
+    *       The Measurement to be stored.
+    * @throws ReportingException
+    *       When it was not possible to write the data.
+    */
    public void appendResult(final Measurement m) throws ReportingException {
       String line = getResultLine(m);
 
