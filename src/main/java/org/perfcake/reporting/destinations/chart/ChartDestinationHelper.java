@@ -37,7 +37,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -206,22 +208,30 @@ public class ChartDestinationHelper {
     *       The charts for inspection.
     * @return A list of attributes that are present at least twice among the charts.
     */
-   private List<String> findMatchingAttributes(final List<Chart> charts) {
-      final List<String> seen = new ArrayList<>();
-      final List<String> result = new ArrayList<>();
+   private Map<String, List<String>> findMatchingAttributes(final List<Chart> charts) {
+      final Map<String, List<String>> seen = new HashMap<>();
+      final Map<String, List<String>> result = new HashMap<>();
 
       for (Chart c : charts) {
+         if (!seen.containsKey(c.getGroup())) {
+            seen.put(c.getGroup(), new ArrayList<String>());
+         }
+         if (!result.containsKey(c.getGroup())) {
+            result.put(c.getGroup(), new ArrayList<String>());
+         }
+
          for (String attribute : c.getAttributes()) {
-            if (seen.contains(attribute) && !result.contains(attribute)) {
-               result.add(attribute);
+            if (seen.get(c.getGroup()).contains(attribute) && !result.get(c.getGroup()).contains(attribute)) {
+               result.get(c.getGroup()).add(attribute);
             } else {
-               seen.add(attribute);
+               seen.get(c.getGroup()).add(attribute);
             }
          }
+         
+         result.get(c.getGroup()).remove("Time");
+         result.get(c.getGroup()).remove("Iteration");
       }
 
-      result.remove("Time");
-      result.remove("Iteration");
 
       return result;
    }
@@ -236,18 +246,20 @@ public class ChartDestinationHelper {
     *       When it was not possible to store any of the charts.
     */
    private List<Chart> analyzeMatchingCharts(final List<Chart> charts) throws PerfCakeException {
-      final List<String> matches = findMatchingAttributes(charts);
+      final Map<String, List<String>> matches = findMatchingAttributes(charts);
       final List<Chart> newCharts = new ArrayList<>();
 
-      for (String match : matches) {
-         final List<Chart> matchingCharts = new ArrayList<>();
-         for (Chart c : charts) {
-            if (c.getAttributes().contains(match)) {
-               matchingCharts.add(c);
+      for (String group : matches.keySet()) {
+         for (String match : matches.get(group)) {
+            final List<Chart> matchingCharts = new ArrayList<>();
+            for (Chart c : charts) {
+               if (c.getAttributes().contains(match)) {
+                  matchingCharts.add(c);
+               }
             }
-         }
 
-         newCharts.add(Chart.combineCharts(target, match, matchingCharts));
+            newCharts.add(Chart.combineCharts(target, match, matchingCharts));
+         }
       }
 
       return newCharts;
