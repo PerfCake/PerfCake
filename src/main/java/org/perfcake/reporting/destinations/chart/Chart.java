@@ -447,4 +447,8 @@ public class Chart {
       }
    }
 
+   public String getGroup() {
+      return "default";
+   }
+
 }
