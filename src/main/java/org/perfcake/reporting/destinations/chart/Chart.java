@@ -103,6 +103,11 @@ public class Chart {
    private List<String> attributes;
 
    /**
+    * The chart's group name. Charts from multiple measurements that have the same group name are later searched for matching attributes.
+    */
+   private String group;
+
+   /**
     * Was this chart created as a concatenation of other charts?
     */
    private boolean concat = false;
@@ -112,6 +117,8 @@ public class Chart {
     *
     * @param baseName
     *       Base of the data files.
+    * @param group
+    *       The name of the group the chart belongs to.
     * @param attributes
     *       Attributes stored for the chart.
     * @param name
@@ -121,8 +128,9 @@ public class Chart {
     * @param yAxis
     *       Legend of the Y axis.
     */
-   private Chart(final String baseName, final List<String> attributes, final String name, final String xAxis, final String yAxis) {
+   private Chart(final String baseName, final String group, final List<String> attributes, final String name, final String xAxis, final String yAxis) {
       this.baseName = baseName;
+      this.group = group;
       this.attributes = attributes;
       this.name = name;
       this.xAxis = xAxis;
@@ -153,6 +161,7 @@ public class Chart {
       this.name = name;
       this.xAxis = xAxis;
       this.yAxis = yAxis;
+      this.group = group;
 
       baseName = group + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
       dataFile = Paths.get(target.toString(), "data", baseName + ".js").toFile();
@@ -174,6 +183,7 @@ public class Chart {
     */
    public static Chart fromDescriptionFile(final File descriptionFile) throws IOException {
       final String base = descriptionFile.getName().substring(0, descriptionFile.getName().length() - 4);
+      final String group = base.substring(0, base.length() - 14);
       final String loaderEntry = new String(Files.readAllBytes(Paths.get(descriptionFile.toURI())));
 
       // drawChart(stats20150124220000, 'chart_stats20150124220000_div', [0, 1, 2], 'Time of test', 'Iterations per second', 'Performance');
@@ -198,7 +208,7 @@ public class Chart {
          columnsList.add(StringUtil.trim(s, "'"));
       }
 
-      return new Chart(base, columnsList, name, xAxis, yAxis);
+      return new Chart(base, group, columnsList, name, xAxis, yAxis);
    }
 
    /**
@@ -256,7 +266,7 @@ public class Chart {
       dataProps.setProperty("charts", baseNames.toString());
       Utils.copyTemplateFromResource("/charts/data-array.js", dataFile, dataProps);
 
-      final Chart result = new Chart(base, columnNames, "Match of " + match, charts.get(0).getxAxis(), charts.get(0).getyAxis());
+      final Chart result = new Chart(base, charts.get(0).getGroup(), columnNames, "Match of " + match, charts.get(0).getxAxis(), charts.get(0).getyAxis());
       result.concat = true;
 
       return result;
@@ -447,6 +457,10 @@ public class Chart {
       }
    }
 
+   /**
+    * Gets the group of the current chart.
+    * @return The group name of this chart.
+    */
    public String getGroup() {
       return "default";
    }
