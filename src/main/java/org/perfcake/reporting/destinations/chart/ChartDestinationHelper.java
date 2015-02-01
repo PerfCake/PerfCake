@@ -123,8 +123,8 @@ public class ChartDestinationHelper {
       try {
          Files.copy(getClass().getResourceAsStream("/charts/google-chart.js"), Paths.get(target.toString(), "src", "google-chart.js"), StandardCopyOption.REPLACE_EXISTING);
          Files.copy(getClass().getResourceAsStream("/charts/google-chart-concat.js"), Paths.get(target.toString(), "src", "google-chart-concat.js"), StandardCopyOption.REPLACE_EXISTING);
-         Files.copy(getClass().getResourceAsStream("/charts/google-jsapi.js"), Paths.get(target.toString(), "src", "google-jsapi.js"), StandardCopyOption.REPLACE_EXISTING);
-         Files.copy(getClass().getResourceAsStream("/charts/jquery.js"), Paths.get(target.toString(), "src", "jquery.js"), StandardCopyOption.REPLACE_EXISTING);
+         Files.copy(getClass().getResourceAsStream("/charts/report.css"), Paths.get(target.toString(), "src", "report.css"), StandardCopyOption.REPLACE_EXISTING);
+         Files.copy(getClass().getResourceAsStream("/charts/report.js"), Paths.get(target.toString(), "src", "report.js"), StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {
          throw new PerfCakeException("Cannot copy necessary chart resources to the output path: ", e);
       }
@@ -173,9 +173,28 @@ public class ChartDestinationHelper {
    private String getDivHtml(final List<Chart> charts) {
       final StringBuilder sb = new StringBuilder();
       for (final Chart chart : charts) {
-         sb.append("      <div id=\"chart_");
+         sb.append("     <div class=\"bs-docs-section clearfix\">\n"
+               + "        <div class=\"row\">\n"
+               + "          <div class=\"col-lg-12\">\n"
+               + "            <div class=\"page-header\">\n"
+               + "              <h1>");
+         sb.append(chart.getName());
+         sb.append("</h1>\n"
+               + "            </div>\n"
+               + "          </div>\n"
+               + "        </div>\n"
+               + "\n"
+               + "        <div class=\"row\">\n"
+               + "          <div class=\"col-lg-12\">\n"
+               + "            <div class=\"bs-component\">\n"
+               + "              <div id=\"chart_\">");
          sb.append(chart.getBaseName());
-         sb.append("_div\"></div>\n");
+         sb.append("</div>\n"
+               + "            </div>\n"
+               + "\n"
+               + "          </div>\n"
+               + "        </div>\n"
+               + "      </div>\n");
       }
       return sb.toString();
    }
@@ -227,7 +246,7 @@ public class ChartDestinationHelper {
                seen.get(c.getGroup()).add(attribute);
             }
          }
-         
+
          result.get(c.getGroup()).remove("Time");
          result.get(c.getGroup()).remove("Iteration");
       }
