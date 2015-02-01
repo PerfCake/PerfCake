@@ -177,9 +177,9 @@ public class ChartDestinationHelper {
                + "        <div class=\"row\">\n"
                + "          <div class=\"col-lg-12\">\n"
                + "            <div class=\"page-header\">\n"
-               + "              <h1>");
+               + "              <h2>");
          sb.append(chart.getName());
-         sb.append("</h1>\n"
+         sb.append("</h2>\n"
                + "            </div>\n"
                + "          </div>\n"
                + "        </div>\n"
@@ -187,9 +187,9 @@ public class ChartDestinationHelper {
                + "        <div class=\"row\">\n"
                + "          <div class=\"col-lg-12\">\n"
                + "            <div class=\"bs-component\">\n"
-               + "              <div id=\"chart_\">");
+               + "              <div id=\"chart_");
          sb.append(chart.getBaseName());
-         sb.append("</div>\n"
+         sb.append("_div\"></div>\n"
                + "            </div>\n"
                + "\n"
                + "          </div>\n"
