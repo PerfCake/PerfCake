@@ -266,7 +266,7 @@ public class Chart {
       dataProps.setProperty("charts", baseNames.toString());
       Utils.copyTemplateFromResource("/charts/data-array.js", dataFile, dataProps);
 
-      final Chart result = new Chart(base, charts.get(0).getGroup(), columnNames, "Group '" + charts.get(0).getGroup() + "', Match of axis '" + match + "'", charts.get(0).getxAxis(), charts.get(0).getyAxis());
+      final Chart result = new Chart(base, charts.get(0).getGroup(), columnNames, "Group: " + charts.get(0).getGroup() + ", Match of axis: " + match, charts.get(0).getxAxis(), charts.get(0).getyAxis());
       result.concat = true;
 
       return result;
