@@ -20,6 +20,7 @@
 package org.perfcake.reporting.destinations;
 
 import org.perfcake.PerfCakeException;
+import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.chart.ChartDestinationHelper;
@@ -77,6 +78,11 @@ public class ChartDestination implements Destination {
     * X axis legend.
     */
    private String xAxis = "Time";
+
+   /**
+    * The type of the X axis. It can display the overall progress of the test in Percents, Time, or Iteration numbers.
+    */
+   private PeriodType xAxisType = PeriodType.TIME;
 
    /**
     * Helper to control the chart generation.
@@ -227,6 +233,25 @@ public class ChartDestination implements Destination {
     */
    public void setXAxis(final String xAxis) {
       this.xAxis = xAxis;
+   }
+
+   /**
+    * Gets the type of the X axis. It can be either Time, Percents, or Iteration number.
+    *
+    * @return The type of the X axis.
+    */
+   public PeriodType getxAxisType() {
+      return xAxisType;
+   }
+
+   /**
+    * Sets the type of the X axis. It can be either Time, Percents, or Iteration number.
+    *
+    * @param xAxisType
+    *       The type of the X axis.
+    */
+   public void setxAxisType(final PeriodType xAxisType) {
+      this.xAxisType = xAxisType;
    }
 
    /**

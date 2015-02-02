@@ -21,6 +21,7 @@ package org.perfcake.reporting.destinations.chart;
 
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
+import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.Utils;
@@ -96,6 +97,11 @@ public class Chart {
     * The legend of the Y axis of this chart.
     */
    private String yAxis;
+
+   /**
+    * The type of the X axis. It can display the overall progress of the test in Percents, Time, or Iteration numbers.
+    */
+   private PeriodType xAxisType = PeriodType.TIME;
 
    /**
     * Attributes that should be stored from the Measurement.
@@ -465,4 +471,13 @@ public class Chart {
       return "default";
    }
 
+   /**
+    * Gets the type of the X axis. It can be either Time, Percents, or Iteration number.
+    *
+    * @return The type of the X axis.
+    */
+   public PeriodType getxAxisType() {
+      return xAxisType;
+   }
+   
 }
