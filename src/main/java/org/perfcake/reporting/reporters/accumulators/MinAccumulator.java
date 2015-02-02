@@ -61,7 +61,7 @@ public class MinAccumulator implements Accumulator<Double> {
     */
    @Override
    public synchronized void reset() {
-      min = Double.MAX_VALUE;
+      min = Double.POSITIVE_INFINITY;
    }
 
 }

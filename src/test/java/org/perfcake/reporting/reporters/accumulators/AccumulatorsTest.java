@@ -134,19 +134,44 @@ public class AccumulatorsTest {
       final Long START = 1L, END = 100_000L;
       final int WINDOW = 1000;
 
+      double harmonicMean = 0d;
+      for (long i = START; i <= END; i = i + 1) {
+         harmonicMean = harmonicMean + (1d / i);
+      }
+      harmonicMean = (END - START + 1d) / harmonicMean;
+
+      double slidingHarmonicMean = 0d;
+      for (long i = END - WINDOW + 1; i <= END; i = i + 1) {
+         slidingHarmonicMean = slidingHarmonicMean + (1d / i);
+      }
+      slidingHarmonicMean = (double) WINDOW / slidingHarmonicMean;
+
       // accumulator, start, end, result, after reset
       return new Object[][] { { new AvgAccumulator(), START, END, (START + END) / 2d, (START + END) / 2d, 0d },
+            { new HarmonicMeanAccumulator(), START, END, harmonicMean, null, 0d },
+            { new MaxAccumulator(), START, END, (double) END, (double) END, Double.NEGATIVE_INFINITY },
+            { new MinAccumulator(), START, END, (double) START, (double) START, Double.POSITIVE_INFINITY },
+            { new MaxLongValueAccumulator(), START, END, END, END, Long.MIN_VALUE },
             { new SumAccumulator(), START, END, (START + END) * (END - START + 1L) / 2d, STRESS_THREADS * (START + END) * (END - START + 1L) / 2d, 0d },
             { new LastValueAccumulator(), START, END, (double) END, (double) END, null },
-            { new SlidingWindowAvgAccumulator(WINDOW), START, END, (END - WINDOW + 1 + END) / 2d, null, 0d } };
+            { new SlidingWindowAvgAccumulator(WINDOW), START, END, (END - WINDOW + 1 + END) / 2d, null, 0d },
+            { new SlidingWindowHarmonicMeanAccumulator(WINDOW), START, END, slidingHarmonicMean, null, 0d },
+            { new SlidingWindowMaxAccumulator(WINDOW), START, END, (double) END, null, Double.NaN },
+            { new SlidingWindowMinAccumulator(WINDOW), START, END, (double) (END - WINDOW + 1), null, Double.NaN } };
    }
 
    @Test(dataProvider = "accumulatorsTest")
    @SuppressWarnings({"rawtypes", "unchecked"})
-   public void accumulatorGenericTest(final Accumulator a, final Long start, final Long end, final Double result, final Double stressResult, final Double zero) {
+   public void accumulatorGenericTest(final Accumulator a, final Long start, final Long end, final Number result, final Number stressResult, final Number zero) {
       Assert.assertEquals(a.getResult(), zero);
-      for (long i = start; i <= end; i = i + 1) {
-         a.add((double) i);
+      try {
+         for (long i = start; i <= end; i = i + 1) {
+            a.add((double) i);
+         }
+      } catch (ClassCastException cce) { // some accumulators accept only longs
+         for (long i = start; i <= end; i = i + 1) {
+            a.add(i);
+         }
       }
       Assert.assertEquals(a.getResult(), result);
       a.reset();
@@ -155,7 +180,7 @@ public class AccumulatorsTest {
 
    @Test(dataProvider = "accumulatorsTest", groups = { "performance" })
    @SuppressWarnings("rawtypes")
-   public void accumulatorStressTest(final Accumulator a, final Long start, final Long end, final Double result, final Double stressResult, final Double zero) throws InterruptedException {
+   public void accumulatorStressTest(final Accumulator a, final Long start, final Long end, final Number result, final Number stressResult, final Number zero) throws InterruptedException {
       List<Thread> stressors = new ArrayList<>();
 
       for (int i = 0; i < STRESS_THREADS; i++) {
@@ -200,8 +225,14 @@ public class AccumulatorsTest {
       @SuppressWarnings("unchecked")
       @Override
       public void run() {
-         for (long i = start; i <= end; i = i + 1L) {
-            a.add((double) i);
+         try {
+            for (long i = start; i <= end; i = i + 1L) {
+               a.add((double) i);
+            }
+         } catch (ClassCastException cce) { // some accumulators accept only longs
+            for (long i = start; i <= end; i = i + 1) {
+               a.add(i);
+            }
          }
       }
    }
