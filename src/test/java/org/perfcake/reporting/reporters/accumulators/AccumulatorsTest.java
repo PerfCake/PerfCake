@@ -129,21 +129,33 @@ public class AccumulatorsTest {
       Assert.assertEquals((long) mlva.getResult(), Long.MAX_VALUE);
    }
 
-   @DataProvider(name = "stressTest")
+   @DataProvider(name = "accumulatorsTest")
    public Object[][] createDataForStressTest() {
       final Long START = 1L, END = 100_000L;
       final int WINDOW = 1000;
 
       // accumulator, start, end, result, after reset
-      return new Object[][] { { new AvgAccumulator(), START, END, (START + END) / 2d, 0d },
-            { new SumAccumulator(), START, END, STRESS_THREADS * (START + END) * (END - START + 1L) / 2d, 0d },
-            { new LastValueAccumulator(), START, END, (double) END, null },
-            { new SlidingWindowAvgAccumulator(WINDOW), START, END, (END - WINDOW + 1 + END) / 2d, 0d } };
+      return new Object[][] { { new AvgAccumulator(), START, END, (START + END) / 2d, (START + END) / 2d, 0d },
+            { new SumAccumulator(), START, END, (START + END) * (END - START + 1L) / 2d, STRESS_THREADS * (START + END) * (END - START + 1L) / 2d, 0d },
+            { new LastValueAccumulator(), START, END, (double) END, (double) END, null },
+            { new SlidingWindowAvgAccumulator(WINDOW), START, END, (END - WINDOW + 1 + END) / 2d, null, 0d } };
    }
 
-   @Test(dataProvider = "stressTest", groups = { "performance" })
+   @Test(dataProvider = "accumulatorsTest")
+   @SuppressWarnings({"rawtypes", "unchecked"})
+   public void accumulatorGenericTest(final Accumulator a, final Long start, final Long end, final Double result, final Double stressResult, final Double zero) {
+      Assert.assertEquals(a.getResult(), zero);
+      for (long i = start; i <= end; i = i + 1) {
+         a.add((double) i);
+      }
+      Assert.assertEquals(a.getResult(), result);
+      a.reset();
+      Assert.assertEquals(a.getResult(), zero);
+   }
+
+   @Test(dataProvider = "accumulatorsTest", groups = { "performance" })
    @SuppressWarnings("rawtypes")
-   public void accumulatorStressTest(final Accumulator a, final Long start, final Long end, final Double result, final Double zero) throws InterruptedException {
+   public void accumulatorStressTest(final Accumulator a, final Long start, final Long end, final Double result, final Double stressResult, final Double zero) throws InterruptedException {
       List<Thread> stressors = new ArrayList<>();
 
       for (int i = 0; i < STRESS_THREADS; i++) {
@@ -164,7 +176,9 @@ public class AccumulatorsTest {
 
       Reporter.log("Stress test (" + a.getClass().getSimpleName() + ") length " + time + "ms.");
 
-      Assert.assertEquals(a.getResult(), result);
+      if (stressResult != null) {
+         Assert.assertEquals(a.getResult(), stressResult);
+      }
 
       a.reset();
 
