@@ -57,7 +57,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -139,11 +138,7 @@ public class XmlFactory implements ScenarioFactory {
          final URL backupUrl = new URL("http://schema.perfcake.org/" + schemaFileName);
 
          URL scenarioXsdUrl = Utils.getResourceAsUrl("/schemas/" + schemaFileName);
-         try {
-            if (!(new File(scenarioXsdUrl.toURI())).exists()) { // backup taken from web
-               scenarioXsdUrl = backupUrl;
-            }
-         } catch (URISyntaxException e) {
+         if (!(new File(scenarioXsdUrl.getFile())).exists()) { // backup taken from web
             scenarioXsdUrl = backupUrl;
          }
 
