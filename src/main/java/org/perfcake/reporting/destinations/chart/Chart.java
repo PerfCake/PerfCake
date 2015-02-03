@@ -260,7 +260,7 @@ public class Chart {
          lengths.append(chart.getBaseName());
          lengths.append(".length");
          quotedNames.append("'");
-         quotedNames.append(chart.getBaseName());
+         quotedNames.append(chart.getName());
          quotedNames.append("'");
       }
 
@@ -465,10 +465,11 @@ public class Chart {
 
    /**
     * Gets the group of the current chart.
+    *
     * @return The group name of this chart.
     */
    public String getGroup() {
-      return "default";
+      return group;
    }
 
    /**
@@ -479,5 +480,14 @@ public class Chart {
    public PeriodType getxAxisType() {
       return xAxisType;
    }
-   
+
+   /**
+    * Was the chart created as a result of combining multiple other charts?
+    *
+    * @return True if and only if the chart was created as a combination of other charts.
+    */
+   public boolean isCombined() {
+      return concat;
+   }
+
 }
