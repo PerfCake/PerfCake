@@ -38,6 +38,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -175,6 +176,7 @@ public class ChartDestinationHelper {
       final List<String> groups = new ArrayList<>();
       final Map<String, List<Chart>> chartsByGroup = new HashMap<>();
       final Map<String, List<Chart>> chartsByGroupCombined = new HashMap<>();
+      final Map<String, String> toc = new LinkedHashMap<>();
 
       for (final Chart chart : charts) {
          if (!groups.contains(chart.getGroup())) {
@@ -196,28 +198,33 @@ public class ChartDestinationHelper {
 
       // list all groups
       for (final String group : groups) {
-         sb.append(HtmlGenerator.getHeading(2, "Charts for group: " + group));
+         sb.append(HtmlGenerator.getHeading(2, "", "Charts for group: " + group));
 
          // plain charts, i.e. not created by combining others
          if (chartsByGroup.get(group) != null) {
-            sb.append(HtmlGenerator.getHeading(3, "Plain results"));
+            sb.append(HtmlGenerator.getHeading(3, "", "Plain results"));
 
             for (final Chart chart : chartsByGroup.get(group)) {
-               sb.append(HtmlGenerator.getHeading(4, chart.getName()));
+               sb.append(HtmlGenerator.getHeading(4, chart.getBaseName(), chart.getName()));
                sb.append(HtmlGenerator.getChartDiv(chart.getBaseName()));
+               toc.put(chart.getBaseName(), chart.getName());
             }
          }
 
          // combined charts next
          if (chartsByGroupCombined.get(group) != null) {
-            sb.append(HtmlGenerator.getHeading(3, "Combined results"));
+            sb.append(HtmlGenerator.getHeading(3, "", "Combined results"));
 
             for (final Chart chart : chartsByGroupCombined.get(group)) {
-               sb.append(HtmlGenerator.getHeading(4, chart.getName()));
+               sb.append(HtmlGenerator.getHeading(4, chart.getBaseName(), chart.getName()));
                sb.append(HtmlGenerator.getChartDiv(chart.getBaseName()));
+               toc.put(chart.getBaseName(), chart.getName());
             }
          }
       }
+
+      sb.insert(0, HtmlGenerator.getHeadingsIndex(toc));
+      sb.insert(0, HtmlGenerator.getHeading(2, "", "Table of Contents"));
 
       return sb.toString();
    }
@@ -408,7 +415,51 @@ public class ChartDestinationHelper {
 
    private static final class HtmlGenerator {
 
-      private static StringBuilder getHeading(final int level, final String heading) {
+      /**
+       * Gets a table with links to headings.
+       *
+       * @param headings
+       *       Map with id->heading pairs.
+       * @return Html code with the table of contents for the given index in the map.
+       */
+      private static StringBuilder getHeadingsIndex(final Map<String, String> headings) {
+         final StringBuilder sb = new StringBuilder();
+         final int half = Math.round(headings.size() / 2.0f);
+
+         sb.append("        <div class=\"row\">\n"
+               + "          <div class=\"col-lg-6\">\n"
+               + "            <div class=\"bs-component\">\n"
+               + "              <ul>");
+
+         int counter = 0;
+         for (Map.Entry<String, String> entry : headings.entrySet()) {
+            if (counter == half) {
+               sb.append("              </ul>\n"
+                     + "            </div>\n"
+                     + "          </div>\n"
+                     + "          <div class=\"col-lg-6\">\n"
+                     + "            <div class=\"bs-component\">\n"
+                     + "              <ul>");
+            }
+
+            sb.append("                <li><a href=\"#");
+            sb.append(entry.getKey());
+            sb.append("\">");
+            sb.append(entry.getValue());
+            sb.append("</a></li>\n");
+
+            counter++;
+         }
+
+         sb.append("              </ul>\n"
+               + "            </div>\n"
+               + "          </div>\n"
+               + "        </div>\n");
+
+         return sb;
+      }
+
+      private static StringBuilder getHeading(final int level, final String id, final String heading) {
          final StringBuilder sb = new StringBuilder();
 
          sb.append("     <div class=\"bs-docs-section clearfix\">\n"
@@ -417,7 +468,9 @@ public class ChartDestinationHelper {
                + "            <div class=\"page-header\">\n"
                + "              <h");
          sb.append(level);
-         sb.append(">");
+         sb.append(" id=\"");
+         sb.append(id);
+         sb.append("\">");
          sb.append(heading);
          sb.append("</h");
          sb.append(level);
