@@ -204,12 +204,17 @@
       <dependency>
          <groupId>org.apache.commons</groupId>
          <artifactId>commons-math3</artifactId>
-         <version>3.0</version>
+         <version>3.4.1</version>
+      </dependency>
+      <dependency>
+         <groupId>commons-io</groupId>
+         <artifactId>commons-io</artifactId>
+         <version>2.4</version>
       </dependency>
       <dependency>
          <groupId>commons-configuration</groupId>
          <artifactId>commons-configuration</artifactId>
-         <version>1.9</version>
+         <version>1.10</version>
       </dependency>
       <dependency>
          <groupId>commons-collections</groupId>
