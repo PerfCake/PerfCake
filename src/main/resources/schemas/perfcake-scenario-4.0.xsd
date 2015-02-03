@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="urn:perfcake:scenario:4.0" xmlns:pc="urn:perfcake:scenario:4.0" version="1.0" targetNamespace="urn:perfcake:scenario:4.0" elementFormDefault="qualified">
+   <xsd:element name="property">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:any processContents="skip" minOccurs="0"/>
+         </xsd:sequence>
+         <xsd:attribute name="name" type="xsd:string"/>
+         <xsd:attribute name="value" type="xsd:string" use="optional"/>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="header">
+      <xsd:complexType>
+         <xsd:attribute name="name" type="xsd:string"/>
+         <xsd:attribute name="value" type="xsd:string"/>
+      </xsd:complexType>
+   </xsd:element>
+   <xsd:element name="scenario">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="properties" minOccurs="0" maxOccurs="1">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pc:property"/>
+                  </xsd:sequence>
+               </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="generator" minOccurs="1" maxOccurs="1">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:element name="run" minOccurs="1" maxOccurs="1">
+                        <xsd:complexType>
+                           <xsd:attribute name="type" type="xsd:string"/>
+                           <xsd:attribute name="value" type="xsd:string"/>
+                        </xsd:complexType>
+                     </xsd:element>
+                     <xsd:sequence>
+                        <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pc:property"/>
+                     </xsd:sequence>
+                  </xsd:sequence>
+                  <xsd:attribute name="class" type="xsd:string"/>
+                  <xsd:attribute name="threads" type="xsd:string"/>
+               </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="sender" minOccurs="1" maxOccurs="1">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pc:property"/>
+                  </xsd:sequence>
+                  <xsd:attribute name="class" type="xsd:string"/>
+               </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="reporting" minOccurs="0" maxOccurs="1">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:sequence>
+                        <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pc:property"/>
+                     </xsd:sequence>
+                     <xsd:element maxOccurs="unbounded" name="reporter">
+                        <xsd:complexType>
+                           <xsd:sequence>
+                              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pc:property"/>
+                              <xsd:element maxOccurs="unbounded" minOccurs="0" name="destination">
+                                 <xsd:complexType>
+                                    <xsd:sequence>
+                                       <xsd:element name="period" minOccurs="0" maxOccurs="unbounded">
+                                          <xsd:complexType>
+                                             <xsd:attribute name="type" type="xsd:string"/>
+                                             <xsd:attribute name="value" type="xsd:string"/>
+                                          </xsd:complexType>
+                                       </xsd:element>
+                                       <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pc:property"/>
+                                    </xsd:sequence>
+                                    <xsd:attribute name="class" type="xsd:string"/>
+                                    <xsd:attribute name="enabled" type="xsd:boolean" use="optional" default="true"/>
+                                 </xsd:complexType>
+                              </xsd:element>
+                           </xsd:sequence>
+                           <xsd:attribute name="class" type="xsd:string"/>
+                           <xsd:attribute name="enabled" type="xsd:boolean" use="optional" default="true"/>
+                        </xsd:complexType>
+                     </xsd:element>
+                  </xsd:sequence>
+               </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="messages" minOccurs="0" maxOccurs="1">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:element maxOccurs="unbounded" name="message">
+                        <xsd:complexType>
+                           <xsd:sequence>
+                              <xsd:element minOccurs="0" maxOccurs="unbounded" ref="pc:header"/>
+                              <xsd:element minOccurs="0" maxOccurs="unbounded" ref="pc:property"/>
+                              <xsd:element name="validatorRef" minOccurs="0" maxOccurs="unbounded">
+                                 <xsd:complexType>
+                                    <xsd:attribute name="id" type="xsd:string"/>
+                                 </xsd:complexType>
+                              </xsd:element>
+                           </xsd:sequence>
+                           <xsd:attribute name="uri" type="xsd:string"/>
+                           <xsd:attribute name="content" type="xsd:string"/>
+                           <xsd:attribute name="multiplicity" type="xsd:string"/>
+                        </xsd:complexType>
+                     </xsd:element>
+                  </xsd:sequence>
+               </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="validation" minOccurs="0" maxOccurs="1">
+               <xsd:complexType>
+                  <xsd:sequence>
+                     <xsd:element name="validator" maxOccurs="unbounded" minOccurs="0">
+                        <xsd:complexType>
+                           <xsd:sequence>
+                              <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pc:property"/>
+                           </xsd:sequence>
+                           <xsd:attribute name="id" type="xsd:string"/>
+                           <xsd:attribute name="class" type="xsd:string"/>
+                        </xsd:complexType>
+                     </xsd:element>
+                  </xsd:sequence>
+                  <xsd:attribute name="enabled" type="xsd:boolean" use="optional" default="true"/>
+                  <xsd:attribute name="fastForward" type="xsd:boolean" use="optional" default="false"/>
+               </xsd:complexType>
+            </xsd:element>
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+</xsd:schema>
