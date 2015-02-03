@@ -20,6 +20,7 @@
 package org.perfcake.reporting.destinations;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.TestSetup;
 import org.perfcake.reporting.Measurement;
 
 import org.apache.logging.log4j.LogManager;
