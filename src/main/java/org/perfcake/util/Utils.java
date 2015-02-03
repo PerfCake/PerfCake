@@ -25,6 +25,7 @@ import org.perfcake.common.TimestampedRecord;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -484,9 +485,9 @@ public class Utils {
             }
          }
 
-         StringTemplate template = new StringTemplate(new String(Files.readAllBytes(Paths.get(Utils.getResourceAsUrl(resource).toURI())), Utils.getDefaultEncoding()), properties);
+         StringTemplate template = new StringTemplate(IOUtils.toString(Utils.class.getResourceAsStream(resource), Utils.getDefaultEncoding()), properties);
          Utils.writeFileContent(target, template.toString());
-      } catch (IOException | URISyntaxException e) {
+      } catch (IOException e) {
          String message = String.format("Could not render template from resource %s:", resource);
          log.error(message, e);
          throw new PerfCakeException(message, e);

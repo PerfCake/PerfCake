@@ -380,6 +380,10 @@ public class ChartDestinationHelper {
       return successInit;
    }
 
+   public void close() throws PerfCakeException {
+      mainChart.close();
+   }
+
    /**
     * A file filter for description files.
     */

@@ -110,6 +110,7 @@ public class ChartDestination implements Destination {
          log.error("Chart destination was not properly initialized, skipping result creation.");
       } else {
          try {
+            helper.close();
             helper.compileResults();
          } catch (PerfCakeException e) {
             log.error("Unable to compile all collected results in a final report: ", e);

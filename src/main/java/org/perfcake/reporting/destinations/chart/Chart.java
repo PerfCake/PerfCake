@@ -23,6 +23,7 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
+import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.StringUtil;
@@ -36,10 +37,13 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -76,6 +80,11 @@ public class Chart {
     * The JavaScript file representing chart data. This is not set for charts created as a combination of existing ones.
     */
    private File dataFile;
+
+   /**
+    * A file channel for storing results.
+    */
+   private FileChannel outputChannel;
 
    /**
     * Target path for storing all data files related to this chart. These are the data itself (.js), the description file (.dat),
@@ -117,6 +126,13 @@ public class Chart {
     * Was this chart created as a concatenation of other charts?
     */
    private boolean concat = false;
+
+   /**
+    * This is set to false after a first result line is obtained from the getResultLine() method.
+    * In the method, this is used to display a complete warning message for the user to be able to fix
+    * the scenario. But we do not want the warning to show every time as it would slow down the performance.
+    */
+   private boolean firstResultsLine = true;
 
    /**
     * Create a new chart based on the information loaded from a description file.
@@ -170,11 +186,18 @@ public class Chart {
       this.group = group;
 
       baseName = group + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
-      dataFile = Paths.get(target.toString(), "data", baseName + ".js").toFile();
+      final Path dataFilePath = Paths.get(target.toString(), "data", baseName + ".js");
+      dataFile = dataFilePath.toFile();
 
       writeDataFileHeader();
       writeDescriptionFile();
       writeQuickView();
+
+      try {
+         outputChannel = FileChannel.open(dataFilePath, StandardOpenOption.APPEND);
+      } catch (IOException e) {
+         throw new PerfCakeException(String.format("Cannot open data file %s for appending data.", dataFile.getAbsolutePath()), e);
+      }
    }
 
    /**
@@ -429,6 +452,9 @@ public class Chart {
 
             // we do not have all required attributes, return an empty line
             if (data == null) {
+               if (firstResultsLine) {
+                  log.warn(String.format("Missing attribute %s, skipping the record.", attr));
+               }
                return "";
             }
 
@@ -436,6 +462,8 @@ public class Chart {
                sb.append("'");
                sb.append((String) data);
                sb.append("'");
+            } else if (data instanceof Quantity) {
+               sb.append(((Quantity) data).getNumber().toString());
             } else {
                sb.append(data.toString());
             }
@@ -443,6 +471,8 @@ public class Chart {
       }
 
       sb.append("]);\n");
+
+      firstResultsLine = false;
 
       return sb.toString();
    }
@@ -459,11 +489,19 @@ public class Chart {
       String line = getResultLine(m);
 
       if (line != null && !"".equals(line)) {
-         try (FileOutputStream fos = new FileOutputStream(dataFile, true); OutputStreamWriter osw = new OutputStreamWriter(fos, Utils.getDefaultEncoding()); BufferedWriter bw = new BufferedWriter(osw)) {
-            bw.append(line);
+         try {
+            outputChannel.write(ByteBuffer.wrap(line.getBytes()));
          } catch (IOException ioe) {
             throw new ReportingException(String.format("Could not append data to the chart file %s.", dataFile.getAbsolutePath()), ioe);
          }
+      }
+   }
+
+   public void close() throws PerfCakeException {
+      try {
+         outputChannel.close();
+      } catch (IOException e) {
+         throw new PerfCakeException(String.format("Cannot close output channel to the file %s.", dataFile.getAbsolutePath()), e);
       }
    }
 
