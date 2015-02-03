@@ -583,6 +583,7 @@ abstract class BaseDslScriptClass extends Script {
 
    // set the metaclasses for both integers and longs (large numbers are likely to be used in the configuration)
    static {
+      Integer.metaClass.getMs = {-> new Time((Integer) delegate, TimeUnit.millisecond)}
       Integer.metaClass.getS = {-> new Time((Integer) delegate, TimeUnit.second)}
       Integer.metaClass.getM = {-> new Time((Integer) delegate, TimeUnit.minute)}
       Integer.metaClass.getH = {-> new Time((Integer) delegate, TimeUnit.hour)}
@@ -595,6 +596,7 @@ abstract class BaseDslScriptClass extends Script {
       Integer.metaClass.getThread = {-> delegate}
       Integer.metaClass.getTimes = {-> delegate}
 
+      Long.metaClass.getMs = {-> new Time((Long) delegate, TimeUnit.millisecond)}
       Long.metaClass.getS = {-> new Time((Long) delegate, TimeUnit.second)}
       Long.metaClass.getM = {-> new Time((Long) delegate, TimeUnit.minute)}
       Long.metaClass.getH = {-> new Time((Long) delegate, TimeUnit.hour)}
