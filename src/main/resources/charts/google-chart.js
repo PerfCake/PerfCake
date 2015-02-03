@@ -28,6 +28,7 @@ function drawChart(dataArray, chartDiv, columns, xAxis, yAxis, chartName) {
       },
       linewidth : 1,
       pointSize : 0,
+      interpolateNulls: true,
    }
    var view = new google.visualization.DataView(data)
    view.setColumns(columns)
