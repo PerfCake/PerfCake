@@ -155,11 +155,11 @@ public class ChartDestinationHelper {
     */
    private String getJsHtml(final List<Chart> charts) {
       final StringBuilder sb = new StringBuilder();
+
       for (final Chart chart : charts) {
-         sb.append("      <script type=\"text/javascript\" src=\"data/");
-         sb.append(chart.getBaseName());
-         sb.append(".js\"></script>\n");
+         sb.append(HtmlGenerator.getJavaScriptImport("data/" + chart.getBaseName() + ".js"));
       }
+
       return sb.toString();
    }
 
@@ -172,30 +172,53 @@ public class ChartDestinationHelper {
     */
    private String getDivHtml(final List<Chart> charts) {
       final StringBuilder sb = new StringBuilder();
+      final List<String> groups = new ArrayList<>();
+      final Map<String, List<Chart>> chartsByGroup = new HashMap<>();
+      final Map<String, List<Chart>> chartsByGroupCombined = new HashMap<>();
+
       for (final Chart chart : charts) {
-         sb.append("     <div class=\"bs-docs-section clearfix\">\n"
-               + "        <div class=\"row\">\n"
-               + "          <div class=\"col-lg-12\">\n"
-               + "            <div class=\"page-header\">\n"
-               + "              <h2>");
-         sb.append(chart.getName());
-         sb.append("</h2>\n"
-               + "            </div>\n"
-               + "          </div>\n"
-               + "        </div>\n"
-               + "\n"
-               + "        <div class=\"row\">\n"
-               + "          <div class=\"col-lg-12\">\n"
-               + "            <div class=\"bs-component\">\n"
-               + "              <div id=\"chart_");
-         sb.append(chart.getBaseName());
-         sb.append("_div\"></div>\n"
-               + "            </div>\n"
-               + "\n"
-               + "          </div>\n"
-               + "        </div>\n"
-               + "      </div>\n");
+         if (!groups.contains(chart.getGroup())) {
+            groups.add(chart.getGroup());
+         }
+
+         if (chart.isCombined()) {
+            if (chartsByGroupCombined.get(chart.getGroup()) == null) {
+               chartsByGroupCombined.put(chart.getGroup(), new ArrayList<Chart>());
+            }
+            chartsByGroupCombined.get(chart.getGroup()).add(chart);
+         } else {
+            if (chartsByGroup.get(chart.getGroup()) == null) {
+               chartsByGroup.put(chart.getGroup(), new ArrayList<Chart>());
+            }
+            chartsByGroup.get(chart.getGroup()).add(chart);
+         }
       }
+
+      // list all groups
+      for (final String group : groups) {
+         sb.append(HtmlGenerator.getHeading(2, "Charts for group: " + group));
+
+         // plain charts, i.e. not created by combining others
+         if (chartsByGroup.get(group) != null) {
+            sb.append(HtmlGenerator.getHeading(3, "Plain results"));
+
+            for (final Chart chart : chartsByGroup.get(group)) {
+               sb.append(HtmlGenerator.getHeading(4, chart.getName()));
+               sb.append(HtmlGenerator.getChartDiv(chart.getBaseName()));
+            }
+         }
+
+         // combined charts next
+         if (chartsByGroupCombined.get(group) != null) {
+            sb.append(HtmlGenerator.getHeading(3, "Combined results"));
+
+            for (final Chart chart : chartsByGroupCombined.get(group)) {
+               sb.append(HtmlGenerator.getHeading(4, chart.getName()));
+               sb.append(HtmlGenerator.getChartDiv(chart.getBaseName()));
+            }
+         }
+      }
+
       return sb.toString();
    }
 
@@ -250,7 +273,6 @@ public class ChartDestinationHelper {
          result.get(c.getGroup()).remove("Time");
          result.get(c.getGroup()).remove("Iteration");
       }
-
 
       return result;
    }
@@ -377,6 +399,59 @@ public class ChartDestinationHelper {
       @Override
       public boolean accept(final File pathname) {
          return pathname.getName().toLowerCase().endsWith(".js") && pathname.getName().startsWith(Chart.DATA_ARRAY_PREFIX);
+      }
+   }
+
+   private static final class HtmlGenerator {
+
+      private static StringBuilder getHeading(final int level, final String heading) {
+         final StringBuilder sb = new StringBuilder();
+
+         sb.append("     <div class=\"bs-docs-section clearfix\">\n"
+               + "        <div class=\"row\">\n"
+               + "          <div class=\"col-lg-12\">\n"
+               + "            <div class=\"page-header\">\n"
+               + "              <h");
+         sb.append(level);
+         sb.append(">");
+         sb.append(heading);
+         sb.append("</h");
+         sb.append(level);
+         sb.append(">\n"
+               + "            </div>\n"
+               + "          </div>\n"
+               + "        </div>\n"
+               + "\n");
+
+         return sb;
+      }
+
+      private static StringBuilder getChartDiv(final String chartName) {
+         final StringBuilder sb = new StringBuilder();
+
+         sb.append("        <div class=\"row\">\n"
+               + "          <div class=\"col-lg-12\">\n"
+               + "            <div class=\"bs-component\">\n"
+               + "              <div id=\"chart_");
+         sb.append(chartName);
+         sb.append("_div\"></div>\n"
+               + "            </div>\n"
+               + "\n"
+               + "          </div>\n"
+               + "        </div>\n"
+               + "      </div>\n");
+
+         return sb;
+      }
+
+      private static StringBuilder getJavaScriptImport(final String location) {
+         final StringBuilder sb = new StringBuilder();
+
+         sb.append("      <script type=\"text/javascript\" src=\"");
+         sb.append(location);
+         sb.append("\"></script>\n");
+
+         return sb;
       }
    }
 

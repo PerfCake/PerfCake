@@ -23,8 +23,8 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.TestSetup;
 import org.perfcake.reporting.Measurement;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.annotations.Test;
 
 import java.text.SimpleDateFormat;
@@ -49,7 +49,7 @@ public class ChartDestinationTest {
       cd.setTarget(tempDir);
       cd.setXAxis("Time of test");
       cd.setYAxis("Iterations per second");
-      cd.setName("Performance");
+      cd.setName("Performance " + (new SimpleDateFormat("HHmmss")).format(new Date()));
       cd.setGroup("stats");
       cd.setAttributes("Average, Result");
 
