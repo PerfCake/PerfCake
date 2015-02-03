@@ -65,16 +65,16 @@ public enum SystemPropertyGetter implements PropertyGetter {
                return defaultValue;
             }
          }
+         
+         // try to find anywhere
+         if (System.getProperty(name) != null) {
+            return System.getProperty(name);
+         } else if (System.getenv(name) != null) {
+            return System.getenv(name);
+         }
       }
 
-      // try to find anywhere
-      if (System.getProperty(name) != null) {
-         return System.getProperty(name);
-      } else if (System.getenv(name) != null) {
-         return System.getenv(name);
-      } else {
-         return defaultValue;
-      }
+      return defaultValue;
    }
 
    @Override

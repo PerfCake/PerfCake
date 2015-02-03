@@ -290,8 +290,8 @@ public class ChartDestinationHelper {
       final Map<String, List<String>> matches = findMatchingAttributes(charts);
       final List<Chart> newCharts = new ArrayList<>();
 
-      for (String group : matches.keySet()) {
-         for (String match : matches.get(group)) {
+      for (Map.Entry<String, List<String>> entry : matches.entrySet()) {
+         for (String match : entry.getValue()) {
             final List<Chart> matchingCharts = new ArrayList<>();
             for (Chart c : charts) {
                if (c.getAttributes().contains(match)) {
@@ -319,7 +319,7 @@ public class ChartDestinationHelper {
 
       for (File f : descriptionsDirectory.listFiles(new CombinedJsFileFilter())) {
          if (!f.delete()) {
-            issues.append(String.format("Cannot delete file %s. \n", f.getAbsolutePath()));
+            issues.append(String.format("Cannot delete file %s. %n", f.getAbsolutePath()));
          }
       }
 

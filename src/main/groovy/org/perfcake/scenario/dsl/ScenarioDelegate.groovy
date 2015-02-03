@@ -18,7 +18,6 @@
  * -----------------------------------------------------------------------/
  */
 package org.perfcake.scenario.dsl
-
 import static org.codehaus.groovy.syntax.Types.*
 
 import org.perfcake.PerfCakeConst
@@ -33,7 +32,6 @@ import org.perfcake.scenario.ScenarioFactory
 import org.perfcake.util.ObjectFactory
 import org.perfcake.util.Utils
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.ImportCustomizer
@@ -42,7 +40,6 @@ import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 import groovy.transform.TupleConstructor
 import java.nio.file.Files
 import java.nio.file.Paths
-
 /**
  * Implementation of DSL scenario specification support for PerfCake.
  * The scenario in the DSL format is a Groovy script. A set of ugly classes in this file
@@ -702,9 +699,9 @@ abstract class BaseDslScriptClass extends Script {
 enum TimeUnit {
    millisecond('ms', 1L),
    second('s', 1000L),
-   minute('m', 1000 * 60L),
-   hour('h', 1000 * 60 * 60L),
-   day('d', 1000 * 60 * 60 * 24L)
+   minute('m', 1000L * 60L),
+   hour('h', 1000L * 60L * 60L),
+   day('d', 1000L * 60L * 60L * 24L)
 
    String abbreviation
    Long multiplier

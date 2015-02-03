@@ -190,7 +190,7 @@ public class Chart {
    public static Chart fromDescriptionFile(final File descriptionFile) throws IOException {
       final String base = descriptionFile.getName().substring(0, descriptionFile.getName().length() - 4);
       final String group = base.substring(0, base.length() - 14);
-      final String loaderEntry = new String(Files.readAllBytes(Paths.get(descriptionFile.toURI())));
+      final String loaderEntry = new String(Files.readAllBytes(Paths.get(descriptionFile.toURI())), Utils.getDefaultEncoding());
 
       // drawChart(stats20150124220000, 'chart_stats20150124220000_div', [0, 1, 2], 'Time of test', 'Iterations per second', 'Performance');
       String name = loaderEntry.substring(loaderEntry.lastIndexOf(", ") + 3);
@@ -204,6 +204,10 @@ public class Chart {
       String firstDataLine = "";
       try (BufferedReader br = Files.newBufferedReader(jsFile.toPath(), Charset.forName(Utils.getDefaultEncoding()));) {
          firstDataLine = br.readLine();
+      }
+
+      if (firstDataLine == null) {
+         throw new IOException(String.format("Cannot read chart from file %s. No entries in the data file.", descriptionFile.getAbsolutePath()));
       }
 
       firstDataLine = firstDataLine.substring(firstDataLine.indexOf("[ [ ") + 4);
