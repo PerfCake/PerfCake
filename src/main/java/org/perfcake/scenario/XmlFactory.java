@@ -51,11 +51,13 @@ import org.w3c.dom.Element;
 import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -132,19 +134,24 @@ public class XmlFactory implements ScenarioFactory {
     */
    private org.perfcake.model.Scenario parse() throws PerfCakeException {
       try {
-         Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes(Utils.getDefaultEncoding())));
-         String schemaFileName = "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd";
+         final Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes(Utils.getDefaultEncoding())));
+         final String schemaFileName = "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd";
+         final URL backupUrl = new URL("http://schema.perfcake.org/" + schemaFileName);
 
          URL scenarioXsdUrl = Utils.getResourceAsUrl("/schemas/" + schemaFileName);
-         if (scenarioXsdUrl == null) { // backup taken from web
-            scenarioXsdUrl = new URL("http://schema.perfcake.org/" + schemaFileName);
+         try {
+            if (!(new File(scenarioXsdUrl.toURI())).exists()) { // backup taken from web
+               scenarioXsdUrl = backupUrl;
+            }
+         } catch (URISyntaxException e) {
+            scenarioXsdUrl = backupUrl;
          }
 
-         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-         Schema schema = schemaFactory.newSchema(scenarioXsdUrl);
+         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+         final Schema schema = schemaFactory.newSchema(scenarioXsdUrl);
 
-         JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
-         Unmarshaller unmarshaller = context.createUnmarshaller();
+         final JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
+         final Unmarshaller unmarshaller = context.createUnmarshaller();
          unmarshaller.setSchema(schema);
          return (org.perfcake.model.Scenario) unmarshaller.unmarshal(scenarioXML);
       } catch (SAXException e) {

@@ -31,8 +31,6 @@ import org.perfcake.util.ObjectFactory;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;
 
-import org.apache.commons.beanutils.BeanUtils;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -69,7 +67,7 @@ public class ScenarioBuilder {
          throw new PerfCakeException("Sender is not set.");
       }
 
-      Properties props = new Properties();
+      Properties props;
       try {
          props = ObjectFactory.getObjectProperties(messageSender);
       } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
