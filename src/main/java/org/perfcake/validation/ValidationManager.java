@@ -23,8 +23,11 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.message.ReceivedMessage;
 
-import org.apache.logging.log4j.Logger;
+import com.gs.collections.api.block.function.Function0;
+import com.gs.collections.api.block.procedure.Procedure2;
+import com.gs.collections.impl.map.mutable.UnifiedMap;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,46 +45,71 @@ import java.util.TreeMap;
  */
 public class ValidationManager {
 
+   private static final String OVERALL_STAT_KEY = "overall";
+
    /**
     * A map of validators: validator id => validator instance
     */
    private final Map<String, MessageValidator> validators = new TreeMap<>();
+
    /**
     * A logger.
     */
    private final Logger log = LogManager.getLogger(ValidationManager.class);
+
    /**
     * An internal thread that takes one response after another and validates them.
     */
    private Thread validationThread = null;
+
    /**
     * Indicates whether the validation is finished. Starts with true as there is no validation running at the beginning.
     */
    private boolean finished = true;
+
    /**
     * Were all messages validated properly so far?
     */
    private boolean allMessagesValid = true;
+
    /**
     * Is validation enabled?
     */
    private boolean enabled = false;
+
    /**
     * Unless specified in the scenario, the validation thread has some sleep for it not to influence measurement.
     * At the end, when there is nothing else to do, we can go through the remaining responses faster.
     */
    private boolean fastForward = false;
+
    /**
     * When true, the validation thread just waits for the input queue to become empty and ends.
     */
    private boolean expectLastMessage = false;
-   /**
-    * A queue with the message responses.
-    */
-   private Queue<ReceivedMessage> resultMessages;
 
    /**
-    * Creates a new validator menager. The message responses are store in a file queue in a temporary file.
+    * A queue with the validation tasks.
+    */
+   private Queue<ValidationTask> validationTasks;
+
+   /**
+    * Stores validation results statistics.
+    */
+   private UnifiedMap<String, Score> statistics = UnifiedMap.newWithKeysValues(OVERALL_STAT_KEY, new Score());
+
+   /**
+    * Function to generate a new zero score. Used to implement a design pattern with GS Colections. Score is then stored in statistics map.
+    */
+   private Function0<Score> scoreFunction = new Function0<Score>() {
+      @Override
+      public Score value() {
+         return new Score();
+      }
+   };
+
+   /**
+    * Creates a new validator manager. The message responses are store in a file queue in a temporary file.
     *
     * @throws PerfCakeException
     *       When it was not possible to initialize the message store.
@@ -106,7 +134,7 @@ public class ValidationManager {
     */
    public void setQueueFile(final File queueFile) throws PerfCakeException {
       if (isFinished()) {
-         resultMessages = new FileQueue<ReceivedMessage>(queueFile);
+         validationTasks = new FileQueue<ValidationTask>(queueFile);
       } else {
          throw new PerfCakeException("It is not possible to change the file queue while there is a running validation.");
       }
@@ -189,13 +217,13 @@ public class ValidationManager {
    }
 
    /**
-    * Adds a new message response to be validated.
+    * Submits a new validation task. The message response in it will be validated.
     *
-    * @param receivedMessage
-    *       The message response to be validated.
+    * @param validationTask
+    *       The new validation task to be processed.
     */
-   public void addToResultMessages(final ReceivedMessage receivedMessage) {
-      resultMessages.add(receivedMessage);
+   public void submitValidationTask(final ValidationTask validationTask) {
+      validationTasks.add(validationTask);
    }
 
    /**
@@ -204,7 +232,7 @@ public class ValidationManager {
     * @return The current size of the file queue with messages waiting for validation.
     */
    public int messagesToBeValidated() {
-      return resultMessages.size();
+      return validationTasks.size();
    }
 
    /**
@@ -239,6 +267,57 @@ public class ValidationManager {
       return finished;
    }
 
+   public boolean isFastForward() {
+      return fastForward;
+   }
+
+   public void setFastForward(boolean fastForward) {
+      this.fastForward = fastForward;
+   }
+
+   private void logStatistics() {
+      final StringBuilder sb = new StringBuilder("=== Validation Statistics ===\n");
+      final Score total = statistics.get(OVERALL_STAT_KEY);
+      sb.append("Overall validated ").append(total.getPassed() + total.getFailed()).append(" messages of which ");
+      sb.append(total.getPassed()).append(" passed and ");
+      sb.append(total.getFailed()).append(" failed.\n");
+
+      statistics.forEachKeyValue(new Procedure2<String, Score>() {
+         @Override
+         public void value(final String key, final Score value) {
+            if (!OVERALL_STAT_KEY.equals(key)) {
+               sb.append("Thread [").append(key).append("]: Totally validated ").append(value.getFailed() + value.getPassed());
+               sb.append(" messages of which ").append(value.getPassed()).append(" passed and ").append(value.getFailed()).append(" failed.\n");
+            }
+         }
+      });
+
+      sb.append("End of statistics.");
+
+      log.info(sb.toString());
+   }
+
+   private static final class Score {
+      private long passed = 0;
+      private long failed = 0;
+
+      public long getPassed() {
+         return passed;
+      }
+
+      public void incPassed() {
+         passed = passed + 1;
+      }
+
+      public long getFailed() {
+         return failed;
+      }
+
+      public void incFailed() {
+         failed = failed + 1;
+      }
+   }
+
    /**
     * Internal class representing the validator thread. The thread validates one message with all registered validators and then
     * sleeps for 500ms. This is needed for the validation not to influence measurement. After a call to {@link #waitForValidation()} the
@@ -248,8 +327,9 @@ public class ValidationManager {
 
       @Override
       public void run() {
-         boolean isMessageValid = false;
-         ReceivedMessage receivedMessage = null;
+         boolean isMessageValid;
+         ReceivedMessage receivedMessage;
+         ValidationTask validationTask;
          finished = false;
          allMessagesValid = true;
          fastForward = false;
@@ -260,13 +340,27 @@ public class ValidationManager {
          }
 
          try {
-            while (!validationThread.isInterrupted() && (!expectLastMessage || !resultMessages.isEmpty())) {
-               receivedMessage = resultMessages.poll();
-               if (receivedMessage != null) {
+            while (!validationThread.isInterrupted() && (!expectLastMessage || !validationTasks.isEmpty())) {
+               validationTask = validationTasks.poll();
+               receivedMessage = null;
+
+               if (validationTask != null) {
+                  receivedMessage = validationTask.getReceivedMessage();
+
                   for (final MessageValidator validator : getValidators(receivedMessage.getSentMessageTemplate().getValidatorIds())) {
                      isMessageValid = validator.isValid(receivedMessage.getSentMessage(), new Message(receivedMessage.getResponse()));
                      if (log.isTraceEnabled()) {
                         log.trace(String.format("Message response %s validated with %s returns %s.", receivedMessage.getResponse().toString(), validator.toString(), String.valueOf(isMessageValid)));
+                     }
+
+                     if (log.isInfoEnabled()) {
+                        if (isMessageValid) {
+                           statistics.get(OVERALL_STAT_KEY).incPassed();
+                           statistics.getIfAbsentPut(validationTask.getThreadName(), scoreFunction).incPassed();
+                        } else {
+                           statistics.get(OVERALL_STAT_KEY).incFailed();
+                           statistics.getIfAbsentPut(validationTask.getThreadName(), scoreFunction).incFailed();
+                        }
                      }
 
                      allMessagesValid &= isMessageValid;
@@ -281,18 +375,11 @@ public class ValidationManager {
          }
 
          if (log.isInfoEnabled()) {
+            logStatistics();
             log.info("The validator thread finished with the result: " + (allMessagesValid ? "all messages are valid." : "there were validation errors."));
          }
 
          finished = true;
       }
-   }
-
-   public boolean isFastForward() {
-      return fastForward;
-   }
-
-   public void setFastForward(boolean fastForward) {
-      this.fastForward = fastForward;
    }
 }

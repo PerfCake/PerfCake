@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,6 +30,7 @@ import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
+import org.perfcake.validation.ValidationTask;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -150,7 +151,7 @@ class SenderTask implements Runnable {
                   for (int i = 0; i < multiplicity; i++) {
                      receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend, currentMessage);
                      if (validationManager.isEnabled()) {
-                        validationManager.addToResultMessages(receivedMessage);
+                        validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                      }
                   }
 
@@ -158,7 +159,7 @@ class SenderTask implements Runnable {
             } else {
                receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null, null);
                if (validationManager.isEnabled()) {
-                  validationManager.addToResultMessages(receivedMessage);
+                  validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                }
             }
 
