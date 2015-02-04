@@ -33,16 +33,17 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 
-import org.apache.logging.log4j.Logger;
+import com.gs.collections.api.block.function.Function0;
+import com.gs.collections.api.block.procedure.Procedure2;
+import com.gs.collections.impl.map.mutable.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Basic reporter that should be used to write any real reporter. This implementation makes sure that the contract defined as part of {@link Reporter} is held. The class is also well tested.
@@ -85,7 +86,7 @@ public abstract class AbstractReporter implements Reporter {
     * Accumulators to accumulate results from multiple {@link org.perfcake.reporting.MeasurementUnit Measurement Units}.
     */
    @SuppressWarnings("rawtypes")
-   private Map<String, Accumulator> accumulatedResults = new ConcurrentHashMap<>();
+   private ConcurrentHashMap<String, Accumulator> accumulatedResults = new ConcurrentHashMap<>();
 
    /**
     * Reports a single {@link org.perfcake.reporting.MeasurementUnit} to this reporter. This calls {@link #doReport(MeasurementUnit)} overridden by a child, accumulates results and reports iteration change and percentage change (if any).
@@ -146,7 +147,8 @@ public abstract class AbstractReporter implements Reporter {
     * @return The value associated with the given key.
     */
    protected Object getAccumulatedResult(final String key) {
-      return accumulatedResults.get(key) == null ? null : accumulatedResults.get(key).getResult();
+      Accumulator accumulator = accumulatedResults.get(key);
+      return accumulator == null ? null : accumulator.getResult();
    }
 
    @Override
@@ -161,9 +163,12 @@ public abstract class AbstractReporter implements Reporter {
     *       The {@link org.perfcake.reporting.Measurement} to be filled with the results.
     */
    protected void publishAccumulatedResult(final Measurement m) {
-      for (final String key : accumulatedResults.keySet()) {
-         m.set(key, accumulatedResults.get(key).getResult());
-      }
+      accumulatedResults.forEachKeyValue(new Procedure2<String, Accumulator>() {
+         @Override
+         public void value(final String s, final Accumulator accumulator) {
+            m.set(s, accumulator.getResult());
+         }
+      });
    }
 
    /**
@@ -178,17 +183,17 @@ public abstract class AbstractReporter implements Reporter {
          // make sure we have an accumulator set to be able to accumulate the result
          final String key = entry.getKey();
          final Object value = entry.getValue();
-         if (accumulatedResults.get(key) == null) {
-            final Accumulator a = getAccumulator(key, value.getClass());
-
-            if (a == null) {
-               log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", key, value.getClass().getCanonicalName()));
-            } else {
-               accumulatedResults.put(key, a);
-               a.add(value);
+         Accumulator accumulator = accumulatedResults.getIfAbsentPut(key, new Function0<Accumulator>() {
+            @Override
+            public Accumulator value() {
+               return getAccumulator(key, value.getClass());
             }
+         });
+
+         if (accumulator == null) {
+            log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", key, value.getClass().getCanonicalName()));
          } else {
-            accumulatedResults.get(key).add(value);
+            accumulator.add(value);
          }
       }
    }
@@ -285,7 +290,7 @@ public abstract class AbstractReporter implements Reporter {
       lastPercentage = -1;
       maxIteration.reset();
       maxIteration.add(0l);
-      accumulatedResults = new HashMap<>();
+      accumulatedResults = new ConcurrentHashMap<>();
       doReset();
    }
 
