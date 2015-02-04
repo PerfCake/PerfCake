@@ -532,7 +532,7 @@ public class Chart {
 
       if (line != null && !"".equals(line)) {
          try {
-            outputChannel.write(ByteBuffer.wrap(line.getBytes()));
+            outputChannel.write(ByteBuffer.wrap(line.getBytes(Charset.forName(Utils.getDefaultEncoding()))));
          } catch (IOException ioe) {
             throw new ReportingException(String.format("Could not append data to the chart file %s.", dataFile.getAbsolutePath()), ioe);
          }
