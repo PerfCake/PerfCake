@@ -46,31 +46,45 @@ public class ChartDestinationTest {
       log.info("Created temp directory for chart: " + tempDir);
 
       ChartDestination cd = new ChartDestination();
-      cd.setTarget(tempDir);
+      ChartDestination cd2 = new ChartDestination();
+      cd.setOutputDir(tempDir);
+      cd2.setOutputDir(tempDir);
       cd.setXAxis("Time of test");
+      cd2.setXAxis("Time of test");
       cd.setYAxis("Iterations per second");
-      cd.setName("Performance " + (new SimpleDateFormat("HHmmss")).format(new Date()));
+      cd2.setYAxis("Iterations per second");
+      cd.setName("Statistics " + (new SimpleDateFormat("HHmmss")).format(new Date()));
+      cd2.setName("Performance " + (new SimpleDateFormat("HHmmss")).format(new Date()));
       cd.setGroup("stats");
+      cd2.setGroup("perf");
       cd.setAttributes("Average, Result");
+      cd2.setAttributes("Average, Result");
 
       cd.open();
+      cd2.open();
 
-      Measurement m = new Measurement(1, System.currentTimeMillis(), 1);
+      final long base = System.currentTimeMillis();
+
+      Measurement m = new Measurement(1, System.currentTimeMillis() - base, 1);
       m.set(10.3);
       m.set("Average", 9.8);
       cd.report(m);
+      cd2.report(m);
 
-      m = new Measurement(2, System.currentTimeMillis(), 2);
+      m = new Measurement(2, System.currentTimeMillis() - base, 2);
       m.set(11.1);
       m.set("Average", 9.1);
       cd.report(m);
+      cd2.report(m);
 
-      m = new Measurement(3, System.currentTimeMillis(), 3);
+      m = new Measurement(3, System.currentTimeMillis() - base, 3);
       m.set(9.2);
       m.set("Average", 9.0);
       cd.report(m);
+      cd2.report(m);
 
       cd.close();
+      cd2.close();
    }
 
 }
