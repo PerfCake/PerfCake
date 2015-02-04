@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,6 +33,7 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 
+import com.gs.collections.api.block.function.Function;
 import com.gs.collections.api.block.function.Function0;
 import com.gs.collections.api.block.procedure.Procedure2;
 import com.gs.collections.impl.map.mutable.ConcurrentHashMap;
@@ -183,15 +184,17 @@ public abstract class AbstractReporter implements Reporter {
          // make sure we have an accumulator set to be able to accumulate the result
          final String key = entry.getKey();
          final Object value = entry.getValue();
-         Accumulator accumulator = accumulatedResults.getIfAbsentPut(key, new Function0<Accumulator>() {
-            @Override
-            public Accumulator value() {
-               return getAccumulator(key, value.getClass());
-            }
-         });
+         Accumulator accumulator = accumulatedResults.get(key);
 
          if (accumulator == null) {
-            log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", key, value.getClass().getCanonicalName()));
+            accumulator = getAccumulator(key, value.getClass());
+
+            if (accumulator == null) {
+               log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", key, value.getClass().getCanonicalName()));
+            } else {
+               accumulatedResults.put(key, accumulator);
+               accumulator.add(value);
+            }
          } else {
             accumulator.add(value);
          }
