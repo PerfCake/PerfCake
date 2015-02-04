@@ -57,6 +57,9 @@ public class Chart {
     * Prefix of the files of the charts created as a combination of measured results.
     */
    protected static final String DATA_ARRAY_PREFIX = "data_array_";
+   protected static final String COLUMN_TIME = "Time";
+   protected static final String COLUMN_ITERATION = "Iteration";
+   protected static final String COLUMN_PERCENT = "Percents";
 
    /**
     * A logger for the class.
@@ -147,11 +150,12 @@ public class Chart {
     * @param yAxis
     *       Legend of the Y axis.
     */
-   private Chart(final String baseName, final String group, final List<String> attributes, final String name, final String xAxis, final String yAxis) {
+   private Chart(final String baseName, final String group, final List<String> attributes, final String name, final PeriodType xAxisType, final String xAxis, final String yAxis) {
       this.baseName = baseName;
       this.group = group;
       this.attributes = attributes;
       this.name = name;
+      this.xAxisType = xAxisType;
       this.xAxis = xAxis;
       this.yAxis = yAxis;
    }
@@ -174,10 +178,11 @@ public class Chart {
     * @throws PerfCakeException
     *       When it was not possible to create necessary data files.
     */
-   public Chart(final Path target, final String group, final List<String> attributes, final String name, final String xAxis, final String yAxis) throws PerfCakeException {
+   public Chart(final Path target, final String group, final List<String> attributes, final String name, final PeriodType xAxisType, final String xAxis, final String yAxis) throws PerfCakeException {
       this.target = target;
       this.attributes = attributes;
       this.name = name;
+      this.xAxisType = xAxisType;
       this.xAxis = xAxis;
       this.yAxis = yAxis;
       this.group = group;
@@ -238,7 +243,21 @@ public class Chart {
          columnsList.add(StringUtil.trim(s, "'"));
       }
 
-      return new Chart(base, group, columnsList, name, xAxis, yAxis);
+      PeriodType xAxisType;
+      switch (columnsList.get(0)) {
+         case COLUMN_PERCENT:
+            xAxisType = PeriodType.PERCENTAGE;
+            break;
+         case COLUMN_ITERATION:
+            xAxisType = PeriodType.ITERATION;
+            break;
+         default:
+         case COLUMN_TIME:
+            xAxisType = PeriodType.TIME;
+            break;
+      }
+
+      return new Chart(base, group, columnsList, name, xAxisType, xAxis, yAxis);
    }
 
    /**
@@ -264,7 +283,18 @@ public class Chart {
       } while (dataFile.toFile().exists());
 
       final List<String> columnNames = new ArrayList<>();
-      columnNames.add("Time");
+      switch (charts.get(0).getxAxisType()) {
+         case PERCENTAGE:
+            columnNames.add(COLUMN_PERCENT);
+            break;
+         case TIME:
+            columnNames.add(COLUMN_TIME);
+            break;
+         case ITERATION:
+            columnNames.add(COLUMN_ITERATION);
+            break;
+      }
+
       final StringBuilder baseNames = new StringBuilder();
       final StringBuilder columns = new StringBuilder();
       final StringBuilder lengths = new StringBuilder();
@@ -296,7 +326,7 @@ public class Chart {
       dataProps.setProperty("charts", baseNames.toString());
       Utils.copyTemplateFromResource("/charts/data-array.js", dataFile, dataProps);
 
-      final Chart result = new Chart(base, charts.get(0).getGroup(), columnNames, "Group: " + charts.get(0).getGroup() + ", Match of axis: " + match, charts.get(0).getxAxis(), charts.get(0).getyAxis());
+      final Chart result = new Chart(base, charts.get(0).getGroup(), columnNames, "Group: " + charts.get(0).getGroup() + ", Match of axis: " + match, charts.get(0).getxAxisType(), charts.get(0).getxAxis(), charts.get(0).getyAxis());
       result.concat = true;
 
       return result;
@@ -438,12 +468,27 @@ public class Chart {
    private String getResultLine(final Measurement m) {
       StringBuilder sb = new StringBuilder();
       sb.append(baseName);
-      sb.append(".push(['");
-      sb.append(Utils.timeToHMS(m.getTime()));
-      sb.append("'");
+      sb.append(".push([");
+      switch (xAxisType) {
+         case TIME:
+            sb.append("'");
+            sb.append(Utils.timeToHMS(m.getTime()));
+            sb.append("'");
+            break;
+         case ITERATION:
+            sb.append("'");
+            sb.append(m.getIteration());
+            sb.append("'");
+            break;
+         case PERCENTAGE:
+            sb.append("'");
+            sb.append(m.getPercentage());
+            sb.append("%'");
+            break;
+      }
 
       for (String attr : attributes) {
-         if (!attr.equals("Time")) {
+         if (attributes.indexOf(attr) > 0) {
             sb.append(", ");
             Object data = m.get(attr);
 

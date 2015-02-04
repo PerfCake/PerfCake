@@ -21,6 +21,7 @@ package org.perfcake.reporting.destinations;
 
 import org.perfcake.PerfCakeConst;
 import org.perfcake.TestSetup;
+import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 
 import org.apache.logging.log4j.LogManager;
@@ -29,6 +30,7 @@ import org.testng.annotations.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 /**
  * Chart destination tests.
@@ -53,6 +55,7 @@ public class ChartDestinationTest {
       cd2.setXAxis("Time of test");
       cd.setYAxis("Iterations per second");
       cd2.setYAxis("Iterations per second");
+      cd2.setxAxisType(PeriodType.ITERATION);
       cd.setName("Statistics " + (new SimpleDateFormat("HHmmss")).format(new Date()));
       cd2.setName("Performance " + (new SimpleDateFormat("HHmmss")).format(new Date()));
       cd.setGroup("stats");
@@ -64,22 +67,23 @@ public class ChartDestinationTest {
       cd2.open();
 
       final long base = System.currentTimeMillis();
+      final Random rnd = new Random();
 
-      Measurement m = new Measurement(1, System.currentTimeMillis() - base, 1);
-      m.set(10.3);
-      m.set("Average", 9.8);
+      Measurement m = new Measurement(10, System.currentTimeMillis() - base, 1);
+      m.set(10.3 + rnd.nextDouble());
+      m.set("Average", 9.8 + rnd.nextDouble());
       cd.report(m);
       cd2.report(m);
 
-      m = new Measurement(2, System.currentTimeMillis() - base, 2);
-      m.set(11.1);
-      m.set("Average", 9.1);
+      m = new Measurement(56, System.currentTimeMillis() - base, 2);
+      m.set(11.1 + rnd.nextDouble());
+      m.set("Average", 9.1 + rnd.nextDouble());
       cd.report(m);
       cd2.report(m);
 
-      m = new Measurement(3, System.currentTimeMillis() - base, 3);
-      m.set(9.2);
-      m.set("Average", 9.0);
+      m = new Measurement(100, System.currentTimeMillis() - base, 3);
+      m.set(9.2 + rnd.nextDouble());
+      m.set("Average", 9.0 + rnd.nextDouble());
       cd.report(m);
       cd2.report(m);
 
