@@ -20,6 +20,7 @@
 package org.perfcake.reporting.destinations.chart;
 
 import org.perfcake.PerfCakeException;
+import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.ChartDestination;
@@ -83,9 +84,19 @@ public class ChartDestinationHelper {
          createOutputFileStructure();
 
          List<String> attributes = new ArrayList<>(chartDestination.getAttributesAsList()); // must close to ArrayList, as the current impl. does not support adding at index
-         attributes.add(0, "Time");
+         switch (chartDestination.getxAxisType()) {
+            case PERCENTAGE:
+               attributes.add(0, Chart.COLUMN_PERCENT);
+               break;
+            case TIME:
+               attributes.add(0, Chart.COLUMN_TIME);
+               break;
+            case ITERATION:
+               attributes.add(0, Chart.COLUMN_ITERATION);
+               break;
+         }
 
-         mainChart = new Chart(target, chartDestination.getGroup(), attributes, chartDestination.getName(), chartDestination.getXAxis(), chartDestination.getYAxis());
+         mainChart = new Chart(target, chartDestination.getGroup(), attributes, chartDestination.getName(), chartDestination.getxAxisType(), chartDestination.getXAxis(), chartDestination.getYAxis());
 
          successInit = true;
       } catch (PerfCakeException e) {
@@ -277,8 +288,9 @@ public class ChartDestinationHelper {
             }
          }
 
-         result.get(c.getGroup()).remove("Time");
-         result.get(c.getGroup()).remove("Iteration");
+         result.get(c.getGroup()).remove(Chart.COLUMN_TIME);
+         result.get(c.getGroup()).remove(Chart.COLUMN_ITERATION);
+         result.get(c.getGroup()).remove(Chart.COLUMN_PERCENT);
       }
 
       return result;
@@ -300,13 +312,25 @@ public class ChartDestinationHelper {
       for (Map.Entry<String, List<String>> entry : matches.entrySet()) {
          for (String match : entry.getValue()) {
             final List<Chart> matchingCharts = new ArrayList<>();
+            PeriodType xAxisType = null;
+            boolean compatible = true; // all charts have compatible xAxisType
+
             for (Chart c : charts) {
                if (entry.getKey().equals(c.getGroup()) && c.getAttributes().contains(match)) {
-                  matchingCharts.add(c);
+                  if (xAxisType == null) {
+                     xAxisType = c.getxAxisType();
+                     matchingCharts.add(c);
+                  } else if (c.getxAxisType() == xAxisType) {
+                     matchingCharts.add(c);
+                  } else {
+                     compatible = false;
+                  }
                }
             }
 
-            newCharts.add(Chart.combineCharts(target, match, matchingCharts));
+            if (compatible) { // there are charts with different xAxisType, we won't combine them
+               newCharts.add(Chart.combineCharts(target, match, matchingCharts));
+            }
          }
       }
 
