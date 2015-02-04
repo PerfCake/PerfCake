@@ -34,7 +34,6 @@ import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 
 import com.gs.collections.api.block.function.Function;
-import com.gs.collections.api.block.function.Function0;
 import com.gs.collections.api.block.procedure.Procedure2;
 import com.gs.collections.impl.map.mutable.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
@@ -59,9 +58,24 @@ public abstract class AbstractReporter implements Reporter {
    private static final Logger log = LogManager.getLogger(AbstractReporter.class);
 
    /**
+    * Function for GS Collections API used to obtain particular accumulator in a call to getIfAbsentWith().
+    */
+   private final GetAccumulatorFunction getAccumulatorFunction = new GetAccumulatorFunction();
+
+   /**
+    * Set of periods bound to destinations. This is used to register destinations and requested reporting periods.
+    */
+   private final Set<BoundPeriod<Destination>> periods = new HashSet<>();
+
+   /**
     * ReportManager that owns this reporter.
     */
    protected ReportManager reportManager = null;
+
+   /**
+    * RunInfo associated with current measurement.
+    */
+   protected RunInfo runInfo = null;
 
    /**
     * Remembers the maximal value of observed MeasurementUnits.
@@ -72,16 +86,6 @@ public abstract class AbstractReporter implements Reporter {
     * Remembers the last observed percentage state of the measurement run. This is used to report change to this value only once.
     */
    private long lastPercentage = -1;
-
-   /**
-    * RunInfo associated with current measurement.
-    */
-   protected RunInfo runInfo = null;
-
-   /**
-    * Set of periods bound to destinations. This is used to register destinations and requested reporting periods.
-    */
-   private final Set<BoundPeriod<Destination>> periods = new HashSet<>();
 
    /**
     * Accumulators to accumulate results from multiple {@link org.perfcake.reporting.MeasurementUnit Measurement Units}.
@@ -181,21 +185,11 @@ public abstract class AbstractReporter implements Reporter {
    @SuppressWarnings({ "unchecked", "rawtypes" })
    private void accumulateResults(final Map<String, Object> results) {
       for (final Entry<String, Object> entry : results.entrySet()) {
-         // make sure we have an accumulator set to be able to accumulate the result
          final String key = entry.getKey();
          final Object value = entry.getValue();
-         Accumulator accumulator = accumulatedResults.get(key);
+         Accumulator accumulator = accumulatedResults.getIfAbsentWith(key, getAccumulatorFunction, entry);
 
-         if (accumulator == null) {
-            accumulator = getAccumulator(key, value.getClass());
-
-            if (accumulator == null) {
-               log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", key, value.getClass().getCanonicalName()));
-            } else {
-               accumulatedResults.put(key, accumulator);
-               accumulator.add(value);
-            }
-         } else {
+         if (accumulator != null) {
             accumulator.add(value);
          }
       }
@@ -364,6 +358,23 @@ public abstract class AbstractReporter implements Reporter {
    @Override
    public final Set<BoundPeriod<Destination>> getReportingPeriods() {
       return Collections.unmodifiableSet(periods);
+   }
+
+   /**
+    * Function for GS Collections API used to obtain particular accumulator in a call to getIfAbsentWith().
+    */
+   private final class GetAccumulatorFunction implements Function<Entry<String, Object>, Accumulator> {
+
+      @Override
+      public Accumulator valueOf(final Entry<String, Object> entry) {
+         final Accumulator accumulator = getAccumulator(entry.getKey(), entry.getValue().getClass());
+
+         if (accumulator == null) {
+            log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", entry.getKey(), entry.getValue().getClass().getCanonicalName()));
+         }
+
+         return accumulator;
+      }
    }
 
 }
