@@ -77,7 +77,7 @@ public class ChartDestinationHelper {
     *       The ChartDestination this helper is supposed to serve to.
     */
    public ChartDestinationHelper(final ChartDestination chartDestination) {
-      target = chartDestination.getTargetAsPath();
+      target = chartDestination.getOutputDirAsPath();
 
       try {
          createOutputFileStructure();
@@ -301,7 +301,7 @@ public class ChartDestinationHelper {
          for (String match : entry.getValue()) {
             final List<Chart> matchingCharts = new ArrayList<>();
             for (Chart c : charts) {
-               if (c.getAttributes().contains(match)) {
+               if (entry.getKey().equals(c.getGroup()) && c.getAttributes().contains(match)) {
                   matchingCharts.add(c);
                }
             }

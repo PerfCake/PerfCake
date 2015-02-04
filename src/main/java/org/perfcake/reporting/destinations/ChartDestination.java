@@ -35,8 +35,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Creates nice charts from the results. The charts are generated to the target path. The charts in the same group can be later
- * combined together based on the names of the columns. All previously generated charts in the target path are placed in the final
+ * Creates nice charts from the results. The charts are generated to the outputPath path. The charts in the same group can be later
+ * combined together based on the names of the columns. All previously generated charts in the outputPath path are placed in the final
  * report. Use with caution as the big number of results can take too long to load in the browser. Each chart has a quick view file
  * where the results can be seen while the test is still running.
  *
@@ -57,7 +57,7 @@ public class ChartDestination implements Destination {
    /**
     * Where to store the charts.
     */
-   private Path target = Paths.get("perfcake-chart");
+   private Path outputPath = Paths.get("perfcake-chart");
 
    /**
     * Name of the chart for this measurement.
@@ -133,31 +133,31 @@ public class ChartDestination implements Destination {
    }
 
    /**
-    * Gets the target output directory for charts.
+    * Gets the output directory for charts.
     *
-    * @return The target location.
+    * @return The output directory location.
     */
-   public String getTarget() {
-      return target.toString();
+   public String getOutputDir() {
+      return outputPath.toString();
    }
 
    /**
-    * Sets the target output directory for charts.
+    * Sets the output directory for charts.
     *
-    * @param target
-    *       The target location.
+    * @param outputDir
+    *       The output directory location.
     */
-   public void setTarget(final String target) {
-      this.target = Paths.get(target);
+   public void setOutputDir(final String outputDir) {
+      this.outputPath = Paths.get(outputDir);
    }
 
    /**
-    * Gets the target output directory for charts as the Path data type.
+    * Gets the output directory for charts as the Path data type.
     *
-    * @return The target location.
+    * @return The output directory location.
     */
-   public Path getTargetAsPath() {
-      return target;
+   public Path getOutputDirAsPath() {
+      return outputPath;
    }
 
    /**
