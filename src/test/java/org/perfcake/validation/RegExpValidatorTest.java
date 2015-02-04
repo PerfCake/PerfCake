@@ -20,9 +20,12 @@
 package org.perfcake.validation;
 
 import org.perfcake.message.Message;
+import org.perfcake.util.ObjectFactory;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+
+import java.util.Properties;
 
 public class RegExpValidatorTest {
    @Test
@@ -135,5 +138,16 @@ public class RegExpValidatorTest {
       Assert.assertFalse(testedValidator.isValid(null, m));
       testedValidator.setComments(true);
       Assert.assertTrue(testedValidator.isValid(null, m));
+   }
+
+   @Test
+   public void dynamicCreationTest() throws Exception {
+      final String pattern = "Ich weiss nich was soll es bedeuten dass ich so traurig bin";
+      final Properties p = new Properties();
+      p.setProperty("pattern", pattern);
+
+      final RegExpValidator r = (RegExpValidator) ObjectFactory.summonInstance(RegExpValidator.class.getName(), p);
+
+      Assert.assertEquals(r.getPattern(), pattern);
    }
 }

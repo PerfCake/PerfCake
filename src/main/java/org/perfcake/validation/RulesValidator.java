@@ -128,7 +128,7 @@ public class RulesValidator implements MessageValidator {
     * @param validationRule
     *       The XML element with the assertions.
     */
-   public void setRules(final Element validationRule) {
+   public void setRulesAsElement(final Element validationRule) {
       try (final BufferedReader br = new BufferedReader(new StringReader(validationRule.getTextContent()))) {
          processAssertions(br);
       } catch (final Exception ex) {

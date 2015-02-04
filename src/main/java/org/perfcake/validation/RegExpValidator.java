@@ -114,7 +114,7 @@ public class RegExpValidator implements MessageValidator {
       return this;
    }
 
-   public void setPattern(Element pattern) {
+   public void setPatternAsElement(Element pattern) {
       this.pattern = pattern.getTextContent();
    }
 

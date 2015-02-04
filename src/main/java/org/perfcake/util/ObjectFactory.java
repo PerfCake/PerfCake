@@ -64,7 +64,7 @@ public class ObjectFactory {
     */
    private static boolean setElementProperty(final Object object, final String propertyName, final Element value) throws InvocationTargetException, IllegalAccessException {
       try {
-         Method setter = object.getClass().getDeclaredMethod("set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1), Element.class);
+         Method setter = object.getClass().getDeclaredMethod("set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1) + "AsElement", Element.class);
          setter.invoke(object, value);
 
          return true;

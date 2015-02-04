@@ -124,7 +124,7 @@ public class ScriptValidator implements MessageValidator {
       return this;
    }
 
-   public void setScript(Element script) {
+   public void setScriptAsElement(Element script) {
       this.scriptFile = null;
       this.compiledScript = null;
       this.script = script.getTextContent();
