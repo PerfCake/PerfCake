@@ -35,7 +35,6 @@ import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 
 import com.gs.collections.api.block.function.Function;
 import com.gs.collections.api.block.procedure.Procedure2;
-import com.gs.collections.impl.map.mutable.ConcurrentHashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,6 +43,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Basic reporter that should be used to write any real reporter. This implementation makes sure that the contract defined as part of {@link Reporter} is held. The class is also well tested.
@@ -168,12 +168,9 @@ public abstract class AbstractReporter implements Reporter {
     *       The {@link org.perfcake.reporting.Measurement} to be filled with the results.
     */
    protected void publishAccumulatedResult(final Measurement m) {
-      accumulatedResults.forEachKeyValue(new Procedure2<String, Accumulator>() {
-         @Override
-         public void value(final String s, final Accumulator accumulator) {
-            m.set(s, accumulator.getResult());
-         }
-      });
+      for (final Entry<String, Accumulator> entry : accumulatedResults.entrySet()) {
+         m.set(entry.getKey(), entry.getValue().getResult());
+      }
    }
 
    /**
