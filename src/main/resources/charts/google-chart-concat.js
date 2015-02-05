@@ -2,7 +2,11 @@ function drawConcatChart(dataArray, chartDiv, columns, xAxis, yAxis, chartName) 
    var data = new google.visualization.DataTable();
    data.addColumn('string', dataArray[0][0]);
    for (var i = 1; i < dataArray[0].length; i++) {
-      data.addColumn('number', dataArray[0][i]);
+      if (dataArray[0][i] == "warmUp") {
+         data.addColumn('boolean', dataArray[0][i]);
+      } else {
+         data.addColumn('number', dataArray[0][i]);
+      }
    }
 
    data.addRows(dataArray.slice(1));
