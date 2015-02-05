@@ -53,6 +53,7 @@ public class CsvDestinationTest {
    private static final Logger log = LogManager.getLogger(CsvDestinationTest.class);
    private static final long ITERATION = 12345;
    private static final String TIMESTAMP = String.valueOf(Calendar.getInstance().getTimeInMillis());
+   private static final String DEFAULT_FILE_NAME = "perfcake-results-" + TIMESTAMP + ".csv";
    private File csvFile;
 
    @BeforeClass
@@ -91,7 +92,7 @@ public class CsvDestinationTest {
 
    @Test
    public void testDefaultProperties() throws IOException {
-      final File defaultCSVFile = File.createTempFile("perfcake", "csvdestination-default-path");
+      final File defaultCSVFile = new File(DEFAULT_FILE_NAME);
       if (defaultCSVFile.exists()) {
          defaultCSVFile.delete();
       }
@@ -100,7 +101,7 @@ public class CsvDestinationTest {
          final Properties destinationProperties = new Properties();
          final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
-         Assert.assertEquals(destination.getPath(), defaultCSVFile.getAbsolutePath());
+         Assert.assertEquals(destination.getPath(), DEFAULT_FILE_NAME);
          Assert.assertEquals(destination.getDelimiter(), ";");
 
          final Measurement measurement = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0

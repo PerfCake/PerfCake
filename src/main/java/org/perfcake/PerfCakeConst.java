@@ -54,6 +54,7 @@ public final class PerfCakeConst {
    public static final String PLUGINS_DIR_OPT = "plugins-dir";
    public static final String PROPERTIES_FILE_OPT = "properties-file";
    public static final String LOGGING_LEVEL_OPT = "log-level";
+   public static final String SKIP_TIMER_BENCHMARK_OPT = "skip-timer-benchmark";
 
    public static final String WARM_UP_TAG = "warmUp";
 }
