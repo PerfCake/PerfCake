@@ -28,11 +28,12 @@ import org.perfcake.util.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +97,11 @@ public class CsvDestination implements Destination {
    private boolean skipHeader = false;
 
    /**
+    * File channel for storing the resulting CSV file.
+    */
+   private FileChannel outputChannel;
+
+   /**
     * Strategy that is used in case that the output file, that this destination represents
     * was used by a different destination or scenario run before.
     */
@@ -142,6 +148,13 @@ public class CsvDestination implements Destination {
    @Override
    public void close() {
       synchronized (this) {
+         if (outputChannel != null) {
+            try {
+               outputChannel.close();
+            } catch (IOException e) {
+               log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
+            }
+         }
          csvFile = null;
       }
    }
@@ -230,14 +243,18 @@ public class CsvDestination implements Destination {
       sb.append(lineBreak);
 
       synchronized (this) {
-         final boolean csvFileExists = csvFile.exists();
-         try (FileOutputStream fos = new FileOutputStream(csvFile, true); OutputStreamWriter osw = new OutputStreamWriter(fos, Utils.getDefaultEncoding()); BufferedWriter bw = new BufferedWriter(osw)) {
-            if (!csvFileExists && !skipHeader) {
-               bw.append(fileHeaders);
-               bw.append(lineBreak);
+         try {
+            final boolean csvFileExists = csvFile.exists();
+
+            if (outputChannel == null) {
+               outputChannel = FileChannel.open(csvFile.toPath(), csvFileExists ? StandardOpenOption.APPEND : StandardOpenOption.CREATE, StandardOpenOption.WRITE);
             }
 
-            bw.append(sb.toString());
+            if (!csvFileExists && !skipHeader) {
+               sb.insert(0, fileHeaders + lineBreak);
+            }
+
+            outputChannel.write(ByteBuffer.wrap(sb.toString().getBytes(Charset.forName(Utils.getDefaultEncoding()))));
          } catch (IOException ioe) {
             throw new ReportingException(String.format("Could not append a report to the file %s.", csvFile.getPath()), ioe);
          }
@@ -265,6 +282,14 @@ public class CsvDestination implements Destination {
       synchronized (this) {
          if (csvFile != null) {
             throw new UnsupportedOperationException("Changing the value of path after opening the destination is not allowed.");
+         }
+         if (outputChannel != null) {
+            try {
+               outputChannel.close();
+               outputChannel = null;
+            } catch (IOException e) {
+               log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
+            }
          }
       }
 
