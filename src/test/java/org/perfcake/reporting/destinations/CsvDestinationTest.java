@@ -98,7 +98,6 @@ public class CsvDestinationTest {
       }
 
       try {
-
          final Properties destinationProperties = new Properties();
          final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 

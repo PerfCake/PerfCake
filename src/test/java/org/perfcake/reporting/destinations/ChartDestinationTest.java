@@ -22,7 +22,10 @@ package org.perfcake.reporting.destinations;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.TestSetup;
 import org.perfcake.common.PeriodType;
+import org.perfcake.message.sender.DummySender;
 import org.perfcake.reporting.Measurement;
+import org.perfcake.scenario.Scenario;
+import org.perfcake.scenario.ScenarioLoader;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,7 +40,7 @@ import java.util.Random;
  *
  * @author Martin Večeřa <marvenec@gmail.com>
  */
-public class ChartDestinationTest {
+public class ChartDestinationTest extends TestSetup {
 
    private static final Logger log = LogManager.getLogger(ChartDestinationTest.class);
 
@@ -89,6 +92,20 @@ public class ChartDestinationTest {
 
       cd.close();
       cd2.close();
+   }
+
+   @Test(enabled = false)
+   public void iterationScenarioTest() throws Exception {
+      final Scenario scenario;
+
+      DummySender.resetCounter();
+
+      scenario = ScenarioLoader.load("test-scenario-chart");
+      scenario.init();
+      scenario.run();
+      scenario.close();
+
+      //Assert.assertEquals(DummySender.getCounter(), 1);
    }
 
 }

@@ -187,7 +187,7 @@ public abstract class AbstractReporter implements Reporter {
       for (final Entry<String, Object> entry : results.entrySet()) {
          final String key = entry.getKey();
          final Object value = entry.getValue();
-         Accumulator accumulator = accumulatedResults.getIfAbsentWith(key, getAccumulatorFunction, entry);
+         Accumulator accumulator = accumulatedResults.getIfAbsentPutWith(key, getAccumulatorFunction, entry);
 
          if (accumulator != null) {
             accumulator.add(value);
