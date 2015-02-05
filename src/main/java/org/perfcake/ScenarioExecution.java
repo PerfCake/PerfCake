@@ -21,6 +21,7 @@ package org.perfcake;
 
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
+import org.perfcake.util.TimerBenchmark;
 import org.perfcake.util.Utils;
 
 import org.apache.commons.cli.CommandLine;
@@ -67,6 +68,11 @@ public class ScenarioExecution {
     * The scenario created from the specified XML file.
     */
    private Scenario scenario;
+
+   /**
+    * Skips timer benchmark when set to true.
+    */
+   private boolean skipTimerBenchmark = false;
 
    /**
     * Parses command line arguments and creates this class to take care of the Scenario execution.
@@ -160,6 +166,7 @@ public class ScenarioExecution {
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.PLUGINS_DIR_OPT).withDescription("directory for plugins").hasArg().withArgName("PLUGINS_DIR").create("pd"));
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.PROPERTIES_FILE_OPT).withDescription("custom system properties file").hasArg().withArgName("PROPERTIES_FILE").create("pf"));
       options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.LOGGING_LEVEL_OPT).withDescription("logging level").hasArg().withArgName("LOG_LEVEL").create("log"));
+      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT).withDescription("skip system timer benchmark").create("skip"));
       options.addOption(OptionBuilder.withArgName("property=value").hasArgs(2).withValueSeparator().withDescription("system properties").create("D"));
 
       final CommandLineParser commandLineParser = new GnuParser();
@@ -177,6 +184,10 @@ public class ScenarioExecution {
          formatter.printHelp("ScenarioExecution -s <SCENARIO> [-sd <SCENARIOS_DIR>] [-md <MESSAGES_DIR>] [-D<property=value>]*", options);
          System.exit(1);
          return;
+      }
+
+      if (commandLine.hasOption(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT)) {
+         skipTimerBenchmark = true;
       }
 
       parseParameter(PerfCakeConst.SCENARIOS_DIR_OPT, PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"));
@@ -238,6 +249,10 @@ public class ScenarioExecution {
     * Executes the loaded scenario.
     */
    private void executeScenario() {
+      if (!skipTimerBenchmark) {
+         TimerBenchmark.measureTimerResolution();
+      }
+
       try {
          scenario.init();
          scenario.run();
