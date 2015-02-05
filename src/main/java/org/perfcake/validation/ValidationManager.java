@@ -23,15 +23,13 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.message.ReceivedMessage;
 
-import com.gs.collections.api.block.function.Function0;
-import com.gs.collections.api.block.procedure.Procedure2;
-import com.gs.collections.impl.map.mutable.UnifiedMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -96,17 +94,7 @@ public class ValidationManager {
    /**
     * Stores validation results statistics.
     */
-   private UnifiedMap<String, Score> statistics = UnifiedMap.newWithKeysValues(OVERALL_STAT_KEY, new Score());
-
-   /**
-    * Function to generate a new zero score. Used to implement a design pattern with GS Colections. Score is then stored in statistics map.
-    */
-   private Function0<Score> scoreFunction = new Function0<Score>() {
-      @Override
-      public Score value() {
-         return new Score();
-      }
-   };
+   private Map<String, Score> statistics = new HashMap<>();
 
    /**
     * Creates a new validator manager. The message responses are store in a file queue in a temporary file.
@@ -115,6 +103,7 @@ public class ValidationManager {
     *       When it was not possible to initialize the message store.
     */
    public ValidationManager() throws PerfCakeException {
+      statistics.put(OVERALL_STAT_KEY, new Score());
       try {
          final File tmpFile = File.createTempFile("perfcake", "queue");
          tmpFile.deleteOnExit();
@@ -282,15 +271,15 @@ public class ValidationManager {
       sb.append(total.getPassed()).append(" passed and ");
       sb.append(total.getFailed()).append(" failed.\n");
 
-      statistics.forEachKeyValue(new Procedure2<String, Score>() {
-         @Override
-         public void value(final String key, final Score value) {
-            if (!OVERALL_STAT_KEY.equals(key)) {
-               sb.append("Thread [").append(key).append("]: Totally validated ").append(value.getFailed() + value.getPassed());
-               sb.append(" messages of which ").append(value.getPassed()).append(" passed and ").append(value.getFailed()).append(" failed.\n");
-            }
+      for (final Map.Entry<String, Score> entry : statistics.entrySet()) {
+         final String key = entry.getKey();
+         final Score value = entry.getValue();
+
+         if (!OVERALL_STAT_KEY.equals(key)) {
+            sb.append("Thread [").append(key).append("]: Totally validated ").append(value.getFailed() + value.getPassed());
+            sb.append(" messages of which ").append(value.getPassed()).append(" passed and ").append(value.getFailed()).append(" failed.\n");
          }
-      });
+      }
 
       sb.append("End of statistics.");
 
@@ -356,10 +345,24 @@ public class ValidationManager {
                      if (log.isInfoEnabled()) {
                         if (isMessageValid) {
                            statistics.get(OVERALL_STAT_KEY).incPassed();
-                           statistics.getIfAbsentPut(validationTask.getThreadName(), scoreFunction).incPassed();
+
+                           Score score = statistics.get(validationTask.getThreadName());
+                           if (score == null) {
+                              score = new Score();
+                              statistics.put(validationTask.getThreadName(), score);
+                           }
+
+                           score.incPassed();
                         } else {
                            statistics.get(OVERALL_STAT_KEY).incFailed();
-                           statistics.getIfAbsentPut(validationTask.getThreadName(), scoreFunction).incFailed();
+
+                           Score score = statistics.get(validationTask.getThreadName());
+                           if (score == null) {
+                              score = new Score();
+                              statistics.put(validationTask.getThreadName(), score);
+                           }
+
+                           score.incFailed();
                         }
                      }
 

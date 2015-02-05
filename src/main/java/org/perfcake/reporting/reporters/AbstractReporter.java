@@ -33,8 +33,6 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 
-import com.gs.collections.api.block.function.Function;
-import com.gs.collections.api.block.procedure.Procedure2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -56,11 +54,6 @@ public abstract class AbstractReporter implements Reporter {
     * The reporter's logger.
     */
    private static final Logger log = LogManager.getLogger(AbstractReporter.class);
-
-   /**
-    * Function for GS Collections API used to obtain particular accumulator in a call to getIfAbsentWith().
-    */
-   private final GetAccumulatorFunction getAccumulatorFunction = new GetAccumulatorFunction();
 
    /**
     * Set of periods bound to destinations. This is used to register destinations and requested reporting periods.
@@ -91,7 +84,7 @@ public abstract class AbstractReporter implements Reporter {
     * Accumulators to accumulate results from multiple {@link org.perfcake.reporting.MeasurementUnit Measurement Units}.
     */
    @SuppressWarnings("rawtypes")
-   private ConcurrentHashMap<String, Accumulator> accumulatedResults = new ConcurrentHashMap<>();
+   private Map<String, Accumulator> accumulatedResults = new ConcurrentHashMap<>();
 
    /**
     * Reports a single {@link org.perfcake.reporting.MeasurementUnit} to this reporter. This calls {@link #doReport(MeasurementUnit)} overridden by a child, accumulates results and reports iteration change and percentage change (if any).
@@ -361,23 +354,6 @@ public abstract class AbstractReporter implements Reporter {
    @Override
    public final Set<BoundPeriod<Destination>> getReportingPeriods() {
       return Collections.unmodifiableSet(periods);
-   }
-
-   /**
-    * Function for GS Collections API used to obtain particular accumulator in a call to getIfAbsentWith().
-    */
-   private final class GetAccumulatorFunction implements Function<Entry<String, Object>, Accumulator> {
-
-      @Override
-      public Accumulator valueOf(final Entry<String, Object> entry) {
-         final Accumulator accumulator = getAccumulator(entry.getKey(), entry.getValue().getClass());
-
-         if (accumulator == null) {
-            log.warn(String.format("No accumulator specified for results key '%s' and its type '%s'.", entry.getKey(), entry.getValue().getClass().getCanonicalName()));
-         }
-
-         return accumulator;
-      }
    }
 
 }
