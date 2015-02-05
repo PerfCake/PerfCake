@@ -466,7 +466,9 @@ public class Chart {
     * the attributes missing.
     */
    private String getResultLine(final Measurement m) {
-      StringBuilder sb = new StringBuilder();
+      final StringBuilder sb = new StringBuilder();
+      boolean missingAttributes = false;
+
       sb.append(baseName);
       sb.append(".push([");
       switch (xAxisType) {
@@ -494,27 +496,31 @@ public class Chart {
 
             // we do not have all required attributes, return an empty line
             if (data == null) {
+               missingAttributes = true;
                if (firstResultsLine) {
                   log.warn(String.format("Missing attribute %s, skipping the record.", attr));
                }
-               return "";
-            }
-
-            if (data instanceof String) {
-               sb.append("'");
-               sb.append((String) data);
-               sb.append("'");
-            } else if (data instanceof Quantity) {
-               sb.append(((Quantity) data).getNumber().toString());
             } else {
-               sb.append(data.toString());
+               if (data instanceof String) {
+                  sb.append("'");
+                  sb.append((String) data);
+                  sb.append("'");
+               } else if (data instanceof Quantity) {
+                  sb.append(((Quantity) data).getNumber().toString());
+               } else {
+                  sb.append(data.toString());
+               }
             }
          }
       }
 
-      sb.append("]);\n");
-
       firstResultsLine = false;
+
+      if (missingAttributes) { // we must postpone the return for all misses to be shown
+         return "";
+      }
+
+      sb.append("]);\n");
 
       return sb.toString();
    }
