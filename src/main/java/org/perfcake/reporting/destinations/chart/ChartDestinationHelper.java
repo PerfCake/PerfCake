@@ -134,7 +134,6 @@ public class ChartDestinationHelper {
 
       try {
          Files.copy(getClass().getResourceAsStream("/charts/google-chart.js"), Paths.get(target.toString(), "src", "google-chart.js"), StandardCopyOption.REPLACE_EXISTING);
-         Files.copy(getClass().getResourceAsStream("/charts/google-chart-concat.js"), Paths.get(target.toString(), "src", "google-chart-concat.js"), StandardCopyOption.REPLACE_EXISTING);
          Files.copy(getClass().getResourceAsStream("/charts/report.css"), Paths.get(target.toString(), "src", "report.css"), StandardCopyOption.REPLACE_EXISTING);
          Files.copy(getClass().getResourceAsStream("/charts/report.js"), Paths.get(target.toString(), "src", "report.js"), StandardCopyOption.REPLACE_EXISTING);
       } catch (IOException e) {

@@ -23,17 +23,10 @@ function countersUnderLimit() {
 function getTm(counter, dataArray) {
 	if (counter < dataArray.length) {
 	   var tmStr = dataArray[counter][0];
-	   if (tmStr.indexOf(':') >= 0) {
-		   var timeTokens = tmStr.split(':');
-         var tm = ((+timeTokens[0] * 3600000.0) + (+timeTokens[1] * 60000.0) + (+timeTokens[2] * 1000.0)) / 3600000.0;
-         return tm;
-      } else if (tmStr.indexOf('%')) {
-         var timeTokens = tmStr.split('%');
-         var tm = (+timeTokens[0]);
-         return tm;
-      } else {
-      	return +tmStr;
-      }
+	   if (tmStr instanceof Date) {
+	   	  return tmStr.getTime();
+	   }
+       return +tmStr;
 	}
 
 	return null;

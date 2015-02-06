@@ -65,7 +65,7 @@ public class TimerBenchmark {
 
       lastDelta = delta;
 
-      log.info(String.format("This system is able to differentiate up to %dns. Maximal measurable throughput is %d iterations/second.", delta, 1_000_000_000 / delta));
+      log.info(String.format("This system is able to differentiate up to %dns. A single thread is now able to measure maximum of %d iterations/second.", delta, 1_000_000_000 / delta));
    }
 
    /**
