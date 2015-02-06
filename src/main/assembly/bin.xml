@@ -65,7 +65,7 @@
          <directory>${basedir}/src/main/resources</directory>
          <outputDirectory/>
          <includes>
-            <include>log4j.xml</include>
+            <include>log4j2.xml</include>
          </includes>
          <fileMode>0644</fileMode>
       </fileSet>
