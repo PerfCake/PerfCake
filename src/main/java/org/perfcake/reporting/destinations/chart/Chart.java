@@ -221,7 +221,9 @@ public class Chart {
       String name = loaderEntry.substring(loaderEntry.lastIndexOf(", ") + 3);
       name = name.substring(0, name.lastIndexOf("'"));
 
-      String axises = loaderEntry.substring(loaderEntry.indexOf("], '") + 4, loaderEntry.lastIndexOf("', '"));
+      String axises = loaderEntry.substring(loaderEntry.indexOf("], ") + 3, loaderEntry.lastIndexOf("', '"));
+      PeriodType xAxisType = PeriodType.values()[Integer.valueOf(axises.substring(0, axises.indexOf(",")))];
+      axises = axises.substring(axises.indexOf("'") + 1);
       String xAxis = axises.substring(0, axises.indexOf("', '"));
       String yAxis = axises.substring(axises.indexOf("', '") + 4);
 
@@ -241,20 +243,6 @@ public class Chart {
       List<String> columnsList = new ArrayList<>();
       for (String s : columnNames) {
          columnsList.add(StringUtil.trim(s, "'"));
-      }
-
-      PeriodType xAxisType;
-      switch (columnsList.get(0)) {
-         case COLUMN_PERCENT:
-            xAxisType = PeriodType.PERCENTAGE;
-            break;
-         case COLUMN_ITERATION:
-            xAxisType = PeriodType.ITERATION;
-            break;
-         default:
-         case COLUMN_TIME:
-            xAxisType = PeriodType.TIME;
-            break;
       }
 
       return new Chart(base, group, columnsList, name, xAxisType, xAxis, yAxis);
@@ -398,7 +386,11 @@ public class Chart {
          dataHeader.append(attr);
          dataHeader.append("'");
       }
-      dataHeader.append(" ] ];\n\n");
+      dataHeader.append(" ] ];\n");
+      if (xAxisType == PeriodType.TIME) {
+         dataHeader.append("var offset = (new Date()).getTimezoneOffset() * 60 * 1000;\n");
+      }
+      dataHeader.append("\n");
       Utils.writeFileContent(dataFile, dataHeader.toString());
    }
 
@@ -434,7 +426,7 @@ public class Chart {
     * @return The JavaScript code to draw the chart.
     */
    public String getLoaderLine() {
-      final StringBuilder line = new StringBuilder(concat ? "drawConcatChart(" : "drawChart(");
+      final StringBuilder line = new StringBuilder("drawChart(");
       line.append(baseName);
       line.append(", 'chart_");
       line.append(baseName);
@@ -445,7 +437,9 @@ public class Chart {
          line.append(i);
       }
 
-      line.append("], '");
+      line.append("], ");
+      line.append(xAxisType.ordinal());
+      line.append(", '");
       line.append(xAxis);
       line.append("', '");
       line.append(yAxis);
@@ -473,19 +467,15 @@ public class Chart {
       sb.append(".push([");
       switch (xAxisType) {
          case TIME:
-            sb.append("'");
-            sb.append(Utils.timeToHMS(m.getTime()));
-            sb.append("'");
+            sb.append("new Date(");
+            sb.append(m.getTime());
+            sb.append(" + offset)");
             break;
          case ITERATION:
-            sb.append("'");
             sb.append(m.getIteration());
-            sb.append("'");
             break;
          case PERCENTAGE:
-            sb.append("'");
             sb.append(m.getPercentage());
-            sb.append("%'");
             break;
       }
 

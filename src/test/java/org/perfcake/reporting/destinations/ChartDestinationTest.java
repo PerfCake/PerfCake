@@ -44,10 +44,10 @@ public class ChartDestinationTest extends TestSetup {
 
    private static final Logger log = LogManager.getLogger(ChartDestinationTest.class);
 
-   @Test(enabled = false)
+   @Test(enabled = true)
    public void basicTest() throws Exception {
       System.setProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY, (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date()));
-      final String tempDir = TestSetup.createTempDir("test-chart");
+      final String tempDir = "target/chart";//TestSetup.createTempDir("test-chart");
       log.info("Created temp directory for chart: " + tempDir);
 
       ChartDestination cd = new ChartDestination();
@@ -78,13 +78,15 @@ public class ChartDestinationTest extends TestSetup {
       cd.report(m);
       cd2.report(m);
 
-      m = new Measurement(56, System.currentTimeMillis() - base, 2);
+      m = new Measurement(13, System.currentTimeMillis() - base, 2);
       m.set(11.1 + rnd.nextDouble());
       m.set("Average", 9.1 + rnd.nextDouble());
       cd.report(m);
       cd2.report(m);
 
-      m = new Measurement(100, System.currentTimeMillis() - base, 3);
+      Thread.sleep(2000);
+
+      m = new Measurement(100, System.currentTimeMillis() - base, 10);
       m.set(9.2 + rnd.nextDouble());
       m.set("Average", 9.0 + rnd.nextDouble());
       cd.report(m);
