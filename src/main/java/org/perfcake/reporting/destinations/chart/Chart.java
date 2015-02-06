@@ -482,15 +482,15 @@ public class Chart {
       for (String attr : attributes) {
          if (attributes.indexOf(attr) > 0) {
             sb.append(", ");
-            Object data = m.get(attr);
 
             // we do not have all required attributes, return an empty line
-            if (data == null) {
+            if (!m.getAll().containsKey(attr)) {
                missingAttributes = true;
                if (firstResultsLine) {
                   log.warn(String.format("Missing attribute %s, skipping the record.", attr));
                }
             } else {
+               Object data = m.get(attr);
                if (data instanceof String) {
                   sb.append("'");
                   sb.append((String) data);
