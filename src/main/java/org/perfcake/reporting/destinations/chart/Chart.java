@@ -498,7 +498,7 @@ public class Chart {
                } else if (data instanceof Quantity) {
                   sb.append(((Quantity) data).getNumber().toString());
                } else {
-                  sb.append(data.toString());
+                  sb.append(data == null ? "null" : data.toString());
                }
             }
          }
