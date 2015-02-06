@@ -17,10 +17,10 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake.validation;
+package org.perfcake.util;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
