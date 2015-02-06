@@ -19,6 +19,8 @@
  */
 package org.perfcake.validation;
 
+import org.perfcake.util.StringUtil;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

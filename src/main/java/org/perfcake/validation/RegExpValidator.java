@@ -20,9 +20,10 @@
 package org.perfcake.validation;
 
 import org.perfcake.message.Message;
+import org.perfcake.util.StringUtil;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
 import java.util.regex.Matcher;
@@ -34,14 +35,13 @@ import java.util.regex.Pattern;
  * It is possible to set the {@link java.util.regex.Pattern#compile(String, int)} compile flags using the particular properties.
  *
  * All flags but {@link java.util.regex.Pattern#UNIX_LINES} are supported. That is because
- * {@link StringUtil#trimLines(String)} is used to pre-process the message payload
+ * {@link org.perfcake.util.StringUtil#trimLines(String)} is used to pre-process the message payload
  * that changes all line breakers to <code>\n</code>.
- *
- * @see java.util.regex.Pattern#compile(String, int)
  *
  * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
  * @author Martin Večeřa <marvenec@gmail.com>
  * @author Pavel Macík <pavel.macik@gmail.com>
+ * @see java.util.regex.Pattern#compile(String, int)
  */
 public class RegExpValidator implements MessageValidator {
 
