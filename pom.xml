@@ -343,7 +343,7 @@
                <exclude>messages/*</exclude>
                <exclude>scenarios/*</exclude>
                <exclude>google-charts/*</exclude>
-               <exclude>log4j.xml</exclude>
+               <exclude>log4j2.xml</exclude>
             </excludes>
          </resource>
       </resources>
