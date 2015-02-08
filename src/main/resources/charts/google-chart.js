@@ -3,6 +3,9 @@ function drawChart(dataArray, chartDiv, columns, xAxisType, xAxis, yAxis, chartN
 
    var data = new google.visualization.DataTable();
    for (var i = 0; i < dataArray[0].length; i++) {
+      if (i == 1) {
+         data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
+      }
       if (i == 0 && xAxisType == 1) {
          data.addColumn('datetime', dataArray[0][i]);
       } else if (dataArray[0][i] == "warmUp") {
@@ -11,7 +14,6 @@ function drawChart(dataArray, chartDiv, columns, xAxisType, xAxis, yAxis, chartN
          data.addColumn('number', dataArray[0][i]);
       }
    }
-   data.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
 
    for (var i = 1; i < dataArray.length; i++) {
       var legend;
@@ -26,14 +28,13 @@ function drawChart(dataArray, chartDiv, columns, xAxisType, xAxis, yAxis, chartN
       }
       legend = legend + '</strong><br />';
 
-      for (var j = 1; j < columns.length; j++) {
-         legend = legend + dataArray[0][columns[j]] + ': ' + dataArray[i][columns[j]] + '<br/ >';
-      }
-
-      dataArray[i].push(legend);
+      dataArray[i].splice(1, 0, legend);
    }
 
-   columns.push(dataArray[0].length);
+   for (var j = 1; j < columns.length; j++) {
+      columns[j]++;
+   }
+   columns.splice(1, 0, 1);
 
    data.addRows(dataArray.slice(1));
 
@@ -68,7 +69,7 @@ function drawChart(dataArray, chartDiv, columns, xAxisType, xAxis, yAxis, chartN
       interpolateNulls: true,
       allowHtml: true,
       tooltip: { isHtml: true },
-      focusTarget: 'category',
+      //focusTarget: 'category',
    }
    var view = new google.visualization.DataView(data);
    view.setColumns(columns);
