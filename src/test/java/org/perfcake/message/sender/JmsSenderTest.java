@@ -65,7 +65,8 @@ public class JmsSenderTest extends Arquillian {
             "org.perfcake",
             "org.apache.commons.beanutils",
             "org.apache.logging.log4j",
-            "org.apache.commons.collections");
+            "org.apache.commons.collections")
+            .deleteClass("org.perfcake.message.sender.WebSocketSender").deleteClass("org.perfcake.message.sender.WebSocketSender$PerfCakeClientEndpoint");
    }
 
    @Test(priority = 0)
@@ -343,8 +344,8 @@ public class JmsSenderTest extends Arquillian {
    @Test
    @RunAsClient
    public void testClientMode() throws Exception {
-      String jndiFactory = org.jboss.naming.remote.client.InitialContextFactory.class.getName();
-      String jndiUrl = "remote://localhost:4447";
+      String jndiFactory = "org.jboss.naming.remote.client.InitialContextFactory";
+      String jndiUrl = "http-remoting://localhost:8080";
       String queueName = "jms/queue/test";
 
       Properties props = new Properties();

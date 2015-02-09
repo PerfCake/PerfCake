@@ -63,7 +63,8 @@ public class RequestResponseJmsSenderTest extends Arquillian {
             "org.perfcake",
             "org.apache.commons.beanutils",
             "org.apache.logging.log4j",
-            "org.apache.commons.collections");
+            "org.apache.commons.collections")
+            .deleteClass("org.perfcake.message.sender.WebSocketSender").deleteClass("org.perfcake.message.sender.WebSocketSender$PerfCakeClientEndpoint");
    }
 
    @Test
