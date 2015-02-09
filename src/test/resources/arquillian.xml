@@ -10,12 +10,11 @@
       <property name="excludes">org.jboss.*,org.jacoco.*</property>
    </extension>
 
-   <container qualifier="jboss-as-managed" default="true">
+   <container qualifier="wildfly-managed" default="true">
       <configuration>
-         <property name="jbossHome">target/jboss-as-7.1.1.Final</property>
-         <property name="javaVmArguments">-Xmx128m -XX:MaxPermSize=128m</property>
+         <property name="jbossHome">target/wildfly-8.2.0.Final</property>
+         <property name="javaVmArguments">-Xmx128m -Xms128m</property>
          <property name="serverConfig">../../../../src/test/resources/standalone-min.xml</property>
-         <!--property name="managementPort">9090</property -->
       </configuration>
    </container>
 </arquillian>

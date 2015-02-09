@@ -19,8 +19,8 @@
  */
 package org.perfcake.message.sender;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Properties;
 import javax.jms.Connection;
@@ -117,7 +117,11 @@ public class JmsHelper {
                }
             }
          } catch (Exception e) {
-            log.error("Error during wiretap:", e);
+            if (e.getCause() instanceof InterruptedException) {
+               log.info("Terminating gracefully.");
+            } else {
+               log.error("Error during wiretap:", e);
+            }
          } finally {
             try {
                if (context != null) {
@@ -166,8 +170,8 @@ public class JmsHelper {
 
    public static Message clientReadMessage(long timeout, String queueName) throws Exception {
       Properties env = new Properties();
-      env.put(Context.INITIAL_CONTEXT_FACTORY, org.jboss.naming.remote.client.InitialContextFactory.class.getName());
-      env.put(Context.PROVIDER_URL, "remote://localhost:4447");
+      env.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.remote.client.InitialContextFactory");
+      env.put(Context.PROVIDER_URL, "http-remoting://localhost:8080");
       env.put(Context.SECURITY_PRINCIPAL, "zappa");
       env.put(Context.SECURITY_CREDENTIALS, "frank");
 
