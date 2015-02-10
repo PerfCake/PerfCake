@@ -147,6 +147,7 @@ cd "$PERFCAKE_HOME"
 
 # Run PerfCake
 exec "$JAVACMD" \
-  -Djava.ext.dirs="${JAVA_HOME}/lib/ext:${JAVA_HOME}/jre/lib/ext:$PERFCAKE_HOME/lib/ext" \
+  -Dlog4j.configurationFile="${PERFCAKE_HOME}/log4j2.xml" \
+  -Djava.ext.dirs="${JAVA_HOME}/lib/ext:${JAVA_HOME}/jre/lib/ext:${PERFCAKE_HOME}/lib/ext" \
   -jar "${PERFCAKE_HOME}"/lib/perfcake*.jar \
   "$@"
