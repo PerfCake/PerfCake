@@ -33,6 +33,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Creates nice charts from the results. The charts are generated to the outputPath path. The charts in the same group can be later
@@ -195,7 +197,29 @@ public class ChartDestination implements Destination {
     *       The group of the chart.
     */
    public void setGroup(final String group) {
-      this.group = group;
+      if ("".equals(group)) {
+         this.group = "_";
+         log.warn("The group name should not be an empty string so it (" + group + ") will be renamed to (" + this.group + ")");
+      } else if (!group.matches("[a-zA-Z][a-zA-Z0-9_]*")) {
+         final String postGroup = group.replaceAll("[^a-zA-Z0-9_]", "_");
+
+         final Matcher firstNumericCharMatcher = Pattern.compile("[0-9]").matcher(postGroup);
+         final int firstNumericCharIndex;
+         if (firstNumericCharMatcher.find()) {
+            firstNumericCharIndex = firstNumericCharMatcher.start();
+         } else {
+            firstNumericCharIndex = -1;
+         }
+
+         if (firstNumericCharIndex == 0) {
+            this.group = "_" + postGroup;
+         } else {
+            this.group = postGroup;
+         }
+         log.warn("The group name should only contain alphanumeric characters or an underscore and it should not start with a numeric digit so it (" + group + ") will be renamed to (" + this.group + ")");
+      } else {
+         this.group = group;
+      }
    }
 
    /**

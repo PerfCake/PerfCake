@@ -29,6 +29,7 @@ import org.perfcake.scenario.ScenarioLoader;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.text.SimpleDateFormat;
@@ -43,6 +44,26 @@ import java.util.Random;
 public class ChartDestinationTest extends TestSetup {
 
    private static final Logger log = LogManager.getLogger(ChartDestinationTest.class);
+
+   @Test(enabled = true)
+   public void basicGroupNameTest() throws Exception {
+      final ChartDestination cd = new ChartDestination();
+      testGroupName(cd, "", "_");
+      testGroupName(cd, "a", "a");
+      testGroupName(cd, "1", "_1");
+      testGroupName(cd, "group1", "group1");
+      testGroupName(cd, "group.1", "group_1");
+      testGroupName(cd, "group 1", "group_1");
+      testGroupName(cd, "1group", "_1group");
+      testGroupName(cd, "1.group", "_1_group");
+      testGroupName(cd, "1. group", "_1__group");
+      testGroupName(cd, "group one", "group_one");
+   }
+
+   private void testGroupName(ChartDestination cd, String setGroup, String expectedGroup) {
+      cd.setGroup(setGroup);
+      Assert.assertEquals(cd.getGroup(), expectedGroup);
+   }
 
    @Test(enabled = false)
    public void basicTest() throws Exception {
