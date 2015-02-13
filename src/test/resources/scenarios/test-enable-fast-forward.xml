@@ -3,10 +3,10 @@
     <generator class="DefaultMessageGenerator" threads="1">
         <run type="time" value="5000"/>
     </generator>
-    <sender class="DummySender">
-        <property name="target" value="Out there!"/>
-    </sender>
-    <reporting>
+   <sender class="DummySender">
+      <property name="target" value="Out there!"/>
+   </sender>
+   <reporting>
         <reporter class="DummyReporter">
             <destination class="DummyDestination">
                 <period type="time" value="1000"/>
