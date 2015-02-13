@@ -36,7 +36,7 @@ import java.lang.reflect.Field;
  * It should confirm the contract and make sure the validation does not
  * disturb the measurement.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ValidationIntegrationTest extends TestSetup {
 

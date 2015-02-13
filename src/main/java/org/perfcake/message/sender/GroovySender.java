@@ -26,8 +26,8 @@ import java.io.File;
  * payload via the standard input or as a command argument. It extends the {@link CommandSender} and
  * executes the groovy script via groovy command with <code>groovy {@link #target}</code> passed as an argument.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class GroovySender extends CommandSender {
 

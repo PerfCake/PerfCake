@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  * Make appropriate configurations to customize its output. You can configure a separate appender only for this category for instance.
  * Logging level can be set via the level attribute.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class Log4jDestination implements Destination {
 

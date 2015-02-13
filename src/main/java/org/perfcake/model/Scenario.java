@@ -41,170 +41,170 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  *
  * <pre>
- * &lt;complexType>
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="properties" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="generator">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="run">
- *                     &lt;complexType>
- *                       &lt;complexContent>
- *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                           &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                           &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                         &lt;/restriction>
- *                       &lt;/complexContent>
- *                     &lt;/complexType>
- *                   &lt;/element>
- *                   &lt;sequence>
- *                     &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
- *                   &lt;/sequence>
- *                 &lt;/sequence>
- *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                 &lt;attribute name="threads" type="{http://www.w3.org/2001/XMLSchema}string" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="sender">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
- *                 &lt;/sequence>
- *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="reporting" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;sequence>
- *                     &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
- *                   &lt;/sequence>
- *                   &lt;element name="reporter" maxOccurs="unbounded">
- *                     &lt;complexType>
- *                       &lt;complexContent>
- *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                           &lt;sequence>
- *                             &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
- *                             &lt;element name="destination" maxOccurs="unbounded" minOccurs="0">
- *                               &lt;complexType>
- *                                 &lt;complexContent>
- *                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                                     &lt;sequence>
- *                                       &lt;element name="period" maxOccurs="unbounded" minOccurs="0">
- *                                         &lt;complexType>
- *                                           &lt;complexContent>
- *                                             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                                               &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                                               &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                                             &lt;/restriction>
- *                                           &lt;/complexContent>
- *                                         &lt;/complexType>
- *                                       &lt;/element>
- *                                       &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
- *                                     &lt;/sequence>
- *                                     &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                                     &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
- *                                   &lt;/restriction>
- *                                 &lt;/complexContent>
- *                               &lt;/complexType>
- *                             &lt;/element>
- *                           &lt;/sequence>
- *                           &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                           &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
- *                         &lt;/restriction>
- *                       &lt;/complexContent>
- *                     &lt;/complexType>
- *                   &lt;/element>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="messages" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="message" maxOccurs="unbounded">
- *                     &lt;complexType>
- *                       &lt;complexContent>
- *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                           &lt;sequence>
- *                             &lt;element ref="{urn:perfcake:scenario:4.0}header" maxOccurs="unbounded" minOccurs="0"/>
- *                             &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
- *                             &lt;element name="validatorRef" maxOccurs="unbounded" minOccurs="0">
- *                               &lt;complexType>
- *                                 &lt;complexContent>
- *                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                                     &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                                   &lt;/restriction>
- *                                 &lt;/complexContent>
- *                               &lt;/complexType>
- *                             &lt;/element>
- *                           &lt;/sequence>
- *                           &lt;attribute name="uri" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                           &lt;attribute name="content" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                           &lt;attribute name="multiplicity" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                         &lt;/restriction>
- *                       &lt;/complexContent>
- *                     &lt;/complexType>
- *                   &lt;/element>
- *                 &lt;/sequence>
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *         &lt;element name="validation" minOccurs="0">
- *           &lt;complexType>
- *             &lt;complexContent>
- *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;sequence>
- *                   &lt;element name="validator" maxOccurs="unbounded" minOccurs="0">
- *                     &lt;complexType>
- *                       &lt;complexContent>
- *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                           &lt;sequence>
- *                             &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
- *                           &lt;/sequence>
- *                           &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                           &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
- *                         &lt;/restriction>
- *                       &lt;/complexContent>
- *                     &lt;/complexType>
- *                   &lt;/element>
- *                 &lt;/sequence>
- *                 &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
- *                 &lt;attribute name="fastForward" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
- *               &lt;/restriction>
- *             &lt;/complexContent>
- *           &lt;/complexType>
- *         &lt;/element>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="properties" minOccurs="0"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *                 &lt;/sequence&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="generator"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element name="run"&gt;
+ *                     &lt;complexType&gt;
+ *                       &lt;complexContent&gt;
+ *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                           &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                           &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                         &lt;/restriction&gt;
+ *                       &lt;/complexContent&gt;
+ *                     &lt;/complexType&gt;
+ *                   &lt;/element&gt;
+ *                   &lt;sequence&gt;
+ *                     &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *                   &lt;/sequence&gt;
+ *                 &lt;/sequence&gt;
+ *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                 &lt;attribute name="threads" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="sender"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *                 &lt;/sequence&gt;
+ *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="reporting" minOccurs="0"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;sequence&gt;
+ *                     &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *                   &lt;/sequence&gt;
+ *                   &lt;element name="reporter" maxOccurs="unbounded"&gt;
+ *                     &lt;complexType&gt;
+ *                       &lt;complexContent&gt;
+ *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                           &lt;sequence&gt;
+ *                             &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *                             &lt;element name="destination" maxOccurs="unbounded" minOccurs="0"&gt;
+ *                               &lt;complexType&gt;
+ *                                 &lt;complexContent&gt;
+ *                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                                     &lt;sequence&gt;
+ *                                       &lt;element name="period" maxOccurs="unbounded" minOccurs="0"&gt;
+ *                                         &lt;complexType&gt;
+ *                                           &lt;complexContent&gt;
+ *                                             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                                               &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                                               &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                                             &lt;/restriction&gt;
+ *                                           &lt;/complexContent&gt;
+ *                                         &lt;/complexType&gt;
+ *                                       &lt;/element&gt;
+ *                                       &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *                                     &lt;/sequence&gt;
+ *                                     &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                                     &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+ *                                   &lt;/restriction&gt;
+ *                                 &lt;/complexContent&gt;
+ *                               &lt;/complexType&gt;
+ *                             &lt;/element&gt;
+ *                           &lt;/sequence&gt;
+ *                           &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                           &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+ *                         &lt;/restriction&gt;
+ *                       &lt;/complexContent&gt;
+ *                     &lt;/complexType&gt;
+ *                   &lt;/element&gt;
+ *                 &lt;/sequence&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="messages" minOccurs="0"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element name="message" maxOccurs="unbounded"&gt;
+ *                     &lt;complexType&gt;
+ *                       &lt;complexContent&gt;
+ *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                           &lt;sequence&gt;
+ *                             &lt;element ref="{urn:perfcake:scenario:4.0}header" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *                             &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *                             &lt;element name="validatorRef" maxOccurs="unbounded" minOccurs="0"&gt;
+ *                               &lt;complexType&gt;
+ *                                 &lt;complexContent&gt;
+ *                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                                     &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                                   &lt;/restriction&gt;
+ *                                 &lt;/complexContent&gt;
+ *                               &lt;/complexType&gt;
+ *                             &lt;/element&gt;
+ *                           &lt;/sequence&gt;
+ *                           &lt;attribute name="uri" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                           &lt;attribute name="content" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                           &lt;attribute name="multiplicity" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                         &lt;/restriction&gt;
+ *                       &lt;/complexContent&gt;
+ *                     &lt;/complexType&gt;
+ *                   &lt;/element&gt;
+ *                 &lt;/sequence&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *         &lt;element name="validation" minOccurs="0"&gt;
+ *           &lt;complexType&gt;
+ *             &lt;complexContent&gt;
+ *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                 &lt;sequence&gt;
+ *                   &lt;element name="validator" maxOccurs="unbounded" minOccurs="0"&gt;
+ *                     &lt;complexType&gt;
+ *                       &lt;complexContent&gt;
+ *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *                           &lt;sequence&gt;
+ *                             &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *                           &lt;/sequence&gt;
+ *                           &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                           &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *                         &lt;/restriction&gt;
+ *                       &lt;/complexContent&gt;
+ *                     &lt;/complexType&gt;
+ *                   &lt;/element&gt;
+ *                 &lt;/sequence&gt;
+ *                 &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+ *                 &lt;attribute name="fastForward" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+ *               &lt;/restriction&gt;
+ *             &lt;/complexContent&gt;
+ *           &lt;/complexType&gt;
+ *         &lt;/element&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -360,29 +360,29 @@ public class Scenario {
     * <p>The following schema fragment specifies the expected content contained within this class.
     *
     * <pre>
-    * &lt;complexType>
-    *   &lt;complexContent>
-    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *       &lt;sequence>
-    *         &lt;element name="run">
-    *           &lt;complexType>
-    *             &lt;complexContent>
-    *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *                 &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *               &lt;/restriction>
-    *             &lt;/complexContent>
-    *           &lt;/complexType>
-    *         &lt;/element>
-    *         &lt;sequence>
-    *           &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-    *         &lt;/sequence>
-    *       &lt;/sequence>
-    *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *       &lt;attribute name="threads" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *     &lt;/restriction>
-    *   &lt;/complexContent>
-    * &lt;/complexType>
+    * &lt;complexType&gt;
+    *   &lt;complexContent&gt;
+    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *       &lt;sequence&gt;
+    *         &lt;element name="run"&gt;
+    *           &lt;complexType&gt;
+    *             &lt;complexContent&gt;
+    *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *                 &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *               &lt;/restriction&gt;
+    *             &lt;/complexContent&gt;
+    *           &lt;/complexType&gt;
+    *         &lt;/element&gt;
+    *         &lt;sequence&gt;
+    *           &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+    *         &lt;/sequence&gt;
+    *       &lt;/sequence&gt;
+    *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *       &lt;attribute name="threads" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *     &lt;/restriction&gt;
+    *   &lt;/complexContent&gt;
+    * &lt;/complexType&gt;
     * </pre>
     */
    @XmlAccessorType(XmlAccessType.FIELD)
@@ -496,14 +496,14 @@ public class Scenario {
        * <p>The following schema fragment specifies the expected content contained within this class.
        *
        * <pre>
-       * &lt;complexType>
-       *   &lt;complexContent>
-       *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-       *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *     &lt;/restriction>
-       *   &lt;/complexContent>
-       * &lt;/complexType>
+       * &lt;complexType&gt;
+       *   &lt;complexContent&gt;
+       *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+       *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *     &lt;/restriction&gt;
+       *   &lt;/complexContent&gt;
+       * &lt;/complexType&gt;
        * </pre>
        */
       @XmlAccessorType(XmlAccessType.FIELD)
@@ -567,38 +567,38 @@ public class Scenario {
     * <p>The following schema fragment specifies the expected content contained within this class.
     *
     * <pre>
-    * &lt;complexType>
-    *   &lt;complexContent>
-    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *       &lt;sequence>
-    *         &lt;element name="message" maxOccurs="unbounded">
-    *           &lt;complexType>
-    *             &lt;complexContent>
-    *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *                 &lt;sequence>
-    *                   &lt;element ref="{urn:perfcake:scenario:4.0}header" maxOccurs="unbounded" minOccurs="0"/>
-    *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-    *                   &lt;element name="validatorRef" maxOccurs="unbounded" minOccurs="0">
-    *                     &lt;complexType>
-    *                       &lt;complexContent>
-    *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *                           &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *                         &lt;/restriction>
-    *                       &lt;/complexContent>
-    *                     &lt;/complexType>
-    *                   &lt;/element>
-    *                 &lt;/sequence>
-    *                 &lt;attribute name="uri" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *                 &lt;attribute name="content" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *                 &lt;attribute name="multiplicity" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *               &lt;/restriction>
-    *             &lt;/complexContent>
-    *           &lt;/complexType>
-    *         &lt;/element>
-    *       &lt;/sequence>
-    *     &lt;/restriction>
-    *   &lt;/complexContent>
-    * &lt;/complexType>
+    * &lt;complexType&gt;
+    *   &lt;complexContent&gt;
+    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *       &lt;sequence&gt;
+    *         &lt;element name="message" maxOccurs="unbounded"&gt;
+    *           &lt;complexType&gt;
+    *             &lt;complexContent&gt;
+    *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *                 &lt;sequence&gt;
+    *                   &lt;element ref="{urn:perfcake:scenario:4.0}header" maxOccurs="unbounded" minOccurs="0"/&gt;
+    *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+    *                   &lt;element name="validatorRef" maxOccurs="unbounded" minOccurs="0"&gt;
+    *                     &lt;complexType&gt;
+    *                       &lt;complexContent&gt;
+    *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *                           &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *                         &lt;/restriction&gt;
+    *                       &lt;/complexContent&gt;
+    *                     &lt;/complexType&gt;
+    *                   &lt;/element&gt;
+    *                 &lt;/sequence&gt;
+    *                 &lt;attribute name="uri" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *                 &lt;attribute name="content" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *                 &lt;attribute name="multiplicity" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *               &lt;/restriction&gt;
+    *             &lt;/complexContent&gt;
+    *           &lt;/complexType&gt;
+    *         &lt;/element&gt;
+    *       &lt;/sequence&gt;
+    *     &lt;/restriction&gt;
+    *   &lt;/complexContent&gt;
+    * &lt;/complexType&gt;
     * </pre>
     */
    @XmlAccessorType(XmlAccessType.FIELD)
@@ -643,28 +643,28 @@ public class Scenario {
        * <p>The following schema fragment specifies the expected content contained within this class.
        *
        * <pre>
-       * &lt;complexType>
-       *   &lt;complexContent>
-       *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-       *       &lt;sequence>
-       *         &lt;element ref="{urn:perfcake:scenario:4.0}header" maxOccurs="unbounded" minOccurs="0"/>
-       *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-       *         &lt;element name="validatorRef" maxOccurs="unbounded" minOccurs="0">
-       *           &lt;complexType>
-       *             &lt;complexContent>
-       *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-       *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *               &lt;/restriction>
-       *             &lt;/complexContent>
-       *           &lt;/complexType>
-       *         &lt;/element>
-       *       &lt;/sequence>
-       *       &lt;attribute name="uri" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *       &lt;attribute name="content" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *       &lt;attribute name="multiplicity" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *     &lt;/restriction>
-       *   &lt;/complexContent>
-       * &lt;/complexType>
+       * &lt;complexType&gt;
+       *   &lt;complexContent&gt;
+       *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+       *       &lt;sequence&gt;
+       *         &lt;element ref="{urn:perfcake:scenario:4.0}header" maxOccurs="unbounded" minOccurs="0"/&gt;
+       *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+       *         &lt;element name="validatorRef" maxOccurs="unbounded" minOccurs="0"&gt;
+       *           &lt;complexType&gt;
+       *             &lt;complexContent&gt;
+       *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+       *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *               &lt;/restriction&gt;
+       *             &lt;/complexContent&gt;
+       *           &lt;/complexType&gt;
+       *         &lt;/element&gt;
+       *       &lt;/sequence&gt;
+       *       &lt;attribute name="uri" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *       &lt;attribute name="content" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *       &lt;attribute name="multiplicity" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *     &lt;/restriction&gt;
+       *   &lt;/complexContent&gt;
+       * &lt;/complexType&gt;
        * </pre>
        */
       @XmlAccessorType(XmlAccessType.FIELD)
@@ -835,13 +835,13 @@ public class Scenario {
           * <p>The following schema fragment specifies the expected content contained within this class.
           *
           * <pre>
-          * &lt;complexType>
-          *   &lt;complexContent>
-          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-          *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
-          *     &lt;/restriction>
-          *   &lt;/complexContent>
-          * &lt;/complexType>
+          * &lt;complexType&gt;
+          *   &lt;complexContent&gt;
+          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+          *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+          *     &lt;/restriction&gt;
+          *   &lt;/complexContent&gt;
+          * &lt;/complexType&gt;
           * </pre>
           */
          @XmlAccessorType(XmlAccessType.FIELD)
@@ -884,15 +884,15 @@ public class Scenario {
     * <p>The following schema fragment specifies the expected content contained within this class.
     *
     * <pre>
-    * &lt;complexType>
-    *   &lt;complexContent>
-    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *       &lt;sequence>
-    *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-    *       &lt;/sequence>
-    *     &lt;/restriction>
-    *   &lt;/complexContent>
-    * &lt;/complexType>
+    * &lt;complexType&gt;
+    *   &lt;complexContent&gt;
+    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *       &lt;sequence&gt;
+    *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+    *       &lt;/sequence&gt;
+    *     &lt;/restriction&gt;
+    *   &lt;/complexContent&gt;
+    * &lt;/complexType&gt;
     * </pre>
     */
    @XmlAccessorType(XmlAccessType.FIELD)
@@ -938,53 +938,53 @@ public class Scenario {
     * <p>The following schema fragment specifies the expected content contained within this class.
     *
     * <pre>
-    * &lt;complexType>
-    *   &lt;complexContent>
-    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *       &lt;sequence>
-    *         &lt;sequence>
-    *           &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-    *         &lt;/sequence>
-    *         &lt;element name="reporter" maxOccurs="unbounded">
-    *           &lt;complexType>
-    *             &lt;complexContent>
-    *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *                 &lt;sequence>
-    *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-    *                   &lt;element name="destination" maxOccurs="unbounded" minOccurs="0">
-    *                     &lt;complexType>
-    *                       &lt;complexContent>
-    *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *                           &lt;sequence>
-    *                             &lt;element name="period" maxOccurs="unbounded" minOccurs="0">
-    *                               &lt;complexType>
-    *                                 &lt;complexContent>
-    *                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *                                     &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *                                     &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *                                   &lt;/restriction>
-    *                                 &lt;/complexContent>
-    *                               &lt;/complexType>
-    *                             &lt;/element>
-    *                             &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-    *                           &lt;/sequence>
-    *                           &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *                           &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
-    *                         &lt;/restriction>
-    *                       &lt;/complexContent>
-    *                     &lt;/complexType>
-    *                   &lt;/element>
-    *                 &lt;/sequence>
-    *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *                 &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
-    *               &lt;/restriction>
-    *             &lt;/complexContent>
-    *           &lt;/complexType>
-    *         &lt;/element>
-    *       &lt;/sequence>
-    *     &lt;/restriction>
-    *   &lt;/complexContent>
-    * &lt;/complexType>
+    * &lt;complexType&gt;
+    *   &lt;complexContent&gt;
+    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *       &lt;sequence&gt;
+    *         &lt;sequence&gt;
+    *           &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+    *         &lt;/sequence&gt;
+    *         &lt;element name="reporter" maxOccurs="unbounded"&gt;
+    *           &lt;complexType&gt;
+    *             &lt;complexContent&gt;
+    *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *                 &lt;sequence&gt;
+    *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+    *                   &lt;element name="destination" maxOccurs="unbounded" minOccurs="0"&gt;
+    *                     &lt;complexType&gt;
+    *                       &lt;complexContent&gt;
+    *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *                           &lt;sequence&gt;
+    *                             &lt;element name="period" maxOccurs="unbounded" minOccurs="0"&gt;
+    *                               &lt;complexType&gt;
+    *                                 &lt;complexContent&gt;
+    *                                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *                                     &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *                                     &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *                                   &lt;/restriction&gt;
+    *                                 &lt;/complexContent&gt;
+    *                               &lt;/complexType&gt;
+    *                             &lt;/element&gt;
+    *                             &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+    *                           &lt;/sequence&gt;
+    *                           &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *                           &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+    *                         &lt;/restriction&gt;
+    *                       &lt;/complexContent&gt;
+    *                     &lt;/complexType&gt;
+    *                   &lt;/element&gt;
+    *                 &lt;/sequence&gt;
+    *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *                 &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+    *               &lt;/restriction&gt;
+    *             &lt;/complexContent&gt;
+    *           &lt;/complexType&gt;
+    *         &lt;/element&gt;
+    *       &lt;/sequence&gt;
+    *     &lt;/restriction&gt;
+    *   &lt;/complexContent&gt;
+    * &lt;/complexType&gt;
     * </pre>
     */
    @XmlAccessorType(XmlAccessType.FIELD)
@@ -1058,40 +1058,40 @@ public class Scenario {
        * <p>The following schema fragment specifies the expected content contained within this class.
        *
        * <pre>
-       * &lt;complexType>
-       *   &lt;complexContent>
-       *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-       *       &lt;sequence>
-       *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-       *         &lt;element name="destination" maxOccurs="unbounded" minOccurs="0">
-       *           &lt;complexType>
-       *             &lt;complexContent>
-       *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-       *                 &lt;sequence>
-       *                   &lt;element name="period" maxOccurs="unbounded" minOccurs="0">
-       *                     &lt;complexType>
-       *                       &lt;complexContent>
-       *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-       *                           &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *                           &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *                         &lt;/restriction>
-       *                       &lt;/complexContent>
-       *                     &lt;/complexType>
-       *                   &lt;/element>
-       *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-       *                 &lt;/sequence>
-       *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *                 &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
-       *               &lt;/restriction>
-       *             &lt;/complexContent>
-       *           &lt;/complexType>
-       *         &lt;/element>
-       *       &lt;/sequence>
-       *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
-       *     &lt;/restriction>
-       *   &lt;/complexContent>
-       * &lt;/complexType>
+       * &lt;complexType&gt;
+       *   &lt;complexContent&gt;
+       *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+       *       &lt;sequence&gt;
+       *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+       *         &lt;element name="destination" maxOccurs="unbounded" minOccurs="0"&gt;
+       *           &lt;complexType&gt;
+       *             &lt;complexContent&gt;
+       *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+       *                 &lt;sequence&gt;
+       *                   &lt;element name="period" maxOccurs="unbounded" minOccurs="0"&gt;
+       *                     &lt;complexType&gt;
+       *                       &lt;complexContent&gt;
+       *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+       *                           &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *                           &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *                         &lt;/restriction&gt;
+       *                       &lt;/complexContent&gt;
+       *                     &lt;/complexType&gt;
+       *                   &lt;/element&gt;
+       *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+       *                 &lt;/sequence&gt;
+       *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *                 &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+       *               &lt;/restriction&gt;
+       *             &lt;/complexContent&gt;
+       *           &lt;/complexType&gt;
+       *         &lt;/element&gt;
+       *       &lt;/sequence&gt;
+       *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+       *     &lt;/restriction&gt;
+       *   &lt;/complexContent&gt;
+       * &lt;/complexType&gt;
        * </pre>
        */
       @XmlAccessorType(XmlAccessType.FIELD)
@@ -1214,27 +1214,27 @@ public class Scenario {
           * <p>The following schema fragment specifies the expected content contained within this class.
           *
           * <pre>
-          * &lt;complexType>
-          *   &lt;complexContent>
-          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-          *       &lt;sequence>
-          *         &lt;element name="period" maxOccurs="unbounded" minOccurs="0">
-          *           &lt;complexType>
-          *             &lt;complexContent>
-          *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-          *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
-          *                 &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
-          *               &lt;/restriction>
-          *             &lt;/complexContent>
-          *           &lt;/complexType>
-          *         &lt;/element>
-          *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-          *       &lt;/sequence>
-          *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
-          *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
-          *     &lt;/restriction>
-          *   &lt;/complexContent>
-          * &lt;/complexType>
+          * &lt;complexType&gt;
+          *   &lt;complexContent&gt;
+          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+          *       &lt;sequence&gt;
+          *         &lt;element name="period" maxOccurs="unbounded" minOccurs="0"&gt;
+          *           &lt;complexType&gt;
+          *             &lt;complexContent&gt;
+          *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+          *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+          *                 &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+          *               &lt;/restriction&gt;
+          *             &lt;/complexContent&gt;
+          *           &lt;/complexType&gt;
+          *         &lt;/element&gt;
+          *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+          *       &lt;/sequence&gt;
+          *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+          *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+          *     &lt;/restriction&gt;
+          *   &lt;/complexContent&gt;
+          * &lt;/complexType&gt;
           * </pre>
           */
          @XmlAccessorType(XmlAccessType.FIELD)
@@ -1357,14 +1357,14 @@ public class Scenario {
              * <p>The following schema fragment specifies the expected content contained within this class.
              *
              * <pre>
-             * &lt;complexType>
-             *   &lt;complexContent>
-             *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-             *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" />
-             *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
-             *     &lt;/restriction>
-             *   &lt;/complexContent>
-             * &lt;/complexType>
+             * &lt;complexType&gt;
+             *   &lt;complexContent&gt;
+             *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+             *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+             *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+             *     &lt;/restriction&gt;
+             *   &lt;/complexContent&gt;
+             * &lt;/complexType&gt;
              * </pre>
              */
             @XmlAccessorType(XmlAccessType.FIELD)
@@ -1432,16 +1432,16 @@ public class Scenario {
     * <p>The following schema fragment specifies the expected content contained within this class.
     *
     * <pre>
-    * &lt;complexType>
-    *   &lt;complexContent>
-    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *       &lt;sequence>
-    *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-    *       &lt;/sequence>
-    *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *     &lt;/restriction>
-    *   &lt;/complexContent>
-    * &lt;/complexType>
+    * &lt;complexType&gt;
+    *   &lt;complexContent&gt;
+    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *       &lt;sequence&gt;
+    *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+    *       &lt;/sequence&gt;
+    *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *     &lt;/restriction&gt;
+    *   &lt;/complexContent&gt;
+    * &lt;/complexType&gt;
     * </pre>
     */
    @XmlAccessorType(XmlAccessType.FIELD)
@@ -1510,29 +1510,29 @@ public class Scenario {
     * <p>The following schema fragment specifies the expected content contained within this class.
     *
     * <pre>
-    * &lt;complexType>
-    *   &lt;complexContent>
-    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *       &lt;sequence>
-    *         &lt;element name="validator" maxOccurs="unbounded" minOccurs="0">
-    *           &lt;complexType>
-    *             &lt;complexContent>
-    *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-    *                 &lt;sequence>
-    *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-    *                 &lt;/sequence>
-    *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
-    *               &lt;/restriction>
-    *             &lt;/complexContent>
-    *           &lt;/complexType>
-    *         &lt;/element>
-    *       &lt;/sequence>
-    *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
-    *       &lt;attribute name="fastForward" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
-    *     &lt;/restriction>
-    *   &lt;/complexContent>
-    * &lt;/complexType>
+    * &lt;complexType&gt;
+    *   &lt;complexContent&gt;
+    *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *       &lt;sequence&gt;
+    *         &lt;element name="validator" maxOccurs="unbounded" minOccurs="0"&gt;
+    *           &lt;complexType&gt;
+    *             &lt;complexContent&gt;
+    *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+    *                 &lt;sequence&gt;
+    *                   &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+    *                 &lt;/sequence&gt;
+    *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *                 &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+    *               &lt;/restriction&gt;
+    *             &lt;/complexContent&gt;
+    *           &lt;/complexType&gt;
+    *         &lt;/element&gt;
+    *       &lt;/sequence&gt;
+    *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" /&gt;
+    *       &lt;attribute name="fastForward" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" /&gt;
+    *     &lt;/restriction&gt;
+    *   &lt;/complexContent&gt;
+    * &lt;/complexType&gt;
     * </pre>
     */
    @XmlAccessorType(XmlAccessType.FIELD)
@@ -1630,17 +1630,17 @@ public class Scenario {
        * <p>The following schema fragment specifies the expected content contained within this class.
        *
        * <pre>
-       * &lt;complexType>
-       *   &lt;complexContent>
-       *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-       *       &lt;sequence>
-       *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/>
-       *       &lt;/sequence>
-       *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" />
-       *     &lt;/restriction>
-       *   &lt;/complexContent>
-       * &lt;/complexType>
+       * &lt;complexType&gt;
+       *   &lt;complexContent&gt;
+       *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+       *       &lt;sequence&gt;
+       *         &lt;element ref="{urn:perfcake:scenario:4.0}property" maxOccurs="unbounded" minOccurs="0"/&gt;
+       *       &lt;/sequence&gt;
+       *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *       &lt;attribute name="class" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+       *     &lt;/restriction&gt;
+       *   &lt;/complexContent&gt;
+       * &lt;/complexType&gt;
        * </pre>
        */
       @XmlAccessorType(XmlAccessType.FIELD)

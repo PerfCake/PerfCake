@@ -46,7 +46,7 @@ import java.util.Properties;
 /**
  * Tests features of MemoryUsageReporter.
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class MemoryUsageReporterTest {
    private static final long ITERATION_COUNT = 1000l;

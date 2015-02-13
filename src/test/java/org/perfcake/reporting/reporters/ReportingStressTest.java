@@ -37,7 +37,7 @@ import java.util.Random;
 /**
  * Verify that reporting can handle multiple threads.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ReportingStressTest {
 

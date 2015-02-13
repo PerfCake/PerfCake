@@ -42,7 +42,7 @@ import java.util.regex.Pattern;
  * report. Use with caution as the big number of results can take too long to load in the browser. Each chart has a quick view file
  * where the results can be seen while the test is still running.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ChartDestination implements Destination {
 

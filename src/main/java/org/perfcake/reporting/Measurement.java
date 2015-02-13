@@ -29,8 +29,8 @@ import java.util.Map.Entry;
  * Measurement is a product of {@link org.perfcake.reporting.reporters.Reporter}. It is typically a combination of multiple {@link MeasurementUnit Measuremen Units}. The way they are combined is the
  * matter of a particular Reporter.
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class Measurement {
 

@@ -38,10 +38,10 @@ import java.util.regex.Pattern;
  * and environment properties can be accessed using the env. prefix.
  * Automatically provides environment properties, system properties and user specified properties.
  * Examples: ${propertyA} ${1+1} ${non_existing||existing} ${propertyB - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}
- * Notice: The first call to the constructor and calls to the static method {@link parseTemplate()} might take more time than a simple RegExp
+ * Notice: The first call to the constructor and calls to the static method {@link #parseTemplate(String)} might take more time than a simple RegExp
  * match but this is payed back for the subsequent calls to {@link toString()}. Internally, the fast HTTL templating engine is used.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class StringTemplate {
 

@@ -39,8 +39,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * A manager of validator that should validate message responses.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
- * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:lucie.fabrikova@gmail.com">Lucie Fabriková</a>
  */
 public class ValidationManager {
 

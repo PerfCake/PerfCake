@@ -22,7 +22,7 @@ package org.perfcake.util.properties;
 import java.util.Properties;
 
 /**
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class DefaultPropertyGetter implements PropertyGetter {
 

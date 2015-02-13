@@ -37,7 +37,7 @@ import org.testng.annotations.Test;
 /**
  * Verify that 100% result is always reported no matter what periods are configured.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class OneHundredPercentageTest {
 

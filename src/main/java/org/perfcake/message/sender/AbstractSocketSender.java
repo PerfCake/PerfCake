@@ -39,7 +39,7 @@ import java.util.Map;
 /**
  * The common ancestor for all senders that are able to send messages through a socket.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 abstract public class AbstractSocketSender extends AbstractSender {
 

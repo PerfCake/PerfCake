@@ -31,7 +31,7 @@ import java.util.Map;
  * A result of the smallest measurement unit - an iteration.
  * One should obtain a new instance of a MeasurementUnit using {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()}.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class MeasurementUnit implements Serializable {
 

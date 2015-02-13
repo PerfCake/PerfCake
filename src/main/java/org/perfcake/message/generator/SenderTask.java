@@ -42,8 +42,8 @@ import java.util.concurrent.Semaphore;
 /**
  * <p> The sender task is a runnable class that is executing a single task of sending the message(s) from the message store using instances of {@link MessageSender} provided by message sender manager (see {@link MessageSenderManager}), receiving the message sender's response and handling the reporting and response message validation. </p> <p> It is used by the generators. </p>
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 class SenderTask implements Runnable {
 

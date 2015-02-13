@@ -23,7 +23,7 @@ package org.perfcake.reporting.reporters.accumulators.weighted;
  * Weighted value is a wrapper for a numeric value with some weight.
  * This is used for statistics. An instance is immutable.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class WeightedValue<T extends Number> {
    private final T value;

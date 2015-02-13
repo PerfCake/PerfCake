@@ -24,7 +24,7 @@ import org.perfcake.message.Message;
 /**
  * Test validator that remembers some information when it is called.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class DummyValidator implements MessageValidator {
 

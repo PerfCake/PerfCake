@@ -33,7 +33,7 @@ import java.util.List;
  * this is just for test purposes. Also, it should be used only for tests, where there
  * is no other option of obtaining the references.
  *
- * @author Martin Večera <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ScenarioRetractor {
 

@@ -38,7 +38,7 @@ package org.perfcake.util.agent;
 /**
  * PerfCake agent that can be used to monitor tested system's JVM.
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class PerfCakeAgent {
 
@@ -55,7 +55,7 @@ public class PerfCakeAgent {
    /**
     * The command type.
     *
-    * @author Pavel Macík <pavel.macik@gmail.com>
+    * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
     */
    public enum Command {
       FREE, USED, TOTAL, MAX, DUMP, GC

@@ -28,7 +28,7 @@ import java.util.Map;
 /**
  * TODO: Provide implementation. This is to cover jMeter functionality. Can be based on HTTP sender???
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class SoapSender extends AbstractSender {
 

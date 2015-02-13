@@ -23,7 +23,7 @@ package org.perfcake.common;
  * A record that is valid for a particular time stamp.
  * The record has a time stamp and a value.
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class TimestampedRecord<T extends Number> {
 

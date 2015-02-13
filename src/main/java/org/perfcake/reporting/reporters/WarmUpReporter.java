@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * minimal duration from the very start has exceeded.
  * </p>
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class WarmUpReporter extends AbstractReporter {
 

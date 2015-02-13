@@ -26,7 +26,7 @@ import java.net.URL;
 /**
  * Interface of factories that can load a scenario from various resources.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public interface ScenarioFactory {
 

@@ -49,7 +49,7 @@ import java.util.Properties;
  * Represents a single Google chart data file(s) stored in the file system.
  * Charts once read from a description file cannot be further modified and stored again!
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class Chart {
 

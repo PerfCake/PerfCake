@@ -51,8 +51,8 @@ import java.util.Properties;
 /**
  * The main class to start PerfCake from command line. It parses command line parameters, loads the scenario XML file and runs it.
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "DM_EXIT", justification = "This class is allowed to terminate the JVM.")
 public class ScenarioExecution {

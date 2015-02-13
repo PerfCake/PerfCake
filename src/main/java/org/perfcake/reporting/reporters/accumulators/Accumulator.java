@@ -23,7 +23,7 @@ package org.perfcake.reporting.reporters.accumulators;
  * Accumulator is a tool for reporters to accumulate multiple values from measurement units into a single mesurement.
  * Accumulator must be thread safe as it might be called from multiple threads at the same time.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public interface Accumulator<T> {
 

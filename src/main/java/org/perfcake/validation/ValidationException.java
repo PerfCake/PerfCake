@@ -24,7 +24,7 @@ import org.perfcake.PerfCakeException;
 /**
  * An exception to indicate problems in message validation.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ValidationException extends PerfCakeException {
 

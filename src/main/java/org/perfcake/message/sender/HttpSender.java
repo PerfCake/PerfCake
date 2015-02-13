@@ -42,8 +42,8 @@ import java.util.Map.Entry;
 /**
  * The sender that is able to send the messages via HTTP protocol.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class HttpSender extends AbstractSender {
 

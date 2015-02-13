@@ -41,7 +41,7 @@ import org.perfcake.reporting.reporters.accumulators.SlidingWindowMinAccumulator
  * 
  * The default value of the reporter is a current value at the moment of publishing.
  * 
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public abstract class StatsReporter extends AbstractReporter {
 

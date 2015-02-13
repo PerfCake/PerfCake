@@ -38,7 +38,7 @@ import java.util.Properties;
 /**
  * The actuall implementation of the PerfCake agent.
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class AgentThread implements Runnable {
    /**

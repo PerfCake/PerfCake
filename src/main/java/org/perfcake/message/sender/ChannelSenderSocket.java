@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * Sender that can send messages through NIO SocketChannel.
  *
- * @author Dominik Hanák <domin.hanak@gmail.com>
+ * @author <a href="mailto:domin.hanak@gmail.com">Dominik Hanák</a>
  */
 public class ChannelSenderSocket extends ChannelSender {
 

@@ -47,7 +47,7 @@ import java.util.Properties;
 /**
  * Helper class for the ChartDestination. Handles all files and data manipulation to keep the destination small and clear.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ChartDestinationHelper {
 

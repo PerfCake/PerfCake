@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * Interface for a message sender.
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public interface MessageSender {
 
