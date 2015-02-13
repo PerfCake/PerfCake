@@ -178,7 +178,7 @@ public class AccumulatorsTest {
       Assert.assertEquals(a.getResult(), zero);
    }
 
-   @Test(dataProvider = "accumulatorsTest", groups = { "performance" })
+   @Test(dataProvider = "accumulatorsTest", groups = { "ueber", "integration", "performance" })
    @SuppressWarnings("rawtypes")
    public void accumulatorStressTest(final Accumulator a, final Long start, final Long end, final Number result, final Number stressResult, final Number zero) throws InterruptedException {
       List<Thread> stressors = new ArrayList<>();
