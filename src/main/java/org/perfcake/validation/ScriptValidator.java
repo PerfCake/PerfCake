@@ -45,7 +45,7 @@ import javax.script.ScriptException;
  * to the script in the 'originalMessage' property and the response is inserted as 'message', both using
  * script bindings. Script return value is evaluated for validation success (true = passed, false = failed).
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ScriptValidator implements MessageValidator {
 

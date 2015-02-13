@@ -32,8 +32,8 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Generator that is able to generate maximal load.
  * </p>
  *
- * @author Martin Večeřa <marvenec@gmail.com>
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class DefaultMessageGenerator extends AbstractMessageGenerator {
 

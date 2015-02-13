@@ -23,8 +23,8 @@ package org.perfcake.reporting.reporters.accumulators;
  * Accumulates an arithmetic average.
  * Atomic types are not used because both values must be set at the same time. Hence the methods are synchronized.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class AvgAccumulator extends SumAccumulator {
 

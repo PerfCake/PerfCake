@@ -31,7 +31,7 @@ import java.io.Closeable;
  * It is the role of {@link org.perfcake.reporting.Measurement} to provide all the information
  * to be reported (including value types, names, units and custom labels).
  *
- * @author Martin Večera <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public interface Destination extends Closeable {
 

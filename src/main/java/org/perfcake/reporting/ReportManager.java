@@ -37,7 +37,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 /**
  * ReportManager that controls the reporting facilities.
  *
- * @author Martin Večera <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ReportManager {
 

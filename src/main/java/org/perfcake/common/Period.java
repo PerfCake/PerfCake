@@ -26,7 +26,7 @@ import java.io.Serializable;
  * using {@link PeriodType}, i.e. time, iterations, percents.
  * Period is an immutable type.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class Period implements Serializable {
 

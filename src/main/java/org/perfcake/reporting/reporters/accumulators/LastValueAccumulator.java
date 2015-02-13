@@ -22,7 +22,7 @@ package org.perfcake.reporting.reporters.accumulators;
 /**
  * This accumulator remembers the last value
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class LastValueAccumulator implements Accumulator<Object> {
 

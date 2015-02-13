@@ -41,8 +41,8 @@ import java.net.InetAddress;
 import java.util.Properties;
 
 /**
- * @author Dominik Hanák <domin.hanak@gmail.com>
- * @author Martin Večera <marvenec@gmail.com>
+ * @author <a href="mailto:domin.hanak@gmail.com">Dominik Hanák</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ChannelSenderDatagramTest {
 

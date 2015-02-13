@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
  * Measures the resolution of System.nanoTime() in the current system.
  * Purpose of this is purely informative to the end user.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class TimerBenchmark {
 

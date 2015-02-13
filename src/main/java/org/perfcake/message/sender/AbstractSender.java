@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * The common ancestor for all senders.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 abstract public class AbstractSender implements MessageSender {
    /**

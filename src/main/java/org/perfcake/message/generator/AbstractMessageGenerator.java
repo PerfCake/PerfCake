@@ -35,7 +35,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * This represents the common ancestor for all generators. It can generate messages using a specified number ({@link #threads}) of concurrent messages senders (see {@link MessageSender}).
  * The generator should also have the ability to tag messages by the sequence number that indicated the order of messages.
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public abstract class AbstractMessageGenerator {
 

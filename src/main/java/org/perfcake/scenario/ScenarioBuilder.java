@@ -38,7 +38,7 @@ import java.util.Properties;
 /**
  * A Java based builder for creating {@link org.perfcake.scenario.Scenario} instance, which can be run by {@link org.perfcake.ScenarioExecution}.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ScenarioBuilder {
 

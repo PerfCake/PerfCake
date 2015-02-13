@@ -34,7 +34,7 @@ import java.net.URL;
  * This class serves as a bridge between Java and Groovy DSL scenario implementation.
  * The DSL language is pure Groovy based on a set of classes specially designed to allow the needed syntax.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class DslFactory implements ScenarioFactory {
 

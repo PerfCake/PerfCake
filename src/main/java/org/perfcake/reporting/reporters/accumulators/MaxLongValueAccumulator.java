@@ -23,7 +23,7 @@ package org.perfcake.reporting.reporters.accumulators;
  * Accumulates the maximum of values.
  * Atomic types are not used because both values must be set at the same time. Hence the methods are synchronized.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class MaxLongValueAccumulator implements Accumulator<Long> {
    /**

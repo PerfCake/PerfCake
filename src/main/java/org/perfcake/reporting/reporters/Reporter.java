@@ -46,7 +46,7 @@ import java.util.Set;
  * this interface only when there is a serious reason.
  * Reporter must be thread safe as it can be called from multiple threads at the same time.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public interface Reporter {
 

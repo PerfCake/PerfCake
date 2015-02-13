@@ -45,9 +45,9 @@ import javax.naming.NamingException;
 /**
  * The sender that is able to send messages via JMS.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
- * @author Pavel Macík <pavel.macik@gmail.com>
- * @author Marek Baluch <baluch.git@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @author <a href="mailto:baluchw@gmail.com">Marek Baluch</a>
  */
 public class JmsSender extends AbstractSender {
 

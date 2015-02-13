@@ -22,7 +22,7 @@ package org.perfcake.message.sender;
 import java.net.Socket;
 
 /**
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class PlainSocketSender extends AbstractSocketSender {
 

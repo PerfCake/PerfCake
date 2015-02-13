@@ -55,8 +55,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @author Pavel Macík <pavel.macik@gmail.com>
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class Utils {
 
@@ -412,7 +412,7 @@ public class Utils {
     *       Target file name.
     * @param content
     *       Content to be written.
-    * @throws IOException
+    * @throws org.perfcake.PerfCakeException
     *       In case of file operations failure.
     */
    public static void writeFileContent(final String fileName, final String content) throws PerfCakeException {
@@ -426,7 +426,7 @@ public class Utils {
     *       Target file.
     * @param content
     *       Content to be written.
-    * @throws IOException
+    * @throws org.perfcake.PerfCakeException
     *       In case of file operations failure.
     */
    public static void writeFileContent(final File file, final String content) throws PerfCakeException {
@@ -440,7 +440,7 @@ public class Utils {
     *       Target file path.
     * @param content
     *       Content to be written.
-    * @throws IOException
+    * @throws org.perfcake.PerfCakeException
     *       In case of file operations failure.
     */
    public static void writeFileContent(final Path path, final String content) throws PerfCakeException {

@@ -31,8 +31,8 @@ import java.util.Properties;
 /**
  * TODO logging and javadoc
  *
- * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:lucie.fabrikova@gmail.com">Lucie Fabriková</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class MessageTemplate implements Serializable {
    private static final long serialVersionUID = 6172258079690233417L;

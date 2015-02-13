@@ -47,8 +47,8 @@ import javax.naming.NamingException;
 /**
  * A sender that is the same with @{link JmsSender} and adds a response retrieval.
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class RequestResponseJmsSender extends JmsSender {
 

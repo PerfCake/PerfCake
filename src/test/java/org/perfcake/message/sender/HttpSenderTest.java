@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class HttpSenderTest {
 

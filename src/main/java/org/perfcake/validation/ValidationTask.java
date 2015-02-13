@@ -26,7 +26,7 @@ import java.io.Serializable;
 /**
  * Represents a single unit of work for validator. This class is immutable.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public final class ValidationTask implements Serializable {
 

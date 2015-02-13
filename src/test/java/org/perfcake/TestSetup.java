@@ -37,7 +37,7 @@ import java.util.Set;
 /**
  * Does the necessary configurations for the tests to work.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class TestSetup {
 

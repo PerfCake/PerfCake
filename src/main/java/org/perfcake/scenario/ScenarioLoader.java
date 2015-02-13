@@ -32,14 +32,14 @@ import java.net.URL;
 /**
  * Builder class for creating {@link org.perfcake.scenario.Scenario} instance, which can be run by {@link org.perfcake.ScenarioExecution}
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ScenarioLoader {
 
    private static final Logger log = LogManager.getLogger(ScenarioBuilder.class);
 
    /**
-    * Loads {@link org.perfcake.scenario.Scenario} from the location specified with the system property <code>-Dscenario=<scenario name></code>
+    * Loads {@link org.perfcake.scenario.Scenario} from the location specified with the system property <code>-Dscenario=&lt;scenario name&gt;</code>
     *
     * @param scenario
     *       scenario location

@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class MessageTemplateTest extends TestSetup {
    private static final String HELLO_NAME = "hello";

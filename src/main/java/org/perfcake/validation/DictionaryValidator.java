@@ -51,7 +51,7 @@ import java.util.Properties;
  * It is not sufficient to store just the index as it is likely that the correct messages will be manually
  * modified after they are recorded.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class DictionaryValidator implements MessageValidator {
 

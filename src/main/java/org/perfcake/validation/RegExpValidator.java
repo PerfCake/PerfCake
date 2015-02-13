@@ -38,9 +38,9 @@ import java.util.regex.Pattern;
  * {@link org.perfcake.util.StringUtil#trimLines(String)} is used to pre-process the message payload
  * that changes all line breakers to <code>\n</code>.
  *
- * @author Lucie Fabriková <lucie.fabrikova@gmail.com>
- * @author Martin Večeřa <marvenec@gmail.com>
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:lucie.fabrikova@gmail.com">Lucie Fabriková</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @see java.util.regex.Pattern#compile(String, int)
  */
 public class RegExpValidator implements MessageValidator {

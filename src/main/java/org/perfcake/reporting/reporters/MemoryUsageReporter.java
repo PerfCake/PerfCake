@@ -51,7 +51,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  * where {@link PerfCakeAgent} is deployed. It communicates with the {@link PerfCakeAgent} to
  * get the information.
  *
- * @author Pavel Macík <pavel.macik@gmail.com>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class MemoryUsageReporter extends AbstractReporter {
 
