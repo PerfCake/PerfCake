@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:4.0">
+   <generator class="DefaultMessageGenerator" threads="1">
+      <run type="iteration" value="1"/>
+   </generator>
+   <sender class="DummySender">
+      <property name="target" value=""/>
+   </sender>
+   <messages>
+      <message uri="message1.xml" multiplicity="5">
+         <validatorRef id="fishValidator"/>
+         <validatorRef id="stupidValidator"/>
+         <validatorRef id="dummyValidator"/>
+      </message>
+      <message uri="message2.txt" multiplicity="5">
+         <validatorRef id="stupidValidator"/>
+         <validatorRef id="smileValidator"/>
+      </message>
+      <message content="message-content-4" multiplicity="3">
+         <validatorRef id="dummyValidator"/>
+      </message>
+      <message uri="message3.txt" multiplicity="5">
+         <validatorRef id="fishValidator"/>
+         <validatorRef id="stupidValidator"/>
+         <validatorRef id="smileValidator"/>
+      </message>
+   </messages>
+   <validation>
+      <validator id="fishValidator" class="RegExpValidator">
+         <property name="pattern" value=".*fish.*"/>
+      </validator>
+      <validator id="stupidValidator" class="RegExpValidator">
+         <property name="pattern" value=".*[Ss]tupid.*"/>
+      </validator>
+      <validator id="smileValidator" class="RegExpValidator">
+         <property name="pattern" value=".*:\).*"/>
+      </validator>
+      <validator id="dummyValidator" class="DummyValidator">
+      </validator>
+   </validation>
+</scenario>

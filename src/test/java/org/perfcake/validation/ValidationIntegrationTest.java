@@ -22,11 +22,10 @@ package org.perfcake.validation;
 import org.perfcake.TestSetup;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
+import org.perfcake.scenario.ScenarioRetractor;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Field;
 
 /**
  * Verifies basic integration of the validation framework into PerfCake.
@@ -34,17 +33,20 @@ import java.lang.reflect.Field;
  * disturb the measurement.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:BukovskyVaclav@centrum.cz">Václav Bukovský</a>
  */
 public class ValidationIntegrationTest extends TestSetup {
+
+   private ValidationManager getValidationManager(final Scenario scenario) {
+      final ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+      return retractor.getValidationManager();
+   }
 
    @Test(enabled = true)
    public void basicIntegrationTest() throws Exception {
       Scenario scenario = ScenarioLoader.load("test-validation-integration");
 
-      // to avoid complicated scenario construction, we relay on public API and dig into it then
-      Field vmField = scenario.getClass().getDeclaredField("validationManager");
-      vmField.setAccessible(true);
-      ValidationManager validationManager = (ValidationManager) vmField.get(scenario);
+      ValidationManager validationManager = getValidationManager(scenario);
       DummyValidator v = (DummyValidator) validationManager.getValidator("v1");
 
       // first, the validation must not run very fast while the measurement is in progress
@@ -76,5 +78,101 @@ public class ValidationIntegrationTest extends TestSetup {
       timeDiff = lastCalled2 - lastCalled;
 
       Assert.assertTrue(timeDiff >= 1 && timeDiff < 20, String.format("Validation did not switch to normal speed operation (timeDiff = %d).", timeDiff));
+   }
+
+   /**
+    * This test checks that the validators switch to fastForward once all messages are sent.
+    */
+   @Test(enabled = true)
+   public void testEnableFastForward() throws Exception {
+      final Scenario scenario = ScenarioLoader.load("test-validation-integration.xml");
+      final ValidationManager validationManager = getValidationManager(scenario);
+      final DummyValidator v = (DummyValidator) validationManager.getValidator("v1");
+
+      scenario.init();
+      scenario.run();
+
+      Assert.assertFalse(validationManager.isFastForward(), "Validation switched to fast forward too soon.");
+
+      scenario.close();
+
+      Assert.assertTrue(validationManager.isFastForward(), "Validation did not switch to fast forward.");
+
+      long lastCalled = v.getPreLastCalledTimestamp();
+      long lastCalled2 = v.getLastCalledTimestamp();
+      long timeDiff = lastCalled2 - lastCalled;
+
+      Assert.assertTrue(timeDiff >= 1 && timeDiff < 20, "Validation did not switch to normal speed operation.");
+   }
+
+   /**
+    * When FastForward is enabled, validator should run without pauses.
+    */
+   @Test(enabled = true)
+   public void testDefaultEnableFastForward() throws Exception {
+      final Scenario scenario = ScenarioLoader.load("test-enable-fast-forward.xml");
+      final ValidationManager validationManager = getValidationManager(scenario);
+      final DummyValidator v = (DummyValidator) validationManager.getValidator("v1");
+
+      scenario.init();
+      scenario.run();
+
+      Assert.assertTrue(validationManager.isFastForward(), "Validation did not loaded properly.");
+
+      long lastCalled = v.getPreLastCalledTimestamp();
+      long lastCalled2 = v.getLastCalledTimestamp();
+      long timeDiff = lastCalled2 - lastCalled;
+
+      Assert.assertTrue(timeDiff >= 0 && timeDiff < 20, "Validation was too slow while being in the fastForward mode.");
+
+      scenario.close();
+
+      Assert.assertTrue(validationManager.isFastForward(), "Validation switched off fastForward unexpectedly.");
+
+      lastCalled = v.getPreLastCalledTimestamp();
+      lastCalled2 = v.getLastCalledTimestamp();
+      timeDiff = lastCalled2 - lastCalled;
+
+      Assert.assertTrue(timeDiff >= 0 && timeDiff < 20, "Validation was too slow while being in the fastForward mode.");
+   }
+
+   /**
+    * When the scenario is completed, all the validation completes successfully.
+    */
+   @Test(enabled = true)
+   public void testFinishAllValidation() throws Exception {
+      final Scenario scenario = ScenarioLoader.load("test-validation-multiple-validators.xml");
+      final ValidationManager validationManager = getValidationManager(scenario);
+
+      scenario.init();
+      scenario.run();
+
+      scenario.close();
+
+      Assert.assertTrue(validationManager.isFinished());
+      Assert.assertTrue(validationManager.messagesToBeValidated() == 0, "Validator could not validate all messages.");
+      Assert.assertTrue(validationManager.isAllMessagesValid(), "One of the validation was not successful.");
+      Assert.assertEquals(validationManager.getOverallStatistics().getPassed(), 37);
+      Assert.assertEquals(validationManager.getOverallStatistics().getFailed(), 0);
+   }
+
+   /**
+    * Negative test, some validations fail.
+    */
+   @Test(enabled = true)
+   public void testFinishValidationWithError() throws Exception {
+      final Scenario scenario = ScenarioLoader.load("test-using-wrong-validators.xml");
+      final ValidationManager validationManager = getValidationManager(scenario);
+
+      scenario.init();
+      scenario.run();
+
+      scenario.close();
+
+      Assert.assertTrue(validationManager.isFinished(), "Validator should have been finished by now.");
+      Assert.assertTrue(validationManager.messagesToBeValidated() == 0, "Validator could not validate all messages.");
+      Assert.assertFalse(validationManager.isAllMessagesValid(), "All validation is correct but we sent messages that should have failed.");
+      Assert.assertEquals(validationManager.getOverallStatistics().getPassed(), 13);
+      Assert.assertEquals(validationManager.getOverallStatistics().getFailed(), 30);
    }
 }

@@ -264,6 +264,10 @@ public class ValidationManager {
       this.fastForward = fastForward;
    }
 
+   protected boolean isAllMessagesValid() {
+      return allMessagesValid;
+   }
+
    private void logStatistics() {
       final StringBuilder sb = new StringBuilder("=== Validation Statistics ===\n");
       final Score total = statistics.get(OVERALL_STAT_KEY);
@@ -286,7 +290,15 @@ public class ValidationManager {
       log.info(sb.toString());
    }
 
-   private static final class Score {
+   /**
+    * Gets the overall validation statistics.
+    * @return The overall statistics score.
+    */
+   protected Score getOverallStatistics() {
+      return statistics.get(OVERALL_STAT_KEY);
+   }
+
+   protected static final class Score {
       private long passed = 0;
       private long failed = 0;
 
@@ -305,6 +317,10 @@ public class ValidationManager {
       public void incFailed() {
          failed = failed + 1;
       }
+
+      public String toString() {
+         return String.format("Score: total %d, passed %d, failed %d", passed + failed, passed, failed);
+      }
    }
 
    /**
@@ -321,7 +337,6 @@ public class ValidationManager {
          ValidationTask validationTask;
          finished = false;
          allMessagesValid = true;
-         fastForward = false;
 
          if (validators.isEmpty()) {
             log.warn("No validators set in scenario.");

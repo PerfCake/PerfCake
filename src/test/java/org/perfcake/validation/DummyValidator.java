@@ -39,11 +39,11 @@ public class DummyValidator implements MessageValidator {
    /**
     * When was the validator called for the last time before the last time.
     */
-   private long preLastCalledTimestamp;
+   private long preLastCalledTimestamp = Long.MIN_VALUE;
    /**
     * When was the validator called for the last time.
     */
-   private long lastCalledTimestamp;
+   private long lastCalledTimestamp = 0;
    /**
     * Return value for the validation method.
     */
