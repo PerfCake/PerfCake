@@ -40,13 +40,18 @@ import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.RegExpValidator;
 import org.perfcake.validation.ValidationManager;
+
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class XmlFactoryTest extends TestSetup {
    private static final int THREADS = 10;
@@ -273,11 +278,23 @@ public class XmlFactoryTest extends TestSetup {
       Assert.assertEquals(((RegExpValidator) vm.getValidator("text2")).getPattern(), MESSAGE2_CONTENT);
 
       // TODO: add assertions on validation
+   }
 
-      // validation is optional
+   @Test
+   public void parseValidationNoValidation() throws Exception {
       final XmlFactory noValidationScenarioFactory = new XmlFactory();
       noValidationScenarioFactory.init(Utils.getResourceAsUrl("/scenarios/test-scenario-no-validation.xml"));
-      vm = noValidationScenarioFactory.parseValidation();
+      final ValidationManager vm = noValidationScenarioFactory.parseValidation();
       Assert.assertEquals(vm.messagesToBeValidated(), 0);
+   }
+
+   @Test
+   public void parseValidationFastForwardTest() throws Exception {
+      final XmlFactory validationScenarioFactory = new XmlFactory();
+      validationScenarioFactory.init(Utils.getResourceAsUrl("/scenarios/test-enable-fast-forward.xml"));
+
+      ValidationManager vm = validationScenarioFactory.parseValidation();
+
+      Assert.assertTrue(vm.isFastForward(), "Fast forward did not load properly.");
    }
 }

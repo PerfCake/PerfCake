@@ -1,79 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:4.0">
-    <properties>
-        <property name="quickstartName" value="testQS"/>
-        <property name="filteredProperty" value="${test.filtered.property:default1}"/>
-        <property name="defaultProperty" value="${test.missing.property:default-property-value}"/>
-    </properties>
-    <generator class="DefaultMessageGenerator" threads="10">
-        <run type="time" value="30"/>
-        <property name="threadQueueSize" value="5000"/>
-    </generator>
-    <sender class="DummySender">
+   <generator class="DefaultMessageGenerator" threads="1">
+      <run type="iteration" value="1"/>
+   </generator>
+   <sender class="DummySender">
       <property name="target" value=""/>
-    </sender>
-    <reporting>
-        <reporter class="WarmUpReporter">
-            <property name="minimalWarmUpCount" value="12345"/>
-            <property name="relativeThreshold" value="1"/>
-        </reporter>
-        <reporter class="DummyReporter">
-            <destination class="DummyDestination">
-                <period type="percentage" value="50"/>
-                <period type="iteration" value="100"/>
-                <period type="time" value="2000"/>
-                <property name="property" value="dummy_p_value"/>
-                <property name="property2" value="dummy_p2_value"/>
-            </destination>
-            <destination class="ConsoleDestination" enabled="false">
-                <period type="iteration" value="100"/>
-            </destination>
-        </reporter>
-        <reporter class="MemoryUsageReporter" enabled="false">
-            <destination class="ConsoleDestination">
-                <period type="iteration" value="100"/>
-            </destination>
-        </reporter>
-    </reporting>
-    <messages>
-        <message uri="message1.xml" multiplicity="5">
-            <header name="m_header1" value="m_h_value1"/>
-            <property name="m_property1" value="m_p_value1"/>
-            <validatorRef id="fishValidator"/>
-            <validatorRef id="stupidValidator"/>
-            <validatorRef id="dummyValidator"/>
-        </message>
-        <message uri="message2.txt" multiplicity="5">
-            <validatorRef id="stupidValidator"/>
-            <validatorRef id="smileValidator"/>
-        </message>
-        <message uri="message1.xml" content="message-content-4" multiplicity="3">
-            <validatorRef id="dummyValidator"/>
-            <validatorRef id="dictionaryValidator"/>
-        </message>
-        <message uri="message3.txt" multiplicity="5">
-            <validatorRef id="dictionaryValidator"/>
-            <validatorRef id="fishValidator"/>
-            <validatorRef id="stupidValidator"/>
-            <validatorRef id="smileValidator"/>
-        </message>
-    </messages>
-    <validation>
-        <validator id="fishValidator" class="RegExpValidator">
-            <property name="pattern" value=".*fish.*"/>
-        </validator>
-        <validator id="stupidValidator" class="RegExpValidator">
-            <property name="pattern" value=".*[Ss]tupid.*"/>
-        </validator>
-        <validator id="smileValidator" class="RegExpValidator">
-            <property name="pattern" value=".*:\).*"/>
-        </validator>
-        <validator id="dummyValidator" class="DummyValidator">
-        </validator>
-        <validator id="dictionaryValidator" class="DictionaryValidator">
-            <property name="pattern">
-                <text><![CDATA[.*"I'm a [Ff]ish"!\.*]]></text>
-            </property>
-        </validator>
-    </validation>
+   </sender>
+   <messages>
+      <message uri="message1.xml" multiplicity="5">
+         <validatorRef id="fishValidator"/>
+         <validatorRef id="stupidValidator"/>
+         <validatorRef id="dummyValidator"/>
+      </message>
+      <message uri="message2.txt" multiplicity="5">
+         <validatorRef id="stupidValidator"/>
+         <validatorRef id="smileValidator"/>
+      </message>
+      <message content="message-content-4" multiplicity="3">
+         <validatorRef id="dummyValidator"/>
+      </message>
+      <message uri="message3.txt" multiplicity="5">
+         <validatorRef id="fishValidator"/>
+         <validatorRef id="stupidValidator"/>
+         <validatorRef id="smileValidator"/>
+      </message>
+   </messages>
+   <validation>
+      <validator id="fishValidator" class="RegExpValidator">
+         <property name="pattern" value=".*fish.*"/>
+      </validator>
+      <validator id="stupidValidator" class="RegExpValidator">
+         <property name="pattern" value=".*[Ss]tupid.*"/>
+      </validator>
+      <validator id="smileValidator" class="RegExpValidator">
+         <property name="pattern" value=".*:\).*"/>
+      </validator>
+      <validator id="dummyValidator" class="DummyValidator">
+      </validator>
+   </validation>
 </scenario>

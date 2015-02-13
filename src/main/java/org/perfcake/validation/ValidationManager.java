@@ -34,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A manager of validator that should validate message responses.
@@ -98,16 +97,6 @@ public class ValidationManager {
    private Map<String, Score> statistics = new HashMap<>();
 
    /**
-    * Finished all validators without error?
-    */
-   private boolean allValidatorsWithoutError = true;
-
-   /**
-    * Finished all validations?
-    */
-   private AtomicInteger validatedMessagesCounter;
-
-   /**
     * Creates a new validator manager. The message responses are store in a file queue in a temporary file.
     *
     * @throws PerfCakeException
@@ -119,7 +108,6 @@ public class ValidationManager {
          final File tmpFile = File.createTempFile("perfcake", "queue");
          tmpFile.deleteOnExit();
          setQueueFile(tmpFile);
-         validatedMessagesCounter = new AtomicInteger(0);
       } catch (final IOException e) {
          throw new PerfCakeException("Cannot create a file queue for messages to be validated: ", e);
       }
@@ -201,19 +189,10 @@ public class ValidationManager {
     *       If the validator thread was interrupted.
     */
    public void waitForValidation() throws InterruptedException {
-      try {
-         if (validationThread != null) {
-            fastForward = true;
-            expectLastMessage = true;
-            validationThread.join();
-
-            while (finished == false) {
-               Thread.sleep(10);
-            }
-         }
-      } catch(InterruptedException ex) {
-         allValidatorsWithoutError = false;
-         throw ex;
+      if (validationThread != null) {
+         fastForward = true;
+         expectLastMessage = true;
+         validationThread.join();
       }
    }
 
@@ -255,13 +234,6 @@ public class ValidationManager {
    }
 
    /**
-    * Are all messages valid?
-    *
-    * @return True if all messages are valid
-    */
-   public boolean isAllMessagesValid() { return allMessagesValid; }
-
-   /**
     * Enables/disables validation. This only takes effect before the validation is started and or finished.
     *
     * @param enabled
@@ -292,14 +264,11 @@ public class ValidationManager {
       this.fastForward = fastForward;
    }
 
-   /**
-    * Determines whether all validators ended correctly.
-    *
-    * @return True if validators ended without errors.
-    */
-   public boolean isAllValidatorsWithoutError() { return allValidatorsWithoutError; }
+   protected boolean isAllMessagesValid() {
+      return allMessagesValid;
+   }
 
-    private void logStatistics() {
+   private void logStatistics() {
       final StringBuilder sb = new StringBuilder("=== Validation Statistics ===\n");
       final Score total = statistics.get(OVERALL_STAT_KEY);
       sb.append("Overall validated ").append(total.getPassed() + total.getFailed()).append(" messages of which ");
@@ -321,7 +290,15 @@ public class ValidationManager {
       log.info(sb.toString());
    }
 
-   private static final class Score {
+   /**
+    * Gets the overall validation statistics.
+    * @return The overall statistics score.
+    */
+   protected Score getOverallStatistics() {
+      return statistics.get(OVERALL_STAT_KEY);
+   }
+
+   protected static final class Score {
       private long passed = 0;
       private long failed = 0;
 
@@ -340,6 +317,10 @@ public class ValidationManager {
       public void incFailed() {
          failed = failed + 1;
       }
+
+      public String toString() {
+         return String.format("Score: total %d, passed %d, failed %d", passed + failed, passed, failed);
+      }
    }
 
    /**
@@ -356,7 +337,6 @@ public class ValidationManager {
          ValidationTask validationTask;
          finished = false;
          allMessagesValid = true;
-         fastForward = false;
 
          if (validators.isEmpty()) {
             log.warn("No validators set in scenario.");
@@ -367,7 +347,6 @@ public class ValidationManager {
             while (!validationThread.isInterrupted() && (!expectLastMessage || !validationTasks.isEmpty())) {
                validationTask = validationTasks.poll();
                receivedMessage = null;
-               validatedMessagesCounter.incrementAndGet();
 
                if (validationTask != null) {
                   receivedMessage = validationTask.getReceivedMessage();
@@ -408,13 +387,9 @@ public class ValidationManager {
                if (!fastForward || receivedMessage == null) {
                   Thread.sleep(500); // we do not want to block senders
                }
-
-               validatedMessagesCounter.decrementAndGet();
             }
          } catch (final InterruptedException ex) {
             // never mind, we have been asked to terminate
-            allValidatorsWithoutError = false;
-            validatedMessagesCounter.decrementAndGet();
          }
 
          if (log.isInfoEnabled()) {
@@ -422,9 +397,7 @@ public class ValidationManager {
             log.info("The validator thread finished with the result: " + (allMessagesValid ? "all messages are valid." : "there were validation errors."));
          }
 
-         if (validatedMessagesCounter.get() == 0) {
-            finished = true;
-         }
+         finished = true;
       }
    }
 }
