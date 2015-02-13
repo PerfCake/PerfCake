@@ -14,13 +14,11 @@
         </reporter>
     </reporting>
     <messages>
-        <message uri="message2.txt">
+        <message uri="message3.txt">
             <validatorRef id="v1"/>
         </message>
     </messages>
-    <validation>
+    <validation fastForward="true" enabled="true">
         <validator id="v1" class="DummyValidator"/>
     </validation>
 </scenario>
-
-
