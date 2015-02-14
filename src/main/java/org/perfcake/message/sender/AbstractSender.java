@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -91,7 +91,7 @@ abstract public class AbstractSender implements MessageSender {
     * message, since this method is being measured
     *
     * @param message
-    * @return Result received by the sender 
+    * @return Result received by the sender
     * @throws Exception
     */
    final public Serializable doSend(final Message message, final MeasurementUnit mu) throws Exception {
@@ -99,13 +99,14 @@ abstract public class AbstractSender implements MessageSender {
    }
 
    /**
-    * Do not use any logger or anything not directly related to sending the
-    * message, since this method is being measured
+    * Actually sends the message. Do not use any logger or anything not directly related to sending the
+    * message, since this method is being measured.
     *
-    * @param message
-    * @param properties
-    * @return Result received by the sender 
-    * @throws Exception
+    * @param message Message to be sent.
+    * @param properties Optional properties that might influence the sending action.
+    * @param mu MesurementUnit that tracks the current sending action. Can be used to change the message body for example.
+    * @return Result received by the sender
+    * @throws Exception This method can throw any exception if the communication towards the target fails.
     */
    abstract public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception;
 
