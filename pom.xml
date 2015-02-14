@@ -150,11 +150,6 @@
             <scope>import</scope>
             <type>pom</type>
          </dependency>
-         <dependency>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>${maven.surefire.plugin.version}</version>
-         </dependency>
       </dependencies>
    </dependencyManagement>
    <dependencies>
@@ -708,6 +703,11 @@
                      </pluginExecutions>
                   </lifecycleMappingMetadata>
                </configuration>
+            </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-surefire-plugin</artifactId>
+               <version>${maven.surefire.plugin.version}</version>
             </plugin>
          </plugins>
       </pluginManagement>
