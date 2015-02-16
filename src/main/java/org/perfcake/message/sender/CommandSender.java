@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -183,6 +183,7 @@ public class CommandSender extends AbstractSender {
     *
     * @param messageFrom
     *       The messageFrom to set.
+    * @return Returns this instance for fluent API.
     */
    public CommandSender setMessageFrom(final MessageFrom messageFrom) {
       this.messageFrom = messageFrom;
@@ -203,6 +204,7 @@ public class CommandSender extends AbstractSender {
     *
     * @param commandPrefix
     *       The commandPrefix to set.
+    * @return Returns this instance for fluent API.
     */
    protected CommandSender setCommandPrefix(final String commandPrefix) {
       this.commandPrefix = commandPrefix;
@@ -219,6 +221,7 @@ public class CommandSender extends AbstractSender {
    /**
     * @param environmentVariables
     *       the environmentVariables to set
+    * @return Returns this instance for fluent API.
     */
    public CommandSender setEnvironmentVariables(String[] environmentVariables) {
       this.environmentVariables = Arrays.copyOf(environmentVariables, environmentVariables.length); // ignore any later external modifications
