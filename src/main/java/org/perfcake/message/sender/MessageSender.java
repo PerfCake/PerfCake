@@ -27,15 +27,29 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * Interface for a message sender.
+ * A contract of message sender. The ultimate goal of a message sender is to send a message (or any other unit of communication work),
+ * and possibly receive a response. Any implementation should not do anything but the communication. It should be a pure wrapper of
+ * the message exchange layer.
  *
+ * {@link #init()} and {@link #close()} methods should be used to establish and close a permanent connection.
+ * It is a design consideration of any implementation whether to handle the connection establishment separately (and not measure it),
+ * or to open and close a connection with every single request (and make it part of the performance measurement).
+ * Most provided implementations (if not all) handle the connection separately as we are really interested only in measuring the message
+ * exchange.
+ *
+ * {@link #preSend()} and {@link #postSend()} methods are still not part of the performance measurement and can prepare the message for
+ * actual sending or handle any cleanup.
+ *
+ * {@link #send} methods must handle just the message exchange. No logging or complex error handling code should be placed here. Therefore
+ * we allow any generic exception to be thrown.
+ *
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public interface MessageSender {
 
    /**
-    * Initializes the sender with properties. It should be executed after all
-    * properties are set.
+    * Initializes the sender. This method is executed once the sender is properly created based on the configuration in the scenario.
     *
     * @throws java.lang.Exception When anything fails, basically this happens when a connection to the target could not have been established.
     */
