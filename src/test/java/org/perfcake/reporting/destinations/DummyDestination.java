@@ -27,7 +27,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * Testing destination.
+ * A destination for testing purposes.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>

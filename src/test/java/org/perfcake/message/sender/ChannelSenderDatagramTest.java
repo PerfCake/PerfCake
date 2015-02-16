@@ -41,9 +41,12 @@ import java.net.InetAddress;
 import java.util.Properties;
 
 /**
+ * Tests {@link org.perfcake.message.sender.ChannelSenderDatagram}.
+ *
  * @author <a href="mailto:domin.hanak@gmail.com">Dominik Hanák</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = { "unit" })
 public class ChannelSenderDatagramTest {
 
    private static final String PAYLOAD = "fish";

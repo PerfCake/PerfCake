@@ -24,6 +24,12 @@ import org.testng.annotations.Test;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Tests {@link org.perfcake.reporting.Measurement}.
+ *
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ */
+@Test(groups = { "unit" })
 public class MeasurementTest {
    private static final long HOURS = 729;
    private static final long MINUTES = 42;

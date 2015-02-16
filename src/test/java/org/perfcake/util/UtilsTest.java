@@ -39,6 +39,12 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Tests {@link org.perfcake.util.Utils}.
+ *
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ */
+@Test(groups = { "unit" })
 public class UtilsTest extends TestSetup {
 
    private static final Logger log = LogManager.getLogger(UtilsTest.class);

@@ -29,9 +29,12 @@ import java.util.List;
 import java.util.Random;
 
 /**
+ * Tests all {@link org.perfcake.reporting.reporters.accumulators.Accumulator Accumulators}.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
+@Test(groups = { "unit" })
 public class AccumulatorsTest {
 
    private static final int STRESS_THREADS = 500;
@@ -178,7 +181,7 @@ public class AccumulatorsTest {
       Assert.assertEquals(a.getResult(), zero);
    }
 
-   @Test(dataProvider = "accumulatorsTest", groups = { "ueber", "integration", "performance" })
+   @Test(dataProvider = "accumulatorsTest", groups = { "ueber", "performance", "stress" })
    @SuppressWarnings("rawtypes")
    public void accumulatorStressTest(final Accumulator a, final Long start, final Long end, final Number result, final Number stressResult, final Number zero) throws InterruptedException {
       List<Thread> stressors = new ArrayList<>();

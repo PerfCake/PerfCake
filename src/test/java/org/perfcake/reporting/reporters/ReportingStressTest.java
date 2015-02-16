@@ -42,7 +42,7 @@ import java.util.Random;
 public class ReportingStressTest {
 
    @Test(groups = { "stress" })
-   public void f() throws InterruptedException {
+   public void threadSafeReportingTest() throws InterruptedException {
       final ReportManager rm = new ReportManager();
       final RunInfo ri = new RunInfo(new Period(PeriodType.TIME, 10000));
       final ResponseTimeStatsReporter r1 = new ResponseTimeStatsReporter();

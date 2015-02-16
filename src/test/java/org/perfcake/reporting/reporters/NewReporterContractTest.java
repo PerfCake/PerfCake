@@ -29,6 +29,12 @@ import org.perfcake.reporting.ReportingException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+/**
+ * Thoroughly verifies the proclaimed contract of {@link org.perfcake.reporting.reporters.Reporter}.
+ *
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ */
+@Test(groups = { "integration" })
 public class NewReporterContractTest {
 
    // private static final Logger log = LogManager.getLogger(NewReporterContractTest.class);

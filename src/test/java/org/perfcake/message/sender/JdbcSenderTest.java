@@ -44,8 +44,11 @@ import java.sql.Statement;
 import java.util.Properties;
 
 /**
- * @author Lenka Vašková <vaskova.lenka@gmail.com>
+ * Tests {@link org.perfcake.message.sender.JdbcSender}.
+ *
+ * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
  */
+@Test(groups = { "unit" })
 public class JdbcSenderTest {
 
    private static class DebugLogAppender implements Appender {

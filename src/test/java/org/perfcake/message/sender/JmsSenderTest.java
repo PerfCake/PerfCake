@@ -43,8 +43,11 @@ import javax.jms.Queue;
 import javax.jms.TextMessage;
 
 /**
- * @author Lenka Vašková <vaskova.lenka@gmail.com>
+ * Tests {@link org.perfcake.message.sender.JmsSender}.
+ *
+ * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
  */
+@Test(groups = { "unit" })
 public class JmsSenderTest extends Arquillian {
 
    @Resource(mappedName = "queue/test")

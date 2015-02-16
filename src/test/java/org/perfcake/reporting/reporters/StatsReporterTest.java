@@ -39,8 +39,11 @@ import java.util.List;
 import java.util.Properties;
 
 /**
+ * Tests all {@link org.perfcake.reporting.reporters.StatsReporter} implemetations.
+ *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
+@Test(groups = { "unit" })
 public class StatsReporterTest {
 
    private static final long ITERATION_COUNT = 10L;

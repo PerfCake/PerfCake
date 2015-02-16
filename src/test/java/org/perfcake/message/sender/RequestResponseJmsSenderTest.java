@@ -42,8 +42,11 @@ import javax.jms.Queue;
 import javax.jms.TextMessage;
 
 /**
- * @author Lenka Vašková <vaskova.lenka@gmail.com>
+ * Tests {@link org.perfcake.message.sender.RequestResponseJmsSender}.
+ *
+ * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
  */
+@Test(groups = { "unit" })
 public class RequestResponseJmsSenderTest extends Arquillian {
 
    private static final Logger log = LogManager.getLogger(RequestResponseJmsSenderTest.class);

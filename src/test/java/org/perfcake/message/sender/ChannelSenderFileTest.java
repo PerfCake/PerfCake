@@ -28,13 +28,15 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.Serializable;
 import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
+ * Tests {@link org.perfcake.message.sender.ChannelSenderFile}.
+ *
  * @author <a href="mailto:domin.hanak@gmail.com">Dominik Hanák</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = { "unit" })
 public class ChannelSenderFileTest {
    private static final String PAYLOAD = "fish";
    private static final String originalContent = "xxxxlion";

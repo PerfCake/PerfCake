@@ -53,6 +53,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+/**
+ * Verifies the correct parsing of XML scenarios.
+ *
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ */
+@Test(groups = { "unit" })
 public class XmlFactoryTest extends TestSetup {
    private static final int THREADS = 10;
    private static final String MESSAGE1_CONTENT = "Stupid is as supid does! :)";

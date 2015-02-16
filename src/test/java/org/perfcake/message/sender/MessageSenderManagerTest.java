@@ -35,8 +35,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * Tests {@link org.perfcake.message.sender.MessageSenderManager}.
+ *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
+@Test(groups = { "unit" })
 public class MessageSenderManagerTest {
 
    private static final int SENDER_COUNT = 100;
@@ -80,7 +83,7 @@ public class MessageSenderManagerTest {
       msm.close();
    }
 
-   @Test(groups = { "performance" })
+   @Test(groups = { "ueber", "performance" })
    public void threadSafeTest() throws Exception {
       final MessageSenderManager msm = new MessageSenderManager();
       msm.setSenderPoolSize(SENDER_COUNT);

@@ -44,10 +44,11 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Tests features of MemoryUsageReporter.
+ * Tests features of {@link org.perfcake.reporting.reporters.MemoryUsageReporter}.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
+@Test(groups = { "unit" })
 public class MemoryUsageReporterTest {
    private static final long ITERATION_COUNT = 1000l;
    private static final String AGENT_HOSTNAME = "localhost";

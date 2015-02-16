@@ -47,6 +47,7 @@ import java.util.Collections;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = { "unit" })
 public class DslFactoryTest extends TestSetup {
 
    @Test

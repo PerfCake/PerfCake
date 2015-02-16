@@ -30,6 +30,8 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 /**
+ * A reporter for testing purposes.
+ *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class DummyReporter extends AbstractReporter {

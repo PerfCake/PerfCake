@@ -39,6 +39,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * Thoroughly verifies the proclaimed contract of {@link org.perfcake.reporting.reporters.Reporter}.
+ *
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ */
+@Test(groups = { "integration" })
 public class ReporterContractTest {
 
    private final ReportManager rm = new ReportManager();
