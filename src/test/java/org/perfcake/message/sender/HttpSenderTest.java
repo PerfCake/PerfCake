@@ -33,8 +33,11 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * Tests {@link org.perfcake.message.sender.HttpSender}.
+ *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
+@Test(groups = { "unit" })
 public class HttpSenderTest {
 
    private static final String URL_GET = "http://httpbin.org/get";

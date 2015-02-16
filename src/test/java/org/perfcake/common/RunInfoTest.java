@@ -27,10 +27,11 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Tests the RunInfo conditions.
+ * Tests the {@link org.perfcake.RunInfo} conditions.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = { "unit" })
 public class RunInfoTest {
    private static final Logger log = LogManager.getLogger(RunInfoTest.class);
 

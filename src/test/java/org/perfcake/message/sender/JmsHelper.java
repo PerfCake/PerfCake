@@ -37,7 +37,9 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
- * @author Lenka Vašková <vaskova.lenka@gmail.com>
+ * Test JMS client, both in-jvm and separate one. Also provides a wiretap that can read messages from a queue and pass them to another immediately.
+ *
+ * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
  */
 public class JmsHelper {
 

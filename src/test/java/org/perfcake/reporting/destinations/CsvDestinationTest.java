@@ -43,11 +43,12 @@ import java.util.Properties;
 import java.util.Scanner;
 
 /**
- * The CsvDestination test class.
+ * Tests {@link org.perfcake.reporting.destinations.ChartDestination}.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = { "unit" })
 public class CsvDestinationTest {
 
    private static final Logger log = LogManager.getLogger(CsvDestinationTest.class);

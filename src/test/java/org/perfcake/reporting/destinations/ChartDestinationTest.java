@@ -37,10 +37,11 @@ import java.util.Date;
 import java.util.Random;
 
 /**
- * Chart destination tests.
+ * Tests {@link org.perfcake.reporting.destinations.ChartDestination}.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = { "unit" })
 public class ChartDestinationTest extends TestSetup {
 
    private static final Logger log = LogManager.getLogger(ChartDestinationTest.class);

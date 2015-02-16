@@ -26,6 +26,12 @@ import org.testng.annotations.Test;
 import java.lang.reflect.Field;
 import java.util.Properties;
 
+/**
+ * Tests {@link org.perfcake.util.StringTemplate}.
+ *
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ */
+@Test(groups = { "unit" })
 public class StringTemplateTest {
 
    @Test

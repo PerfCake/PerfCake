@@ -31,8 +31,11 @@ import java.util.List;
 import java.util.Properties;
 
 /**
+ * Tests integration of message templates.
+ *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
+@Test(groups = { "integration" })
 public class MessageTemplateTest extends TestSetup {
    private static final String HELLO_NAME = "hello";
    private static final String HELLO_VALUE = "hello.value";

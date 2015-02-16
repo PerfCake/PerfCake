@@ -39,6 +39,7 @@ import org.testng.annotations.Test;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = { "integration" })
 public class OneHundredPercentageTest {
 
    private Scenario getScenario(Period p, DummyDestination dd) throws Exception {
