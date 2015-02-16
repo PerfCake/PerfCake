@@ -37,7 +37,7 @@ import java.util.Map;
  * Most provided implementations (if not all) handle the connection separately as we are really interested only in measuring the message
  * exchange.
  *
- * {@link #preSend()} and {@link #postSend()} methods are still not part of the performance measurement and can prepare the message for
+ * {@link #preSend} and {@link #postSend} methods are still not part of the performance measurement and can prepare the message for
  * actual sending or handle any cleanup.
  *
  * {@link #send} methods must handle just the message exchange. No logging or complex error handling code should be placed here. Therefore
@@ -76,6 +76,7 @@ public interface MessageSender {
     * @param message Message to be sent.
     * @param mu Measurement unit that carries the current send iteration information.
     *
+    * @return Received response.
     * @throws java.lang.Exception When the send operation failed.
     */
    public Serializable send(final Message message, final MeasurementUnit mu) throws Exception;
@@ -87,6 +88,7 @@ public interface MessageSender {
     * @param properties Properties that can be used or anyhow influence the sending of the message. Typically carries message headers.
     * @param mu Measurement unit that carries the current send iteration information.
     *
+    * @return Received response.
     * @throws java.lang.Exception When the send operation failed.
     */
    public Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception;
