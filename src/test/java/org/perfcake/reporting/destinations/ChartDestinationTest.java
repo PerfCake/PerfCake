@@ -91,18 +91,50 @@ public class ChartDestinationTest extends TestSetup {
       cd.open();
       cd2.open();
 
-      final long base = System.currentTimeMillis();
+      long base = System.currentTimeMillis();
       final Random rnd = new Random();
 
       Measurement m = new Measurement(10, System.currentTimeMillis() - base, 1);
       m.set(10.3 + rnd.nextDouble());
       m.set("Average", 9.8 + rnd.nextDouble());
+      m.set("warmUp", true);
       cd.report(m);
       cd2.report(m);
+
+      Thread.sleep(100);
+
+      m = new Measurement(10, System.currentTimeMillis() - base, 2);
+      m.set(10.3 + rnd.nextDouble());
+      m.set("Average", 9.8 + rnd.nextDouble());
+      m.set("warmUp", true);
+      cd.report(m);
+      cd2.report(m);
+
+      Thread.sleep(100);
+
+      m = new Measurement(10, System.currentTimeMillis() - base, 3);
+      m.set(10.3 + rnd.nextDouble());
+      m.set("Average", 9.8 + rnd.nextDouble());
+      m.set("warmUp", true);
+      cd.report(m);
+      cd2.report(m);
+
+      Thread.sleep(100);
+
+      base = System.currentTimeMillis();
+      m = new Measurement(10, System.currentTimeMillis() - base, 1);
+      m.set(10.3 + rnd.nextDouble());
+      m.set("Average", 9.8 + rnd.nextDouble());
+      m.set("warmUp", false);
+      cd.report(m);
+      cd2.report(m);
+
+      Thread.sleep(100);
 
       m = new Measurement(13, System.currentTimeMillis() - base, 2);
       m.set(11.1 + rnd.nextDouble());
       m.set("Average", 9.1 + rnd.nextDouble());
+      m.set("warmUp", false);
       cd.report(m);
       cd2.report(m);
 
@@ -111,6 +143,7 @@ public class ChartDestinationTest extends TestSetup {
       m = new Measurement(100, System.currentTimeMillis() - base, 10);
       m.set(9.2 + rnd.nextDouble());
       m.set("Average", 9.0 + rnd.nextDouble());
+      m.set("warmUp", false);
       cd.report(m);
       cd2.report(m);
 
