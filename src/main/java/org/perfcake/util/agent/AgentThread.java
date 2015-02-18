@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * The actuall implementation of the PerfCake agent.
+ * The actual implementation of the PerfCake agent.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
