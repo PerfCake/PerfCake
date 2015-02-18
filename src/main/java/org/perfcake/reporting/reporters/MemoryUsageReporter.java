@@ -185,7 +185,7 @@ public class MemoryUsageReporter extends AbstractReporter {
          if (log.isDebugEnabled()) {
             log.debug("Creating socket " + host + ":" + agentPort + "...");
          }
-         socket = new Socket(host, Integer.valueOf(agentPort));
+         socket = new Socket(host, Integer.parseInt(agentPort));
          requestWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), PerfCakeAgent.DEFAULT_ENCODING), true);
          responseReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), PerfCakeAgent.DEFAULT_ENCODING));
          usedMemoryTimeWindow = new LinkedBlockingQueue<>(usedMemoryTimeWindowSize);
@@ -321,7 +321,7 @@ public class MemoryUsageReporter extends AbstractReporter {
          log.debug("sending " + command);
       }
       requestWriter.println(command);
-      long retVal = Long.valueOf(responseReader.readLine());
+      long retVal = Long.parseLong(responseReader.readLine());
       if (log.isDebugEnabled()) {
          log.debug("received " + retVal);
       }

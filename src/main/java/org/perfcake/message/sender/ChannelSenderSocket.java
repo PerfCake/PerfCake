@@ -57,7 +57,7 @@ public class ChannelSenderSocket extends ChannelSender {
    public void init() {
       String[] parts = target.split(":", 2);
       host = parts[0];
-      port = Integer.valueOf(parts[1]);
+      port = Integer.parseInt(parts[1]);
    }
 
    @Override

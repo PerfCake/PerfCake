@@ -87,7 +87,7 @@ public class AgentThread implements Runnable {
          }
 
          if (props.get("port") != null) {
-            port = Integer.valueOf((String) props.get("port"));
+            port = Integer.parseInt((String) props.get("port"));
          }
 
          if (props.get("hostname") != null) {
