@@ -190,7 +190,7 @@ public class XmlFactory implements ScenarioFactory {
       Generator gen = scenarioModel.getGenerator();
       Generator.Run run = gen.getRun();
 
-      return new RunInfo(new Period(PeriodType.valueOf(run.getType().toUpperCase()), Long.valueOf(run.getValue())));
+      return new RunInfo(new Period(PeriodType.valueOf(run.getType().toUpperCase()), Long.parseLong(run.getValue())));
    }
 
    /**
@@ -212,7 +212,7 @@ public class XmlFactory implements ScenarioFactory {
          }
          log.info("--- Generator (" + generatorClass + ") ---");
 
-         int threads = Integer.valueOf(gen.getThreads());
+         int threads = Integer.parseInt(gen.getThreads());
          log.info("  threads=" + threads);
 
          Properties generatorProperties = getPropertiesFromList(gen.getProperty());
@@ -306,7 +306,7 @@ public class XmlFactory implements ScenarioFactory {
                if (m.getMultiplicity() == null || m.getMultiplicity().equals("")) {
                   currentMessageMultiplicity = 1L;
                } else {
-                  currentMessageMultiplicity = Long.valueOf(m.getMultiplicity());
+                  currentMessageMultiplicity = Long.parseLong(m.getMultiplicity());
                }
 
                final List<String> currentMessageValidatorIds = new ArrayList<>();
@@ -383,7 +383,7 @@ public class XmlFactory implements ScenarioFactory {
                         Destination currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
                         Set<Period> currentDestinationPeriodSet = new HashSet<>();
                         for (org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period p : d.getPeriod()) {
-                           currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(p.getType().toUpperCase()), Long.valueOf(p.getValue())));
+                           currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(p.getType().toUpperCase()), Long.parseLong(p.getValue())));
                         }
                         currentReporter.registerDestination(currentDestination, currentDestinationPeriodSet);
                      }

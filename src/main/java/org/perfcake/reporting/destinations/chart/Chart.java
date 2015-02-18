@@ -222,7 +222,7 @@ public class Chart {
       name = name.substring(0, name.lastIndexOf("'"));
 
       String axises = loaderEntry.substring(loaderEntry.indexOf("], ") + 3, loaderEntry.lastIndexOf("', '"));
-      PeriodType xAxisType = PeriodType.values()[Integer.valueOf(axises.substring(0, axises.indexOf(",")))];
+      PeriodType xAxisType = PeriodType.values()[Integer.parseInt(axises.substring(0, axises.indexOf(",")))];
       axises = axises.substring(axises.indexOf("'") + 1);
       String xAxis = axises.substring(0, axises.indexOf("', '"));
       String yAxis = axises.substring(axises.indexOf("', '") + 4);

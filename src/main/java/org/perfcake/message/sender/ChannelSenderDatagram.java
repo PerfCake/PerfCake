@@ -53,7 +53,7 @@ public class ChannelSenderDatagram extends ChannelSender {
    public void init() {
       final String[] parts = target.split(":", 2);
       final String host = parts[0];
-      final int port = Integer.valueOf(parts[1]);
+      final int port = Integer.parseInt(parts[1]);
 
       address = new InetSocketAddress(host, port);
    }
