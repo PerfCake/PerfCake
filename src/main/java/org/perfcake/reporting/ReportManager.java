@@ -287,6 +287,8 @@ public class ReportManager {
          log.debug("Stopping reporting and all reporters.");
       }
 
+      runInfo.stop();
+
       reportFinalTimeResults();
 
       for (final Reporter r : reporters) {
@@ -297,8 +299,6 @@ public class ReportManager {
          periodicThread.interrupt();
       }
       periodicThread = null;
-
-      runInfo.stop();
    }
 
 }
