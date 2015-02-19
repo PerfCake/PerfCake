@@ -24,14 +24,21 @@ import org.perfcake.TestSetup;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.sender.DummySender;
 import org.perfcake.reporting.Measurement;
+import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
+import org.perfcake.scenario.ScenarioRetractor;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import sun.security.krb5.internal.crypto.Des;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -45,6 +52,11 @@ import java.util.Random;
 public class ChartDestinationTest extends TestSetup {
 
    private static final Logger log = LogManager.getLogger(ChartDestinationTest.class);
+
+   @BeforeMethod
+   public void beforeMethod() {
+      System.setProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY, (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date()));
+   }
 
    @Test(enabled = true)
    public void basicGroupNameTest() throws Exception {
@@ -151,10 +163,11 @@ public class ChartDestinationTest extends TestSetup {
       cd2.close();
    }
 
-   @Test(enabled = false)
+   @Test(enabled = true)
    public void iterationScenarioTest() throws Exception {
       final Scenario scenario;
 
+      System.setProperty(PerfCakeConst.SCENARIO_PROPERTY, "1chart-scenario$");
       DummySender.resetCounter();
 
       scenario = ScenarioLoader.load("test-scenario-chart");
@@ -162,7 +175,26 @@ public class ChartDestinationTest extends TestSetup {
       scenario.run();
       scenario.close();
 
-      //Assert.assertEquals(DummySender.getCounter(), 1);
+      ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+      Reporter reporter = retractor.getReportManager().getReporters().iterator().next();
+      ChartDestination chartDestination = null;
+      for (Destination d : reporter.getDestinations()) {
+         log.info(d.toString());
+         if (d instanceof ChartDestination) {
+            chartDestination = (ChartDestination) d;
+            break;
+         }
+      }
+
+      Assert.assertNotNull(chartDestination);
+      Assert.assertEquals(chartDestination.getGroup(), "_1chart_scenario__throughput");
+      Assert.assertEquals(DummySender.getCounter(), 1_000_000);
+
+      verifyBasicFiles(Paths.get("target/test-chart"));
+   }
+
+   private void verifyBasicFiles(final Path dir) {
+      Assert.assertTrue(dir.resolve(Paths.get("data")).toFile().exists());
    }
 
 }
