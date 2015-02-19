@@ -198,8 +198,8 @@ public class ChartDestination implements Destination {
     */
    public void setGroup(final String group) {
       if ("".equals(group)) {
-         this.group = "_";
-         log.warn("The group name should not be an empty string so it (" + group + ") will be renamed to (" + this.group + ")");
+         this.group = "default";
+         log.warn("Empty group name, renaming to: default");
       } else if (!group.matches("[a-zA-Z][a-zA-Z0-9_]*")) {
          final String postGroup = group.replaceAll("[^a-zA-Z0-9_]", "_");
 
@@ -216,7 +216,7 @@ public class ChartDestination implements Destination {
          } else {
             this.group = postGroup;
          }
-         log.warn("The group name should only contain alphanumeric characters or an underscore and it should not start with a numeric digit so it (" + group + ") will be renamed to (" + this.group + ")");
+         log.warn("Illegal characters found in the group name. Only allowed characters are letters, numbers and underscore. The group must not start with a number. Renaming to: " + this.group);
       } else {
          this.group = group;
       }

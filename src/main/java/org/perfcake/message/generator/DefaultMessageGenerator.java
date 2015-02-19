@@ -149,6 +149,10 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
             log.debug(String.format("Adaptive test execution termination in progress. Tasks finished in last round: %d", lastActive - active));
          }
       }
+
+      if (active > 0) {
+         log.warn("Cannot terminate all sender tasks. Remaining tasks active: " + active);
+      }
    }
 
    /**
