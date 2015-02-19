@@ -69,7 +69,7 @@ public class ChartDestination implements Destination {
    /**
     * Group of this chart. Charts in the same group can be later matched for the column names.
     */
-   private String group = "results";
+   private String group = "default";
 
    /**
     * Y axis legend.
