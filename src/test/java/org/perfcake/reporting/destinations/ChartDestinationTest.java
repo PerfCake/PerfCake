@@ -29,13 +29,12 @@ import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import sun.security.krb5.internal.crypto.Des;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -61,7 +60,7 @@ public class ChartDestinationTest extends TestSetup {
    @Test(enabled = true)
    public void basicGroupNameTest() throws Exception {
       final ChartDestination cd = new ChartDestination();
-      testGroupName(cd, "", "_");
+      testGroupName(cd, "", "default");
       testGroupName(cd, "a", "a");
       testGroupName(cd, "1", "_1");
       testGroupName(cd, "group1", "group1");
@@ -191,10 +190,13 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertEquals(DummySender.getCounter(), 1_000_000);
 
       verifyBasicFiles(Paths.get("target/test-chart"));
+
+      FileUtils.deleteDirectory(Paths.get("target/test-chart").toFile());
    }
 
    private void verifyBasicFiles(final Path dir) {
       Assert.assertTrue(dir.resolve(Paths.get("data")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("src")).toFile().exists());
    }
 
 }
