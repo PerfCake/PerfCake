@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The destination that appends the {@link Measurement} into a CSV file.
+ * The destination that appends the {@link org.perfcake.reporting.Measurement} into a CSV file.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
