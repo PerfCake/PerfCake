@@ -22,8 +22,8 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.MeasurementUnit;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -348,6 +348,7 @@ public class JmsSender extends AbstractSender {
     *
     * @param username
     *       The username to set.
+    * @return Instance of this for fluent API.
     */
    public JmsSender setUsername(final String username) {
       this.username = username;
@@ -368,6 +369,7 @@ public class JmsSender extends AbstractSender {
     *
     * @param password
     *       The password to set.
+    * @return Instance of this for fluent API.
     */
    public JmsSender setPassword(final String password) {
       this.password = password;
@@ -388,6 +390,7 @@ public class JmsSender extends AbstractSender {
     *
     * @param transacted
     *       The transacted to set.
+    * @return Instance of this for fluent API.
     */
    public JmsSender setTransacted(final boolean transacted) {
       this.transacted = transacted;
@@ -408,6 +411,7 @@ public class JmsSender extends AbstractSender {
     *
     * @param persistent
     *       The persistent to set.
+    * @return Instance of this for fluent API.
     */
    public JmsSender setPersistent(final boolean persistent) {
       this.persistent = persistent;
@@ -418,6 +422,8 @@ public class JmsSender extends AbstractSender {
     * Set the value of messageType.
     *
     * @param messageType
+    *       The message type used to send the messages.
+    * @return Instance of this for fluent API.
     */
    public JmsSender setMessageType(MessageType messageType) {
       this.messageType = messageType;
@@ -447,6 +453,7 @@ public class JmsSender extends AbstractSender {
     *
     * @param connectionFactory
     *       The connectionFactory to set.
+    * @return Instance of this for fluent API.
     */
    public JmsSender setConnectionFactory(final String connectionFactory) {
       this.connectionFactory = connectionFactory;
@@ -467,6 +474,7 @@ public class JmsSender extends AbstractSender {
     *
     * @param jndiContextFactory
     *       The jndiContextFactory to set.
+    * @return Instance of this for fluent API.
     */
    public JmsSender setJndiContextFactory(final String jndiContextFactory) {
       this.jndiContextFactory = jndiContextFactory;
@@ -487,6 +495,7 @@ public class JmsSender extends AbstractSender {
     *
     * @param jndiUrl
     *       The jndiUrl to set.
+    * @return Instance of this for fluent API.
     */
    public JmsSender setJndiUrl(final String jndiUrl) {
       this.jndiUrl = jndiUrl;
@@ -507,6 +516,7 @@ public class JmsSender extends AbstractSender {
     *
     * @param jndiSecurityPrincipal
     *       The jndiSecurityPrincipal to set.
+    * @return Instance of this for fluent API.
     */
    public JmsSender setJndiSecurityPrincipal(final String jndiSecurityPrincipal) {
       this.jndiSecurityPrincipal = jndiSecurityPrincipal;
@@ -527,6 +537,7 @@ public class JmsSender extends AbstractSender {
     *
     * @param jndiSecurityCredentials
     *       The jndiSecurityCredentials to set.
+    * @return Instance of this for fluent API.
     */
    public JmsSender setJndiSecurityCredentials(final String jndiSecurityCredentials) {
       this.jndiSecurityCredentials = jndiSecurityCredentials;
@@ -547,6 +558,7 @@ public class JmsSender extends AbstractSender {
     *
     * @param replyTo
     *       The replyTo to set.
+    * @return Instance of this for fluent API.
     */
    public JmsSender setReplyTo(final String replyTo) {
       this.replyTo = replyTo;

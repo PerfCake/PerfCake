@@ -87,6 +87,7 @@ public abstract class AbstractMessageGenerator {
     * @param messageStore
     *       Message store where the messages are taken from.
     * @throws Exception
+    *       When it was not possible to initialize the generator.
     */
    public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception {
       this.messageStore = messageStore;
@@ -147,6 +148,7 @@ public abstract class AbstractMessageGenerator {
     * It closes and finalize the generator. During the closing the {@link #messageSenderManager} is closed as well.
     *
     * @throws PerfCakeException
+    *       When it was not to smoothly finalize the generator.
     */
    public void close() throws PerfCakeException {
       messageSenderManager.close();
@@ -183,6 +185,7 @@ public abstract class AbstractMessageGenerator {
     * Executes the actual implementation of a generator.
     *
     * @throws Exception
+    *       When it was not possible to generate the messages.
     */
    public abstract void generate() throws Exception;
 

@@ -168,7 +168,7 @@ public class ScenarioBuilder {
     *
     * @return The finished {@link org.perfcake.scenario.Scenario}.
     */
-   public Scenario build() throws Exception {
+   public Scenario build() {
       return scenario;
    }
 

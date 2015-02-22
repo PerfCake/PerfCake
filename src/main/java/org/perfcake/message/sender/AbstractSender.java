@@ -23,8 +23,8 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -35,13 +35,14 @@ import java.util.Map;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 abstract public class AbstractSender implements MessageSender {
+
    /**
     * The sender's logger.
     */
    private static final Logger log = LogManager.getLogger(AbstractSender.class);
 
    /**
-    * The sender's target.
+    * The target where to send the messages.
     */
    protected String target = "";
 
@@ -71,10 +72,10 @@ abstract public class AbstractSender implements MessageSender {
       return doSend(message, properties, mu);
    }
 
-   /**
-    * @param message
-    * @param properties
-    * @throws Exception
+   /*
+    * (non-Javadoc)
+    *
+    * @see org.perfcake.message.sender.MessageSender#preSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
    public void preSend(final Message message, final Map<String, String> properties) throws Exception {
@@ -86,33 +87,26 @@ abstract public class AbstractSender implements MessageSender {
       }
    }
 
-   /**
-    * Do not use any logger or anything not directly related to sending the
-    * message, since this method is being measured
+   /*
+    * (non-Javadoc)
     *
-    * @param message
-    * @return Result received by the sender
-    * @throws Exception
+    * @see org.perfcake.message.sender.MessageSender#doSend(org.perfcake.message.Message, org.perfcake.reporting.MeasurementUnit)
     */
    final public Serializable doSend(final Message message, final MeasurementUnit mu) throws Exception {
       return this.doSend(message, null, mu);
    }
 
-   /**
-    * Actually sends the message. Do not use any logger or anything not directly related to sending the
-    * message, since this method is being measured.
+   /*
+    * (non-Javadoc)
     *
-    * @param message Message to be sent.
-    * @param properties Optional properties that might influence the sending action.
-    * @param mu MesurementUnit that tracks the current sending action. Can be used to change the message body for example.
-    * @return Result received by the sender
-    * @throws Exception This method can throw any exception if the communication towards the target fails.
+    * @see org.perfcake.message.sender.MessageSender#doSend(org.perfcake.message.Message, java.util.Properties, org.perfcake.reporting.MeasurementUnit)
     */
    abstract public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception;
 
-   /**
-    * @param message
-    * @throws Exception
+   /*
+    * (non-Javadoc)
+    *
+    * @see org.perfcake.message.sender.MessageSender#postSend(org.perfcake.message.Message)
     */
    @Override
    public void postSend(final Message message) throws Exception {
@@ -132,20 +126,20 @@ abstract public class AbstractSender implements MessageSender {
    }
 
    /**
-    * Used to read the value of target.
+    * Read the target where to send the messages.
     *
-    * @return The target.
+    * @return The current target.
     */
    public String getTarget() {
       return target;
    }
 
    /**
-    * Sets the value of target.
+    * Sets the target where to send the messages.
     *
     * @param target
-    *       The target to set.
-    * @return this to support fluent API.
+    *       The target to be set.
+    * @return Instance of this for fluent API.
     */
    public AbstractSender setTarget(final String target) {
       this.target = target;

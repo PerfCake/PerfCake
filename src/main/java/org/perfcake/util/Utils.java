@@ -69,17 +69,27 @@ public class Utils {
     * by respective value of the property named &lt;property.name&gt; using {@link SystemPropertyGetter}.
     *
     * @param text
-    *       Original string.
+    *       The original string.
     * @return Filtered string with.
-    * @throws IOException
     */
-   public static String filterProperties(final String text) throws IOException {
+   public static String filterProperties(final String text) {
       String propertyPattern = "[^\\\\](\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?})";
       Matcher matcher = Pattern.compile(propertyPattern).matcher(text);
 
       return filterProperties(text, matcher, SystemPropertyGetter.INSTANCE);
    }
 
+   /**
+    * Filters properties in the given string. Consider using {@link org.perfcake.util.StringTemplate} instead.
+    *
+    * @param text
+    *       The string to be filtered.
+    * @param matcher
+    *       The matcher to find the properties, any user specified matcher can be provided.
+    * @param pg
+    *       The {@link org.perfcake.util.properties.PropertyGetter} to provide values of the properties.
+    * @return The filtered text.
+    */
    public static String filterProperties(final String text, final Matcher matcher, final PropertyGetter pg) {
       String filteredString = text;
 
@@ -106,7 +116,7 @@ public class Utils {
     * the variable does not exist the method returns a <code>null</code>.
     *
     * @param name
-    *       Property name
+    *       Property name.
     * @return Property value or <code>null</code>.
     */
    public static String getProperty(final String name) {
@@ -119,9 +129,9 @@ public class Utils {
     * the variable does not exist the method returns <code>defautValue</code>.
     *
     * @param name
-    *       Property name
+    *       Property name.
     * @param defaultValue
-    *       Default property value
+    *       Default property value.
     * @return Property value or <code>defaultValue</code>.
     */
    public static String getProperty(final String name, final String defaultValue) {
@@ -129,15 +139,30 @@ public class Utils {
    }
 
    /**
+    * Writes the whole properties map to the given logger at the given level.
+    *
+    * @param logger
+    *       The logger to log the properties.
+    * @param level
+    *       The level at which to log the properties.
     * @param properties
+    *       The properties to log.
     */
    public static void logProperties(final Logger logger, final Level level, final Properties properties) {
       logProperties(logger, level, properties, "");
    }
 
    /**
+    * Writes the whole properties map to the given logger at the given level with the given prefix.
+    *
+    * @param logger
+    *       The logger to log the properties.
+    * @param level
+    *       The level at which to log the properties.
     * @param properties
+    *       The properties to log.
     * @param prefix
+    *       The prefix to prepend to each log message (used for aligning with spaces, tabs, etc.).
     */
    public static void logProperties(final Logger logger, final Level level, final Properties properties, final String prefix) {
       if (logger.isEnabled(level)) {
@@ -148,12 +173,12 @@ public class Utils {
    }
 
    /**
-    * Reads file content into a string. The file content is processed as an UTF-8 encoded text.
+    * Reads URL (file) content into a string. The file content is processed as an UTF-8 encoded text.
     *
     * @param url
-    *       specifies the file location as a URL
-    * @return the file contents
-    * @throws IOException
+    *       The file location as an URL.
+    * @return The file contents.
+    * @throws IOException When it was not possible to read the content.
     */
    public static String readFilteredContent(final URL url) throws IOException {
       try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
@@ -172,16 +197,16 @@ public class Utils {
     * when the property is undefined.
     *
     * @param location
-    *       location of the resource
+    *       The location of the resource.
     * @param defaultLocationProperty
-    *       property to read the default location prefix
+    *       The property to read the default location prefix.
     * @param defaultLocation
-    *       default value for defaultLocationProperty if this property is undefined
+    *       The default value for defaultLocationProperty if this property is undefined.
     * @param defaultSuffix
-    *       default suffix of the location
-    * @return URL representing the location
+    *       The default suffix of the location.
+    * @return The URL representing the location.
     * @throws MalformedURLException
-    *       when the location cannot be converted to a URL
+    *       When the location cannot be converted to a URL.
     */
    public static URL locationToUrl(final String location, final String defaultLocationProperty, final String defaultLocation, final String defaultSuffix) throws MalformedURLException {
       String uri;
@@ -211,14 +236,14 @@ public class Utils {
     * If the file was not found, the result is simply file://location
     *
     * @param location
-    *       Location of the resource.
+    *       The location of the resource.
     * @param defaultLocationProperty
-    *       Property to read the default location prefix.
+    *       The property to read the default location prefix.
     * @param defaultLocation
-    *       Default value for defaultLocationProperty if this property is undefined.
+    *       The default value for defaultLocationProperty if this property is undefined.
     * @param defaultSuffix
-    *       Array of default default suffixes to try when searching for the resource.
-    * @return URL representing the location.
+    *       The array of default default suffixes to try when searching for the resource.
+    * @return The URL representing the location.
     * @throws MalformedURLException
     *       When the location cannot be converted to an URL.
     */
@@ -273,8 +298,8 @@ public class Utils {
     * Determines the default location of resources based on the resourcesDir constant.
     *
     * @param locationSuffix
-    *       Optional suffix to be added to the path
-    * @return the location based on the resourcesDir constant
+    *       The optional suffix to be added to the path.
+    * @return The location based on the resourcesDir constant.
     */
    public static String determineDefaultLocation(final String locationSuffix) {
       return DEFAULT_RESOURCES_DIR.getAbsolutePath() + "/" + (locationSuffix == null ? "" : locationSuffix);
@@ -284,8 +309,8 @@ public class Utils {
     * Converts camelCaseStringsWithACRONYMS to CAMEL_CASE_STRINGS_WITH_ACRONYMS
     *
     * @param camelCase
-    *       a camelCase string
-    * @return the same string in equivalent format for Java enum values
+    *       The camelCase string.
+    * @return The same string in equivalent format for Java enum values.
     */
    public static String camelCaseToEnum(final String camelCase) {
       final String regex = "([a-z])([A-Z])";
@@ -298,8 +323,8 @@ public class Utils {
     * Converts time in milliseconds to H:MM:SS format, where H is unbound.
     *
     * @param time
-    *       Timestamp in milliseconds.
-    * @return String representing the timestamp in H:MM:SS format.
+    *       The timestamp in milliseconds.
+    * @return The string representing the timestamp in H:MM:SS format.
     */
    public static String timeToHMS(final long time) {
       long hours = TimeUnit.MILLISECONDS.toHours(time);
@@ -315,16 +340,17 @@ public class Utils {
    /**
     * Uses {@link PerfCakeConst#DEFAULT_ENCODING_PROPERTY} system property, if this property is not set, <b>UTF-8</b> is used.
     *
-    * @return String representation of default encoding for all read and written files
+    * @return The string representation of default encoding for all read and written files
     */
    public static String getDefaultEncoding() {
       return Utils.getProperty(PerfCakeConst.DEFAULT_ENCODING_PROPERTY, "UTF-8");
    }
 
    /**
-    * Computes a linear regression trend of the data set povided.
+    * Computes a linear regression trend of the data set provided.
     *
-    * @return Linear regression trend
+    * @param data Data on which to compute the trend.
+    * @return The linear regression trend.
     */
    public static double computeRegressionTrend(Collection<TimestampedRecord<Number>> data) {
       final SimpleRegression simpleRegression = new SimpleRegression();
@@ -341,11 +367,11 @@ public class Utils {
     * Sets the property value to the first not-null value from the list.
     *
     * @param props
-    *       Properties instance.
+    *       The properties instance.
     * @param propName
-    *       Name of the property to be set.
+    *       The name of the property to be set.
     * @param values
-    *       List of possibilities, the first not-null is used to set the property value.
+    *       The list of possibilities, the first not-null is used to set the property value.
     */
    public static void setFirstNotNullProperty(Properties props, String propName, String... values) {
       String notNull = getFirstNotNull(values);
@@ -375,10 +401,10 @@ public class Utils {
     * Obtains the needed resource with full-path as URL. Works safely on all platforms.
     *
     * @param resource
-    *       The name of the resource to obtain
-    * @return The fully qualified resource URL location
+    *       The name of the resource to obtain.
+    * @return The fully qualified resource URL location.
     * @throws PerfCakeException
-    *       in the case of wrong resource name.
+    *       In the case of wrong resource name.
     */
    public static URL getResourceAsUrl(final String resource) throws PerfCakeException {
       try {
@@ -392,10 +418,10 @@ public class Utils {
     * Obtains the needed resource with full-path. Works safely on all platforms.
     *
     * @param resource
-    *       The name of the resource to obtain
-    * @return The fully qualified resource location
+    *       The name of the resource to obtain.
+    * @return The fully qualified resource location.
     * @throws PerfCakeException
-    *       in the case of wrong resource name.
+    *       In the case of wrong resource name.
     */
    public static String getResource(final String resource) throws PerfCakeException {
       try {
@@ -409,11 +435,11 @@ public class Utils {
     * Atomically writes given content to a file.
     *
     * @param fileName
-    *       Target file name.
+    *       The target file name.
     * @param content
-    *       Content to be written.
+    *       The content to be written.
     * @throws org.perfcake.PerfCakeException
-    *       In case of file operations failure.
+    *       In the case of s file operations failure.
     */
    public static void writeFileContent(final String fileName, final String content) throws PerfCakeException {
       writeFileContent(new File(fileName), content);
@@ -423,11 +449,11 @@ public class Utils {
     * Atomically writes given content to a file.
     *
     * @param file
-    *       Target file.
+    *       The target file.
     * @param content
-    *       Content to be written.
+    *       The content to be written.
     * @throws org.perfcake.PerfCakeException
-    *       In case of file operations failure.
+    *       In the case of file operations failure.
     */
    public static void writeFileContent(final File file, final String content) throws PerfCakeException {
       writeFileContent(file.toPath(), content);
@@ -437,11 +463,11 @@ public class Utils {
     * Atomically writes given content to a file.
     *
     * @param path
-    *       Target file path.
+    *       The target file path.
     * @param content
-    *       Content to be written.
+    *       The content to be written.
     * @throws org.perfcake.PerfCakeException
-    *       In case of file operations failure.
+    *       In the case of file operations failure.
     */
    public static void writeFileContent(final Path path, final String content) throws PerfCakeException {
       try {
@@ -466,11 +492,11 @@ public class Utils {
     * Takes a resource as a StringTemplate, renders the template using the provided properties and stores it to the given path.
     *
     * @param resource
-    *       Resource location of a template.
+    *       The resource location of a template.
     * @param target
-    *       Target path where to store the rendered template file.
+    *       The target path where to store the rendered template file.
     * @param properties
-    *       Properties to fill into the template.
+    *       The properties to fill into the template.
     * @throws PerfCakeException
     *       When it is not possible to render the template or store the target file.
     */

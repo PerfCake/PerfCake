@@ -56,6 +56,8 @@ public interface Reporter {
     *
     * @param mu
     *       Measurement Unit from a run iteration
+    * @throws org.perfcake.reporting.ReportingException
+    *       When it was not possible to report the {@link org.perfcake.reporting.MeasurementUnit}.
     */
    public void report(MeasurementUnit mu) throws ReportingException;
 
@@ -78,6 +80,7 @@ public interface Reporter {
     * @param d
     *       A destination to which the result should be reported.
     * @throws ReportingException
+    *       When it was not possible to publish results to the given destination.
     */
    public void publishResult(PeriodType periodType, Destination d) throws ReportingException;
 

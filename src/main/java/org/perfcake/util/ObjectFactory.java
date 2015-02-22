@@ -26,8 +26,8 @@ import org.apache.commons.beanutils.BeanUtilsBean;
 import org.apache.commons.beanutils.ConvertUtilsBean;
 import org.apache.commons.beanutils.FluentPropertyBeanIntrospector;
 import org.apache.commons.beanutils.PropertyUtilsBean;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
 import java.io.File;
@@ -49,18 +49,30 @@ import java.util.Properties;
  */
 public class ObjectFactory {
 
+   /**
+    * Logger of this class.
+    */
    private static final Logger log = LogManager.getLogger(ObjectFactory.class);
+
+   /**
+    * Cached plugin class loader.
+    */
    private static ClassLoader pluginClassLoader = null;
 
    /**
-    * Lookup for a set method on a bean that is able to accept Element
+    * Looks up for a set method on a bean that is able to accept Element
     *
     * @param object
+    *       The object on which we search for the setter.
     * @param propertyName
+    *       Name of the property of type Element.
     * @param value
+    *       Value to be set to the property.
     * @return <code>true</code> if operation has succeeded, <code>false</code> otherwise
     * @throws InvocationTargetException
+    *       When it was not possible to call the setter on the object.
     * @throws IllegalAccessException
+    *       When we did not have the correct rights to set any of the properties.
     */
    private static boolean setElementProperty(final Object object, final String propertyName, final Element value) throws InvocationTargetException, IllegalAccessException {
       try {
@@ -74,10 +86,16 @@ public class ObjectFactory {
    }
 
    /**
+    * Sets the attributes of an object according to the properties provided.
+    *
     * @param object
+    *       Object on which the properties should be set.
     * @param properties
+    *       Properties that should be set as properties of the object. Key is a name of an object property and value is its value.
     * @throws InvocationTargetException
+    *       When it was not possible to call the setter on the object.
     * @throws IllegalAccessException
+    *       When we did not have the correct rights to set any of the properties.
     */
    public static void setPropertiesOnObject(final Object object, final Properties properties) throws IllegalAccessException, InvocationTargetException {
       PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();
@@ -101,6 +119,23 @@ public class ObjectFactory {
       }
    }
 
+   /**
+    * Creates an instance of the given class and configures its properties.
+    *
+    * @param className
+    *       Name of the class to be constructed.
+    * @param properties
+    *       Properties to be configured on the class instance.
+    * @return Configured class instance.
+    * @throws InstantiationException
+    *       When it was not possible to create the object instance.
+    * @throws IllegalAccessException
+    *       When we did not have correct rights to create the object or set any of its properties.
+    * @throws ClassNotFoundException
+    *       When the given class does not exists.
+    * @throws InvocationTargetException
+    *       When it was not possible to call any of the properties setters.
+    */
    public static Object summonInstance(final String className, final Properties properties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
       Object object = Class.forName(className, false, getPluginClassLoader()).newInstance();
       setPropertiesOnObject(object, properties);
@@ -108,6 +143,19 @@ public class ObjectFactory {
       return object;
    }
 
+   /**
+    * Gets the properties of an object as a {@link java.util.Properties} object.
+    *
+    * @param object
+    *       The object to be inspected.
+    * @return All the properties of the object.
+    * @throws IllegalAccessException
+    *       When it was not possible to find, call, or use any of the getter methods.
+    * @throws NoSuchMethodException
+    *       When it was not possible to find, call, or use any of the getter methods.
+    * @throws InvocationTargetException
+    *       When it was not possible to find, call, or use any of the getter methods.
+    */
    public static Properties getObjectProperties(Object object) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
       Properties properties = new Properties();
       properties.putAll(BeanUtils.describe(object));
@@ -115,6 +163,11 @@ public class ObjectFactory {
       return properties;
    }
 
+   /**
+    * Gets a dedicated class loader for loading plugins.
+    *
+    * @return Plugin class loader.
+    */
    protected static ClassLoader getPluginClassLoader() {
       if (pluginClassLoader == null) {
          final ClassLoader currentClassLoader = ObjectFactory.class.getClassLoader();

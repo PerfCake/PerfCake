@@ -171,6 +171,8 @@ public class Chart {
     *       Attributes to be stored for this chart.
     * @param name
     *       Name of the chart.
+    * @param xAxisType
+    *       Type of the X axis - time, percents or iterations.
     * @param xAxis
     *       Legend of the X axis.
     * @param yAxis

@@ -122,6 +122,7 @@ public class DummySender extends AbstractSender {
     *
     * @param delay
     *       The delay to set.
+    * @return Instance of this for fluent API.
     */
    public DummySender setDelay(final long delay) {
       this.delay = delay;
@@ -137,6 +138,7 @@ public class DummySender extends AbstractSender {
 
    /**
     * Gets the iteration counter (how many times the doSend method has been called).
+    * @return The iteration counter value.
     */
    public static long getCounter() {
       return counter.get();

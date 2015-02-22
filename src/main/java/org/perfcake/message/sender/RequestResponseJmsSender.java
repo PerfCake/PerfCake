@@ -23,8 +23,8 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.util.Utils;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -303,6 +303,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param useCorrelationId
     *       When true, only the messages that are response to the original message can be read from the response destination. Otherwise, any response message can be read.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setUseCorrelationId(boolean useCorrelationId) {
       this.useCorrelationId = useCorrelationId;
@@ -332,6 +333,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param receivingTimeout
     *       Number of milliseconds to wait for the response message.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setReceivingTimeout(final long receivingTimeout) {
       this.receivingTimeout = receivingTimeout;
@@ -352,6 +354,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param receiveAttempts
     *       The maximum number of attempts to read the response message.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setReceiveAttempts(final int receiveAttempts) {
       this.receiveAttempts = receiveAttempts;
@@ -372,6 +375,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseTarget
     *       The name of the response destination.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setResponseTarget(final String responseTarget) {
       this.responseTarget = responseTarget;
@@ -392,6 +396,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param autoAck
     *       The autoAck to set.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setAutoAck(final boolean autoAck) {
       this.autoAck = autoAck;
@@ -413,6 +418,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseConnectionFactory
     *       The connection factory used for the response reception.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setResponseConnectionFactory(String responseConnectionFactory) {
       this.responseConnectionFactory = responseConnectionFactory;
@@ -433,6 +439,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseJndiContextFactory
     *       The JNDI context factory used for the response reception.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setResponseJndiContextFactory(String responseJndiContextFactory) {
       this.responseJndiContextFactory = responseJndiContextFactory;
@@ -454,6 +461,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseJndiUrl
     *       The JNDI URL used for the response reception.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setResponseJndiUrl(String responseJndiUrl) {
       this.responseJndiUrl = responseJndiUrl;
@@ -475,6 +483,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseJndiSecurityPrincipal
     *       The security principal used for the response reception.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setResponseJndiSecurityPrincipal(String responseJndiSecurityPrincipal) {
       this.responseJndiSecurityPrincipal = responseJndiSecurityPrincipal;
@@ -497,6 +506,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseJndiSecurityCredentials
     *       The JNDI security credentials to be used for the response reception.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setResponseJndiSecurityCredentials(String responseJndiSecurityCredentials) {
       this.responseJndiSecurityCredentials = responseJndiSecurityCredentials;
@@ -517,6 +527,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responseUsername
     *       The JMS username used for response reception.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setResponseUsername(String responseUsername) {
       this.responseUsername = responseUsername;
@@ -537,6 +548,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *
     * @param responsePassword
     *       The JMS username used for response reception.
+    * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setResponsePassword(String responsePassword) {
       this.responsePassword = responsePassword;

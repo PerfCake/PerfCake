@@ -108,6 +108,7 @@ public class Log4jDestination implements Destination {
     *
     * @param level
     *       Level at which the destination logs.
+    * @return Instance of this for fluent API.
     */
    public Log4jDestination setLevel(final Level level) {
       this.level = level;

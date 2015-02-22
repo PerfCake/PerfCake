@@ -52,6 +52,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario }
+    * @return Instance of Scenario.
     */
    public Scenario createScenario() {
       return new Scenario();
@@ -59,6 +60,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Validation }
+    * @return Instance of Validation.
     */
    public Scenario.Validation createScenarioValidation() {
       return new Scenario.Validation();
@@ -66,6 +68,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Messages }
+    * @return Instance of Messages.
     */
    public Scenario.Messages createScenarioMessages() {
       return new Scenario.Messages();
@@ -73,6 +76,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Messages.Message }
+    * @return Instance of Message.
     */
    public Scenario.Messages.Message createScenarioMessagesMessage() {
       return new Scenario.Messages.Message();
@@ -80,6 +84,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Reporting }
+    * @return Instance of Reporting.
     */
    public Scenario.Reporting createScenarioReporting() {
       return new Scenario.Reporting();
@@ -87,6 +92,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Reporting.Reporter }
+    * @return Instance of Reporter.
     */
    public Scenario.Reporting.Reporter createScenarioReportingReporter() {
       return new Scenario.Reporting.Reporter();
@@ -94,6 +100,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Reporting.Reporter.Destination }
+    * @return Instance of Destination.
     */
    public Scenario.Reporting.Reporter.Destination createScenarioReportingReporterDestination() {
       return new Scenario.Reporting.Reporter.Destination();
@@ -101,6 +108,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Generator }
+    * @return Instance of Generator.
     */
    public Scenario.Generator createScenarioGenerator() {
       return new Scenario.Generator();
@@ -108,6 +116,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Properties }
+    * @return Instance of Properties.
     */
    public Scenario.Properties createScenarioProperties() {
       return new Scenario.Properties();
@@ -115,6 +124,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Sender }
+    * @return Instance of Sender.
     */
    public Scenario.Sender createScenarioSender() {
       return new Scenario.Sender();
@@ -122,6 +132,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Property }
+    * @return Instance of Property.
     */
    public Property createProperty() {
       return new Property();
@@ -129,6 +140,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Header }
+    * @return Instance of Header.
     */
    public Header createHeader() {
       return new Header();
@@ -136,6 +148,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Validation.Validator }
+    * @return Instance of Validator.
     */
    public Scenario.Validation.Validator createScenarioValidationValidator() {
       return new Scenario.Validation.Validator();
@@ -143,6 +156,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Messages.Message.ValidatorRef }
+    * @return Instance of ValidatorRef.
     */
    public Scenario.Messages.Message.ValidatorRef createScenarioMessagesMessageValidatorRef() {
       return new Scenario.Messages.Message.ValidatorRef();
@@ -150,6 +164,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Reporting.Reporter.Destination.Period }
+    * @return Instance of Period.
     */
    public Scenario.Reporting.Reporter.Destination.Period createScenarioReportingReporterDestinationPeriod() {
       return new Scenario.Reporting.Reporter.Destination.Period();
@@ -157,6 +172,7 @@ public class ObjectFactory {
 
    /**
     * Create an instance of {@link Scenario.Generator.Run }
+    * @return Instance of Run.
     */
    public Scenario.Generator.Run createScenarioGeneratorRun() {
       return new Scenario.Generator.Run();

@@ -63,6 +63,7 @@ public class GroovySender extends CommandSender {
     *
     * @param groovyExecutable
     *       The groovyExecutable to set.
+    * @return Instance of this for fluent API.
     */
    public GroovySender setGroovyExecutable(final String groovyExecutable) {
       this.groovyExecutable = groovyExecutable;
