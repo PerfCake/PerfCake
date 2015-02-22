@@ -21,8 +21,8 @@ package org.perfcake.validation;
 
 import org.perfcake.message.Message;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -236,6 +236,7 @@ public class DictionaryValidator implements MessageValidator {
     *
     * @param dictionaryDirectory
     *       The name of the dictionary directory.
+    * @return Instance of this for fluent API.
     */
    public DictionaryValidator setDictionaryDirectory(String dictionaryDirectory) {
       this.dictionaryDirectory = dictionaryDirectory;
@@ -256,6 +257,7 @@ public class DictionaryValidator implements MessageValidator {
     *
     * @param dictionaryIndex
     *       The file name of the dictionary index.
+    * @return Instance of this for fluent API.
     */
    public DictionaryValidator setDictionaryIndex(String dictionaryIndex) {
       this.dictionaryIndex = dictionaryIndex;
@@ -276,6 +278,7 @@ public class DictionaryValidator implements MessageValidator {
     *
     * @param record
     *       True to activate the record mode.
+    * @return Instance of this for fluent API.
     */
    public DictionaryValidator setRecord(boolean record) {
       this.record = record;

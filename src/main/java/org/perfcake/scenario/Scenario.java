@@ -39,17 +39,40 @@ import java.util.List;
  */
 public class Scenario {
 
+   /**
+    * Logger for this class.
+    */
    private static final Logger log = LogManager.getLogger(Scenario.class);
+
+   /**
+    * Message generator.
+    */
    private AbstractMessageGenerator generator;
+
+   /**
+    * Manager of message senders.
+    */
    private MessageSenderManager messageSenderManager;
+
+   /**
+    * Report manager.
+    */
    private ReportManager reportManager;
+
+   /**
+    * Store of the messages.
+    */
    private List<MessageTemplate> messageStore;
+
+   /**
+    * Validation manager.
+    */
    private ValidationManager validationManager;
 
    /**
-    * Initialize the scenario execution
+    * Initializes the scenario execution.
     *
-    * @throws org.perfcake.PerfCakeException
+    * @throws org.perfcake.PerfCakeException When it was not possible to fully initialize the scenario.
     */
    public void init() throws PerfCakeException {
       if (log.isTraceEnabled()) {
@@ -67,9 +90,9 @@ public class Scenario {
    }
 
    /**
-    * Execute the scenario. This mainly means to send the messages.
+    * Executes the scenario. This mainly means to send the messages.
     *
-    * @throws PerfCakeException
+    * @throws PerfCakeException When it was not possible to execute the scenario.
     */
    public void run() throws PerfCakeException {
       if (log.isTraceEnabled()) {
@@ -97,7 +120,7 @@ public class Scenario {
    /**
     * Finalize the scenario.
     *
-    * @throws PerfCakeException
+    * @throws PerfCakeException When it was not possible to perform all finalization operations.
     */
    public void close() throws PerfCakeException {
       if (generator != null) {
@@ -115,52 +138,84 @@ public class Scenario {
       }
    }
 
+   /**
+    * Gets the current {@link org.perfcake.model.Scenario.Generator}.
+    * @return The current {@link org.perfcake.model.Scenario.Generator}.
+    */
    AbstractMessageGenerator getGenerator() {
       return generator;
    }
 
+   /**
+    * Sets the {@link org.perfcake.model.Scenario.Generator} for the scenario.
+    * @param generator The {@link org.perfcake.model.Scenario.Generator} to be set.
+    */
    void setGenerator(AbstractMessageGenerator generator) {
       this.generator = generator;
    }
 
+   /**
+    * Gets the current {@link org.perfcake.message.sender.MessageSenderManager}.
+    * @return The current {@link org.perfcake.message.sender.MessageSenderManager}.
+    */
    MessageSenderManager getMessageSenderManager() {
       return messageSenderManager;
    }
 
+   /**
+    * Sets the {@link org.perfcake.message.sender.MessageSenderManager}.
+    * @param messageSenderManager The {@link org.perfcake.message.sender.MessageSenderManager} to be set.
+    */
    void setMessageSenderManager(MessageSenderManager messageSenderManager) {
       this.messageSenderManager = messageSenderManager;
    }
 
+   /**
+    * Gets the current {@link org.perfcake.reporting.ReportManager}.
+    * @return The current {@link org.perfcake.reporting.ReportManager}.
+    */
    ReportManager getReportManager() {
       return reportManager;
    }
 
+   /**
+    * Sets the {@link org.perfcake.reporting.ReportManager}.
+    * @param reportManager The {@link org.perfcake.reporting.ReportManager} to be set.
+    */
    void setReportManager(ReportManager reportManager) {
       this.reportManager = reportManager;
    }
 
+   /**
+    * Gets the current message store.
+    * @return The current message store.
+    */
    List<MessageTemplate> getMessageStore() {
       return messageStore;
    }
 
+   /**
+    * Sets the message store.
+    * @param messageStore The message store to be set.
+    */
    void setMessageStore(List<MessageTemplate> messageStore) {
       this.messageStore = messageStore;
    }
 
    /**
-    * Sets the value of validationManager.
+    * Sets the {@link org.perfcake.validation.ValidationManager}.
     *
     * @param validationManager
-    *       The value of validationManager to set.
+    *       The {@link org.perfcake.validation.ValidationManager} to be set.
     */
    void setValidationManager(ValidationManager validationManager) {
       this.validationManager = validationManager;
    }
 
    /**
-    * Gets the validation manager configured with the scenario.
+    * Gets the current {@link org.perfcake.validation.ValidationManager}.
     *
-    * @return The validation manager configured with the scenario.
+    * @return The current {@link org.perfcake.validation.ValidationManager}.
     */
    ValidationManager getValidationManager() {
       return validationManager;

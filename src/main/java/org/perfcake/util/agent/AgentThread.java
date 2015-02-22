@@ -56,7 +56,9 @@ public class AgentThread implements Runnable {
    }
 
    /**
-    * @param agentArgs
+    * Creates a new agent thread.
+    *
+    * @param agentArgs Arguments passed to the agent.
     */
    public AgentThread(String agentArgs) {
       super();

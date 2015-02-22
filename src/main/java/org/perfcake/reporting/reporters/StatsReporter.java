@@ -38,9 +38,9 @@ import org.perfcake.reporting.reporters.accumulators.SlidingWindowMinAccumulator
  * This abstract reporter is able to report the minimal, maximal and average value from the beginning
  * of the measuring to the moment when the results are published including. The actual value about what
  * the statistics are gathered is computed as a result of the {@link #computeResult(MeasurementUnit)} method.
- * 
+ *
  * The default value of the reporter is a current value at the moment of publishing.
- * 
+ *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public abstract class StatsReporter extends AbstractReporter {
@@ -96,9 +96,9 @@ public abstract class StatsReporter extends AbstractReporter {
    /**
     * Gets an appropriate accumulator for a given key from the Measurement Unit's results map for the case that the value of the {@link #windowSize} is
     * different from the default value of {@link Integer#MAX_VALUE}.
-    * 
+    *
     * @param key
-    *        Name of the key from the results map.
+    *       Name of the key from the results map.
     * @return An appropriate accumulator instance.
     */
    @SuppressWarnings("rawtypes")
@@ -119,9 +119,9 @@ public abstract class StatsReporter extends AbstractReporter {
    /**
     * Gets an appropriate accumulator for a given key from the Measurement Unit's results map for the case that the value of the {@link #windowSize} is
     * equal to the value of {@link Integer#MAX_VALUE}, which is the default value.
-    * 
+    *
     * @param key
-    *        Name of the key from the results map.
+    *       Name of the key from the results map.
     * @return An appropriate accumulator instance.
     */
    @SuppressWarnings("rawtypes")
@@ -191,7 +191,7 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Gets the status of the metric of a maximal value
-    * 
+    *
     * @return Returns <code>true</code> if the metric of a maximal is enabled or <code>false</code> otherwise.
     */
    public boolean isMaximumEnabled() {
@@ -200,9 +200,10 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Enables or disables the metric of a maximal value.
-    * 
+    *
     * @param maximumEnabled
-    *        Set <code>true</code> to enable the metric of a maximal value or <code>false</code> to disable it.
+    *       Set <code>true</code> to enable the metric of a maximal value or <code>false</code> to disable it.
+    * @return Instance of this for fluent API.
     */
    public StatsReporter setMaximumEnabled(boolean maximumEnabled) {
       this.maximumEnabled = maximumEnabled;
@@ -211,7 +212,7 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Gets the status of the metric of a minimal value.
-    * 
+    *
     * @return Returns <code>true</code> if the metric of a minimal value is enabled or <code>false</code> otherwise.
     */
    public boolean isMinimumEnabled() {
@@ -220,9 +221,10 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Enables or disables the metric of a minimal value.
-    * 
+    *
     * @param minimumEnabled
-    *        Set <code>true</code> to enable the metric of a minimal value or <code>false</code> to disable it.
+    *       Set <code>true</code> to enable the metric of a minimal value or <code>false</code> to disable it.
+    * @return Instance of this for fluent API.
     */
    public StatsReporter setMinimumEnabled(boolean minimumEnabled) {
       this.minimumEnabled = minimumEnabled;
@@ -231,7 +233,7 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Gets the status of the metric of an average value.
-    * 
+    *
     * @return Returns <code>true</code> if the metric of an average value is enabled or <code>false</code> otherwise.
     */
    public boolean isAverageEnabled() {
@@ -240,9 +242,10 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Enables or disables the metric of an average value.
-    * 
+    *
     * @param averageEnabled
-    *        Set <code>true</code> to enable the metric of an average value or <code>false</code> to disable it.
+    *       Set <code>true</code> to enable the metric of an average value or <code>false</code> to disable it.
+    * @return Instance of this for fluent API.
     */
    public StatsReporter setAverageEnabled(boolean averageEnabled) {
       this.averageEnabled = averageEnabled;
@@ -252,7 +255,7 @@ public abstract class StatsReporter extends AbstractReporter {
    /**
     * Gets the sliding window size if set. If the size is equal to {@link Integer#MAX_VALUE}, then it means the
     * sliding window is not used at all and the statistics are taken from the whole run.
-    * 
+    *
     * @return The sliding window size.
     */
    public int getWindowSize() {
@@ -261,12 +264,13 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Sets the size of the sliding window.
-    * 
+    *
     * If the size is equal to {@link Integer#MAX_VALUE} (which is the default value), then it means the
     * sliding window is not used at all and the statistics are taken from the whole run.
-    * 
+    *
     * @param windowSize
-    *        The sliding window size.
+    *       The sliding window size.
+    * @return Instance of this for fluent API.
     */
    public StatsReporter setWindowSize(int windowSize) {
       this.windowSize = windowSize;
@@ -279,9 +283,9 @@ public abstract class StatsReporter extends AbstractReporter {
     * this method as units before sent to destinations.
     * If a stats reporter is supposed to have results with units the reporter is to override this method.<br/>
     * If the method returns a <code>null</code> value, the reporter's results remain untouched.
-    * 
+    *
     * @return The string representation of the reporter results' unit or a <code>null</code> value.
-    **/
+    */
    protected String getResultUnit() {
       return null;
    }

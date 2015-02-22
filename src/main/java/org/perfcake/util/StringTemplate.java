@@ -19,10 +19,8 @@
  */
 package org.perfcake.util;
 
-import httl.Engine;
-import httl.Template;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.text.ParseException;
 import java.util.HashMap;
@@ -31,36 +29,81 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import httl.Engine;
+import httl.Template;
+
 /**
  * A string template that can quickly replace properties in form of ${property} and #{property} to their values.
  * The properties with the dollar sign are replaced only once, while the properties with the hash sign are replaced with each call
- * to {@link toString()} with the current values (this simulates JavaEE EL). System properties can be accessed using the props. prefix,
+ * to {@link #toString()} with the current values (this simulates JavaEE EL). System properties can be accessed using the props. prefix,
  * and environment properties can be accessed using the env. prefix.
  * Automatically provides environment properties, system properties and user specified properties.
  * Examples: ${propertyA} ${1+1} ${non_existing||existing} ${propertyB - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}
  * Notice: The first call to the constructor and calls to the static method {@link #parseTemplate(String)} might take more time than a simple RegExp
- * match but this is payed back for the subsequent calls to {@link toString()}. Internally, the fast HTTL templating engine is used.
+ * match but this is payed back for the subsequent calls to {@link #toString()}. Internally, the fast HTTL templating engine is used.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class StringTemplate {
 
+   /**
+    * Prefix to allow usage of "env." and "props." prefixes in the template.
+    */
    private static final String PREFIX = "#set(Map env)#set(Map props)";
-   private static final int PREFIX_TOKENS = 2;
-   private static final String PROPERTY_PATTERN = "[^\\\\](@\\{([^@\\$\\{]+)})";
+
+   /**
+    * Pattern to find \@{property}.
+    */
    private static final String ESCAPED_PROPERTY_PATTERN = "([\\\\](@\\{[^@\\$\\{]+}))";
+
+   /**
+    * Pattern to find ${pattern}.
+    */
    private static final String ESCAPED_PATTERN = "(\\$(\\{[^\\$\\{]+}))";
+
+   /**
+    * Logger for this class.
+    */
    private static final Logger log = LogManager.getLogger(StringTemplate.class);
 
+   /**
+    * Cached compiled template.
+    */
    private Template template = null;
+
+   /**
+    * Original version of the template. Used in case there was not anything to replace.
+    */
    private String originalTemplate = null;
+
+   /**
+    * Variables to be replaced in the template.
+    */
    private Map vars = new HashMap();
+
+   /**
+    * Template engine.
+    */
    private Engine engine = getEngine();
 
+   /**
+    * Creates a template using the provided string interpretation.
+    *
+    * @param template
+    *       The string interpretation of the pattern.
+    */
    public StringTemplate(final String template) {
       this(template, null);
    }
 
+   /**
+    * Creates a template using the provided string interpretation using the additional properties.
+    *
+    * @param template
+    *       The string interpretation of the pattern.
+    * @param properties
+    *       Properties to be immediately replaced in the template.
+    */
    @SuppressWarnings("unchecked")
    public StringTemplate(final String template, final Properties properties) {
       this.originalTemplate = template;
@@ -78,10 +121,22 @@ public class StringTemplate {
       }
    }
 
+   /**
+    * Renders the template.
+    *
+    * @return The rendered template.
+    */
    public String toString() {
       return renderTemplate(vars);
    }
 
+   /**
+    * Renders the template using the additionally provided properties.
+    *
+    * @param properties
+    *       The additional properties to be replaced in the template.
+    * @return The rendered template.
+    */
    @SuppressWarnings("unchecked")
    public String toString(Properties properties) {
       Map localVars = new HashMap(vars);
@@ -92,10 +147,26 @@ public class StringTemplate {
       return renderTemplate(localVars);
    }
 
+   /**
+    * Gets the rendered template of the provided string interpretation and properties.
+    *
+    * @param template
+    *       The string representation of the template.
+    * @param properties
+    *       The properties to be replaced in the template.
+    * @return The rendered template.
+    */
    public static String parseTemplate(final String template, final Properties properties) {
       return new StringTemplate(template, properties).toString(properties);
    }
 
+   /**
+    * Gets the rendered template of the provided string interpretation.
+    *
+    * @param template
+    *       The string representation of the template.
+    * @return The rendered template.
+    */
    private Template parseTemplate(final String template) throws ParseException {
       return engine.parseTemplate(PREFIX + template);
    }
@@ -104,6 +175,11 @@ public class StringTemplate {
       return renderTemplate(this.template, variables);
    }
 
+   /**
+    * Is there anything in the template to be rendered?
+    *
+    * @return <code>true</code> if and only if the template contains any placeholders to be rendered.
+    */
    public boolean hasPlaceholders() {
       return template != null;
    }
@@ -162,7 +238,8 @@ public class StringTemplate {
     * During the first pass, the values of ${property} placeholders are replaced immediately.
     * All occurrences of #{property} are replaced with ${property} and the resulting string is returned for the second pass.
     *
-    * @param template The original template
+    * @param template
+    *       The original template
     * @return The template with first pass placeholders replaced and second pass placeholders ready for further parsing.
     */
    private void preParse(final String template) throws ParseException {

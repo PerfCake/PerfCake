@@ -112,6 +112,7 @@ public class RulesValidator implements MessageValidator {
     *
     * @param validationRuleFile
     *       The file name of the assertions file.
+    * @return Instance of this for fluent API.
     */
    public RulesValidator setRules(final String validationRuleFile) {
       try (final BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(validationRuleFile), StandardCharsets.UTF_8))) {

@@ -28,8 +28,8 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -165,6 +165,7 @@ public class WarmUpReporter extends AbstractReporter {
     *
     * @param minimalWarmUpDuration
     *       The minimal warm-up period duration to set.
+    * @return Instance of this for fluent API.
     */
    public WarmUpReporter setMinimalWarmUpDuration(final long minimalWarmUpDuration) {
       this.minimalWarmUpDuration = minimalWarmUpDuration;
@@ -185,6 +186,7 @@ public class WarmUpReporter extends AbstractReporter {
     *
     * @param minimalWarmUpCount
     *       The value of minimal warm-up iteration count to set.
+    * @return Instance of this for fluent API.
     */
    public WarmUpReporter setMinimalWarmUpCount(final long minimalWarmUpCount) {
       this.minimalWarmUpCount = minimalWarmUpCount;
@@ -205,6 +207,7 @@ public class WarmUpReporter extends AbstractReporter {
     *
     * @param relativeThreshold
     *       The value of relativeThreshold to set.
+    * @return Instance of this for fluent API.
     */
    public WarmUpReporter setRelativeThreshold(final double relativeThreshold) {
       this.relativeThreshold = relativeThreshold;
@@ -225,6 +228,7 @@ public class WarmUpReporter extends AbstractReporter {
     *
     * @param absoluteThreshold
     *       The value of absoluteThreshold to set.
+    * @return Instance of this for fluent API.
     */
    public WarmUpReporter setAbsoluteThreshold(final double absoluteThreshold) {
       this.absoluteThreshold = absoluteThreshold;

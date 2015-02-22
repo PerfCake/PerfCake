@@ -62,9 +62,9 @@ public class Measurement {
    /**
     * Creates a new instance of Measurement.
     *
-    * @param percentage
-    * @param time
-    * @param iteration
+    * @param percentage The current progress of the scenario execution in percents.
+    * @param time The current time of the scenario execution.
+    * @param iteration The current iteration of the scenario execution.
     */
    public Measurement(final long percentage, final long time, final long iteration) {
       super();
@@ -76,7 +76,7 @@ public class Measurement {
    /**
     * Used to read the value of percentage.
     *
-    * @return The percentage.
+    * @return The percentage progress of the scenario execution..
     */
    public long getPercentage() {
       return percentage;
@@ -85,7 +85,7 @@ public class Measurement {
    /**
     * Used to read the value of time.
     *
-    * @return The time.
+    * @return The time of the execution.
     */
    public long getTime() {
       return time;
@@ -94,7 +94,7 @@ public class Measurement {
    /**
     * Used to read the value of iteration.
     *
-    * @return The iteration.
+    * @return The iteration of the execution.
     */
    public long getIteration() {
       return iteration;
@@ -103,7 +103,7 @@ public class Measurement {
    /**
     * Used to read the value of results.
     *
-    * @return The results.
+    * @return The measured results.
     */
    public Map<String, Object> getAll() {
       return results;
@@ -119,18 +119,20 @@ public class Measurement {
    }
 
    /**
-    * @param name
-    * @return The result name
+    * Gets the result with the given name.
+    *
+    * @param name The name of the result to get.
+    * @return The result value.
     */
    public Object get(final String name) {
       return results.get(name);
    }
 
    /**
-    * Used to append a named result.
+    * Sets a named result.
     *
     * @param name
-    *       Name of the result.
+    *       The name of the result.
     * @param result
     *       The result value.
     */
@@ -139,7 +141,7 @@ public class Measurement {
    }
 
    /**
-    * Used to set the default result.
+    * Sets the default result.
     *
     * @param result
     *       The default result value.

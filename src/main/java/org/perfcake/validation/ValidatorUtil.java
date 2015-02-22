@@ -19,10 +19,11 @@
  */
 package org.perfcake.validation;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.perfcake.message.Message;
 import org.perfcake.util.Utils;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
@@ -77,14 +78,21 @@ public final class ValidatorUtil {
     * Validates messages in the <code>list</code> in the interval between <code>from</code> and <code>to</code> borders included. It applies <code>operator</code> on the messages <code>part</code> and
     * the valid <code>value</code>.
     *
-    * @param list      Message list.
-    * @param from      Begin of the interval.
-    * @param to        End of the interval.
-    * @param part      Validated message part.
-    * @param partValue Actual value of the parametrized message part (e.g. when <code>part</code> is a body part, this value specifies which
-    *                  one). If it is not provided, make it <code>null</code>.
-    * @param operator  Operator for validation.
-    * @param value     Valid value of validated message part.
+    * @param list
+    *       Message list.
+    * @param from
+    *       Begin of the interval.
+    * @param to
+    *       End of the interval.
+    * @param part
+    *       Validated message part.
+    * @param partValue
+    *       Actual value of the parametrized message part (e.g. when <code>part</code> is a body part, this value specifies which
+    *       one). If it is not provided, make it <code>null</code>.
+    * @param operator
+    *       Operator for validation.
+    * @param value
+    *       Valid value of validated message part.
     * @return A boolean value indicating, if validation of all messages passed
     * (<code>true</code>) or not (<code>false</code>).
     */
@@ -113,11 +121,18 @@ public final class ValidatorUtil {
     * applies <code>operator</code> on the message <code>part</code> and the
     * valid <code>value</code>.
     *
-    * @param list     Message list.
-    * @param number   Message position in the list.
-    * @param part     Validated message part.
-    * @param operator Operator for validation.
-    * @param value    Valid value of validated message part.
+    * @param list
+    *       Message list.
+    * @param number
+    *       Message position in the list.
+    * @param part
+    *       Validated message part.
+    * @param partName
+    *       Name of the message part.
+    * @param operator
+    *       Operator for validation.
+    * @param value
+    *       Valid value of validated message part.
     * @return A boolean value indicating, if validation of the message passed
     * (<code>true</code>) or not (<code>false</code>).
     */
@@ -227,14 +242,21 @@ public final class ValidatorUtil {
    /**
     * Validate that the <code>list</code> contains specified number of valid messages.
     *
-    * @param list       Message list.
-    * @param part       Validated message part.
-    * @param partName   Actual value of the parametrized message part (e.g. when <code>part</code> is a body part, this value specifies which
-    *                   one). If it is not provided, make it <code>null</code>.
-    * @param operator   Operator for validation.
-    * @param value      Valid value of validated message part.
-    * @param occurrence Type of message occurrence in the <code>list</code>.
-    * @param treshold   Treshold for the <code>occurrence</code> metrics.
+    * @param list
+    *       Message list.
+    * @param part
+    *       Validated message part.
+    * @param partName
+    *       Actual value of the parametrized message part (e.g. when <code>part</code> is a body part, this value specifies which
+    *       one). If it is not provided, make it <code>null</code>.
+    * @param operator
+    *       Operator for validation.
+    * @param value
+    *       Valid value of validated message part.
+    * @param occurrence
+    *       Type of message occurrence in the <code>list</code>.
+    * @param treshold
+    *       Treshold for the <code>occurrence</code> metrics.
     * @return A boolean value indicating, if validation of the message passed
     * (<code>true</code>) or not (<code>false</code>) with actual <code>occurrence</code>.
     */
@@ -261,16 +283,25 @@ public final class ValidatorUtil {
    /**
     * Validate that the sublist of the <code>list</code> (between <code>from</code> and <code>to</code> (borders included)) contains specified number of valid messages.
     *
-    * @param list       Message list.
-    * @param from       Begin of the interval.
-    * @param to         End of the interval.
-    * @param part       Validated message part.
-    * @param partName   Actual value of the parametrized message part (e.g. when <code>part</code> is a body part, this value specifies which
-    *                   one). If it is not provided, make it <code>null</code>.
-    * @param operator   Operator for validation.
-    * @param value      Valid value of validated message part.
-    * @param occurrence Type of message occurrence in the <code>list</code>.
-    * @param treshold   Treshold for the <code>occurrence</code> metrics.
+    * @param list
+    *       Message list.
+    * @param from
+    *       Begin of the interval.
+    * @param to
+    *       End of the interval.
+    * @param part
+    *       Validated message part.
+    * @param partName
+    *       Actual value of the parametrized message part (e.g. when <code>part</code> is a body part, this value specifies which
+    *       one). If it is not provided, make it <code>null</code>.
+    * @param operator
+    *       Operator for validation.
+    * @param value
+    *       Valid value of validated message part.
+    * @param occurrence
+    *       Type of message occurrence in the <code>list</code>.
+    * @param treshold
+    *       Treshold for the <code>occurrence</code> metrics.
     * @return A boolean value indicating, if validation of the message passed
     * (<code>true</code>) or not (<code>false</code>) with actual <code>occurrence</code>.
     */
@@ -297,12 +328,17 @@ public final class ValidatorUtil {
    /**
     * Count messages in the list that match the criteria (pass the validation)..
     *
-    * @param list     Message list.
-    * @param part     Validated message part.
-    * @param partName Actual value of the parametrized message part (e.g. when <code>part</code> is a body part, this value specifies which
-    *                 one). If it is not provided, make it <code>null</code>.
-    * @param operator Operator for validation.
-    * @param value    Valid value of validated message part.
+    * @param list
+    *       Message list.
+    * @param part
+    *       Validated message part.
+    * @param partName
+    *       Actual value of the parametrized message part (e.g. when <code>part</code> is a body part, this value specifies which
+    *       one). If it is not provided, make it <code>null</code>.
+    * @param operator
+    *       Operator for validation.
+    * @param value
+    *       Valid value of validated message part.
     * @return Number of messages in the list that match the criteria (pass the validation).
     * @see #validateMessage(java.util.List, int, org.perfcake.validation.ValidatorUtil.MessagePart, java.lang.String, org.perfcake.validation.ValidatorUtil.Operator,
     * java.lang.String)

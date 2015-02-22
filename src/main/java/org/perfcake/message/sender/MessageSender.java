@@ -64,6 +64,7 @@ public interface MessageSender {
 
    /**
     * Performs any action that needs to be done to send the message but is not directly related to the sending operation and thus not measured.
+    *
     * @param message Message to be sent.
     * @param properties Additional properties that can influence the sending of the message.
     * @throws Exception In case anything fails during the preparation.

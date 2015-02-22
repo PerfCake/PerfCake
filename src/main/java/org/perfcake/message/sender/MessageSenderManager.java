@@ -65,11 +65,11 @@ public class MessageSenderManager {
    }
 
    /**
-    * adds {@link MessageSender} into available senders and initializes it
+    * Adds {@link MessageSender} into available senders and initializes it.
     *
-    * @param sender
+    * @param sender Sender to be registered with this manager.
     * @throws Exception
-    *       if initialization of sender fails
+    *       When the initialization of the sender fails.
     */
    public void addSenderInstance(MessageSender sender) throws Exception {
       sender.init();
