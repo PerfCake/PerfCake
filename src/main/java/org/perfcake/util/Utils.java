@@ -178,7 +178,8 @@ public class Utils {
     * @param url
     *       The file location as an URL.
     * @return The file contents.
-    * @throws IOException When it was not possible to read the content.
+    * @throws IOException
+    *       When it was not possible to read the content.
     */
    public static String readFilteredContent(final URL url) throws IOException {
       try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
@@ -349,7 +350,8 @@ public class Utils {
    /**
     * Computes a linear regression trend of the data set provided.
     *
-    * @param data Data on which to compute the trend.
+    * @param data
+    *       Data on which to compute the trend.
     * @return The linear regression trend.
     */
    public static double computeRegressionTrend(Collection<TimestampedRecord<Number>> data) {
