@@ -26,8 +26,8 @@ import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 
@@ -72,7 +72,8 @@ public class Scenario {
    /**
     * Initializes the scenario execution.
     *
-    * @throws org.perfcake.PerfCakeException When it was not possible to fully initialize the scenario.
+    * @throws org.perfcake.PerfCakeException
+    *       When it was not possible to fully initialize the scenario.
     */
    public void init() throws PerfCakeException {
       if (log.isTraceEnabled()) {
@@ -92,7 +93,8 @@ public class Scenario {
    /**
     * Executes the scenario. This mainly means to send the messages.
     *
-    * @throws PerfCakeException When it was not possible to execute the scenario.
+    * @throws PerfCakeException
+    *       When it was not possible to execute the scenario.
     */
    public void run() throws PerfCakeException {
       if (log.isTraceEnabled()) {
@@ -120,7 +122,8 @@ public class Scenario {
    /**
     * Finalize the scenario.
     *
-    * @throws PerfCakeException When it was not possible to perform all finalization operations.
+    * @throws PerfCakeException
+    *       When it was not possible to perform all finalization operations.
     */
    public void close() throws PerfCakeException {
       if (generator != null) {
@@ -140,6 +143,7 @@ public class Scenario {
 
    /**
     * Gets the current {@link org.perfcake.model.Scenario.Generator}.
+    *
     * @return The current {@link org.perfcake.model.Scenario.Generator}.
     */
    AbstractMessageGenerator getGenerator() {
@@ -148,7 +152,9 @@ public class Scenario {
 
    /**
     * Sets the {@link org.perfcake.model.Scenario.Generator} for the scenario.
-    * @param generator The {@link org.perfcake.model.Scenario.Generator} to be set.
+    *
+    * @param generator
+    *       The {@link org.perfcake.model.Scenario.Generator} to be set.
     */
    void setGenerator(AbstractMessageGenerator generator) {
       this.generator = generator;
@@ -156,6 +162,7 @@ public class Scenario {
 
    /**
     * Gets the current {@link org.perfcake.message.sender.MessageSenderManager}.
+    *
     * @return The current {@link org.perfcake.message.sender.MessageSenderManager}.
     */
    MessageSenderManager getMessageSenderManager() {
@@ -164,7 +171,9 @@ public class Scenario {
 
    /**
     * Sets the {@link org.perfcake.message.sender.MessageSenderManager}.
-    * @param messageSenderManager The {@link org.perfcake.message.sender.MessageSenderManager} to be set.
+    *
+    * @param messageSenderManager
+    *       The {@link org.perfcake.message.sender.MessageSenderManager} to be set.
     */
    void setMessageSenderManager(MessageSenderManager messageSenderManager) {
       this.messageSenderManager = messageSenderManager;
@@ -172,6 +181,7 @@ public class Scenario {
 
    /**
     * Gets the current {@link org.perfcake.reporting.ReportManager}.
+    *
     * @return The current {@link org.perfcake.reporting.ReportManager}.
     */
    ReportManager getReportManager() {
@@ -180,7 +190,9 @@ public class Scenario {
 
    /**
     * Sets the {@link org.perfcake.reporting.ReportManager}.
-    * @param reportManager The {@link org.perfcake.reporting.ReportManager} to be set.
+    *
+    * @param reportManager
+    *       The {@link org.perfcake.reporting.ReportManager} to be set.
     */
    void setReportManager(ReportManager reportManager) {
       this.reportManager = reportManager;
@@ -188,6 +200,7 @@ public class Scenario {
 
    /**
     * Gets the current message store.
+    *
     * @return The current message store.
     */
    List<MessageTemplate> getMessageStore() {
@@ -196,7 +209,9 @@ public class Scenario {
 
    /**
     * Sets the message store.
-    * @param messageStore The message store to be set.
+    *
+    * @param messageStore
+    *       The message store to be set.
     */
    void setMessageStore(List<MessageTemplate> messageStore) {
       this.messageStore = messageStore;
