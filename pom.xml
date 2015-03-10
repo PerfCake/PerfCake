@@ -615,7 +615,7 @@
                         <directory>${basedir}</directory>
                         <includes>
                            <include>logs</include>
-                           <include>*.log</include>
+                           <include>*.log*</include>
                         </includes>
                         <followSymlinks>false</followSymlinks>
                      </fileset>
