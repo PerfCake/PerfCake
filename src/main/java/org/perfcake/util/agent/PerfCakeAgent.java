@@ -36,7 +36,18 @@
 package org.perfcake.util.agent;
 
 /**
- * PerfCake agent that can be used to monitor tested system's JVM.
+ * Java implementation of a PerfCake agent that can be used to monitor tested system's JVM.
+ *
+ * <p>Starts a thread with a socket server listening on a specified host and port and is used
+ * by {@link org.perfcake.reporting.reporters.MemoryUsageReporter} to gather memory usage data
+ * and to control garbage collection and heap dump activities needed by the reporter.</p>
+ *
+ * <p>To attach the agent to the tested system's JVM, append the following JVM argument to
+ * the executing java command or use JAVA_OPTS environment variable:</p>
+ *
+ * <p><code>"... -javaagent:&lt;perfcake_jar_path&gt;=hostname=&lt;hostname&gt;,port=&lt;port&gt;</code></p>
+ * <p>where <code>perfcake_jar_path</code> is a path to PerfCake JAR archive, <code>hostname</code> and <code>port</code>
+ * specifes agent's socket.</p>
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
@@ -66,6 +77,7 @@ public class PerfCakeAgent {
     *
     * @param agentArgs
     *       Agent arguments.
+    * @see java.lang.instrument
     */
    public static void premain(String agentArgs) {
       Thread agentThread = new Thread(new AgentThread(agentArgs));
