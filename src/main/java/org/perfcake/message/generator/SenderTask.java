@@ -19,8 +19,6 @@
  */
 package org.perfcake.message.generator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
@@ -32,6 +30,9 @@ import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 import org.perfcake.validation.ValidationTask;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -40,7 +41,10 @@ import java.util.Properties;
 import java.util.concurrent.Semaphore;
 
 /**
- * <p> The sender task is a runnable class that is executing a single task of sending the message(s) from the message store using instances of {@link MessageSender} provided by message sender manager (see {@link MessageSenderManager}), receiving the message sender's response and handling the reporting and response message validation. </p> <p> It is used by the generators. </p>
+ * The sender task is a runnable class that is executing a single task of sending the message(s) from the message store
+ * using instances of {@link MessageSender} provided by message sender manager (see {@link MessageSenderManager}),
+ * receiving the message sender's response and handling the reporting and response message validation.
+ * Sender task is not part of the public API, it is used from generators.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -82,7 +86,16 @@ class SenderTask implements Runnable {
     */
    private Semaphore semaphore;
 
-   // limit the possibilities to construct this class
+   /**
+    * Creates a new task to send a message.
+    * The semaphore is released when the task is finished. This is used to control the maximum number of sender tasks running in parallel.
+    * The visibility of this constructor is limited as it is not intended for normal use.
+    * To obtain a new instance of a sender task properly initialized call
+    * {@link org.perfcake.message.generator.AbstractMessageGenerator#newSenderTask(java.util.concurrent.Semaphore)}.
+    *
+    * @param semaphore
+    *       A semaphore to be released once the task is finished.
+    */
    protected SenderTask(Semaphore semaphore) {
       this.semaphore = semaphore;
    }
@@ -119,6 +132,9 @@ class SenderTask implements Runnable {
       return result;
    }
 
+   /**
+    * Executes the scheduled sender task. This is supposed to be controlled by an enclosing thread.
+    */
    @Override
    public void run() {
       assert messageStore != null && reportManager != null && validationManager != null && senderManager != null : "SenderTask was not properly initialized.";
@@ -181,22 +197,52 @@ class SenderTask implements Runnable {
       }
    }
 
+   /**
+    * Configures a {@link org.perfcake.message.sender.MessageSenderManager} for the sender task.
+    *
+    * @param senderManager
+    *       {@link org.perfcake.message.sender.MessageSenderManager} to be used by the sender task.
+    */
    protected void setSenderManager(final MessageSenderManager senderManager) {
       this.senderManager = senderManager;
    }
 
+   /**
+    * Configures a message store for the sender task.
+    *
+    * @param messageStore
+    *       Message store to be used by the sender task.
+    */
    protected void setMessageStore(final List<MessageTemplate> messageStore) {
       this.messageStore = messageStore;
    }
 
+   /**
+    * Enables or disables marking the messages with a unique number. Disable this for maximal performance.
+    *
+    * @param messageNumberingEnabled
+    *       True to enable message numbering, false otherwise.
+    */
    protected void setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
       this.messageNumberingEnabled = messageNumberingEnabled;
    }
 
+   /**
+    * Configures a {@link org.perfcake.reporting.ReportManager} for the sender task.
+    *
+    * @param reportManager
+    *       {@link org.perfcake.reporting.ReportManager} to be used by the sender task.
+    */
    protected void setReportManager(final ReportManager reportManager) {
       this.reportManager = reportManager;
    }
 
+   /**
+    * Configures a {@link org.perfcake.validation.ValidationManager} for the sender task.
+    *
+    * @param validationManager
+    *       {@link org.perfcake.validation.ValidationManager} to be used by the sender task.
+    */
    protected void setValidationManager(final ValidationManager validationManager) {
       this.validationManager = validationManager;
    }
