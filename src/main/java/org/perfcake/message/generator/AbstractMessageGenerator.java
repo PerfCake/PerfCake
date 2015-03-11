@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -95,6 +95,14 @@ public abstract class AbstractMessageGenerator {
       this.messageSenderManager.init();
    }
 
+   /**
+    * Gets a new instance of a {@link org.perfcake.message.generator.SenderTask}.
+    * The provided semaphore can be used to control parallel execution of sender tasks in multiple threads.
+    *
+    * @param semaphore Semaphore that will be release upon completion of the sender task.
+    *
+    * @return A sender task ready to work on another iteration.
+    */
    protected SenderTask newSenderTask(Semaphore semaphore) {
       final SenderTask task = new SenderTask(semaphore);
 
@@ -108,7 +116,7 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-    * Sets the message sender manager.
+    * Sets the {@link org.perfcake.message.sender.MessageSenderManager} to be used for generating the messages.
     *
     * @param messageSenderManager
     *       The message sender manager to set.
@@ -118,10 +126,9 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-    * Sets the current run info.
+    * Sets the current {@link org.perfcake.RunInfo} to control generating of the messages.
     *
-    * @param runInfo
-    *       The current run info object.
+    * @param runInfo {@link org.perfcake.RunInfo} to be used.
     */
    public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
@@ -135,34 +142,33 @@ public abstract class AbstractMessageGenerator {
    abstract protected void validateRunInfo();
 
    /**
-    * Sets the report manager.
+    * Sets the {@link org.perfcake.reporting.ReportManager} to be used for the current performance test execution.
     *
-    * @param reportManager
-    *       The report manager to set.
+    * @param reportManager {@link org.perfcake.reporting.ReportManager} to be used.
     */
    public void setReportManager(final ReportManager reportManager) {
       this.reportManager = reportManager;
    }
 
    /**
-    * It closes and finalize the generator. During the closing the {@link #messageSenderManager} is closed as well.
+    * Closes and finalizes the generator. The {@link #messageSenderManager} is closed as well.
     *
     * @throws PerfCakeException
-    *       When it was not to smoothly finalize the generator.
+    *       When it was not possible to smoothly finalize the generator.
     */
    public void close() throws PerfCakeException {
       messageSenderManager.close();
    }
 
    /**
-    * Sets the timestamp of the moment when generator execution started.
+    * Records the timestamp of the moment when the generator execution started.
     */
    protected void setStartTime() {
       reportManager.start();
    }
 
    /**
-    * Sets the timestamp of the moment when generator execution stopped.
+    * Records the timestamp of the moment when the generator execution stopped.
     */
    protected void setStopTime() {
       if (runInfo.isStarted()) {
@@ -171,18 +177,18 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-    * Computes the current average speed the iterations are executed.
+    * Computes the current average speed at which the iterations are executed.
     *
-    * @param cnt
-    *       The iteration count.
-    * @return The current average iteration execution speed.
+    * @param cnt Current iteration number.
+    *
+    * @return The current average iteration execution speed in iterations per second.
     */
    protected float getSpeed(final long cnt) {
       return 1000f * cnt / runInfo.getRunTime();
    }
 
    /**
-    * Executes the actual implementation of a generator.
+    * Generate the messages. This actually executes the whole performance test.
     *
     * @throws Exception
     *       When it was not possible to generate the messages.
