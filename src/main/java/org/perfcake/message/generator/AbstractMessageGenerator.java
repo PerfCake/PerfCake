@@ -75,7 +75,7 @@ public abstract class AbstractMessageGenerator {
    protected boolean messageNumberingEnabled = false;
 
    /**
-    * Represents the information about current run
+    * Represents the information about current run.
     */
    protected RunInfo runInfo;
 
@@ -118,10 +118,10 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-    * Sets the current run info
+    * Sets the current run info.
     *
     * @param runInfo
-    *       The current run info object
+    *       The current run info object.
     */
    public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
@@ -130,12 +130,12 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-    * Verifies that the current configuration of {@link org.perfcake.RunInfo} is supported by the current generator
+    * Verifies that the current configuration of {@link org.perfcake.RunInfo} is supported by the current generator.
     */
    abstract protected void validateRunInfo();
 
    /**
-    * Sets the report manager
+    * Sets the report manager.
     *
     * @param reportManager
     *       The report manager to set.
@@ -190,18 +190,9 @@ public abstract class AbstractMessageGenerator {
    public abstract void generate() throws Exception;
 
    /**
-    * Executes the steps needed after the moment the warm-up period ended.
+    * Gets the value of threads.
     *
-    * @throws Exception
-    */
-   protected void postWarmUp() throws Exception {
-      // override if needed
-   }
-
-   /**
-    * Used to read the value of threads.
-    *
-    * @return the threads
+    * @return The number of currently running threads.
     */
    public int getThreads() {
       return threads;
@@ -212,7 +203,7 @@ public abstract class AbstractMessageGenerator {
     *
     * @param threads
     *       The number of threads.
-    * @return this
+    * @return Returns this instance for fluent API.
     */
    public AbstractMessageGenerator setThreads(final int threads) {
       this.threads = threads;
@@ -237,13 +228,19 @@ public abstract class AbstractMessageGenerator {
     *
     * @param messageNumberingEnabled
     *       The messageNumberingEnabled to set.
-    * @return this
+    * @return Returns this instance for fluent API.
     */
    public AbstractMessageGenerator setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
       this.messageNumberingEnabled = messageNumberingEnabled;
       return this;
    }
 
+   /**
+   * Sets the value of validationManager {@link org.perfcake.validation.ValidationManager}.
+   *
+   * @param validationManager
+   *       The validationManager to set.
+   */
    public void setValidationManager(final ValidationManager validationManager) {
       this.validationManager = validationManager;
    }
