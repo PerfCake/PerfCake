@@ -29,14 +29,41 @@ public class PerfCakeException extends Exception {
 
    private static final long serialVersionUID = 7819381443289919857L;
 
+   /**
+    * Defaults to {@link java.lang.Exception#Exception(String, Throwable)}.
+    * @see java.lang.Exception#Exception(String, Throwable)
+    *
+    * @param message The detailed message. The detailed message is saved for
+    *          later retrieval by the {@link #getMessage()} method.
+    * @param cause The cause (which is saved for later retrieval by the
+    *         {@link #getCause()} method). (A <tt>null</tt> value is
+    *         permitted, and indicates that the cause is nonexistent or
+    *         unknown.)
+    */
    public PerfCakeException(final String message, final Throwable cause) {
       super(message, cause);
    }
 
+   /**
+    * Defaults to {@link java.lang.Exception#Exception(Throwable)}.
+    * @see java.lang.Exception#Exception(Throwable)
+
+    * @param cause The cause (which is saved for later retrieval by the
+    *         {@link #getCause()} method). (A <tt>null</tt> value is
+    *         permitted, and indicates that the cause is nonexistent or
+    *         unknown.)
+    */
    public PerfCakeException(final Throwable cause) {
       super(cause);
    }
 
+   /**
+    * Defaults to {@link java.lang.Exception#Exception(String)}.
+    * @see java.lang.Exception#Exception(String)
+    *
+    * @param message The detailed message. The detailed message is saved for
+    *          later retrieval by the {@link #getMessage()} method.
+    */
    public PerfCakeException(final String message) {
       super(message);
    }
