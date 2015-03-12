@@ -159,7 +159,7 @@ public class MessageTemplate implements Serializable {
    }
 
    // fill in the transient field
-   private void readObject(java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
+   private void readObject(final java.io.ObjectInputStream stream) throws java.io.IOException, ClassNotFoundException {
       stream.defaultReadObject();
       if (isStringMessage) {
          prepareTemplate();

@@ -99,7 +99,7 @@ public class JdbcSender extends AbstractSender {
    public void close() {
       try {
          connection.close();
-      } catch (SQLException ex) {
+      } catch (final SQLException ex) {
          log.error(ex.getMessage());
       }
    }
@@ -122,18 +122,18 @@ public class JdbcSender extends AbstractSender {
     */
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
-      boolean result = statement.execute((String) message.getPayload());
+      final boolean result = statement.execute((String) message.getPayload());
       Serializable retVal;
       if (result) {
-         ResultSet resultSet = statement.getResultSet();
+         final ResultSet resultSet = statement.getResultSet();
 
          if (log.isDebugEnabled()) {
-            ResultSetMetaData rsmd = resultSet.getMetaData();
-            int columnCount = rsmd.getColumnCount();
+            final ResultSetMetaData rsmd = resultSet.getMetaData();
+            final int columnCount = rsmd.getColumnCount();
 
             log.debug("Column count: " + columnCount);
 
-            StringBuffer sb = new StringBuffer();
+            final StringBuffer sb = new StringBuffer();
             for (int i = 1; i <= columnCount; i++) {
                sb.append(" ");
                sb.append(rsmd.getColumnName(i));

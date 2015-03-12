@@ -61,7 +61,7 @@ public class WeightedValue<T extends Number> {
    }
 
    @Override
-   public boolean equals(Object o) {
+   public boolean equals(final Object o) {
       if (this == o) {
          return true;
       }
@@ -69,7 +69,7 @@ public class WeightedValue<T extends Number> {
          return false;
       }
 
-      WeightedValue that = (WeightedValue) o;
+      final WeightedValue that = (WeightedValue) o;
 
       if (weight != that.weight) {
          return false;

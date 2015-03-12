@@ -52,16 +52,16 @@ public class MessageTemplateTest extends TestSetup {
 
    @Test
    public void messageTemplateFilteringTest() throws PerfCakeException {
-      ScenarioLoader sl = new ScenarioLoader();
-      Scenario scenario = sl.load("test-scenario-unfiltered");
-      ScenarioRetractor sr = new ScenarioRetractor(scenario);
-      List<MessageTemplate> messageStore = sr.getMessageStore();
+      final ScenarioLoader sl = new ScenarioLoader();
+      final Scenario scenario = sl.load("test-scenario-unfiltered");
+      final ScenarioRetractor sr = new ScenarioRetractor(scenario);
+      final List<MessageTemplate> messageStore = sr.getMessageStore();
       Assert.assertEquals(messageStore.size(), 6);
 
-      Properties propertiesToBeFiltered = new Properties();
+      final Properties propertiesToBeFiltered = new Properties();
       propertiesToBeFiltered.setProperty(HELLO_NAME, HELLO_VALUE);
       propertiesToBeFiltered.setProperty(NUMBER_NAME, String.valueOf(NUMBER_VALUE));
-      Message m0 = messageStore.get(0).getFilteredMessage(propertiesToBeFiltered);
+      final Message m0 = messageStore.get(0).getFilteredMessage(propertiesToBeFiltered);
       Assert.assertEquals(m0.getPayload(), EXPECTED_MESSAGE_FROM_URI);
 
       Message m1 = messageStore.get(1).getFilteredMessage(propertiesToBeFiltered);
@@ -71,16 +71,16 @@ public class MessageTemplateTest extends TestSetup {
       m1 = messageStore.get(1).getFilteredMessage(propertiesToBeFiltered);
       Assert.assertEquals(m1.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_1B);
 
-      Message m2 = messageStore.get(2).getFilteredMessage(propertiesToBeFiltered);
+      final Message m2 = messageStore.get(2).getFilteredMessage(propertiesToBeFiltered);
       Assert.assertEquals(m2.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_2);
 
-      Message m3 = messageStore.get(3).getFilteredMessage(propertiesToBeFiltered);
+      final Message m3 = messageStore.get(3).getFilteredMessage(propertiesToBeFiltered);
       Assert.assertEquals(m3.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_3);
 
-      Message m4 = messageStore.get(4).getFilteredMessage(propertiesToBeFiltered);
+      final Message m4 = messageStore.get(4).getFilteredMessage(propertiesToBeFiltered);
       Assert.assertEquals(m4.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_4);
 
-      Message m5 = messageStore.get(5).getFilteredMessage(propertiesToBeFiltered);
+      final Message m5 = messageStore.get(5).getFilteredMessage(propertiesToBeFiltered);
       Assert.assertEquals(m5.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_5);
    }
 }

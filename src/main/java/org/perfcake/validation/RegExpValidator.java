@@ -74,7 +74,7 @@ public class RegExpValidator implements MessageValidator {
       return true;
    }
 
-   private boolean matches(String string, String regex) {
+   private boolean matches(final String string, final String regex) {
       int flags = 0;
       if (caseInsensitive) {
          flags = flags | Pattern.CASE_INSENSITIVE;
@@ -121,7 +121,7 @@ public class RegExpValidator implements MessageValidator {
     *       The regular expression pattern.
     * @return Instance of this to support fluent API.
     */
-   public RegExpValidator setPattern(String pattern) {
+   public RegExpValidator setPattern(final String pattern) {
       this.pattern = pattern;
       return this;
    }
@@ -132,7 +132,7 @@ public class RegExpValidator implements MessageValidator {
     * @param pattern
     *       The DOM element from whose content the regular expression pattern is taken.
     */
-   public void setPatternAsElement(Element pattern) {
+   public void setPatternAsElement(final Element pattern) {
       this.pattern = pattern.getTextContent();
    }
 

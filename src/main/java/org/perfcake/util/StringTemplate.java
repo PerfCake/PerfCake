@@ -79,12 +79,12 @@ public class StringTemplate {
    /**
     * Variables to be replaced in the template.
     */
-   private Map vars = new HashMap();
+   private final Map vars = new HashMap();
 
    /**
     * Template engine.
     */
-   private Engine engine = getEngine();
+   private final Engine engine = getEngine();
 
    /**
     * Creates a template using the provided string interpretation.
@@ -116,7 +116,7 @@ public class StringTemplate {
 
       try {
          preParse(template);
-      } catch (ParseException pe) {
+      } catch (final ParseException pe) {
          log.error("Unable to parse template. Continue with un-parsed content: ", pe);
       }
    }
@@ -138,8 +138,8 @@ public class StringTemplate {
     * @return The rendered template.
     */
    @SuppressWarnings("unchecked")
-   public String toString(Properties properties) {
-      Map localVars = new HashMap(vars);
+   public String toString(final Properties properties) {
+      final Map localVars = new HashMap(vars);
       if (properties != null) {
          localVars.putAll(properties);
       }
@@ -188,7 +188,7 @@ public class StringTemplate {
       if (template != null) {
          try {
             return template.evaluate(variables).toString();
-         } catch (ParseException pe) {
+         } catch (final ParseException pe) {
             log.error("Cannot parse template. Continue with un-parsed content: ", pe);
          }
       }
@@ -196,7 +196,7 @@ public class StringTemplate {
    }
 
    private Engine getEngine() {
-      Properties config = new Properties();
+      final Properties config = new Properties();
       config.setProperty("value.filters", "");
       config.setProperty("script.value.filters", "");
       config.setProperty("style.value.filters", "");
@@ -210,7 +210,7 @@ public class StringTemplate {
    private boolean isUnescapedAtSign(final String suspect) {
       char last = '\0';
       for (int i = 0; i < suspect.length(); i++) {
-         char c = suspect.charAt(i);
+         final char c = suspect.charAt(i);
          if (c == '@' && last != '\\') {
             return true;
          }
@@ -221,9 +221,9 @@ public class StringTemplate {
 
    private String replaceUnescapedAtSign(final String suspect) {
       char last = '\0';
-      StringBuilder sb = new StringBuilder();
+      final StringBuilder sb = new StringBuilder();
       for (int i = 0; i < suspect.length(); i++) {
-         char c = suspect.charAt(i);
+         final char c = suspect.charAt(i);
          if (c == '@' && last != '\\') {
             sb.append("$");
          } else {

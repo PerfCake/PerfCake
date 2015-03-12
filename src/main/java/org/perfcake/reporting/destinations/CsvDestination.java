@@ -115,12 +115,12 @@ public class CsvDestination implements Destination {
          if (csvFile.exists()) {
             switch (appendStrategy) {
                case RENAME:
-                  String name = csvFile.getAbsolutePath();
+                  final String name = csvFile.getAbsolutePath();
                   File f = null;
                   int ind = 1;
                   do {
                      //
-                     int lastDot = name.lastIndexOf(".");
+                     final int lastDot = name.lastIndexOf(".");
                      if (lastDot > -1) {
                         f = new File(name.substring(0, lastDot) + "." + (ind++) + name.substring(lastDot));
                      } else {
@@ -151,7 +151,7 @@ public class CsvDestination implements Destination {
          if (outputChannel != null) {
             try {
                outputChannel.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
             }
          }
@@ -162,7 +162,7 @@ public class CsvDestination implements Destination {
    private void presetResultNames(final Measurement m) {
       final Map<String, Object> results = m.getAll();
 
-      for (String key : results.keySet()) {
+      for (final String key : results.keySet()) {
          if (!key.equals(Measurement.DEFAULT_RESULT)) {
             resultNames.add(key);
          }
@@ -180,7 +180,7 @@ public class CsvDestination implements Destination {
          sb.append(delimiter);
          sb.append(Measurement.DEFAULT_RESULT);
       }
-      for (String key : resultNames) {
+      for (final String key : resultNames) {
          sb.append(delimiter);
          sb.append(key);
       }
@@ -207,7 +207,7 @@ public class CsvDestination implements Destination {
       }
 
       Object currentResult;
-      for (String resultName : resultNames) {
+      for (final String resultName : resultNames) {
          sb.append(delimiter);
          currentResult = results.get(resultName);
          if (currentResult instanceof Quantity<?>) {
@@ -255,7 +255,7 @@ public class CsvDestination implements Destination {
             }
 
             outputChannel.write(ByteBuffer.wrap(sb.toString().getBytes(Charset.forName(Utils.getDefaultEncoding()))));
-         } catch (IOException ioe) {
+         } catch (final IOException ioe) {
             throw new ReportingException(String.format("Could not append a report to the file %s.", csvFile.getPath()), ioe);
          }
       }
@@ -288,7 +288,7 @@ public class CsvDestination implements Destination {
             try {
                outputChannel.close();
                outputChannel = null;
-            } catch (IOException e) {
+            } catch (final IOException e) {
                log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
             }
          }
@@ -335,7 +335,7 @@ public class CsvDestination implements Destination {
     *       The appendStrategy value to set.
     * @return Instance of this to support fluent API.
     */
-   public CsvDestination setAppendStrategy(AppendStrategy appendStrategy) {
+   public CsvDestination setAppendStrategy(final AppendStrategy appendStrategy) {
       this.appendStrategy = appendStrategy;
       return this;
    }
@@ -357,7 +357,7 @@ public class CsvDestination implements Destination {
     *       The data lines prefix.
     * @return Instance of this to support fluent API.
     */
-   public CsvDestination setLinePrefix(String linePrefix) {
+   public CsvDestination setLinePrefix(final String linePrefix) {
       this.linePrefix = linePrefix;
       return this;
    }
@@ -379,7 +379,7 @@ public class CsvDestination implements Destination {
     *       The data lines suffix.
     * @return Instance of this to support fluent API.
     */
-   public CsvDestination setLineSuffix(String lineSuffix) {
+   public CsvDestination setLineSuffix(final String lineSuffix) {
       this.lineSuffix = lineSuffix;
       return this;
    }
@@ -400,7 +400,7 @@ public class CsvDestination implements Destination {
     *       The delimiter used to separate output lines.
     * @return Instance of this to support fluent API.
     */
-   public CsvDestination setLineBreak(String lineBreak) {
+   public CsvDestination setLineBreak(final String lineBreak) {
       this.lineBreak = lineBreak;
       return this;
    }
@@ -421,7 +421,7 @@ public class CsvDestination implements Destination {
     *       When set to true, headers are not written.
     * @return Instance of this to support fluent API.
     */
-   public CsvDestination setSkipHeader(boolean skipHeader) {
+   public CsvDestination setSkipHeader(final boolean skipHeader) {
       this.skipHeader = skipHeader;
       return this;
    }

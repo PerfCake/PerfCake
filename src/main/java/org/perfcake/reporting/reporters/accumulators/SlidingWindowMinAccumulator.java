@@ -41,7 +41,7 @@ public class SlidingWindowMinAccumulator extends AbstractSlidingWindowAccumulato
    public Double getResult() {
       double min = Double.POSITIVE_INFINITY;
       synchronized (fifo) {
-         for (Object o : fifo) {
+         for (final Object o : fifo) {
             min = Math.min(min, (Double) o);
          }
       }

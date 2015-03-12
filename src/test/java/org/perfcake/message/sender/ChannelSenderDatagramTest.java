@@ -53,14 +53,14 @@ public class ChannelSenderDatagramTest {
    private static final int PORT = 4444;
    private static String host;
    private String target;
-   private DatagramSocketVerticle vert = new DatagramSocketVerticle();
+   private final DatagramSocketVerticle vert = new DatagramSocketVerticle();
 
    @BeforeClass
    public void setUp() throws Exception {
       host = InetAddress.getLocalHost().getHostAddress();
       target = host + ":" + PORT;
 
-      Vertx vertx = VertxFactory.newVertx();
+      final Vertx vertx = VertxFactory.newVertx();
       vert.setVertx(vertx);
       vert.start();
    }
@@ -89,11 +89,11 @@ public class ChannelSenderDatagramTest {
          sender.init();
          sender.preSend(message, null);
 
-         Serializable response = sender.doSend(message, null, null);
+         final Serializable response = sender.doSend(message, null, null);
          Assert.assertEquals(response, "fish2");
 
          sender.postSend(message);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
       }
    }
@@ -109,11 +109,11 @@ public class ChannelSenderDatagramTest {
          sender.init();
          sender.preSend(null, null);
 
-         Serializable response = sender.doSend(null, null, null);
+         final Serializable response = sender.doSend(null, null, null);
          Assert.assertNull(response);
 
          sender.postSend(null);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
       }
    }
@@ -124,12 +124,12 @@ public class ChannelSenderDatagramTest {
          final DatagramSocket socket = vertx.createDatagramSocket(InternetProtocolFamily.IPv4);
          final DatagramSocket responseSocket = vertx.createDatagramSocket(InternetProtocolFamily.IPv4);
          socket.listen(host, PORT, new AsyncResultHandler<DatagramSocket>() {
-            public void handle(AsyncResult<DatagramSocket> asyncResult) {
+            public void handle(final AsyncResult<DatagramSocket> asyncResult) {
                if (asyncResult.succeeded()) {
                   socket.dataHandler(new Handler<DatagramPacket>() {
-                     public void handle(DatagramPacket packet) {
+                     public void handle(final DatagramPacket packet) {
                         socket.send(packet.data().appendString("2"), packet.sender().getHostName(), packet.sender().getPort(), new AsyncResultHandler<DatagramSocket>() {
-                           public void handle(AsyncResult<DatagramSocket> asyncResult) {
+                           public void handle(final AsyncResult<DatagramSocket> asyncResult) {
                               if (!asyncResult.succeeded()) {
                                  throw new IllegalStateException("Cannot send test response: ", asyncResult.cause());
                               }

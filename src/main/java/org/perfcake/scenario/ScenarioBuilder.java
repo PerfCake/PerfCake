@@ -110,13 +110,13 @@ public class ScenarioBuilder {
       messageGenerator.setRunInfo(runInfo);
       scenario.setGenerator(messageGenerator);
 
-      MessageSenderManager messageSenderManager = new MessageSenderManager();
+      final MessageSenderManager messageSenderManager = new MessageSenderManager();
       messageSenderManager.setSenderClass(senderClass);
       messageSenderManager.addMessageSenderProperties(senderProperties);
       messageSenderManager.setSenderPoolSize(messageGenerator.getThreads());
       scenario.setMessageSenderManager(messageSenderManager);
 
-      ReportManager reportManager = new ReportManager();
+      final ReportManager reportManager = new ReportManager();
       reportManager.setRunInfo(runInfo);
       scenario.setReportManager(reportManager);
 

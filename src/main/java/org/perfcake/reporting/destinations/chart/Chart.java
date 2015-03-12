@@ -86,7 +86,7 @@ public class Chart {
    /**
     * Base of the file name of the chart file. E.g. from '/some/path/data/stats201501272232.js' it is just 'stats201501272232'.
     */
-   private String baseName;
+   private final String baseName;
 
    /**
     * The JavaScript file representing chart data. This is not set for charts created as a combination of existing ones.
@@ -107,17 +107,17 @@ public class Chart {
    /**
     * Name of this chart.
     */
-   private String name;
+   private final String name;
 
    /**
     * The legend of the X axis of this chart.
     */
-   private String xAxis;
+   private final String xAxis;
 
    /**
     * The legend of the Y axis of this chart.
     */
-   private String yAxis;
+   private final String yAxis;
 
    /**
     * The type of the X axis. It can display the overall progress of the test in Percents, Time, or Iteration numbers.
@@ -127,12 +127,12 @@ public class Chart {
    /**
     * Attributes that should be stored from the Measurement.
     */
-   private List<String> attributes;
+   private final List<String> attributes;
 
    /**
     * The chart's group name. Charts from multiple measurements that have the same group name are later searched for matching attributes.
     */
-   private String group;
+   private final String group;
 
    /**
     * Was this chart created as a concatenation of other charts?
@@ -211,7 +211,7 @@ public class Chart {
 
       try {
          outputChannel = FileChannel.open(dataFilePath, StandardOpenOption.APPEND);
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException(String.format("Cannot open data file %s for appending data.", dataFile.getAbsolutePath()), e);
       }
    }
@@ -236,10 +236,10 @@ public class Chart {
       name = name.substring(0, name.lastIndexOf("'"));
 
       String axises = loaderEntry.substring(loaderEntry.indexOf("], ") + 3, loaderEntry.lastIndexOf("', '"));
-      PeriodType xAxisType = PeriodType.values()[Integer.parseInt(axises.substring(0, axises.indexOf(",")))];
+      final PeriodType xAxisType = PeriodType.values()[Integer.parseInt(axises.substring(0, axises.indexOf(",")))];
       axises = axises.substring(axises.indexOf("'") + 1);
-      String xAxis = axises.substring(0, axises.indexOf("', '"));
-      String yAxis = axises.substring(axises.indexOf("', '") + 4);
+      final String xAxis = axises.substring(0, axises.indexOf("', '"));
+      final String yAxis = axises.substring(axises.indexOf("', '") + 4);
 
       final File jsFile = new File(descriptionFile.getAbsolutePath().substring(0, descriptionFile.getAbsolutePath().length() - 4) + ".js");
       String firstDataLine = "";
@@ -253,9 +253,9 @@ public class Chart {
 
       firstDataLine = firstDataLine.substring(firstDataLine.indexOf("[ [ ") + 4);
       firstDataLine = firstDataLine.substring(0, firstDataLine.indexOf(" ] ]"));
-      String[] columnNames = firstDataLine.split(", ");
-      List<String> columnsList = new ArrayList<>();
-      for (String s : columnNames) {
+      final String[] columnNames = firstDataLine.split(", ");
+      final List<String> columnsList = new ArrayList<>();
+      for (final String s : columnNames) {
          columnsList.add(StringUtil.trim(s, "'"));
       }
 
@@ -301,7 +301,7 @@ public class Chart {
       final StringBuilder columns = new StringBuilder();
       final StringBuilder lengths = new StringBuilder();
       final StringBuilder quotedNames = new StringBuilder();
-      for (Chart chart : charts) {
+      for (final Chart chart : charts) {
          if (baseNames.length() > 0) {
             baseNames.append(", ");
             columns.append(", ");
@@ -390,7 +390,7 @@ public class Chart {
       dataHeader.append(baseName);
       dataHeader.append(" = [ [ ");
       boolean first = true;
-      for (String attr : attributes) {
+      for (final String attr : attributes) {
          if (first) {
             dataHeader.append("'");
             first = false;
@@ -493,7 +493,7 @@ public class Chart {
             break;
       }
 
-      for (String attr : attributes) {
+      for (final String attr : attributes) {
          if (attributes.indexOf(attr) > 0) {
             sb.append(", ");
 
@@ -504,7 +504,7 @@ public class Chart {
                   log.warn(String.format("Missing attribute %s, skipping the record.", attr));
                }
             } else {
-               Object data = measurement.get(attr);
+               final Object data = measurement.get(attr);
                if (data instanceof String) {
                   sb.append("'");
                   sb.append((String) data);
@@ -538,12 +538,12 @@ public class Chart {
     *       When it was not possible to write the data.
     */
    public void appendResult(final Measurement measurement) throws ReportingException {
-      String line = getResultLine(measurement);
+      final String line = getResultLine(measurement);
 
       if (line != null && !"".equals(line)) {
          try {
             outputChannel.write(ByteBuffer.wrap(line.getBytes(Charset.forName(Utils.getDefaultEncoding()))));
-         } catch (IOException ioe) {
+         } catch (final IOException ioe) {
             throw new ReportingException(String.format("Could not append data to the chart file %s.", dataFile.getAbsolutePath()), ioe);
          }
       }
@@ -552,7 +552,7 @@ public class Chart {
    public void close() throws PerfCakeException {
       try {
          outputChannel.close();
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException(String.format("Cannot close output channel to the file %s.", dataFile.getAbsolutePath()), e);
       }
    }

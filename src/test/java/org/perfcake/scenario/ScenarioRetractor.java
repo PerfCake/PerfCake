@@ -37,7 +37,7 @@ import java.util.List;
  */
 public class ScenarioRetractor {
 
-   private Scenario scenario;
+   private final Scenario scenario;
 
    /**
     * Creates a new retractor to keep the Scenario insides visible to the outer world.

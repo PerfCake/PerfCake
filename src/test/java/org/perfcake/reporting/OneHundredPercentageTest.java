@@ -42,22 +42,22 @@ import org.testng.annotations.Test;
 @Test(groups = { "integration" })
 public class OneHundredPercentageTest {
 
-   private Scenario getScenario(Period p, DummyDestination dd) throws Exception {
-      RunInfo ri = new RunInfo(p);
+   private Scenario getScenario(final Period p, final DummyDestination dd) throws Exception {
+      final RunInfo ri = new RunInfo(p);
 
-      DefaultMessageGenerator mg = new DefaultMessageGenerator();
+      final DefaultMessageGenerator mg = new DefaultMessageGenerator();
       mg.setThreads(100);
       mg.setSenderTaskQueueSize(1000);
 
-      ThroughputStatsReporter atr = new ThroughputStatsReporter();
+      final ThroughputStatsReporter atr = new ThroughputStatsReporter();
       atr.registerDestination(dd, new Period(PeriodType.TIME, 500));
 
-      Message m = new Message();
+      final Message m = new Message();
       m.setPayload("hello");
 
-      MessageTemplate mt = new MessageTemplate(m, 1, null);
+      final MessageTemplate mt = new MessageTemplate(m, 1, null);
 
-      ScenarioBuilder sb = new ScenarioBuilder(ri, mg, DummySender.class.getName(), null);
+      final ScenarioBuilder sb = new ScenarioBuilder(ri, mg, DummySender.class.getName(), null);
       sb.addReporter(atr);
       sb.addMessage(mt);
 
@@ -66,8 +66,8 @@ public class OneHundredPercentageTest {
 
    @Test
    public void makeSure100PercentageTimeIsReported() throws Exception {
-      DummyDestination dd = new DummyDestination();
-      Scenario s = getScenario(new Period(PeriodType.TIME, 2000), dd);
+      final DummyDestination dd = new DummyDestination();
+      final Scenario s = getScenario(new Period(PeriodType.TIME, 2000), dd);
       s.init();
       s.run();
 
@@ -76,8 +76,8 @@ public class OneHundredPercentageTest {
 
    @Test
    public void makeSure100PercentageIterationIsReported() throws Exception {
-      DummyDestination dd = new DummyDestination();
-      Scenario s = getScenario(new Period(PeriodType.ITERATION, 2000), dd);
+      final DummyDestination dd = new DummyDestination();
+      final Scenario s = getScenario(new Period(PeriodType.ITERATION, 2000), dd);
       s.init();
       s.run();
 

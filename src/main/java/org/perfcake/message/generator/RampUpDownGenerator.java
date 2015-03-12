@@ -127,7 +127,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    private Phase currentPhase;
 
    @Override
-   public void init(MessageSenderManager messageSenderManager, List<MessageTemplate> messageStore) throws Exception {
+   public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception {
       super.init(messageSenderManager, messageStore);
       if (log.isInfoEnabled()) {
          log.info("Initiating " + getClass().getSimpleName());
@@ -145,7 +145,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
       boolean threadCountChanged = true;
       setStartTime();
       long last = 0;
-      PeriodType runTimeType = runInfo.getDuration().getPeriodType();
+      final PeriodType runTimeType = runInfo.getDuration().getPeriodType();
       runInfo.addTag("");
 
       mainLoop:
@@ -174,7 +174,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
                break;
             case RAMP_UP:
                if (runTime - last >= rampUpStepPeriod) {
-                  int newThreadCount = getThreads() + rampUpStep;
+                  final int newThreadCount = getThreads() + rampUpStep;
                   if (newThreadCount >= mainThreadCount) {
                      setThreads(mainThreadCount);
                      currentPhase = Phase.MAIN;
@@ -235,7 +235,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
 
    }
 
-   private void resizeExecutorService(int threads) throws InterruptedException {
+   private void resizeExecutorService(final int threads) throws InterruptedException {
       executorService.setCorePoolSize(threads);
       executorService.setMaximumPoolSize(threads);
    }
@@ -256,7 +256,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
     *       The initial number of threads.
     * @return Instance of this to support fluent API.
     */
-   public RampUpDownGenerator setPreThreadCount(int preThreadCount) {
+   public RampUpDownGenerator setPreThreadCount(final int preThreadCount) {
       this.preThreadCount = preThreadCount;
       return this;
    }
@@ -277,7 +277,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
     *       The final number of threads.
     * @return Instance of this to support fluent API.
     */
-   public RampUpDownGenerator setPostThreadCount(int postThreadCount) {
+   public RampUpDownGenerator setPostThreadCount(final int postThreadCount) {
       this.postThreadCount = postThreadCount;
       return this;
    }
@@ -300,7 +300,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
     *       PRE phase duration period in the units of <code>run</code> type.
     * @return Instance of this to support fluent API.
     */
-   public RampUpDownGenerator setPreDuration(long preDuration) {
+   public RampUpDownGenerator setPreDuration(final long preDuration) {
       this.preDuration = preDuration;
       return this;
    }
@@ -321,7 +321,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
     *       The size of the step.
     * @return Instance of this to support fluent API.
     */
-   public RampUpDownGenerator setRampUpStep(int rampUpStep) {
+   public RampUpDownGenerator setRampUpStep(final int rampUpStep) {
       this.rampUpStep = rampUpStep;
       return this;
    }
@@ -342,7 +342,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
     *       The RAMP UP step duration period in a units of <code>run</code> type.
     * @return Instance of this to support fluent API.
     */
-   public RampUpDownGenerator setRampUpStepPeriod(long rampUpStepPeriod) {
+   public RampUpDownGenerator setRampUpStepPeriod(final long rampUpStepPeriod) {
       this.rampUpStepPeriod = rampUpStepPeriod;
       return this;
    }
@@ -363,7 +363,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
     *       The size of the step.
     * @return Instance of this to support fluent API.
     */
-   public RampUpDownGenerator setRampDownStep(int rampDownStep) {
+   public RampUpDownGenerator setRampDownStep(final int rampDownStep) {
       this.rampDownStep = rampDownStep;
       return this;
    }
@@ -384,7 +384,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
     *       The RAMP DOWN step duration period in a units of <code>run</code> type.
     * @return Instance of this to support fluent API.
     */
-   public RampUpDownGenerator setRampDownStepPeriod(long rampDownStepPeriod) {
+   public RampUpDownGenerator setRampDownStepPeriod(final long rampDownStepPeriod) {
       this.rampDownStepPeriod = rampDownStepPeriod;
       return this;
    }
@@ -405,7 +405,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
     *       The MAIN phase duration period in the units of <code>run</code> type.
     * @return Instance of this to support fluent API.
     */
-   public RampUpDownGenerator setMainDuration(long mainDuration) {
+   public RampUpDownGenerator setMainDuration(final long mainDuration) {
       this.mainDuration = mainDuration;
       return this;
    }
@@ -426,7 +426,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
     *       The maximal number of threads.
     * @return Instance of this to support fluent API.
     */
-   public RampUpDownGenerator setMainThreadCount(int mainThreadCount) {
+   public RampUpDownGenerator setMainThreadCount(final int mainThreadCount) {
       this.mainThreadCount = mainThreadCount;
       return this;
    }

@@ -73,7 +73,7 @@ public class HttpSenderTest {
          noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
          response = _sendMessage(sender, noPayloadMessage, additionalMessageProperties);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -92,7 +92,7 @@ public class HttpSenderTest {
       String response = null;
       try {
          response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), null, null);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -113,7 +113,7 @@ public class HttpSenderTest {
          payloadMessage.setPayload(POST_PAYLOAD);
 
          response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), payloadMessage, null);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -135,7 +135,7 @@ public class HttpSenderTest {
          noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
          response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), noPayloadMessage, null);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -150,8 +150,8 @@ public class HttpSenderTest {
       senderProperties.setProperty("expectedResponseCodes", "500,200");
       String response = null;
       try {
-         HttpSender sender = (HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties);
-         List<Integer> responseCodeList = sender.getExpectedResponseCodeList();
+         final HttpSender sender = (HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties);
+         final List<Integer> responseCodeList = sender.getExpectedResponseCodeList();
          Assert.assertNotNull(responseCodeList);
          Assert.assertEquals(responseCodeList.size(), 2);
          Assert.assertTrue(responseCodeList.contains(500));
@@ -162,7 +162,7 @@ public class HttpSenderTest {
          noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
          response = _sendMessage(sender, noPayloadMessage, null);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -175,7 +175,7 @@ public class HttpSenderTest {
          noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
          response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), noPayloadMessage, null);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -195,7 +195,7 @@ public class HttpSenderTest {
          noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
          response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), noPayloadMessage, null);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          if (e instanceof PerfCakeException) {
             Assert.assertTrue(e.getMessage().contains("unexpected HTTP response code: 500"));
          } else {
@@ -218,7 +218,7 @@ public class HttpSenderTest {
          noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
          response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), noPayloadMessage, null);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -226,7 +226,7 @@ public class HttpSenderTest {
       Assert.assertTrue(response.contains("500 Internal Server Error"));
    }
 
-   private String _sendMessage(MessageSender sender, Message message, Map<String, String> additionalProperties) throws Exception {
+   private String _sendMessage(final MessageSender sender, final Message message, final Map<String, String> additionalProperties) throws Exception {
       String response = null;
       sender.init();
       sender.preSend(message, additionalProperties);

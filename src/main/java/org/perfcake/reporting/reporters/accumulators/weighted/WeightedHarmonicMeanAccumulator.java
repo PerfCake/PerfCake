@@ -34,7 +34,7 @@ public class WeightedHarmonicMeanAccumulator implements Accumulator<WeightedValu
    private long weight;
 
    @Override
-   public synchronized void add(WeightedValue<Double> value) {
+   public synchronized void add(final WeightedValue<Double> value) {
       sum = sum + (value.getWeight() / value.getValue());
       weight = weight + value.getWeight();
    }

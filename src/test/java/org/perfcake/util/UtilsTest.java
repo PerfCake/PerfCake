@@ -62,11 +62,11 @@ public class UtilsTest extends TestSetup {
    @Test
    public void testTimeToHMS() {
 
-      long test1 = (12 * 3600 + 12 * 60 + 12) * 1000;
+      final long test1 = (12 * 3600 + 12 * 60 + 12) * 1000;
       Assert.assertEquals(Utils.timeToHMS(test1), "12:12:12");
-      long test2 = (121 * 3600 + 12 * 60 + 12) * 1000;
+      final long test2 = (121 * 3600 + 12 * 60 + 12) * 1000;
       Assert.assertEquals(Utils.timeToHMS(test2), "121:12:12");
-      long test3 = (1 * 3600 + 12 * 60 + 12) * 1000;
+      final long test3 = (1 * 3600 + 12 * 60 + 12) * 1000;
       Assert.assertEquals(Utils.timeToHMS(test3), "1:12:12");
    }
 
@@ -84,16 +84,16 @@ public class UtilsTest extends TestSetup {
       Assert.assertEquals(Utils.getProperty("env." + TEST_KEY, "non"), "non");
       Assert.assertEquals(Utils.getProperty("props.JAVA_HOME", "non"), "non");
 
-      Map<String, String> env = System.getenv();
+      final Map<String, String> env = System.getenv();
       if (!env.isEmpty()) {
-         Entry<String, String> first = env.entrySet().iterator().next();
+         final Entry<String, String> first = env.entrySet().iterator().next();
          Assert.assertEquals(Utils.getProperty(first.getKey()), first.getValue());
       }
    }
 
    @Test
    public void testFilterProperties() throws IOException {
-      String unfiltered = "text with ${test.key2} property";
+      final String unfiltered = "text with ${test.key2} property";
       System.setProperty(TEST_KEY2, TEST_VALUE);
 
       String filtered = Utils.filterProperties(unfiltered);
@@ -113,12 +113,12 @@ public class UtilsTest extends TestSetup {
 
    @Test
    public void testLocationToUrl() throws MalformedURLException {
-      URL url1 = Utils.locationToUrl("foo", PROPERTY_LOCATION, "bar", ".bak");
+      final URL url1 = Utils.locationToUrl("foo", PROPERTY_LOCATION, "bar", ".bak");
       Assert.assertEquals(url1.getProtocol(), "file");
       Assert.assertEquals(url1.toExternalForm(), new File("bar", "foo.bak").toURI().toString());
 
       System.setProperty(PROPERTY_LOCATION, "barbar");
-      URL url2 = Utils.locationToUrl("http://foo", PROPERTY_LOCATION, "bar", ".bak");
+      final URL url2 = Utils.locationToUrl("http://foo", PROPERTY_LOCATION, "bar", ".bak");
       Assert.assertEquals(url2.getProtocol(), "http");
       Assert.assertEquals(url2.toExternalForm(), "http://foo");
    }
@@ -141,7 +141,7 @@ public class UtilsTest extends TestSetup {
 
    @Test
    public void testNonNullValue() {
-      String s1 = null, s2 = null, s3 = null;
+      final String s1 = null, s2 = null, s3 = null;
 
       Assert.assertNull(Utils.getFirstNotNull(s1, s2, s3));
       Assert.assertEquals(Utils.getFirstNotNull(s1, "Hello", s2), "Hello");
@@ -152,7 +152,7 @@ public class UtilsTest extends TestSetup {
 
    @Test
    public void testSetNotNullProperty() {
-      Properties p = new Properties();
+      final Properties p = new Properties();
       Utils.setFirstNotNullProperty(p, "p1", null, null, null);
       Utils.setFirstNotNullProperty(p, "p2", null, "Hello", null);
       Utils.setFirstNotNullProperty(p, "p3", "World", null, null);

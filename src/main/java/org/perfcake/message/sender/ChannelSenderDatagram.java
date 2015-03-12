@@ -59,7 +59,7 @@ public class ChannelSenderDatagram extends ChannelSender {
    }
 
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
 
       // Open the Datagram channel in blocking mode
@@ -68,12 +68,12 @@ public class ChannelSenderDatagram extends ChannelSender {
    }
 
    @Override
-   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit measurementUnit) throws PerfCakeException {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws PerfCakeException {
       if (messageBuffer != null) {
          // write data into channel
          try {
             datagramChannel.send(messageBuffer, address);
-         } catch (IOException e) {
+         } catch (final IOException e) {
             throw new PerfCakeException("Problem while writing to the datagram channel: ", e);
          }
 
@@ -82,7 +82,7 @@ public class ChannelSenderDatagram extends ChannelSender {
             if (responseBuffer != null) {
                try {
                   datagramChannel.receive(responseBuffer);
-               } catch (IOException e) {
+               } catch (final IOException e) {
                   throw new PerfCakeException("Problem while reading from the datagram channel: ", e);
                }
                return new String(responseBuffer.array(), Charset.forName("UTF-8"));
@@ -95,11 +95,11 @@ public class ChannelSenderDatagram extends ChannelSender {
    }
 
    @Override
-   public void postSend(Message message) throws Exception {
+   public void postSend(final Message message) throws Exception {
       super.postSend(message);
       try {
          datagramChannel.close();
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException("Error while closing the datagram channel: ", e);
       }
    }

@@ -52,7 +52,7 @@ public class TimerBenchmark {
       }
 
       long delta = Long.MAX_VALUE;
-      long prev = results[0];
+      final long prev = results[0];
       for (int i = 1; i < CYCLES; i++) {
          if (results[i] - prev < delta && results[i] - prev > 0) {
             delta = results[i] - prev;

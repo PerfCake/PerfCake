@@ -94,7 +94,7 @@ public class StatsReporterTest {
    }
 
    @Test(dataProvider = "reporterProperties")
-   public void testReporters(StatsReporter reporter, boolean averageEnabled, boolean minimumEnabled, boolean maximumEnabled) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+   public void testReporters(final StatsReporter reporter, final boolean averageEnabled, final boolean minimumEnabled, final boolean maximumEnabled) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
       final String reporterName = reporter.getClass().getName();
 
       final Properties reporterProperties = new Properties();

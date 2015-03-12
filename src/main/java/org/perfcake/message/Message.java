@@ -98,7 +98,7 @@ public class Message implements Serializable {
       if (!(obj instanceof Message)) {
          return false;
       }
-      Message m = (Message) obj;
+      final Message m = (Message) obj;
       if (!payload.equals(m.payload)) {
          return false;
       }

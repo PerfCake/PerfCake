@@ -73,7 +73,7 @@ public class ChartDestinationTest extends TestSetup {
       testGroupName(cd, "group one", "group_one");
    }
 
-   private void testGroupName(ChartDestination cd, String setGroup, String expectedGroup) {
+   private void testGroupName(final ChartDestination cd, final String setGroup, final String expectedGroup) {
       cd.setGroup(setGroup);
       Assert.assertEquals(cd.getGroup(), expectedGroup);
    }
@@ -83,8 +83,8 @@ public class ChartDestinationTest extends TestSetup {
       final String tempDir = "target/chart";//TestSetup.createTempDir("test-chart");
       log.info("Created temp directory for chart: " + tempDir);
 
-      ChartDestination cd = new ChartDestination();
-      ChartDestination cd2 = new ChartDestination();
+      final ChartDestination cd = new ChartDestination();
+      final ChartDestination cd2 = new ChartDestination();
       cd.setOutputDir(tempDir);
       cd2.setOutputDir(tempDir);
       cd.setXAxis("Time of test");
@@ -186,9 +186,9 @@ public class ChartDestinationTest extends TestSetup {
       scenario.close();
 
       final ScenarioRetractor retractor = new ScenarioRetractor(scenario);
-      Reporter reporter = retractor.getReportManager().getReporters().iterator().next();
+      final Reporter reporter = retractor.getReportManager().getReporters().iterator().next();
       ChartDestination chartDestination = null;
-      for (Destination d : reporter.getDestinations()) {
+      for (final Destination d : reporter.getDestinations()) {
          log.info(d.toString());
          if (d instanceof ChartDestination) {
             chartDestination = (ChartDestination) d;

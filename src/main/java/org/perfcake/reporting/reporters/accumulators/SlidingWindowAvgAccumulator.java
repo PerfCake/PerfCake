@@ -33,7 +33,7 @@ public class SlidingWindowAvgAccumulator extends AbstractSlidingWindowAccumulato
     * @param windowSize
     *       Size of the sliding window.
     */
-   public SlidingWindowAvgAccumulator(int windowSize) {
+   public SlidingWindowAvgAccumulator(final int windowSize) {
       super(windowSize);
    }
 
@@ -43,7 +43,7 @@ public class SlidingWindowAvgAccumulator extends AbstractSlidingWindowAccumulato
       double size = 0;
 
       synchronized (fifo) {
-         for (Object o : fifo) {
+         for (final Object o : fifo) {
             accum = accum + (Double) o;
          }
          size = fifo.size();

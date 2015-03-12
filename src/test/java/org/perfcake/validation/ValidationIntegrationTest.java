@@ -44,10 +44,10 @@ public class ValidationIntegrationTest extends TestSetup {
 
    @Test(enabled = true)
    public void basicIntegrationTest() throws Exception {
-      Scenario scenario = ScenarioLoader.load("test-validation-integration");
+      final Scenario scenario = ScenarioLoader.load("test-validation-integration");
 
-      ValidationManager validationManager = getValidationManager(scenario);
-      DummyValidator v = (DummyValidator) validationManager.getValidator("v1");
+      final ValidationManager validationManager = getValidationManager(scenario);
+      final DummyValidator v = (DummyValidator) validationManager.getValidator("v1");
 
       // first, the validation must not run very fast while the measurement is in progress
       scenario.init();
@@ -98,9 +98,9 @@ public class ValidationIntegrationTest extends TestSetup {
 
       Assert.assertTrue(validationManager.isFastForward(), "Validation did not switch to fast forward.");
 
-      long lastCalled = v.getPreLastCalledTimestamp();
-      long lastCalled2 = v.getLastCalledTimestamp();
-      long timeDiff = lastCalled2 - lastCalled;
+      final long lastCalled = v.getPreLastCalledTimestamp();
+      final long lastCalled2 = v.getLastCalledTimestamp();
+      final long timeDiff = lastCalled2 - lastCalled;
 
       Assert.assertTrue(timeDiff >= 1 && timeDiff < 20, "Validation did not switch to normal speed operation.");
    }

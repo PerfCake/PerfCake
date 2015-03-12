@@ -50,7 +50,7 @@ public class AgentThread implements Runnable {
 
    static {
       memoryCommands = new ArrayList<>();
-      for (PerfCakeAgent.Command commandType : PerfCakeAgent.Command.values()) {
+      for (final PerfCakeAgent.Command commandType : PerfCakeAgent.Command.values()) {
          memoryCommands.add(commandType.name().toUpperCase());
       }
    }
@@ -60,7 +60,7 @@ public class AgentThread implements Runnable {
     *
     * @param agentArgs Arguments passed to the agent.
     */
-   public AgentThread(String agentArgs) {
+   public AgentThread(final String agentArgs) {
       super();
       this.agentArgs = agentArgs;
    }
@@ -75,11 +75,11 @@ public class AgentThread implements Runnable {
 
       try {
          // parse agent properties
-         Properties props = new Properties();
+         final Properties props = new Properties();
          if (!"".equals(agentArgs) && agentArgs != null) {
-            String[] args = agentArgs.split(",");
-            for (String arg : args) {
-               String[] keyValuePair = arg.split("=");
+            final String[] args = agentArgs.split(",");
+            for (final String arg : args) {
+               final String[] keyValuePair = arg.split("=");
                if (keyValuePair.length == 2) {
                   props.put(keyValuePair[0], keyValuePair[1]);
                } else {
@@ -138,7 +138,7 @@ public class AgentThread implements Runnable {
                         ManagementFactoryHelper.getDiagnosticMXBean().dumpHeap(dumpFile.getAbsolutePath(), true);
                         log("Heap dump saved to " + dumpFile.getAbsolutePath());
                         response = "0";
-                     } catch (IOException ioe) {
+                     } catch (final IOException ioe) {
                         log("Error saving heap dump!");
                         ioe.printStackTrace();
                         response = "-1";
@@ -147,7 +147,7 @@ public class AgentThread implements Runnable {
                      System.gc();
                      response = "0";
                   }
-               } catch (IllegalArgumentException iae) {
+               } catch (final IllegalArgumentException iae) {
                   err(iae.getLocalizedMessage());
                   response = "-1";
                }
@@ -156,13 +156,13 @@ public class AgentThread implements Runnable {
             log("Client disconnected");
          }
 
-      } catch (Throwable e) {
+      } catch (final Throwable e) {
          e.printStackTrace();
       } finally {
          if (is != null) {
             try {
                is.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                e.printStackTrace();
             }
          }
@@ -176,7 +176,7 @@ public class AgentThread implements Runnable {
     *       Message to be logged.
     */
 
-   private static void log(String message) {
+   private static void log(final String message) {
       System.out.println(PerfCakeAgent.class.getSimpleName() + " > " + message);
    }
 
@@ -186,7 +186,7 @@ public class AgentThread implements Runnable {
     * @param message
     *       Message to be logged.
     */
-   private static void err(String message) {
+   private static void err(final String message) {
       System.err.println(PerfCakeAgent.class.getSimpleName() + " > ERROR: " + message);
    }
 }

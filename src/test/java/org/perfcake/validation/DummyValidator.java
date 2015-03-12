@@ -50,7 +50,7 @@ public class DummyValidator implements MessageValidator {
    private boolean returnValue = true;
 
    @Override
-   public boolean isValid(Message originalMessage, Message response) {
+   public boolean isValid(final Message originalMessage, final Message response) {
       lastOriginalMessage = originalMessage;
       lastResponse = response;
       preLastCalledTimestamp = lastCalledTimestamp;
@@ -65,7 +65,7 @@ public class DummyValidator implements MessageValidator {
     * @param returnValue
     *       The value that should be returned from the validation.
     */
-   public void setReturnValue(boolean returnValue) {
+   public void setReturnValue(final boolean returnValue) {
       this.returnValue = returnValue;
    }
 

@@ -217,7 +217,7 @@ public final class ValidatorUtil {
          if (data instanceof byte[]) {
             try {
                return new String((byte[]) data, Utils.getDefaultEncoding());
-            } catch (UnsupportedEncodingException e) {
+            } catch (final UnsupportedEncodingException e) {
                return new String((byte[]) data, Charset.defaultCharset());
             }
          } else {

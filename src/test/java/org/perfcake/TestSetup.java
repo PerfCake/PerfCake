@@ -70,13 +70,13 @@ public class TestSetup {
    public static String createTempDir(final String name) {
       try {
          if (isPosix) {
-            Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-xr--");
-            FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
+            final Set<PosixFilePermission> perms = PosixFilePermissions.fromString("rwxr-xr--");
+            final FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions.asFileAttribute(perms);
             return Files.createTempDirectory(name, attr).toString();
          } else {
             return Files.createTempDirectory(name).toString();
          }
-      } catch (IOException e) {
+      } catch (final IOException e) {
          log.error(String.format("Cannot create temporary directory %s: ", name), e);
          return null;
       }

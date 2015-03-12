@@ -245,7 +245,7 @@ public class Scenario {
     *       allowed object is
     *       {@link Scenario.Properties }
     */
-   public void setProperties(Scenario.Properties value) {
+   public void setProperties(final Scenario.Properties value) {
       this.properties = value;
    }
 
@@ -266,7 +266,7 @@ public class Scenario {
     *       allowed object is
     *       {@link Scenario.Generator }
     */
-   public void setGenerator(Scenario.Generator value) {
+   public void setGenerator(final Scenario.Generator value) {
       this.generator = value;
    }
 
@@ -287,7 +287,7 @@ public class Scenario {
     *       allowed object is
     *       {@link Scenario.Sender }
     */
-   public void setSender(Scenario.Sender value) {
+   public void setSender(final Scenario.Sender value) {
       this.sender = value;
    }
 
@@ -308,7 +308,7 @@ public class Scenario {
     *       allowed object is
     *       {@link Scenario.Reporting }
     */
-   public void setReporting(Scenario.Reporting value) {
+   public void setReporting(final Scenario.Reporting value) {
       this.reporting = value;
    }
 
@@ -329,7 +329,7 @@ public class Scenario {
     *       allowed object is
     *       {@link Scenario.Messages }
     */
-   public void setMessages(Scenario.Messages value) {
+   public void setMessages(final Scenario.Messages value) {
       this.messages = value;
    }
 
@@ -350,7 +350,7 @@ public class Scenario {
     *       allowed object is
     *       {@link Scenario.Validation }
     */
-   public void setValidation(Scenario.Validation value) {
+   public void setValidation(final Scenario.Validation value) {
       this.validation = value;
    }
 
@@ -417,7 +417,7 @@ public class Scenario {
        *       allowed object is
        *       {@link Scenario.Generator.Run }
        */
-      public void setRun(Scenario.Generator.Run value) {
+      public void setRun(final Scenario.Generator.Run value) {
          this.run = value;
       }
 
@@ -465,7 +465,7 @@ public class Scenario {
        *       allowed object is
        *       {@link String }
        */
-      public void setClazz(String value) {
+      public void setClazz(final String value) {
          this.clazz = value;
       }
 
@@ -486,7 +486,7 @@ public class Scenario {
        *       allowed object is
        *       {@link String }
        */
-      public void setThreads(String value) {
+      public void setThreads(final String value) {
          this.threads = value;
       }
 
@@ -532,7 +532,7 @@ public class Scenario {
           *       allowed object is
           *       {@link String }
           */
-         public void setType(String value) {
+         public void setType(final String value) {
             this.type = value;
          }
 
@@ -553,7 +553,7 @@ public class Scenario {
           *       allowed object is
           *       {@link String }
           */
-         public void setValue(String value) {
+         public void setValue(final String value) {
             this.value = value;
          }
 
@@ -783,7 +783,7 @@ public class Scenario {
           *       allowed object is
           *       {@link String }
           */
-         public void setUri(String value) {
+         public void setUri(final String value) {
             this.uri = value;
          }
 
@@ -804,7 +804,7 @@ public class Scenario {
           *       allowed object is
           *       {@link String }
           */
-         public void setContent(String value) {
+         public void setContent(final String value) {
             this.content = value;
          }
 
@@ -825,7 +825,7 @@ public class Scenario {
           *       allowed object is
           *       {@link String }
           */
-         public void setMultiplicity(String value) {
+         public void setMultiplicity(final String value) {
             this.multiplicity = value;
          }
 
@@ -868,7 +868,7 @@ public class Scenario {
              *       allowed object is
              *       {@link String }
              */
-            public void setId(String value) {
+            public void setId(final String value) {
                this.id = value;
             }
 
@@ -1179,7 +1179,7 @@ public class Scenario {
           *       allowed object is
           *       {@link String }
           */
-         public void setClazz(String value) {
+         public void setClazz(final String value) {
             this.clazz = value;
          }
 
@@ -1204,7 +1204,7 @@ public class Scenario {
           *       allowed object is
           *       {@link Boolean }
           */
-         public void setEnabled(Boolean value) {
+         public void setEnabled(final Boolean value) {
             this.enabled = value;
          }
 
@@ -1322,7 +1322,7 @@ public class Scenario {
              *       allowed object is
              *       {@link String }
              */
-            public void setClazz(String value) {
+            public void setClazz(final String value) {
                this.clazz = value;
             }
 
@@ -1347,7 +1347,7 @@ public class Scenario {
              *       allowed object is
              *       {@link Boolean }
              */
-            public void setEnabled(Boolean value) {
+            public void setEnabled(final Boolean value) {
                this.enabled = value;
             }
 
@@ -1393,7 +1393,7 @@ public class Scenario {
                 *       allowed object is
                 *       {@link String }
                 */
-               public void setType(String value) {
+               public void setType(final String value) {
                   this.type = value;
                }
 
@@ -1414,7 +1414,7 @@ public class Scenario {
                 *       allowed object is
                 *       {@link String }
                 */
-               public void setValue(String value) {
+               public void setValue(final String value) {
                   this.value = value;
                }
 
@@ -1498,7 +1498,7 @@ public class Scenario {
        *       allowed object is
        *       {@link String }
        */
-      public void setClazz(String value) {
+      public void setClazz(final String value) {
          this.clazz = value;
       }
 
@@ -1595,7 +1595,7 @@ public class Scenario {
        *       allowed object is
        *       {@link Boolean }
        */
-      public void setEnabled(Boolean value) {
+      public void setEnabled(final Boolean value) {
          this.enabled = value;
       }
 
@@ -1620,7 +1620,7 @@ public class Scenario {
        *       allowed object is
        *       {@link Boolean }
        */
-      public void setFastForward(Boolean value) {
+      public void setFastForward(final Boolean value) {
          this.fastForward = value;
       }
 
@@ -1699,7 +1699,7 @@ public class Scenario {
           *       allowed object is
           *       {@link String }
           */
-         public void setId(String value) {
+         public void setId(final String value) {
             this.id = value;
          }
 
@@ -1720,7 +1720,7 @@ public class Scenario {
           *       allowed object is
           *       {@link String }
           */
-         public void setClazz(String value) {
+         public void setClazz(final String value) {
             this.clazz = value;
          }
 

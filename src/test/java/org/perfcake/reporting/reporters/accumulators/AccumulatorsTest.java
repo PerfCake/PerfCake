@@ -41,7 +41,7 @@ public class AccumulatorsTest {
 
    @Test
    public void lastValueAccumulatorTest() {
-      LastValueAccumulator lva = new LastValueAccumulator();
+      final LastValueAccumulator lva = new LastValueAccumulator();
 
       Assert.assertNull(lva.getResult(), "Clean LastValueAccumulator must have null result.");
 
@@ -59,7 +59,7 @@ public class AccumulatorsTest {
    public void avgAccumulatorTest() {
       final int START = 10, END = 100;
 
-      AvgAccumulator aa = new AvgAccumulator();
+      final AvgAccumulator aa = new AvgAccumulator();
 
       Assert.assertEquals(aa.getResult(), 0d);
 
@@ -77,7 +77,7 @@ public class AccumulatorsTest {
    public void sumAccumulatorTest() {
       final int START = 10, END = 100;
 
-      SumAccumulator aa = new SumAccumulator();
+      final SumAccumulator aa = new SumAccumulator();
 
       Assert.assertEquals(aa.getResult(), 0d);
 
@@ -95,7 +95,7 @@ public class AccumulatorsTest {
    public void slidingWindowAvgAccumulatorTest() {
       final int START = 10, END = 100, WINDOW = 16;
 
-      SlidingWindowAvgAccumulator aa = new SlidingWindowAvgAccumulator(WINDOW);
+      final SlidingWindowAvgAccumulator aa = new SlidingWindowAvgAccumulator(WINDOW);
 
       Assert.assertEquals(aa.getResult(), 0d);
 
@@ -116,13 +116,13 @@ public class AccumulatorsTest {
 
    @Test
    public void maxLongValueAccumulatorTest() {
-      MaxLongValueAccumulator mlva = new MaxLongValueAccumulator();
+      final MaxLongValueAccumulator mlva = new MaxLongValueAccumulator();
       Assert.assertEquals((long) mlva.getResult(), (long) Long.MIN_VALUE);
 
       mlva.add(1l);
       Assert.assertEquals((long) mlva.getResult(), 1l);
 
-      Random r = new Random();
+      final Random r = new Random();
       for (int i = 0; i < 5000; i++) {
          mlva.add(r.nextLong() >> 32);
       }
@@ -171,7 +171,7 @@ public class AccumulatorsTest {
          for (long i = start; i <= end; i = i + 1) {
             a.add((double) i);
          }
-      } catch (ClassCastException cce) { // some accumulators accept only longs
+      } catch (final ClassCastException cce) { // some accumulators accept only longs
          for (long i = start; i <= end; i = i + 1) {
             a.add(i);
          }
@@ -184,7 +184,7 @@ public class AccumulatorsTest {
    @Test(dataProvider = "accumulatorsTest", groups = { "ueber", "performance", "stress" })
    @SuppressWarnings("rawtypes")
    public void accumulatorStressTest(final Accumulator a, final Long start, final Long end, final Number result, final Number stressResult, final Number zero) throws InterruptedException {
-      List<Thread> stressors = new ArrayList<>();
+      final List<Thread> stressors = new ArrayList<>();
 
       for (int i = 0; i < STRESS_THREADS; i++) {
          stressors.add(new Thread(new AccumulatorStressor(a, start, end)));
@@ -192,11 +192,11 @@ public class AccumulatorsTest {
 
       long time = System.currentTimeMillis();
 
-      for (Thread t : stressors) {
+      for (final Thread t : stressors) {
          t.start();
       }
 
-      for (Thread t : stressors) {
+      for (final Thread t : stressors) {
          t.join();
       }
 
@@ -232,7 +232,7 @@ public class AccumulatorsTest {
             for (long i = start; i <= end; i = i + 1L) {
                a.add((double) i);
             }
-         } catch (ClassCastException cce) { // some accumulators accept only longs
+         } catch (final ClassCastException cce) { // some accumulators accept only longs
             for (long i = start; i <= end; i = i + 1) {
                a.add(i);
             }

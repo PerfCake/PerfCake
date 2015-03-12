@@ -75,7 +75,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
 
    @Override
    public void init() throws Exception {
-      String[] parts = target.split(":", 2);
+      final String[] parts = target.split(":", 2);
       host = parts[0];
       port = Integer.parseInt(parts[1]);
    }
@@ -111,12 +111,12 @@ abstract public class AbstractSocketSender extends AbstractSender {
       out.close();
       try {
          in.close();
-      } catch (IOException e) {
+      } catch (final IOException e) {
          log.warn("Cannot close input stream.", e);
       }
       try {
          socket.close();
-      } catch (IOException e) {
+      } catch (final IOException e) {
          log.warn("Cannot close socket.", e);
       }
    }
@@ -136,7 +136,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
          throw new PerfCakeException(String.format("Error writing to a socket at %s:%d.", host, port));
       }
 
-      StringBuilder sb = new StringBuilder();
+      final StringBuilder sb = new StringBuilder();
       while (in.ready()) {
          sb.append(in.readLine());
       }

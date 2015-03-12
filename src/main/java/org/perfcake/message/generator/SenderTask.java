@@ -55,7 +55,7 @@ class SenderTask implements Runnable {
    /**
     * Sender task's logger.
     */
-   private Logger log = LogManager.getLogger(SenderTask.class);
+   private final Logger log = LogManager.getLogger(SenderTask.class);
 
    /**
     * Reference to a message sender manager that is providing the message senders.
@@ -85,7 +85,7 @@ class SenderTask implements Runnable {
    /**
     * Controls the amount of prepared tasks in a buffer.
     */
-   private Semaphore semaphore;
+   private final Semaphore semaphore;
 
    /**
     * Creates a new task to send a message.
@@ -97,14 +97,14 @@ class SenderTask implements Runnable {
     * @param semaphore
     *       A semaphore to be released once the task is finished.
     */
-   protected SenderTask(Semaphore semaphore) {
+   protected SenderTask(final Semaphore semaphore) {
       this.semaphore = semaphore;
    }
 
    private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) {
       try {
          sender.preSend(message, messageHeaders);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          if (log.isErrorEnabled()) {
             log.error("Exception occurred!", e);
          }
@@ -115,7 +115,7 @@ class SenderTask implements Runnable {
       Serializable result = null;
       try {
          result = sender.send(message, messageHeaders, mu);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          if (log.isErrorEnabled()) {
             log.error("Exception occurred!", e);
          }
@@ -124,7 +124,7 @@ class SenderTask implements Runnable {
 
       try {
          sender.postSend(message);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          if (log.isErrorEnabled()) {
             log.error("Exception occurred!", e);
          }
@@ -145,7 +145,7 @@ class SenderTask implements Runnable {
       MessageSender sender = null;
       ReceivedMessage receivedMessage = null;
       try {
-         MeasurementUnit mu = reportManager.newMeasurementUnit();
+         final MeasurementUnit mu = reportManager.newMeasurementUnit();
 
          if (mu != null) {
             // only set numbering to headers if it is enabled, later there is no change to
@@ -157,13 +157,13 @@ class SenderTask implements Runnable {
 
             sender = senderManager.acquireSender();
 
-            Iterator<MessageTemplate> iterator = messageStore.iterator();
+            final Iterator<MessageTemplate> iterator = messageStore.iterator();
             if (iterator.hasNext()) {
                while (iterator.hasNext()) {
 
-                  MessageTemplate messageToSend = iterator.next();
-                  Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
-                  long multiplicity = messageToSend.getMultiplicity();
+                  final MessageTemplate messageToSend = iterator.next();
+                  final Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
+                  final long multiplicity = messageToSend.getMultiplicity();
 
                   for (int i = 0; i < multiplicity; i++) {
                      receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend, currentMessage);
@@ -185,7 +185,7 @@ class SenderTask implements Runnable {
 
             reportManager.report(mu);
          }
-      } catch (Exception e) {
+      } catch (final Exception e) {
          e.printStackTrace();
       } finally {
          if (semaphore != null) {

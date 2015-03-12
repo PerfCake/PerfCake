@@ -34,7 +34,7 @@ public class WeightedMeanAccumulator implements Accumulator<WeightedValue<Double
    private long weight;
 
    @Override
-   public synchronized void add(WeightedValue<Double> value) {
+   public synchronized void add(final WeightedValue<Double> value) {
       sum = sum + (value.getValue() * value.getWeight());
       weight = weight + value.getWeight();
    }

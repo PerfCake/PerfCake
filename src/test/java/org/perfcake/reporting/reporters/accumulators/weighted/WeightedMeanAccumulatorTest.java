@@ -29,7 +29,7 @@ public class WeightedMeanAccumulatorTest {
 
    @Test
    public void testWeightedMeanAccumulator() {
-      WeightedMeanAccumulator wma = new WeightedMeanAccumulator();
+      final WeightedMeanAccumulator wma = new WeightedMeanAccumulator();
       wma.add(new WeightedValue<Double>(1d, 1l));
       wma.add(new WeightedValue<Double>(2d, 2l));
       wma.add(new WeightedValue<Double>(3d, 3l));

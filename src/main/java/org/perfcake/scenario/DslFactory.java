@@ -68,7 +68,7 @@ public class DslFactory implements ScenarioFactory {
          if (log.isDebugEnabled()) {
             log.debug(String.format("Loaded scenario definition from '%s'.", scenarioURL.toString()));
          }
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
       }
    }

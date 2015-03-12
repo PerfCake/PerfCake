@@ -34,7 +34,7 @@ public class ThroughputStatsReporter extends StatsReporter {
 
    @SuppressWarnings("rawtypes")
    @Override
-   protected Accumulator getWindowedAccumulator(String key) {
+   protected Accumulator getWindowedAccumulator(final String key) {
       if (AVERAGE.equals(key)) {
          return new SlidingWindowHarmonicMeanAccumulator(getWindowSize());
       } else {
@@ -44,7 +44,7 @@ public class ThroughputStatsReporter extends StatsReporter {
 
    @SuppressWarnings("rawtypes")
    @Override
-   protected Accumulator getNonWindowedAccumulator(String key) {
+   protected Accumulator getNonWindowedAccumulator(final String key) {
       if (AVERAGE.equals(key)) {
          return new HarmonicMeanAccumulator();
       } else {
@@ -53,7 +53,7 @@ public class ThroughputStatsReporter extends StatsReporter {
    }
 
    @Override
-   protected Double computeResult(MeasurementUnit measurementUnit) {
+   protected Double computeResult(final MeasurementUnit measurementUnit) {
       return 1000d * runInfo.getThreads() / measurementUnit.getLastTime(); // per second
    }
 

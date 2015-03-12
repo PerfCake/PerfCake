@@ -115,15 +115,15 @@ public class WebSocketSender extends AbstractSender {
    public void close() throws PerfCakeException {
       try {
          session.close();
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException("Cannot close web socket session.", e);
       }
    }
 
    @Override
-   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       if (remoteEndpointType == RemoteEndpointType.BASIC) {
-         RemoteEndpoint.Basic basic = session.getBasicRemote();
+         final RemoteEndpoint.Basic basic = session.getBasicRemote();
          switch (payloadType) {
             case TEXT:
                basic.sendText(message.getPayload().toString());
@@ -138,7 +138,7 @@ public class WebSocketSender extends AbstractSender {
                throw new IllegalStateException("Unknown or undefined web socket payload type. Use text, binary or ping.");
          }
       } else if (remoteEndpointType == RemoteEndpointType.ASYNC) {
-         RemoteEndpoint.Async async = session.getAsyncRemote();
+         final RemoteEndpoint.Async async = session.getAsyncRemote();
          switch (payloadType) {
             case TEXT:
                async.sendText(message.getPayload().toString());
@@ -162,20 +162,20 @@ public class WebSocketSender extends AbstractSender {
    public class PerfCakeClientEndpoint {
 
       @OnOpen
-      public void onOpen(Session session) {
+      public void onOpen(final Session session) {
          logger.info("Connected ... " + session.getId());
          WebSocketSender.this.session = session;
       }
 
       @OnMessage
-      public void onMessage(String message, Session session) {
+      public void onMessage(final String message, final Session session) {
          if (logger.isDebugEnabled()) {
             logger.debug("Received ... " + message);
          }
       }
 
       @OnClose
-      public void onClose(Session session, CloseReason closeReason) {
+      public void onClose(final Session session, final CloseReason closeReason) {
          logger.info(String.format("Session %s close because of %s", session.getId(), closeReason));
       }
    }

@@ -30,12 +30,12 @@ public class TimestampedRecord<T extends Number> {
    /**
     * Time stamp.
     */
-   private long timestamp;
+   private final long timestamp;
 
    /**
     * The value.
     */
-   private T value;
+   private final T value;
 
    /**
     * Creates a new record using the provided time stamp and value bound to it.
@@ -45,7 +45,7 @@ public class TimestampedRecord<T extends Number> {
     * @param value
     *       The value of the record.
     */
-   public TimestampedRecord(long timestamp, T value) {
+   public TimestampedRecord(final long timestamp, final T value) {
       super();
       this.timestamp = timestamp;
       this.value = value;

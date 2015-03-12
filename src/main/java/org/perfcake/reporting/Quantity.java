@@ -80,7 +80,7 @@ public class Quantity<N extends Number> {
       if (getClass() != obj.getClass()) {
          return false;
       }
-      Quantity other = (Quantity) obj;
+      final Quantity other = (Quantity) obj;
       if (number == null) {
          if (other.number != null) {
             return false;

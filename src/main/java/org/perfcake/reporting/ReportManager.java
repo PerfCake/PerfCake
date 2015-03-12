@@ -215,7 +215,7 @@ public class ReportManager {
 
                   now = System.currentTimeMillis();
 
-                  for (Reporter r : reporters) {
+                  for (final Reporter r : reporters) {
                      lastTimes = reportLastTimes.get(r);
 
                      if (lastTimes == null) {
@@ -268,7 +268,7 @@ public class ReportManager {
                if (bp.getPeriodType() == PeriodType.TIME) {
                   r.publishResult(bp.getPeriodType(), bp.getBinding());
                }
-            } catch (ReportingException e) {
+            } catch (final ReportingException e) {
                log.error(String.format("Could not report final result for reporter %s and destination %s.", r.toString(), bp.getBinding().toString()), e);
             }
          }

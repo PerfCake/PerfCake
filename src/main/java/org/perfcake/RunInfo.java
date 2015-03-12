@@ -172,7 +172,7 @@ public class RunInfo {
     *       The iteration for which we want to know the progress % number compared to the configured period duration.
     * @return Completed percents of the theoretical measurement state. This cannot be more than 100% no matter what value is provided.
     */
-   public double getPercentage(long iteration) {
+   public double getPercentage(final long iteration) {
       if (startTime == -1) {
          return 0d;
       }
@@ -320,7 +320,7 @@ public class RunInfo {
     * @param threads
     *       The number of threads.
     */
-   public void setThreads(int threads) {
+   public void setThreads(final int threads) {
       this.threads = threads;
    }
 }

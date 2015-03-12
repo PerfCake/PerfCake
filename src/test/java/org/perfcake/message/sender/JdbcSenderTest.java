@@ -107,13 +107,13 @@ public class JdbcSenderTest {
 
    @Test
    public void testSelect() throws Exception {
-      String sql = "SELECT * FROM USERS";
-      String result = "1;Jennifer Aniston;jennifer@aniston.com\n2;Adam Sandler;adam0001@yahoo.com";
+      final String sql = "SELECT * FROM USERS";
+      final String result = "1;Jennifer Aniston;jennifer@aniston.com\n2;Adam Sandler;adam0001@yahoo.com";
 
-      Connection c = mock(Connection.class);
-      Statement s = mock(Statement.class);
-      ResultSet rs = mock(ResultSet.class);
-      ResultSetMetaData rsmd = mock(ResultSetMetaData.class);
+      final Connection c = mock(Connection.class);
+      final Statement s = mock(Statement.class);
+      final ResultSet rs = mock(ResultSet.class);
+      final ResultSetMetaData rsmd = mock(ResultSetMetaData.class);
 
       when(c.createStatement()).thenReturn(s);
       when(s.execute(sql)).thenReturn(true);
@@ -132,29 +132,29 @@ public class JdbcSenderTest {
       when(rs.next()).thenAnswer(new Answer<Boolean>() {
          private int count = 0;
 
-         public Boolean answer(InvocationOnMock invocation) {
+         public Boolean answer(final InvocationOnMock invocation) {
             return count++ < 2;
          }
       });
 
-      Properties props = new Properties();
-      JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
+      final Properties props = new Properties();
+      final JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
 
       // Inject connection
-      Field connectionField = JdbcSender.class.getDeclaredField("connection");
+      final Field connectionField = JdbcSender.class.getDeclaredField("connection");
       connectionField.setAccessible(true);
       connectionField.set(sender, c);
 
-      org.perfcake.message.Message message = new org.perfcake.message.Message();
+      final org.perfcake.message.Message message = new org.perfcake.message.Message();
       message.setPayload(sql);
       sender.preSend(message, null);
-      Serializable response = sender.send(message, null);
+      final Serializable response = sender.send(message, null);
       sender.postSend(message);
       sender.close();
 
       Assert.assertEquals(response.toString(), result);
 
-      InOrder order = inOrder(c, s, rs, rsmd);
+      final InOrder order = inOrder(c, s, rs, rsmd);
       order.verify(c).createStatement();
       order.verify(s).execute(sql);
       order.verify(s).getResultSet();
@@ -183,33 +183,33 @@ public class JdbcSenderTest {
 
    @Test
    public void testUpdate() throws Exception {
-      String sql = "DROP TABLE USERS";
+      final String sql = "DROP TABLE USERS";
 
-      Connection c = mock(Connection.class);
-      Statement s = mock(Statement.class);
+      final Connection c = mock(Connection.class);
+      final Statement s = mock(Statement.class);
 
       when(c.createStatement()).thenReturn(s);
       when(s.execute(sql)).thenReturn(false);
       when(s.getUpdateCount()).thenReturn(3);
 
-      Properties props = new Properties();
-      JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
+      final Properties props = new Properties();
+      final JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
 
       // Inject connection
-      Field connectionField = JdbcSender.class.getDeclaredField("connection");
+      final Field connectionField = JdbcSender.class.getDeclaredField("connection");
       connectionField.setAccessible(true);
       connectionField.set(sender, c);
 
-      org.perfcake.message.Message message = new org.perfcake.message.Message();
+      final org.perfcake.message.Message message = new org.perfcake.message.Message();
       message.setPayload(sql);
       sender.preSend(message, null);
-      Serializable response = sender.send(message, null);
+      final Serializable response = sender.send(message, null);
       sender.postSend(message);
       sender.close();
 
       Assert.assertEquals((Integer) response, Integer.valueOf(3));
 
-      InOrder order = inOrder(c, s);
+      final InOrder order = inOrder(c, s);
       order.verify(c).createStatement();
       order.verify(s).execute(sql);
       order.verify(s).getUpdateCount();
@@ -222,18 +222,18 @@ public class JdbcSenderTest {
 
    @Test
    public void testProperties() throws Exception {
-      String username = "zappa";
-      String password = "frank";
-      String jdbcUrl = "jdbc:none:test";
-      String driverClass = "org.perfcake.None";
+      final String username = "zappa";
+      final String password = "frank";
+      final String jdbcUrl = "jdbc:none:test";
+      final String driverClass = "org.perfcake.None";
 
-      Properties props = new Properties();
+      final Properties props = new Properties();
       props.setProperty("username", username);
       props.setProperty("password", password);
       props.setProperty("jdbcUrl", jdbcUrl);
       props.setProperty("driverClass", driverClass);
 
-      JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
+      final JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
 
       Assert.assertEquals(sender.getUsername(), username);
       Assert.assertEquals(sender.getPassword(), password);
@@ -243,23 +243,23 @@ public class JdbcSenderTest {
 
    @Test
    public void testNegativeClose() throws Exception {
-      String errorMessage = "Huhúúú";
-      Connection c = mock(Connection.class);
+      final String errorMessage = "Huhúúú";
+      final Connection c = mock(Connection.class);
       doThrow(new SQLException(errorMessage)).when(c).close();
 
-      Properties props = new Properties();
-      JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
+      final Properties props = new Properties();
+      final JdbcSender sender = (JdbcSender) ObjectFactory.summonInstance(JdbcSender.class.getName(), props);
 
       // Inject connection
-      Field connectionField = JdbcSender.class.getDeclaredField("connection");
+      final Field connectionField = JdbcSender.class.getDeclaredField("connection");
       connectionField.setAccessible(true);
       connectionField.set(sender, c);
 
       // Add log appender
-      Field logField = JdbcSender.class.getDeclaredField("log");
+      final Field logField = JdbcSender.class.getDeclaredField("log");
       logField.setAccessible(true);
-      Logger log = (Logger) logField.get(sender);
-      DebugLogAppender a = new DebugLogAppender();
+      final Logger log = (Logger) logField.get(sender);
+      final DebugLogAppender a = new DebugLogAppender();
       ((org.apache.logging.log4j.core.Logger) log).addAppender(a);
 
       sender.close();

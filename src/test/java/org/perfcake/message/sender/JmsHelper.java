@@ -53,12 +53,12 @@ public class JmsHelper {
       private Message message = null;
       private boolean running = false;
 
-      private Wiretap(String inQueue, String outQueue) {
+      private Wiretap(final String inQueue, final String outQueue) {
          this.inQueue = inQueue;
          this.outQueue = outQueue;
       }
 
-      private void setMaster(Thread master) {
+      private void setMaster(final Thread master) {
          this.master = master;
       }
 
@@ -81,9 +81,9 @@ public class JmsHelper {
          Context context = null;
          try {
             context = new InitialContext();
-            ConnectionFactory cf = (ConnectionFactory) context.lookup("ConnectionFactory");
-            Destination source = (Destination) context.lookup(inQueue);
-            Destination target = (Destination) context.lookup(outQueue);
+            final ConnectionFactory cf = (ConnectionFactory) context.lookup("ConnectionFactory");
+            final Destination source = (Destination) context.lookup(inQueue);
+            final Destination target = (Destination) context.lookup(outQueue);
 
             Connection connection = null;
             Session session = null;
@@ -92,15 +92,15 @@ public class JmsHelper {
                connection = cf.createConnection();
                connection.start();
                session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-               MessageConsumer messageConsumer = session.createConsumer(source);
-               MessageProducer messageProducer = session.createProducer(target);
+               final MessageConsumer messageConsumer = session.createConsumer(source);
+               final MessageProducer messageProducer = session.createProducer(target);
 
                if (master == null) {
                   throw new IllegalStateException("First set the master thread.");
                }
 
                while (!master.isInterrupted() && running) {
-                  Message message = messageConsumer.receive(1000);
+                  final Message message = messageConsumer.receive(1000);
                   if (message != null) {
                      this.message = message;
                      messageProducer.send(message);
@@ -118,7 +118,7 @@ public class JmsHelper {
                   }
                }
             }
-         } catch (Exception e) {
+         } catch (final Exception e) {
             if (e.getCause() instanceof InterruptedException) {
                log.info("Terminating gracefully.");
             } else {
@@ -129,22 +129,22 @@ public class JmsHelper {
                if (context != null) {
                   context.close();
                }
-            } catch (NamingException ne) {
+            } catch (final NamingException ne) {
                log.error("Error closing initial context:", ne);
             }
          }
       }
    }
 
-   public static Wiretap wiretap(String inQueue, String outQueue) {
-      Wiretap w = new Wiretap(inQueue, outQueue);
-      Thread t = new Thread(w);
+   public static Wiretap wiretap(final String inQueue, final String outQueue) {
+      final Wiretap w = new Wiretap(inQueue, outQueue);
+      final Thread t = new Thread(w);
       w.setMaster(t);
 
       return w;
    }
 
-   public static Message readMessage(ConnectionFactory factory, long timeout, Queue queue) throws JMSException {
+   public static Message readMessage(final ConnectionFactory factory, final long timeout, final Queue queue) throws JMSException {
       Connection connection = null;
       Session session = null;
       Message message = null;
@@ -153,7 +153,7 @@ public class JmsHelper {
          connection = factory.createConnection();
          connection.start();
          session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-         MessageConsumer messageConsumer = session.createConsumer(queue);
+         final MessageConsumer messageConsumer = session.createConsumer(queue);
          message = messageConsumer.receive(timeout);
       } finally {
          try {
@@ -170,18 +170,18 @@ public class JmsHelper {
       return message;
    }
 
-   public static Message clientReadMessage(long timeout, String queueName) throws Exception {
-      Properties env = new Properties();
+   public static Message clientReadMessage(final long timeout, final String queueName) throws Exception {
+      final Properties env = new Properties();
       env.put(Context.INITIAL_CONTEXT_FACTORY, "org.jboss.naming.remote.client.InitialContextFactory");
       env.put(Context.PROVIDER_URL, "http-remoting://localhost:8080");
       env.put(Context.SECURITY_PRINCIPAL, "zappa");
       env.put(Context.SECURITY_CREDENTIALS, "frank");
 
       Message message = null;
-      Context context = new InitialContext(env);
+      final Context context = new InitialContext(env);
       try {
-         ConnectionFactory cf = (ConnectionFactory) context.lookup("jms/RemoteConnectionFactory");
-         Destination destination = (Destination) context.lookup("jms/queue/test");
+         final ConnectionFactory cf = (ConnectionFactory) context.lookup("jms/RemoteConnectionFactory");
+         final Destination destination = (Destination) context.lookup("jms/queue/test");
 
          Connection connection = null;
          Session session = null;
@@ -190,7 +190,7 @@ public class JmsHelper {
             connection = cf.createConnection();
             connection.start();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            MessageConsumer messageConsumer = session.createConsumer(destination);
+            final MessageConsumer messageConsumer = session.createConsumer(destination);
             message = messageConsumer.receive(timeout);
          } finally {
             try {

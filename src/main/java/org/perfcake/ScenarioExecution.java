@@ -92,7 +92,7 @@ public class ScenarioExecution {
     *       Command line arguments.
     */
    public static void main(final String[] args) {
-      ScenarioExecution se = new ScenarioExecution(args);
+      final ScenarioExecution se = new ScenarioExecution(args);
 
       log.info(String.format("=== Welcome to PerfCake %s ===", PerfCakeConst.VERSION));
 
@@ -130,12 +130,12 @@ public class ScenarioExecution {
     * Parses additional user properties specified in a property file and at the command line.
     */
    private void parseUserProperties() {
-      Properties props = new Properties();
-      String propsFile = System.getProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY);
+      final Properties props = new Properties();
+      final String propsFile = System.getProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY);
       if (propsFile != null) {
          try (final FileInputStream propsInputStream = new FileInputStream(propsFile)) {
             props.load(propsInputStream);
-         } catch (IOException e) {
+         } catch (final IOException e) {
             // we can still continue without reading file
             log.warn(String.format("Unable to read the properties file '%s': ", propsFile), e);
          }
@@ -143,7 +143,7 @@ public class ScenarioExecution {
 
       props.putAll(commandLine.getOptionProperties("D"));
 
-      for (Entry<Object, Object> entry : props.entrySet()) {
+      for (final Entry<Object, Object> entry : props.entrySet()) {
          System.setProperty(entry.getKey().toString(), entry.getValue().toString());
       }
 
@@ -172,7 +172,7 @@ public class ScenarioExecution {
       final CommandLineParser commandLineParser = new GnuParser();
       try {
          commandLine = commandLineParser.parse(options, args);
-      } catch (ParseException pe) {
+      } catch (final ParseException pe) {
          pe.printStackTrace();
          System.exit(2);
          return;
@@ -210,23 +210,23 @@ public class ScenarioExecution {
     */
    private void printTraceInformation() {
       log.trace("System properties:");
-      List<String> p = new LinkedList<>();
-      for (Entry<Object, Object> entry : System.getProperties().entrySet()) {
+      final List<String> p = new LinkedList<>();
+      for (final Entry<Object, Object> entry : System.getProperties().entrySet()) {
          p.add("\t" + entry.getKey() + "=" + entry.getValue());
       }
 
       Collections.sort(p);
 
-      for (String s : p) {
+      for (final String s : p) {
          log.trace(s);
       }
 
       // Print classpath
       log.trace("Classpath:");
-      ClassLoader currentCL = ScenarioExecution.class.getClassLoader();
-      URL[] curls = ((URLClassLoader) currentCL).getURLs();
+      final ClassLoader currentCL = ScenarioExecution.class.getClassLoader();
+      final URL[] curls = ((URLClassLoader) currentCL).getURLs();
 
-      for (URL curl : curls) {
+      for (final URL curl : curls) {
          log.trace("\t" + curl);
       }
    }
@@ -235,11 +235,11 @@ public class ScenarioExecution {
     * Loads the scenario from the XML file specified at the command line.
     */
    private void loadScenario() {
-      String scenarioFile = Utils.getProperty(PerfCakeConst.SCENARIO_PROPERTY);
+      final String scenarioFile = Utils.getProperty(PerfCakeConst.SCENARIO_PROPERTY);
 
       try {
          scenario = ScenarioLoader.load(scenarioFile);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          log.fatal(String.format("Cannot load scenario '%s': ", scenarioFile), e);
          System.exit(3);
       }
@@ -256,12 +256,12 @@ public class ScenarioExecution {
       try {
          scenario.init();
          scenario.run();
-      } catch (PerfCakeException e) {
+      } catch (final PerfCakeException e) {
          log.fatal("Error running scenario: ", e);
       } finally {
          try {
             scenario.close();
-         } catch (PerfCakeException e) {
+         } catch (final PerfCakeException e) {
             log.fatal("Scenario did not finish properly: ", e);
          }
       }

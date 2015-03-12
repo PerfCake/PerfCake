@@ -76,11 +76,11 @@ public class ObjectFactory {
     */
    private static boolean setElementProperty(final Object object, final String propertyName, final Element value) throws InvocationTargetException, IllegalAccessException {
       try {
-         Method setter = object.getClass().getDeclaredMethod("set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1) + "AsElement", Element.class);
+         final Method setter = object.getClass().getDeclaredMethod("set" + propertyName.substring(0, 1).toUpperCase() + propertyName.substring(1) + "AsElement", Element.class);
          setter.invoke(object, value);
 
          return true;
-      } catch (NoSuchMethodException e) {
+      } catch (final NoSuchMethodException e) {
          return false;
       }
    }
@@ -98,11 +98,11 @@ public class ObjectFactory {
     *       When we did not have the correct rights to set any of the properties.
     */
    public static void setPropertiesOnObject(final Object object, final Properties properties) throws IllegalAccessException, InvocationTargetException {
-      PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();
+      final PropertyUtilsBean propertyUtilsBean = new PropertyUtilsBean();
       propertyUtilsBean.addBeanIntrospector(new FluentPropertyBeanIntrospector());
-      BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumConvertUtilsBean(), propertyUtilsBean);
+      final BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumConvertUtilsBean(), propertyUtilsBean);
 
-      for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+      for (final Map.Entry<Object, Object> entry : properties.entrySet()) {
          if (log.isTraceEnabled()) {
             log.trace("Setting property: '" + entry.getKey().toString() + "'='" + entry.getValue().toString() + "'");
          }
@@ -137,7 +137,7 @@ public class ObjectFactory {
     *       When it was not possible to call any of the properties setters.
     */
    public static Object summonInstance(final String className, final Properties properties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
-      Object object = Class.forName(className, false, getPluginClassLoader()).newInstance();
+      final Object object = Class.forName(className, false, getPluginClassLoader()).newInstance();
       setPropertiesOnObject(object, properties);
 
       return object;
@@ -156,8 +156,8 @@ public class ObjectFactory {
     * @throws InvocationTargetException
     *       When it was not possible to find, call, or use any of the getter methods.
     */
-   public static Properties getObjectProperties(Object object) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-      Properties properties = new Properties();
+   public static Properties getObjectProperties(final Object object) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+      final Properties properties = new Properties();
       properties.putAll(BeanUtils.describe(object));
 
       return properties;
@@ -187,7 +187,7 @@ public class ObjectFactory {
          for (int i = 0; i < plugins.length; i++) {
             try {
                pluginURLs[i] = plugins[i].toURI().toURL();
-            } catch (MalformedURLException e) {
+            } catch (final MalformedURLException e) {
                log.warn(String.format("Cannot resolve path to plugin '%s', skipping this file", plugins[i]));
             }
          }
@@ -218,11 +218,11 @@ public class ObjectFactory {
    private static class FileExtensionFilter implements FilenameFilter {
       private final String extension;
 
-      public FileExtensionFilter(String extension) {
+      public FileExtensionFilter(final String extension) {
          this.extension = extension;
       }
 
-      public boolean accept(File dir, String name) {
+      public boolean accept(final File dir, final String name) {
          return name.endsWith(extension);
       }
    }
