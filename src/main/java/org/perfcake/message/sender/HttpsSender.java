@@ -33,6 +33,8 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 /**
+ * Sends messages via HTTPs protocol.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:elfilip01@gmail.com">Filip Eliáš</a>
@@ -45,6 +47,9 @@ public class HttpsSender extends HttpSender {
    private String trustStorePassword;
    private SSLSocketFactory sslFactory;
 
+   /**
+    * Specifies SSL key store directory.
+    */
    public static final String KEYSTORES_DIR_PROPERTY = "perfcake.keystores.dir";
 
    @Override
@@ -100,40 +105,82 @@ public class HttpsSender extends HttpSender {
       return ctx.getSocketFactory();
    }
 
+   /**
+    * Gets the SSL key store.
+    *
+    * @return The SSL key store.
+    */
    public String getKeyStore() {
       return keyStore;
    }
 
+   /**
+    * Sets the SSL key store.
+    *
+    * @return The SSL key store.
+    */
    public HttpsSender setKeyStore(final String keyStore) {
       this.keyStore = keyStore;
       return this;
    }
 
+   /**
+    * Gets the SSL key store password.
+    *
+    * @return The SSL key store password.
+    */
    public String getKeyStorePassword() {
       return keyStorePassword;
    }
 
+   /**
+    * Sets the SSL key store password.
+    *
+    * @param keyStorePassword
+    *       The SSL key store password.
+    */
    public HttpsSender setKeyStorePassword(final String keyStorePassword) {
       this.keyStorePassword = keyStorePassword;
       return this;
    }
 
+   /**
+    * Gets the SSL trust store.
+    *
+    * @return The SSL trust store.
+    */
    public String getTrustStore() {
       return trustStore;
    }
 
+   /**
+    * Sets the SSL trust store.
+    *
+    * @param trustStore
+    *       The SSL trust store.
+    */
    public HttpsSender setTrustStore(final String trustStore) {
       this.trustStore = trustStore;
       return this;
    }
 
+   /**
+    * Gets the SSL trust store password.
+    *
+    * @return The SSL trust store password.
+    */
    public String getTrustStorePassword() {
       return trustStorePassword;
    }
 
+   /**
+    * Sets the SSL trust store password.
+    *
+    * @param trustStorePassword
+    *       The SSL trust store password.
+    */
    public HttpsSender setTrustStorePassword(final String trustStorePassword) {
       this.trustStorePassword = trustStorePassword;
       return this;
    }
-
 }

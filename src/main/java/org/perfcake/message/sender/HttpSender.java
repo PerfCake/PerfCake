@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * The sender that is able to send the messages via HTTP protocol.
+ * Sends messages via HTTP protocol.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
@@ -123,7 +123,7 @@ public class HttpSender extends AbstractSender {
    }
 
    /**
-    * Used to read the list of expected response codes.
+    * Gets the list of expected response codes.
     *
     * @return The list of expected response codes.
     */
@@ -132,7 +132,7 @@ public class HttpSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of expectedResponseCodes property.
+    * Gets the value of expectedResponseCodes property.
     *
     * @return The expectedResponseCodes.
     */
@@ -296,7 +296,7 @@ public class HttpSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of HTTP method.
+    * Gets the value of HTTP method.
     *
     * @return The HTTP method.
     */
