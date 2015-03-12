@@ -2,7 +2,7 @@
 <scenario xmlns="urn:perfcake:scenario:4.0">
    <generator class="DefaultMessageGenerator" threads="${threads:25}">
       <run type="${perfcake.performance.run.type:time}" value="${perfcake.performance.run.duration:300000}"/>
-      <property name="threadQueueSize" value="${queue.size:5000}"/>
+      <property name="senderTaskQueueSize" value="${queue.size:5000}"/>
    </generator>
    <sender class="DummySender">
       <property name="target" value=""/>

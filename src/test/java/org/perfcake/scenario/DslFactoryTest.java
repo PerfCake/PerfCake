@@ -58,7 +58,7 @@ public class DslFactoryTest extends TestSetup {
       s.init();
 
       Assert.assertTrue(s.getGenerator() instanceof DefaultMessageGenerator);
-      Assert.assertEquals(((DefaultMessageGenerator) s.getGenerator()).getThreadQueueSize(), 3000);
+      Assert.assertEquals(((DefaultMessageGenerator) s.getGenerator()).getSenderTaskQueueSize(), 3000);
       Assert.assertEquals(s.getGenerator().getThreads(), 4);
 
       Field runInfoField = AbstractMessageGenerator.class.getDeclaredField("runInfo");

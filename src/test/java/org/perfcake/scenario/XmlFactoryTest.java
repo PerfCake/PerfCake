@@ -112,7 +112,7 @@ public class XmlFactoryTest extends TestSetup {
          final DefaultMessageGenerator dmg = (DefaultMessageGenerator) generator;
          dmg.setRunInfo(new RunInfo(new Period(PeriodType.TIME, 30L)));
          Assert.assertEquals(dmg.getThreads(), THREADS, "threads");
-         Assert.assertEquals(dmg.getThreadQueueSize(), 5000);
+         Assert.assertEquals(dmg.getSenderTaskQueueSize(), 5000);
       } catch (PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());

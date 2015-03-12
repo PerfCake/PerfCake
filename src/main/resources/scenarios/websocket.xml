@@ -2,7 +2,7 @@
 <scenario xmlns="urn:perfcake:scenario:4.0">
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:1}">
       <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:50000}"/>
-      <property name="threadQueueSize" value="100000"/>
+      <property name="senderTaskQueueSize" value="100000"/>
    </generator>
    <sender class="WebSocketSender">
       <!-- example web socket server can be found here: https://github.com/shekhargulati/wordgame -->

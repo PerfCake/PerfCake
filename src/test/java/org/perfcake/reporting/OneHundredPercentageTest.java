@@ -47,7 +47,7 @@ public class OneHundredPercentageTest {
 
       DefaultMessageGenerator mg = new DefaultMessageGenerator();
       mg.setThreads(100);
-      mg.setThreadQueueSize(1000);
+      mg.setSenderTaskQueueSize(1000);
 
       ThroughputStatsReporter atr = new ThroughputStatsReporter();
       atr.registerDestination(dd, new Period(PeriodType.TIME, 500));

@@ -1,7 +1,7 @@
 scenario "můj super scénář"
   qsName "test" propA "hello"
   run 10.s with 4.threads
-  generator "DefaultMessageGenerator" threadQueueSize 3000 values 1,2,3
+  generator "DefaultMessageGenerator" senderTaskQueueSize 3000 values 1,2,3
   sender "DummySender" target "httpbin.org" headers name:"Gromit",id:1234 anotherProp 12.s
   reporter "WarmUpReporter"
   reporter "ThroughputStatsReporter" coolProp "value"
