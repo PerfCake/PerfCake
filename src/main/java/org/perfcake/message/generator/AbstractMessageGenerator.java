@@ -61,26 +61,22 @@ public abstract class AbstractMessageGenerator {
     * Message store where the messages for senders to be send are taken from.
     */
    protected List<MessageTemplate> messageStore;
-
-   /**
-    * Number of concurrent threads the generator will use to send the messages.
-    */
-   private int threads = 1;
-
    /**
     * The executor service used to run the threads.
     */
    protected ThreadPoolExecutor executorService;
-
    /**
     * The property of the generator indicating whether the message numbering feature is enabled or disabled.
     */
    protected boolean messageNumberingEnabled = false;
-
    /**
     * Represents the information about current run.
     */
    protected RunInfo runInfo;
+   /**
+    * Number of concurrent threads the generator will use to send the messages.
+    */
+   private int threads = 1;
 
    /**
     * Initialize the generator. During the initialization the {@link #messageSenderManager} is initialized as well.
@@ -102,8 +98,8 @@ public abstract class AbstractMessageGenerator {
     * Gets a new instance of a {@link org.perfcake.message.generator.SenderTask}.
     * The provided semaphore can be used to control parallel execution of sender tasks in multiple threads.
     *
-    * @param semaphore Semaphore that will be release upon completion of the sender task.
-    *
+    * @param semaphore
+    *       Semaphore that will be release upon completion of the sender task.
     * @return A sender task ready to work on another iteration.
     */
    protected SenderTask newSenderTask(Semaphore semaphore) {
@@ -131,7 +127,8 @@ public abstract class AbstractMessageGenerator {
    /**
     * Sets the current {@link org.perfcake.RunInfo} to control generating of the messages.
     *
-    * @param runInfo {@link org.perfcake.RunInfo} to be used.
+    * @param runInfo
+    *       {@link org.perfcake.RunInfo} to be used.
     */
    public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
@@ -147,7 +144,8 @@ public abstract class AbstractMessageGenerator {
    /**
     * Sets the {@link org.perfcake.reporting.ReportManager} to be used for the current performance test execution.
     *
-    * @param reportManager {@link org.perfcake.reporting.ReportManager} to be used.
+    * @param reportManager
+    *       {@link org.perfcake.reporting.ReportManager} to be used.
     */
    public void setReportManager(final ReportManager reportManager) {
       this.reportManager = reportManager;
@@ -182,8 +180,8 @@ public abstract class AbstractMessageGenerator {
    /**
     * Computes the current average speed at which the iterations are executed.
     *
-    * @param cnt Current iteration number.
-    *
+    * @param cnt
+    *       Current iteration number.
     * @return The current average iteration execution speed in iterations per second.
     */
    protected float getSpeed(final long cnt) {
@@ -211,8 +209,8 @@ public abstract class AbstractMessageGenerator {
    /**
     * Sets the number of threads used to generate the messages.
     *
-    * @param threads The number of threads to be used.
-    *
+    * @param threads
+    *       The number of threads to be used.
     * @return Returns this instance for fluent API.
     */
    public AbstractMessageGenerator setThreads(final int threads) {
@@ -239,7 +237,6 @@ public abstract class AbstractMessageGenerator {
     *
     * @param messageNumberingEnabled
     *       True to enable message numbering, false otherwise.
-    *
     * @return Returns this instance for fluent API.
     */
    public AbstractMessageGenerator setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
@@ -248,10 +245,11 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-   * Configures the {@link org.perfcake.validation.ValidationManager} to be used for the performance test execution.
-   *
-   * @param validationManager {@link org.perfcake.validation.ValidationManager} to be used.s
-   */
+    * Configures the {@link org.perfcake.validation.ValidationManager} to be used for the performance test execution.
+    *
+    * @param validationManager
+    *       {@link org.perfcake.validation.ValidationManager} to be used.s
+    */
    public void setValidationManager(final ValidationManager validationManager) {
       this.validationManager = validationManager;
    }
