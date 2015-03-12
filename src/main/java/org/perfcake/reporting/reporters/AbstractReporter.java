@@ -338,7 +338,7 @@ public abstract class AbstractReporter implements Reporter {
     */
    protected boolean checkStart() {
       if (periods.size() == 0) {
-         log.warn("No reporting periods are configured for this reporter (" + getClass().getCanonicalName() + "). The reporter is disabled. Call start() again after the periods are registered.");
+         log.warn("No reporting periods are configured for this reporter (" + getClass().getCanonicalName() + "). The reporter won't be able to output any results while it still processes the results and thus consuming precious time. Register periods and call start() again.");
          return false;
       }
 
