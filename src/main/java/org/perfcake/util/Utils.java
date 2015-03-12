@@ -55,22 +55,35 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Holds usefull utility methods used throughout PerfCake.
+ *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class Utils {
 
+   /**
+    * Default name of resource directory.
+    */
    public static final File DEFAULT_RESOURCES_DIR = new File("resources");
+
+   /**
+    * Default name of plugin directory.
+    */
    public static final File DEFAULT_PLUGINS_DIR = new File("lib/plugins");
+
+   /**
+    * Logger.
+    */
    private static final Logger log = LogManager.getLogger(Utils.class);
 
    /**
-    * It takes a string and replaces all ${&lt;property.name&gt;} placeholders
+    * Replaces all ${&lt;property.name&gt;} placeholders in a string
     * by respective value of the property named &lt;property.name&gt; using {@link SystemPropertyGetter}.
     *
     * @param text
     *       The original string.
-    * @return Filtered string with.
+    * @return Filtered string.
     */
    public static String filterProperties(final String text) {
       String propertyPattern = "[^\\\\](\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?})";
@@ -193,7 +206,7 @@ public class Utils {
    }
 
    /**
-    * Convert location to URL. If location specifies a protocol, it is immediately converted. Without a protocol specified, output is
+    * Converts location to URL. If location specifies a protocol, it is immediately converted. Without a protocol specified, output is
     * file://${&lt;defaultLocationProperty&gt;}/&lt;location&gt;&lt;defaultSuffix&gt; using defaultLocation as a default value for the defaultLocationProperty
     * when the property is undefined.
     *
@@ -229,7 +242,7 @@ public class Utils {
    }
 
    /**
-    * Convert location to URL with check for the location existence. If location specifies a protocol, it is immediately converted. Without a protocol specified, the following paths
+    * Converts location to URL with check for the location existence. If location specifies a protocol, it is immediately converted. Without a protocol specified, the following paths
     * are checked for the existence:
     * 1. file://location
     * 2. file://$defaultLocationProperty/location or file://defaultLocation/location (when the property is not set)
@@ -339,7 +352,7 @@ public class Utils {
    }
 
    /**
-    * Uses {@link PerfCakeConst#DEFAULT_ENCODING_PROPERTY} system property, if this property is not set, <b>UTF-8</b> is used.
+    * Gets the default encoding. Uses {@link PerfCakeConst#DEFAULT_ENCODING_PROPERTY} system property, if this property is not set, <b>UTF-8</b> is used.
     *
     * @return The string representation of default encoding for all read and written files
     */
