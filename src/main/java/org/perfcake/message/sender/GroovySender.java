@@ -36,11 +36,6 @@ public class GroovySender extends CommandSender {
     */
    private String groovyExecutable = null;
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.CommandSender#init()
-    */
    @Override
    public void init() throws Exception {
       setCommandPrefix(getGroovyExecutable());
@@ -63,7 +58,7 @@ public class GroovySender extends CommandSender {
     *
     * @param groovyExecutable
     *       The groovyExecutable to set.
-    * @return Instance of this for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public GroovySender setGroovyExecutable(final String groovyExecutable) {
       this.groovyExecutable = groovyExecutable;
