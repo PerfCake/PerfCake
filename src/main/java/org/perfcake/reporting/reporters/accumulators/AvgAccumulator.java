@@ -29,7 +29,7 @@ package org.perfcake.reporting.reporters.accumulators;
 public class AvgAccumulator extends SumAccumulator {
 
    /**
-    * Number of reported values
+    * Number of reported values.
     */
    private long count = 0;
 

@@ -31,14 +31,14 @@ public interface Accumulator<T> {
     * Adds a value to the accumulator. This value is accumulated with the previously reported values.
     *
     * @param value
-    *       The value to be accumulated
+    *       The value to be accumulated.
     */
    public void add(T value);
 
    /**
     * Get the accumulated result of currently added values.
     *
-    * @return The result of the accumulation
+    * @return The result of the accumulation.
     */
    public T getResult();
 
@@ -46,5 +46,4 @@ public interface Accumulator<T> {
     * Reset the accumulator to the default state.
     */
    public void reset();
-
 }

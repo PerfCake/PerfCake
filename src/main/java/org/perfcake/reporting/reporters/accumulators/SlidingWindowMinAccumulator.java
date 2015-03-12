@@ -27,6 +27,12 @@ package org.perfcake.reporting.reporters.accumulators;
  */
 public class SlidingWindowMinAccumulator extends AbstractSlidingWindowAccumulator {
 
+   /**
+    * Creates a new minimum accumulator with the sliding window of a given size.
+    *
+    * @param windowSize
+    *       Size of the sliding window.
+    */
    public SlidingWindowMinAccumulator(final int windowSize) {
       super(windowSize);
    }

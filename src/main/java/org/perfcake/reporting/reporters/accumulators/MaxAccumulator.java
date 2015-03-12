@@ -28,15 +28,10 @@ package org.perfcake.reporting.reporters.accumulators;
  */
 public class MaxAccumulator implements Accumulator<Double> {
    /**
-    * Maximum of the reported values
+    * Maximum of the reported values.
     */
    private Double max = Double.NEGATIVE_INFINITY;
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.reporters.accumulators.Accumulator#add(java.lang.Object)
-    */
    @Override
    public synchronized void add(final Double value) {
       if (value > max) {
@@ -44,24 +39,13 @@ public class MaxAccumulator implements Accumulator<Double> {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.reporters.accumulators.Accumulator#getResult()
-    */
    @Override
    public synchronized Double getResult() {
       return max;
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.reporters.accumulators.Accumulator#reset()
-    */
    @Override
    public synchronized void reset() {
       max = Double.NEGATIVE_INFINITY;
    }
-
 }

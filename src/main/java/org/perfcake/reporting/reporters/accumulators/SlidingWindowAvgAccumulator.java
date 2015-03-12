@@ -27,6 +27,12 @@ package org.perfcake.reporting.reporters.accumulators;
  */
 public class SlidingWindowAvgAccumulator extends AbstractSlidingWindowAccumulator {
 
+   /**
+    * Creates a new average accumulator with the sliding window of a given size.
+    *
+    * @param windowSize
+    *       Size of the sliding window.
+    */
    public SlidingWindowAvgAccumulator(int windowSize) {
       super(windowSize);
    }

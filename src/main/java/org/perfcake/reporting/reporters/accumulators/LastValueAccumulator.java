@@ -20,14 +20,14 @@
 package org.perfcake.reporting.reporters.accumulators;
 
 /**
- * This accumulator remembers the last value
+ * Remembers the last reported value.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class LastValueAccumulator implements Accumulator<Object> {
 
    /**
-    * Last remembered value
+    * Last remembered value.
     */
    private Object lastValue;
 
@@ -45,5 +45,4 @@ public class LastValueAccumulator implements Accumulator<Object> {
    public void reset() {
       lastValue = null;
    }
-
 }
