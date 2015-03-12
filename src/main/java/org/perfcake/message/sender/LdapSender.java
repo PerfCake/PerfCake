@@ -23,8 +23,8 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,9 +39,9 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.LdapContext;
 
 /**
- * The sender which queries LDAP server.
+ * Queries LDAP server.
  *
- * @author vjuranek
+ * @author Vojta Juránek
  */
 public class LdapSender extends AbstractSender {
 
@@ -55,37 +55,85 @@ public class LdapSender extends AbstractSender {
    private String searchBase = null;
    private String filter = null;
 
+   /**
+    * Gets the LDAP username.
+    *
+    * @returns The LDAP username.
+    */
    public String getLdapUsername() {
       return ldapUsername;
    }
 
+   /**
+    * Sets the LDAP username.
+    *
+    * @param ldapUsername
+    *       The LDAP username.
+    * @return Instance of this to support fluent API.
+    */
    public LdapSender setLdapUsername(final String ldapUsername) {
       this.ldapUsername = ldapUsername;
       return this;
    }
 
+   /**
+    * Gets the LDAP password.
+    *
+    * @returns The LDAP password.
+    */
    public String getLdapPassword() {
       return ldapPassword;
    }
 
+   /**
+    * Sets the LDAP password.
+    *
+    * @param ldapPassword
+    *       The LDAP password.
+    * @return Instance of this to support fluent API.
+    */
    public LdapSender setLdapPassword(final String ldapPassword) {
       this.ldapPassword = ldapPassword;
       return this;
    }
 
+   /**
+    * Gets the LDAP search base.
+    *
+    * @returns The LDAP search base.
+    */
    public String getSearchBase() {
       return searchBase;
    }
 
+   /**
+    * Sets the LDAP search base.
+    *
+    * @param searchBase
+    *       The LDAP search base.
+    * @return Instance of this to support fluent API.
+    */
    public LdapSender setSearchBase(final String searchBase) {
       this.searchBase = searchBase;
       return this;
    }
 
+   /**
+    * Gets the LDAP filter.
+    *
+    * @returns The LDAP filter.
+    */
    public String getFilter() {
       return filter;
    }
 
+   /**
+    * Sets the LDAP filter.
+    *
+    * @param filter
+    *       The LDAP filter.
+    * @return Instance of this to support fluent API.
+    */
    public LdapSender setFilter(final String filter) {
       this.filter = filter;
       return this;
