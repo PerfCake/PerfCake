@@ -1,22 +1,48 @@
 PerfCake Change Log
 ===================
 
-Release 4.0 (next release)
-==========================
+Release 4.0
+===========
 
 Features
 --------
-* https://github.com/PerfCake/PerfCake/issues/160 - Enable possibility to perform a garbage collection for MemoryUsageReporter (via **performGcOnMemoryUsage** boolean property)
+* Scenario schema namespace changed to "**urn:perfcake:scenario:4.0**".
+* https://github.com/PerfCake/PerfCake/issues/68 - Allow to set Logger threshold by parameter or similar way
+* https://github.com/PerfCake/PerfCake/issues/116 - Add Google Charts templates
+* https://github.com/PerfCake/PerfCake/issues/136 - Implement expression language
+* https://github.com/PerfCake/PerfCake/issues/140 - Develop Validators integration test
+* https://github.com/PerfCake/PerfCake/issues/141 - Refactor Reporter Contract test
+* https://github.com/PerfCake/PerfCake/issues/142 - Review members visibility and usage of final
+* https://github.com/PerfCake/PerfCake/issues/143 - Update maven-javadoc-plugin to the latest version
+* https://github.com/PerfCake/PerfCake/issues/145 - Archive signatures using website SSL key
+* https://github.com/PerfCake/PerfCake/issues/148 - Review Javadoc Maven plugin configuration
+* https://github.com/PerfCake/PerfCake/issues/150 - Review JavaDoc enhancement
+* https://github.com/PerfCake/PerfCake/issues/152 - Optimize test groups and run time
+* https://github.com/PerfCake/PerfCake/issues/153 - Investigate possibility to initiate a heapdump once possible memory leak is detected by **MemoryUsageReporter**.
+* https://github.com/PerfCake/PerfCake/issues/158 - Add possibility to show validation statistics when validation is enabled.
+* https://github.com/PerfCake/PerfCake/issues/159 - Improve integration with Sonatype enhancement
+* https://github.com/PerfCake/PerfCake/issues/160 - Enable possibility to perform a garbage collection for MemoryUsageReporter
 * https://github.com/PerfCake/PerfCake/issues/163 - Extend tests to cover message templating
 * https://github.com/PerfCake/PerfCake/issues/167 - Extend RegExpValidator to be able to configure Pattern.compile flags
+* https://github.com/PerfCake/PerfCake/issues/168 - Publish documentation in HTML format documentation
+* https://github.com/PerfCake/PerfCake/issues/172 - Try using Timer from Faban as a precise source of time
+* https://github.com/PerfCake/PerfCake/issues/173 - Investigate possibilities of using Goldman Sachs collections
+* https://github.com/PerfCake/PerfCake/issues/174 - Extend accumulators tests
+* https://github.com/PerfCake/PerfCake/issues/175 - Update embedded AS Arquillian tests to run with Java 8
+* https://github.com/PerfCake/PerfCake/issues/176 - Convert **CSVDestination** to use FileChannel
+* https://github.com/PerfCake/PerfCake/issues/177 - Document all result names for each reporter
+* https://github.com/PerfCake/PerfCake/issues/178 - Log validators separately
+* https://github.com/PerfCake/PerfCake/issues/180 - Allow only alphanumeric digits and an underscore in group name for **ChartDestination**
 
 Bug Fixes
 ---------
 * https://github.com/PerfCake/PerfCake/issues/156 - XSLT transformation adds an empty property to sender
-* https://github.com/PerfCake/PerfCake/issues/157 - MemoryUsageReporter does not reset correctly
-* https://github.com/PerfCake/PerfCake/issues/164 - RampUpDownGenerator produces NPE
-* https://github.com/PerfCake/PerfCake/issues/165 - RampUpDownGenerator does not have implemented mainThreadCount getters/setters
-* https://github.com/PerfCake/PerfCake/issues/166 - RampUpDownGenerator logs current phase too often
+* https://github.com/PerfCake/PerfCake/issues/157 - **MemoryUsageReporter** does not reset correctly
+* https://github.com/PerfCake/PerfCake/issues/161 - Issue with space in JAVA_HOME
+* https://github.com/PerfCake/PerfCake/issues/164 - **RampUpDownGenerator** produces NPE
+* https://github.com/PerfCake/PerfCake/issues/165 - **RampUpDownGenerator** does not have implemented **mainThreadCount** getters/setters
+* https://github.com/PerfCake/PerfCake/issues/166 - **RampUpDownGenerator** logs current phase too often
+* https://github.com/PerfCake/PerfCake/issues/179 - Log4j config is missing in binary distro
 
 Release 3.3
 ==========================
