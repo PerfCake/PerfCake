@@ -82,13 +82,13 @@ class SenderTask implements Runnable {
    private ValidationManager validationManager;
 
    /**
-    * Semaphore used from the outside of SenderTask, it controls the amount of prepared tasks in a buffer.
+    * Controls the amount of prepared tasks in a buffer.
     */
    private Semaphore semaphore;
 
    /**
     * Creates a new task to send a message.
-    * The semaphore is released when the task is finished. This is used to control the maximum number of sender tasks running in parallel.
+    * The semaphore is released when the task is finished. This is used to control the maximum number sender tasks created and waiting for execution.
     * The visibility of this constructor is limited as it is not intended for normal use.
     * To obtain a new instance of a sender task properly initialized call
     * {@link org.perfcake.message.generator.AbstractMessageGenerator#newSenderTask(java.util.concurrent.Semaphore)}.

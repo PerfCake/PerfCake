@@ -19,18 +19,21 @@
  */
 package org.perfcake.message.generator;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.ReportManager;
 
-import java.util.concurrent.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * <p>
- * Generator that is able to generate maximal load.
- * </p>
+ * Generator that is able to generate maximal load given the number of threads configured..
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
@@ -77,14 +80,18 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    /**
     * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
     * It the same amount of threads keeps running for this period, they are forcefully stopped.
+    * The unit of this value is milliseconds. The default value is 1000ms.
     */
-   protected long shutdownPeriod = 1000; //default 1s
+   protected long shutdownPeriod = 1000;
 
    /**
-    * The size of internal thread queue.
+    * The size of internal queue of prepared sender tasks. The default value is 1000 tasks.
     */
-   protected int threadQueueSize = 1000; // default
+   protected int senderTaskQueueSize = 1000;
 
+   /**
+    * Controls the maximal number of threads running in parallel.
+    */
    protected Semaphore semaphore;
 
    @Override
@@ -92,6 +99,10 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       super.setReportManager(reportManager);
    }
 
+   /**
+    * Assigns nice names to threads that send messages and increases their default priority slightly.
+    * All threads are set at daemon by default for PerfCake to be able to finish even if some of then hung up.
+    */
    static class DaemonThreadFactory implements ThreadFactory {
       private static final AtomicInteger poolNumber = new AtomicInteger(1);
       private final ThreadGroup group;
@@ -177,7 +188,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    @Override
    public void generate() throws Exception {
       log.info("Starting to generate...");
-      semaphore = new Semaphore(threadQueueSize);
+      semaphore = new Semaphore(senderTaskQueueSize);
       executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(getThreads(), new DaemonThreadFactory());
       runInfo.setThreads(getThreads());
       setStartTime();
@@ -234,18 +245,18 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     *
     * @return The thread queue size.
     */
-   public int getThreadQueueSize() {
-      return threadQueueSize;
+   public int getSenderTaskQueueSize() {
+      return senderTaskQueueSize;
    }
 
    /**
     * Sets the the size of the internal thread queue.
     *
-    * @param threadQueueSize The thread queue size.
+    * @param senderTaskQueueSize The thread queue size.
     * @return this
     */
-   public DefaultMessageGenerator setThreadQueueSize(final int threadQueueSize) {
-      this.threadQueueSize = threadQueueSize;
+   public DefaultMessageGenerator setSenderTaskQueueSize(final int senderTaskQueueSize) {
+      this.senderTaskQueueSize = senderTaskQueueSize;
       return this;
    }
 

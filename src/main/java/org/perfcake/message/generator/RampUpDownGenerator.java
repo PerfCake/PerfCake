@@ -108,7 +108,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    @Override
    public void generate() throws Exception {
       log.info("Starting to generate...");
-      semaphore = new Semaphore(threadQueueSize);
+      semaphore = new Semaphore(senderTaskQueueSize);
       executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(preThreadCount);
       currentPhase = Phase.PRE;
       boolean phaseChanged = true;
