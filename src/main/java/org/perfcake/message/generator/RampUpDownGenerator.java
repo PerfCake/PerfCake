@@ -32,6 +32,34 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
+ * Generates maximal load using a variable number of threads.
+ * <p>The generating starts with the number of threads set to the value of the {@link #preThreadCount} property.
+ * It continues to execute for the duration set by the {@link #preDuration} property,
+ * which is called the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE PRE} phase.
+ * When {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE PRE} phase ends,
+ * the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP RAMP UP} phase starts.</p>
+ *
+ * <p>In the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP RAMP UP} phase
+ * the number of the threads is changed by the value of the {@link #rampUpStep} property
+ * each period set by the {@link #rampUpStepPeriod} until it reaches the number of threads
+ * set by the value of the {@link #mainThreadCount} property.</p>
+ *
+ * <p>In that moment {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#MAIN MAIN} phase starts
+ * and the execution continues for the duration set by the {@link #mainDuration} property,
+ * when the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_DOWN RAMP DOWN} phase starts.</p>
+ *
+ * <p>In the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_DOWN RAMP DOWN} phase
+ * the number of threads is again changed but this time in the opposite direction than
+ * in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP RAMP UP} phase.
+ * It changes by the value of the {@link #rampDownStep} property each period specified
+ * by the {@link #rampDownStepPeriod} property until the final number of threads is reached.
+ * By that moment the final phase called {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#POST POST} starts.</p>
+ *
+ * <p>The {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#POST POST} phase ends by the end of the scenario execution.</p>
+ *
+ * <p>The outer borders of the number of threads and the duration is set by the maximum number of threads
+ * specified by the threads attribute of the generator and by the maximum duration set by the run element.</p>
+ *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class RampUpDownGenerator extends DefaultMessageGenerator {
@@ -44,7 +72,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
     * Phase of the generator.
     */
    private enum Phase {
-      PRE, RAMP_UP, MAIN, RAMP_DOWN, POST;
+      PRE, RAMP_UP, MAIN, RAMP_DOWN, POST
    }
 
    /**
@@ -63,12 +91,13 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    private int mainThreadCount = super.getThreads();
 
    /**
-    * A duration period after the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP} phase starts.
+    * A duration period of the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE} phase,
+    * before the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP} phase starts.
     */
    private long preDuration = Long.MAX_VALUE;
 
    /**
-    * A number by which the # of threads is changed in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP} phase.
+    * A number by which the number of threads is changed in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP} phase.
     */
    private int rampUpStep = 0;
 
@@ -211,82 +240,192 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
       executorService.setMaximumPoolSize(threads);
    }
 
+   /**
+    * Gets an initial number of threads - the number of threads in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE PRE} phase.
+    *
+    * @return The final number of threads.
+    */
    public int getPreThreadCount() {
       return preThreadCount;
    }
 
+   /**
+    * Sets a final number of threads - the number of threads in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE PRE} phase.
+    *
+    * @param preThreadCount
+    *       The initial number of threads.
+    * @return Instance of this to support fluent API.
+    */
    public RampUpDownGenerator setPreThreadCount(int preThreadCount) {
       this.preThreadCount = preThreadCount;
       return this;
    }
 
+   /**
+    * Gets a final number of threads - the number of threads in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#POST POST} phase.
+    *
+    * @return The final number of threads.
+    */
    public int getPostThreadCount() {
       return postThreadCount;
    }
 
+   /**
+    * Sets a final number of threads - the number of threads in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#POST POST} phase.
+    *
+    * @param postThreadCount
+    *       The final number of threads.
+    * @return Instance of this to support fluent API.
+    */
    public RampUpDownGenerator setPostThreadCount(int postThreadCount) {
       this.postThreadCount = postThreadCount;
       return this;
    }
 
+   /**
+    * Gets duration period of the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE PRE} phase,
+    * before the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP RAMP UP} phase starts.
+    *
+    * @return PRE phase duration period in the units of <code>run</code> type.
+    */
    public long getPreDuration() {
       return preDuration;
    }
 
+   /**
+    * Sets duration period of the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE PRE} phase,
+    * before the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP RAMP UP} phase starts.
+    *
+    * @param preDuration
+    *       PRE phase duration period in the units of <code>run</code> type.
+    * @return Instance of this to support fluent API.
+    */
    public RampUpDownGenerator setPreDuration(long preDuration) {
       this.preDuration = preDuration;
       return this;
    }
 
+   /**
+    * Gets a number by which the number of threads is changed in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP RAMP UP} phase.
+    *
+    * @return The size of the step.
+    */
    public int getRampUpStep() {
       return rampUpStep;
    }
 
+   /**
+    * Sets a number by which the number of threads is changed in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP RAMP UP} phase.
+    *
+    * @param rampUpStep
+    *       The size of the step.
+    * @return Instance of this to support fluent API.
+    */
    public RampUpDownGenerator setRampUpStep(int rampUpStep) {
       this.rampUpStep = rampUpStep;
       return this;
    }
 
+   /**
+    * Gets a duration period after which the number of threads is changed in {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP RAMP UP} phase.
+    *
+    * @return The RAMP UP step duration period in a units of <code>run</code> type.
+    */
    public long getRampUpStepPeriod() {
       return rampUpStepPeriod;
    }
 
+   /**
+    * Sets a duration period after which the number of threads is changed in {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP RAMP UP} phase.
+    *
+    * @param rampUpStepPeriod
+    *       The RAMP UP step duration period in a units of <code>run</code> type.
+    * @return Instance of this to support fluent API.
+    */
    public RampUpDownGenerator setRampUpStepPeriod(long rampUpStepPeriod) {
       this.rampUpStepPeriod = rampUpStepPeriod;
       return this;
    }
 
+   /**
+    * Gets a number by which the number of threads is changed in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_DOWN RAMP DOWN} phase.
+    *
+    * @return The size of the step.
+    */
    public int getRampDownStep() {
       return rampDownStep;
    }
 
+   /**
+    * Sets a number by which the number of threads is changed in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_DOWN RAMP DOWN} phase.
+    *
+    * @param rampDownStep
+    *       The size of the step.
+    * @return Instance of this to support fluent API.
+    */
    public RampUpDownGenerator setRampDownStep(int rampDownStep) {
       this.rampDownStep = rampDownStep;
       return this;
    }
 
+   /**
+    * Gets a duration period after which the number of threads is changed in {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_DOWN RAMP DOWN} phase.
+    *
+    * @return The RAMP DOWN step duration period in a units of <code>run</code> type.
+    */
    public long getRampDownStepPeriod() {
       return rampDownStepPeriod;
    }
 
+   /**
+    * Sets a duration period after which the number of threads is changed in {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_DOWN RAMP DOWN} phase.
+    *
+    * @param rampDownStepPeriod
+    *       The RAMP DOWN step duration period in a units of <code>run</code> type.
+    * @return Instance of this to support fluent API.
+    */
    public RampUpDownGenerator setRampDownStepPeriod(long rampDownStepPeriod) {
       this.rampDownStepPeriod = rampDownStepPeriod;
       return this;
    }
 
+   /**
+    * Gets a duration period for which the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#MAIN MAIN} phase lasts.
+    *
+    * @return The MAIN phase duration period in the units of <code>run</code> type.
+    */
    public long getMainDuration() {
       return mainDuration;
    }
 
+   /**
+    * Sets a duration period for which the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#MAIN MAIN} phase lasts.
+    *
+    * @param mainDuration
+    *       The MAIN phase duration period in the units of <code>run</code> type.
+    * @return Instance of this to support fluent API.
+    */
    public RampUpDownGenerator setMainDuration(long mainDuration) {
       this.mainDuration = mainDuration;
       return this;
    }
 
+   /**
+    * Gets a maximal number of threads - the number of threads used in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#MAIN MAIN} phase.
+    *
+    * @return The maximal number of threads.
+    */
    public int getMainThreadCount() {
       return mainThreadCount;
    }
 
+   /**
+    * Sets a maximal number of threads - the number of threads used in the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#MAIN MAIN} phase.
+    *
+    * @param mainThreadCount
+    *       The maximal number of threads.
+    * @return Instance of this to support fluent API.
+    */
    public RampUpDownGenerator setMainThreadCount(int mainThreadCount) {
       this.mainThreadCount = mainThreadCount;
       return this;

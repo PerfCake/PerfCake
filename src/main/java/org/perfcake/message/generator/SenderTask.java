@@ -41,13 +41,14 @@ import java.util.Properties;
 import java.util.concurrent.Semaphore;
 
 /**
- * The sender task is a runnable class that is executing a single task of sending the message(s) from the message store
- * using instances of {@link MessageSender} provided by message sender manager (see {@link MessageSenderManager}),
+ * Executes a single task of sending messages from the message store
+ * using instances of {@link MessageSender} provided by message sender manager (see {@link org.perfcake.message.sender.MessageSenderManager}),
  * receiving the message sender's response and handling the reporting and response message validation.
  * Sender task is not part of the public API, it is used from generators.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @see org.perfcake.message.sender.MessageSenderManager
  */
 class SenderTask implements Runnable {
 
