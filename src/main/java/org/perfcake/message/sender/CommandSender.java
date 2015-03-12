@@ -121,17 +121,17 @@ public class CommandSender extends AbstractSender {
       final Set<Entry<String, String>> envEntrySet = System.getenv().entrySet();
       environmentVariables = new String[propertiesEntrySet.size() + envEntrySet.size() + (message != null ? message.getHeaders().size() + message.getProperties().size() : 0)];
       int i = 0;
-      for (Entry<String, String> entry : propertiesEntrySet) {
+      for (final Entry<String, String> entry : propertiesEntrySet) {
          environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
       }
-      for (Entry<String, String> entry : envEntrySet) {
+      for (final Entry<String, String> entry : envEntrySet) {
          environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
       }
       if (message != null) {
-         for (Entry<Object, Object> entry : message.getHeaders().entrySet()) {
+         for (final Entry<Object, Object> entry : message.getHeaders().entrySet()) {
             environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
          }
-         for (Entry<Object, Object> entry : message.getProperties().entrySet()) {
+         for (final Entry<Object, Object> entry : message.getProperties().entrySet()) {
             environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
          }
       }
@@ -148,17 +148,17 @@ public class CommandSender extends AbstractSender {
       }
 
       process.waitFor();
-      char[] cbuf = new char[10 * 1024];
+      final char[] cbuf = new char[10 * 1024];
       this.reader = new InputStreamReader(process.getInputStream(), Utils.getDefaultEncoding());
       // note that Content-Length is available at this point
-      StringBuilder sb = new StringBuilder();
+      final StringBuilder sb = new StringBuilder();
       int ch = reader.read(cbuf);
       while (ch != -1) {
          sb.append(cbuf, 0, ch);
          ch = reader.read(cbuf);
       }
 
-      String result = sb.toString();
+      final String result = sb.toString();
       return result;
    }
 
@@ -223,7 +223,7 @@ public class CommandSender extends AbstractSender {
     *       the environmentVariables to set
     * @return Instance of this to support fluent API.
     */
-   public CommandSender setEnvironmentVariables(String[] environmentVariables) {
+   public CommandSender setEnvironmentVariables(final String[] environmentVariables) {
       this.environmentVariables = Arrays.copyOf(environmentVariables, environmentVariables.length); // ignore any later external modifications
       return this;
    }

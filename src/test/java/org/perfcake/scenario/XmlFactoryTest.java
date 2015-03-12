@@ -107,13 +107,13 @@ public class XmlFactoryTest extends TestSetup {
       try {
          final XmlFactory scenarioFactory = new XmlFactory();
          scenarioFactory.init(Utils.getResourceAsUrl("/scenarios/test-scenario.xml"));
-         AbstractMessageGenerator generator = scenarioFactory.parseGenerator();
+         final AbstractMessageGenerator generator = scenarioFactory.parseGenerator();
          Assert.assertTrue(generator instanceof DefaultMessageGenerator, "The generator is not an instance of " + DefaultMessageGenerator.class.getName());
          final DefaultMessageGenerator dmg = (DefaultMessageGenerator) generator;
          dmg.setRunInfo(new RunInfo(new Period(PeriodType.TIME, 30L)));
          Assert.assertEquals(dmg.getThreads(), THREADS, "threads");
          Assert.assertEquals(dmg.getSenderTaskQueueSize(), 5000);
-      } catch (PerfCakeException e) {
+      } catch (final PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -218,7 +218,7 @@ public class XmlFactoryTest extends TestSetup {
          final String WARM_UP_REPORTER_KEY = "warmup";
 
          final Map<String, Reporter> reportersMap = new HashMap<>();
-         for (Reporter reporter : reportManager.getReporters()) {
+         for (final Reporter reporter : reportManager.getReporters()) {
             if (reporter instanceof DummyReporter) {
                reportersMap.put(DUMMY_REPORTER_KEY, reporter);
             } else if (reporter instanceof WarmUpReporter) {
@@ -262,7 +262,7 @@ public class XmlFactoryTest extends TestSetup {
          Assert.assertEquals(((WarmUpReporter) warmUpReporter).getAbsoluteThreshold(), 0.2d, "reporter's absolute threshold");
          Assert.assertEquals(((WarmUpReporter) warmUpReporter).getRelativeThreshold(), 1d, "reporter's relative threshold");
 
-      } catch (PerfCakeException e) {
+      } catch (final PerfCakeException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -272,8 +272,8 @@ public class XmlFactoryTest extends TestSetup {
    public void parseValidationTest() throws Exception {
       final XmlFactory validationScenarioFactory = new XmlFactory();
       validationScenarioFactory.init(Utils.getResourceAsUrl("/scenarios/test-validator-load.xml"));
-      ValidationManager vm = validationScenarioFactory.parseValidation();
-      List<MessageTemplate> mts = validationScenarioFactory.parseMessages(vm);
+      final ValidationManager vm = validationScenarioFactory.parseValidation();
+      final List<MessageTemplate> mts = validationScenarioFactory.parseMessages(vm);
 
       Assert.assertEquals(mts.size(), 1);
       Assert.assertEquals(mts.get(0).getValidatorIds().size(), 2);
@@ -299,7 +299,7 @@ public class XmlFactoryTest extends TestSetup {
       final XmlFactory validationScenarioFactory = new XmlFactory();
       validationScenarioFactory.init(Utils.getResourceAsUrl("/scenarios/test-enable-fast-forward.xml"));
 
-      ValidationManager vm = validationScenarioFactory.parseValidation();
+      final ValidationManager vm = validationScenarioFactory.parseValidation();
 
       Assert.assertTrue(vm.isFastForward(), "Fast forward did not load properly.");
    }

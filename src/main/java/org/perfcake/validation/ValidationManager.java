@@ -95,7 +95,7 @@ public class ValidationManager {
    /**
     * Stores validation results statistics.
     */
-   private Map<String, Score> statistics = new HashMap<>();
+   private final Map<String, Score> statistics = new HashMap<>();
 
    /**
     * Creates a new validator manager. The message responses are store in a file queue in a temporary file.
@@ -161,9 +161,9 @@ public class ValidationManager {
     * @return The list of requested validators.
     */
    public List<MessageValidator> getValidators(final List<String> validatorIds) {
-      List<MessageValidator> _validators = new ArrayList<>();
+      final List<MessageValidator> _validators = new ArrayList<>();
 
-      for (String id : validatorIds) {
+      for (final String id : validatorIds) {
          _validators.add(getValidator(id));
       }
 
@@ -276,7 +276,7 @@ public class ValidationManager {
     * @param fastForward
     *       <code>true</code> to enable the fast forward mode.
     */
-   public void setFastForward(boolean fastForward) {
+   public void setFastForward(final boolean fastForward) {
       this.fastForward = fastForward;
    }
 

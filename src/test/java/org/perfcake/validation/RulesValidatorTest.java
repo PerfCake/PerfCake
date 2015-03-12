@@ -37,15 +37,15 @@ public class RulesValidatorTest {
 
    @Test
    public void rulesValidatorTest() throws IOException {
-      RulesValidator rv = new RulesValidator();
+      final RulesValidator rv = new RulesValidator();
 
-      Message m = new Message();
+      final Message m = new Message();
       m.setPayload("Kdo šel z depa? Přece Pepa!");
 
-      Message mFail = new Message();
+      final Message mFail = new Message();
       mFail.setPayload("Kdo šel z depa? Přece Radek!");
 
-      File f = File.createTempFile("perfcake", "rules-validator");
+      final File f = File.createTempFile("perfcake", "rules-validator");
       f.deleteOnExit();
       try (FileWriter fw = new FileWriter(f)) {
          fw.write("Message body contains \"Pepa\".");

@@ -57,12 +57,12 @@ class RulesValidatorHelper {
    /**
     * Assertions checked by the helper.
     */
-   private Map<Integer, String> assertions;
+   private final Map<Integer, String> assertions;
 
    /**
     * KIE container that holds all Drools related data.
     */
-   private KieContainer kieContainer;
+   private final KieContainer kieContainer;
 
    /**
     * Gets a new helper based on the assertions.
@@ -75,7 +75,7 @@ class RulesValidatorHelper {
    public RulesValidatorHelper(final Map<Integer, String> assertions) throws ValidationException {
       this.assertions = assertions;
 
-      KieServices kieServices = KieServices.Factory.get();
+      final KieServices kieServices = KieServices.Factory.get();
       kieContainer = build(kieServices, assertions);
    }
 
@@ -89,7 +89,7 @@ class RulesValidatorHelper {
     * @return Map with unused/invalid assertions.
     */
    public Map<Integer, String> validate(final Message originalMessage, final Message response) {
-      KieSession kieSession = kieContainer.newKieSession();
+      final KieSession kieSession = kieContainer.newKieSession();
       final Map<Integer, String> unusedAssertions = new HashMap<>();
       unusedAssertions.putAll(assertions);
 

@@ -36,26 +36,26 @@ public class StringTemplateTest {
 
    @Test
    public void testStringTemplateLarge() {
-      String message = StringUtils.repeat("Galia est omnis divisa in partes tres quarum unam incolunt Belgae, aliam Aquitanii, tertiam qui lingua ipsorum Celtae, nostra Gali appelantur.", 5 * 1024 / 140);
-      String expression = "${hello} ${1+1} ${ahoj||1} ${hello - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}";
+      final String message = StringUtils.repeat("Galia est omnis divisa in partes tres quarum unam incolunt Belgae, aliam Aquitanii, tertiam qui lingua ipsorum Celtae, nostra Gali appelantur.", 5 * 1024 / 140);
+      final String expression = "${hello} ${1+1} ${ahoj||1} ${hello - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}";
 
-      Properties vars = new Properties();
+      final Properties vars = new Properties();
       vars.setProperty("hello", "4"); // set int as string
 
-      String result = StringTemplate.parseTemplate(message + expression, vars); // this passes variables into constructor immediately
+      final String result = StringTemplate.parseTemplate(message + expression, vars); // this passes variables into constructor immediately
 
       Assert.assertEquals(result, message + "4 2 1 3 " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"));
    }
 
    @Test
    public void testStringTemplateBasic() {
-      String expression = "@{hello} ${1+1} @{ahoj||1} @{hello - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}";
-      StringTemplate template = new StringTemplate(expression);
+      final String expression = "@{hello} ${1+1} @{ahoj||1} @{hello - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}";
+      final StringTemplate template = new StringTemplate(expression);
 
-      Properties vars = new Properties();
+      final Properties vars = new Properties();
       vars.put("hello", 4); // entered directly as int - usually, we should use setProperty() here
 
-      String result = template.toString(vars); // pass the variables later
+      final String result = template.toString(vars); // pass the variables later
 
       Assert.assertEquals(result, "4 2 1 3 " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"));
    }
@@ -113,7 +113,7 @@ public class StringTemplateTest {
       Assert.assertFalse(template.hasPlaceholders());
 
       Assert.assertEquals(result, "2");
-      Field templateField = StringTemplate.class.getDeclaredField("template");
+      final Field templateField = StringTemplate.class.getDeclaredField("template");
       templateField.setAccessible(true);
       Assert.assertNull(templateField.get(template));
 

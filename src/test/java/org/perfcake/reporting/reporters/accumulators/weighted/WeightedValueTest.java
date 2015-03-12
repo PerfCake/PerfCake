@@ -29,18 +29,18 @@ public class WeightedValueTest {
 
    @Test
    public void weightedValueTest() {
-      WeightedValue<Byte> w1 = new WeightedValue<>((byte) 10, 3l);
+      final WeightedValue<Byte> w1 = new WeightedValue<>((byte) 10, 3l);
       Assert.assertEquals(w1.getValue(), Byte.valueOf((byte) 10));
       Assert.assertEquals(w1.getWeight(), 3l);
 
-      WeightedValue<Double> w2 = new WeightedValue<>(10d, 3l);
+      final WeightedValue<Double> w2 = new WeightedValue<>(10d, 3l);
       Assert.assertTrue(w2.equals(w2));
       Assert.assertEquals(w2.getValue(), 10d);
       Assert.assertEquals(w2.getWeight(), 3l);
 
       Assert.assertNotEquals(w1, w2);
 
-      WeightedValue<Double> w3 = new WeightedValue<>(w2.getValue(), w2.getWeight());
+      final WeightedValue<Double> w3 = new WeightedValue<>(w2.getValue(), w2.getWeight());
       Assert.assertEquals(w2, w3);
 
       Assert.assertEquals(new WeightedValue<Long>(123l, 1l).toString(), "123");

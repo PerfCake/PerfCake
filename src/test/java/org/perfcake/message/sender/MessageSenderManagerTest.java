@@ -58,7 +58,8 @@ public class MessageSenderManagerTest {
 
       assertTrue(msm.availableSenderCount() == SENDER_COUNT);
       final MessageSender[] senders = new MessageSender[SENDER_COUNT];
-      int i = 0, n = 5;
+      int i = 0;
+	final int n = 5;
       for (; i < n; i++) {
          senders[i] = msm.acquireSender();
       }
@@ -75,7 +76,7 @@ public class MessageSenderManagerTest {
       assertTrue(msm.availableSenderCount() == 0);
       try {
          msm.acquireSender();
-      } catch (PerfCakeException te) {
+      } catch (final PerfCakeException te) {
          assertTrue(te.getMessage().equals("MessageSender pool is empty."));
       }
       msm.releaseAllSenders();
@@ -94,7 +95,7 @@ public class MessageSenderManagerTest {
       final ExecutorService es = Executors.newFixedThreadPool(THREAD_COUNT);
 
       for (int i = 0; i < SENDER_TASK_COUNT; i++) {
-         Runnable senderTask = new SenderTask(msm, threads);
+         final Runnable senderTask = new SenderTask(msm, threads);
          threads.put(senderTask, null);
          es.submit(senderTask);
       }
@@ -104,7 +105,7 @@ public class MessageSenderManagerTest {
       assertTrue(es.isShutdown());
       final Iterator<Runnable> it = threads.keySet().iterator();
       while (it.hasNext()) {
-         Throwable t = threads.get(it.next());
+         final Throwable t = threads.get(it.next());
          if (t != null) {
             fail("One of the threads threw following exception: " + t.getMessage());
          }
@@ -115,10 +116,10 @@ public class MessageSenderManagerTest {
    private static class SenderTask implements Runnable {
       private static final Random rnd = new Random(System.currentTimeMillis());
 
-      private MessageSenderManager msm;
-      private Map<Runnable, Throwable> threads;
+      private final MessageSenderManager msm;
+      private final Map<Runnable, Throwable> threads;
 
-      public SenderTask(MessageSenderManager msm, Map<Runnable, Throwable> threads) {
+      public SenderTask(final MessageSenderManager msm, final Map<Runnable, Throwable> threads) {
          this.msm = msm;
          this.threads = threads;
       }
@@ -131,7 +132,7 @@ public class MessageSenderManagerTest {
             msm.releaseSender(sender);
             counter.decrementAndGet();
 
-         } catch (Throwable t) {
+         } catch (final Throwable t) {
             threads.put(Thread.currentThread(), t);
          }
       }

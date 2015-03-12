@@ -51,14 +51,14 @@ public enum SystemPropertyGetter implements PropertyGetter {
       // first find out whether we specified a namespace
       if (name != null) {
          if (name.startsWith("env.")) {
-            String val = System.getenv(name.substring(4));
+            final String val = System.getenv(name.substring(4));
             if (val != null) {
                return val;
             } else {
                return defaultValue;
             }
          } else if (name.startsWith("props.")) {
-            String val = System.getProperty(name.substring(6));
+            final String val = System.getProperty(name.substring(6));
             if (val != null) {
                return val;
             } else {

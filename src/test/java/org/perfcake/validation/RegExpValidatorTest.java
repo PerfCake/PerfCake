@@ -30,8 +30,8 @@ import java.util.Properties;
 public class RegExpValidatorTest {
    @Test
    public void validationTest() {
-      RegExpValidator rev = new RegExpValidator();
-      Message m = new Message();
+      final RegExpValidator rev = new RegExpValidator();
+      final Message m = new Message();
 
       m.setPayload("né pětku");
       rev.setPattern(".*pět[^k].");

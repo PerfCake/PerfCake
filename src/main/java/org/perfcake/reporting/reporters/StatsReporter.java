@@ -82,7 +82,7 @@ public abstract class StatsReporter extends AbstractReporter {
 
    @SuppressWarnings("rawtypes")
    @Override
-   protected Accumulator getAccumulator(String key, Class clazz) {
+   protected Accumulator getAccumulator(final String key, final Class clazz) {
       if (Double.class.equals(clazz)) {
          if (windowSize == Integer.MAX_VALUE) {
             return getNonWindowedAccumulator(key);
@@ -102,7 +102,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * @return An appropriate accumulator instance.
     */
    @SuppressWarnings("rawtypes")
-   protected Accumulator getWindowedAccumulator(String key) {
+   protected Accumulator getWindowedAccumulator(final String key) {
       switch (key) {
          case MAXIMUM:
             return new SlidingWindowMaxAccumulator(windowSize);
@@ -125,7 +125,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * @return An appropriate accumulator instance.
     */
    @SuppressWarnings("rawtypes")
-   protected Accumulator getNonWindowedAccumulator(String key) {
+   protected Accumulator getNonWindowedAccumulator(final String key) {
       switch (key) {
          case MAXIMUM:
             return new MaxAccumulator();
@@ -205,7 +205,7 @@ public abstract class StatsReporter extends AbstractReporter {
     *       Set <code>true</code> to enable the metric of a maximal value or <code>false</code> to disable it.
     * @return Instance of this for fluent API.
     */
-   public StatsReporter setMaximumEnabled(boolean maximumEnabled) {
+   public StatsReporter setMaximumEnabled(final boolean maximumEnabled) {
       this.maximumEnabled = maximumEnabled;
       return this;
    }
@@ -226,7 +226,7 @@ public abstract class StatsReporter extends AbstractReporter {
     *       <code>true</code> to enable the metric of a minimal value or <code>false</code> to disable it.
     * @return Instance of this for fluent API.
     */
-   public StatsReporter setMinimumEnabled(boolean minimumEnabled) {
+   public StatsReporter setMinimumEnabled(final boolean minimumEnabled) {
       this.minimumEnabled = minimumEnabled;
       return this;
    }
@@ -247,7 +247,7 @@ public abstract class StatsReporter extends AbstractReporter {
     *       <code>true</code> to enable the metric of an average value or <code>false</code> to disable it.
     * @return Instance of this for fluent API.
     */
-   public StatsReporter setAverageEnabled(boolean averageEnabled) {
+   public StatsReporter setAverageEnabled(final boolean averageEnabled) {
       this.averageEnabled = averageEnabled;
       return this;
    }
@@ -272,7 +272,7 @@ public abstract class StatsReporter extends AbstractReporter {
     *       The sliding window size.
     * @return Instance of this for fluent API.
     */
-   public StatsReporter setWindowSize(int windowSize) {
+   public StatsReporter setWindowSize(final int windowSize) {
       this.windowSize = windowSize;
       return this;
    }

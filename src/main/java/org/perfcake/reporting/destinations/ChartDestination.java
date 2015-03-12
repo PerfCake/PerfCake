@@ -104,7 +104,7 @@ public class ChartDestination implements Destination {
          try {
             helper.close();
             helper.compileResults();
-         } catch (PerfCakeException e) {
+         } catch (final PerfCakeException e) {
             log.error("Unable to compile all collected results in a final report: ", e);
          }
       }

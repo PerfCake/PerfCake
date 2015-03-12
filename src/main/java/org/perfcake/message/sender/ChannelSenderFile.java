@@ -47,7 +47,7 @@ public class ChannelSenderFile extends ChannelSender {
    }
 
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
 
       fileChannel = new RandomAccessFile(getTarget(), "rw").getChannel();
@@ -58,7 +58,7 @@ public class ChannelSenderFile extends ChannelSender {
    }
 
    @Override
-   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       if (messageBuffer != null) {
          fileChannel.write(messageBuffer);
 
@@ -75,11 +75,11 @@ public class ChannelSenderFile extends ChannelSender {
    }
 
    @Override
-   public void postSend(Message message) throws Exception {
+   public void postSend(final Message message) throws Exception {
       super.postSend(message);
       try {
          fileChannel.close();
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException("Error while closing the file channel: ", e);
       }
    }

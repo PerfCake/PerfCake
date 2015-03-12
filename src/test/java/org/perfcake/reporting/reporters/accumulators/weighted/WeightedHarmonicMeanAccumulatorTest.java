@@ -29,7 +29,7 @@ public class WeightedHarmonicMeanAccumulatorTest {
 
    @Test
    public void testWeightedHarmonicMeanAccumulator() {
-      WeightedHarmonicMeanAccumulator wma = new WeightedHarmonicMeanAccumulator();
+      final WeightedHarmonicMeanAccumulator wma = new WeightedHarmonicMeanAccumulator();
       wma.add(new WeightedValue<Double>(1d, 3l));
       wma.add(new WeightedValue<Double>(2d, 4l));
       wma.add(new WeightedValue<Double>(3d, 5l));

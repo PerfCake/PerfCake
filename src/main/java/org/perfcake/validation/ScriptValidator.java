@@ -58,15 +58,15 @@ public class ScriptValidator implements MessageValidator {
 
    private CompiledScript getCompiledScript() throws ScriptException, ValidationException {
       if (compiledScript == null) {
-         ScriptEngineManager manager = new ScriptEngineManager();
-         ScriptEngine engine = manager.getEngineByName(this.engine);
+         final ScriptEngineManager manager = new ScriptEngineManager();
+         final ScriptEngine engine = manager.getEngineByName(this.engine);
 
          if (script != null) {
             compiledScript = ((Compilable) engine).compile(script);
          } else if (scriptFile != null) {
             try (Reader fr = new BufferedReader(new InputStreamReader(new FileInputStream(new File(scriptFile)), StandardCharsets.UTF_8))) {
                compiledScript = ((Compilable) engine).compile(fr);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                throw new ValidationException("Error loading script file: ", e);
             }
          } else {
@@ -78,16 +78,16 @@ public class ScriptValidator implements MessageValidator {
    }
 
    @Override
-   public boolean isValid(final Message originalMessage, Message response) {
+   public boolean isValid(final Message originalMessage, final Message response) {
       boolean result = false;
 
       try {
-         CompiledScript script = getCompiledScript();
-         Bindings b = script.getEngine().createBindings();
+         final CompiledScript script = getCompiledScript();
+         final Bindings b = script.getEngine().createBindings();
          b.put("originalMessage", originalMessage);
          b.put("message", response);
          b.put("log", log);
-         Object ret = script.eval(b);
+         final Object ret = script.eval(b);
          if (ret instanceof Boolean) {
             result = (Boolean) ret;
          }
@@ -118,7 +118,7 @@ public class ScriptValidator implements MessageValidator {
     *       The Java Script Engine.
     * @return This instance for fluent API.
     */
-   public ScriptValidator setEngine(String engine) {
+   public ScriptValidator setEngine(final String engine) {
       this.compiledScript = null;
       this.engine = engine;
       return this;
@@ -140,7 +140,7 @@ public class ScriptValidator implements MessageValidator {
     *       The Java script.
     * @return This instance for fluent API.
     */
-   public ScriptValidator setScript(String script) {
+   public ScriptValidator setScript(final String script) {
       this.scriptFile = null;
       this.compiledScript = null;
       this.script = script;
@@ -154,7 +154,7 @@ public class ScriptValidator implements MessageValidator {
     * @param script
     *       The DOM element from whose content the Java script is taken.
     */
-   public void setScriptAsElement(Element script) {
+   public void setScriptAsElement(final Element script) {
       this.scriptFile = null;
       this.compiledScript = null;
       this.script = script.getTextContent();
@@ -176,7 +176,7 @@ public class ScriptValidator implements MessageValidator {
     *       The script file.
     * @return This instance for fluent API.
     */
-   public ScriptValidator setScriptFile(String scriptFile) {
+   public ScriptValidator setScriptFile(final String scriptFile) {
       this.script = null;
       this.compiledScript = null;
       this.scriptFile = scriptFile;

@@ -156,7 +156,7 @@ public class Scenario {
     * @param generator
     *       The {@link org.perfcake.model.Scenario.Generator} to be set.
     */
-   void setGenerator(AbstractMessageGenerator generator) {
+   void setGenerator(final AbstractMessageGenerator generator) {
       this.generator = generator;
    }
 
@@ -175,7 +175,7 @@ public class Scenario {
     * @param messageSenderManager
     *       The {@link org.perfcake.message.sender.MessageSenderManager} to be set.
     */
-   void setMessageSenderManager(MessageSenderManager messageSenderManager) {
+   void setMessageSenderManager(final MessageSenderManager messageSenderManager) {
       this.messageSenderManager = messageSenderManager;
    }
 
@@ -194,7 +194,7 @@ public class Scenario {
     * @param reportManager
     *       The {@link org.perfcake.reporting.ReportManager} to be set.
     */
-   void setReportManager(ReportManager reportManager) {
+   void setReportManager(final ReportManager reportManager) {
       this.reportManager = reportManager;
    }
 
@@ -213,7 +213,7 @@ public class Scenario {
     * @param messageStore
     *       The message store to be set.
     */
-   void setMessageStore(List<MessageTemplate> messageStore) {
+   void setMessageStore(final List<MessageTemplate> messageStore) {
       this.messageStore = messageStore;
    }
 
@@ -223,7 +223,7 @@ public class Scenario {
     * @param validationManager
     *       The {@link org.perfcake.validation.ValidationManager} to be set.
     */
-   void setValidationManager(ValidationManager validationManager) {
+   void setValidationManager(final ValidationManager validationManager) {
       this.validationManager = validationManager;
    }
 

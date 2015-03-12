@@ -50,7 +50,7 @@ public class LdapSender extends AbstractSender {
    private LdapContext ctx = null;
    private String ldapUsername = null;
    private String ldapPassword = null;
-   private SearchControls searchControls = new SearchControls();
+   private final SearchControls searchControls = new SearchControls();
 
    private String searchBase = null;
    private String filter = null;
@@ -59,7 +59,7 @@ public class LdapSender extends AbstractSender {
       return ldapUsername;
    }
 
-   public LdapSender setLdapUsername(String ldapUsername) {
+   public LdapSender setLdapUsername(final String ldapUsername) {
       this.ldapUsername = ldapUsername;
       return this;
    }
@@ -68,7 +68,7 @@ public class LdapSender extends AbstractSender {
       return ldapPassword;
    }
 
-   public LdapSender setLdapPassword(String ldapPassword) {
+   public LdapSender setLdapPassword(final String ldapPassword) {
       this.ldapPassword = ldapPassword;
       return this;
    }
@@ -77,7 +77,7 @@ public class LdapSender extends AbstractSender {
       return searchBase;
    }
 
-   public LdapSender setSearchBase(String searchBase) {
+   public LdapSender setSearchBase(final String searchBase) {
       this.searchBase = searchBase;
       return this;
    }
@@ -86,14 +86,14 @@ public class LdapSender extends AbstractSender {
       return filter;
    }
 
-   public LdapSender setFilter(String filter) {
+   public LdapSender setFilter(final String filter) {
       this.filter = filter;
       return this;
    }
 
    @Override
    public void init() throws Exception {
-      Hashtable<String, Object> env = new Hashtable<String, Object>();
+      final Hashtable<String, Object> env = new Hashtable<String, Object>();
       env.put(Context.SECURITY_AUTHENTICATION, "simple");
       if (ldapUsername != null) {
          env.put(Context.SECURITY_PRINCIPAL, ldapUsername);
@@ -116,7 +116,7 @@ public class LdapSender extends AbstractSender {
    public void close() throws PerfCakeException {
       try {
          ctx.close();
-      } catch (NamingException e) {
+      } catch (final NamingException e) {
          throw new PerfCakeException("Failed to close LDAP context.", e.getCause());
       }
    }
@@ -131,8 +131,8 @@ public class LdapSender extends AbstractSender {
 
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
-      NamingEnumeration<SearchResult> results = ctx.search(searchBase, filter, searchControls);
-      ArrayList<SearchResult> res = new ArrayList<SearchResult>();
+      final NamingEnumeration<SearchResult> results = ctx.search(searchBase, filter, searchControls);
+      final ArrayList<SearchResult> res = new ArrayList<SearchResult>();
       while (results.hasMoreElements()) {
          res.add(results.nextElement());
       }

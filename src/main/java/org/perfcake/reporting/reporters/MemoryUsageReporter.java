@@ -195,12 +195,12 @@ public class MemoryUsageReporter extends AbstractReporter {
 
          if (memoryLeakDetectionEnabled) { // start the thread only if memory leak detection is enabled
             memoryDataGatheringTask = new MemoryDataGatheringTask();
-            Thread memoryDataGatheringThread = new Thread(memoryDataGatheringTask);
+            final Thread memoryDataGatheringThread = new Thread(memoryDataGatheringTask);
             memoryDataGatheringThread.setName("PerfCake-memory-data-gathering-thread");
             memoryDataGatheringThread.setDaemon(true);
             memoryDataGatheringThread.start();
          }
-      } catch (IOException ioe) {
+      } catch (final IOException ioe) {
          ioe.printStackTrace();
       }
    }
@@ -215,7 +215,7 @@ public class MemoryUsageReporter extends AbstractReporter {
          if (memoryLeakDetectionEnabled) {
             memoryDataGatheringTask.stop();
          }
-      } catch (IOException ioe) {
+      } catch (final IOException ioe) {
          ioe.printStackTrace();
       }
    }
@@ -244,7 +244,7 @@ public class MemoryUsageReporter extends AbstractReporter {
          if (log.isDebugEnabled()) {
             log.debug("Reporting: [" + m.toString() + "]");
          }
-      } catch (IOException ioe) {
+      } catch (final IOException ioe) {
          throw new ReportingException("Could not publish result", ioe);
       }
    }
@@ -263,7 +263,7 @@ public class MemoryUsageReporter extends AbstractReporter {
          while (running) {
             try {
                used = sendAgentCommand(Command.USED.name());
-            } catch (IOException e) {
+            } catch (final IOException e) {
                e.printStackTrace();
             }
 
@@ -276,7 +276,7 @@ public class MemoryUsageReporter extends AbstractReporter {
                memoryLeakDetected = true;
                if (memoryDumpOnLeak && !heapDumpSaved) {
                   try {
-                     StringBuffer cmd = new StringBuffer();
+                     final StringBuffer cmd = new StringBuffer();
                      cmd.append(Command.DUMP.name());
                      cmd.append(":");
                      if (memoryDumpFile != null) {
@@ -288,7 +288,7 @@ public class MemoryUsageReporter extends AbstractReporter {
                         throw new RuntimeException("An exception occured at " + PerfCakeAgent.class.getSimpleName() + " side.");
                      }
                      heapDumpSaved = true;
-                  } catch (IOException e) {
+                  } catch (final IOException e) {
                      e.printStackTrace();
                   }
                }
@@ -296,7 +296,7 @@ public class MemoryUsageReporter extends AbstractReporter {
             }
             try {
                Thread.sleep(memoryLeakDetectionMonitoringPeriod);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                e.printStackTrace();
             }
          }
@@ -326,7 +326,7 @@ public class MemoryUsageReporter extends AbstractReporter {
          log.debug("sending " + command);
       }
       requestWriter.println(command);
-      long retVal = Long.parseLong(responseReader.readLine());
+      final long retVal = Long.parseLong(responseReader.readLine());
       if (log.isDebugEnabled()) {
          log.debug("received " + retVal);
       }
@@ -391,7 +391,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *       The usedMemoryTimeWindowSize value to set.
     * @return Instance of this to support fluent API.
     */
-   public MemoryUsageReporter setUsedMemoryTimeWindowSize(int timeWindowSize) {
+   public MemoryUsageReporter setUsedMemoryTimeWindowSize(final int timeWindowSize) {
       this.usedMemoryTimeWindowSize = timeWindowSize;
       return this;
    }
@@ -412,7 +412,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *       The memoryLeakSlopeThreshold value to set.
     * @return Instance of this to support fluent API.
     */
-   public MemoryUsageReporter setMemoryLeakSlopeThreshold(double memoryLeakSlopeThreshold) {
+   public MemoryUsageReporter setMemoryLeakSlopeThreshold(final double memoryLeakSlopeThreshold) {
       this.memoryLeakSlopeThreshold = memoryLeakSlopeThreshold;
       return this;
    }
@@ -433,7 +433,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *       The memoryLeakDetectionEnabled value to set.
     * @return Instance of this to support fluent API.
     */
-   public MemoryUsageReporter setMemoryLeakDetectionEnabled(boolean memoryLeakDetectionEnabled) {
+   public MemoryUsageReporter setMemoryLeakDetectionEnabled(final boolean memoryLeakDetectionEnabled) {
       this.memoryLeakDetectionEnabled = memoryLeakDetectionEnabled;
       return this;
    }
@@ -454,7 +454,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *       The memoryLeakDetectionMonitoringPeriod value to set.
     * @return Instance of this to support fluent API.
     */
-   public MemoryUsageReporter setMemoryLeakDetectionMonitoringPeriod(long memoryLeakDetectionMonitoringPeriod) {
+   public MemoryUsageReporter setMemoryLeakDetectionMonitoringPeriod(final long memoryLeakDetectionMonitoringPeriod) {
       this.memoryLeakDetectionMonitoringPeriod = memoryLeakDetectionMonitoringPeriod;
       return this;
    }

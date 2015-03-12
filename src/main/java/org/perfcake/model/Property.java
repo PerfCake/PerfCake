@@ -85,7 +85,7 @@ public class Property {
     *       allowed object is
     *       {@link Element }
     */
-   public void setAny(Element value) {
+   public void setAny(final Element value) {
       this.any = value;
    }
 
@@ -106,7 +106,7 @@ public class Property {
     *       allowed object is
     *       {@link String }
     */
-   public void setName(String value) {
+   public void setName(final String value) {
       this.name = value;
    }
 
@@ -127,7 +127,7 @@ public class Property {
     *       allowed object is
     *       {@link String }
     */
-   public void setValue(String value) {
+   public void setValue(final String value) {
       this.value = value;
    }
 

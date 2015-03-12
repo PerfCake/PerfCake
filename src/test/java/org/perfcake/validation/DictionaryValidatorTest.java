@@ -74,12 +74,12 @@ public class DictionaryValidatorTest {
 
    @Test
    public void testBasicOperation() throws IOException {
-      Message m1 = new Message();
+      final Message m1 = new Message();
       m1.setPayload("Ahoj");
-      Message m2 = new Message();
+      final Message m2 = new Message();
       m2.setPayload("Čau");
 
-      String dir = TestSetup.createTempDir("PerfCakeDictionaryValidator");
+      final String dir = TestSetup.createTempDir("PerfCakeDictionaryValidator");
       try {
          // first record some sample data
          DictionaryValidator dv = new DictionaryValidator();
@@ -107,12 +107,12 @@ public class DictionaryValidatorTest {
 
    @Test
    public void testExtremeMessages() throws IOException {
-      Message m1 = new Message();
+      final Message m1 = new Message();
       m1.setPayload("Ahoj : = == \\ \\\\ \\= \\: " + SVRATKA + SVRATKA + SVRATKA);
-      Message m2 = new Message();
+      final Message m2 = new Message();
       m2.setPayload(SVRATKA + SVRATKA + SVRATKA);
 
-      String dir = TestSetup.createTempDir("PerfCakeDictionaryValidator");
+      final String dir = TestSetup.createTempDir("PerfCakeDictionaryValidator");
       try {
          // first record some sample data
          DictionaryValidator dv = new DictionaryValidator();
@@ -134,12 +134,12 @@ public class DictionaryValidatorTest {
 
    @Test
    public void testDuplicateMessage() throws IOException {
-      Message m1 = new Message();
+      final Message m1 = new Message();
       m1.setPayload("Ahoj");
-      Message m2 = new Message();
+      final Message m2 = new Message();
       m2.setPayload("Čau");
 
-      String dir = TestSetup.createTempDir("PerfCakeDictionaryValidator");
+      final String dir = TestSetup.createTempDir("PerfCakeDictionaryValidator");
       try {
          // first record some sample data
          DictionaryValidator dv = new DictionaryValidator();

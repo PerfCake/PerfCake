@@ -54,28 +54,28 @@ public class DslFactoryTest extends TestSetup {
    public void testDslScenarioParsing() throws Exception {
       System.setProperty(PerfCakeConst.SCENARIO_PROPERTY, "test-scenario");
 
-      Scenario s = ScenarioLoader.load("stub_test_scenario");
+      final Scenario s = ScenarioLoader.load("stub_test_scenario");
       s.init();
 
       Assert.assertTrue(s.getGenerator() instanceof DefaultMessageGenerator);
       Assert.assertEquals(((DefaultMessageGenerator) s.getGenerator()).getSenderTaskQueueSize(), 3000);
       Assert.assertEquals(s.getGenerator().getThreads(), 4);
 
-      Field runInfoField = AbstractMessageGenerator.class.getDeclaredField("runInfo");
+      final Field runInfoField = AbstractMessageGenerator.class.getDeclaredField("runInfo");
       runInfoField.setAccessible(true);
-      RunInfo r = (RunInfo) runInfoField.get(s.getGenerator());
+      final RunInfo r = (RunInfo) runInfoField.get(s.getGenerator());
 
       Assert.assertEquals(r.getThreads(), 4);
       Assert.assertEquals(r.getDuration().getPeriodType(), PeriodType.TIME);
       Assert.assertEquals(r.getDuration().getPeriod(), 10 * 1000);
 
-      MessageSender ms = s.getMessageSenderManager().acquireSender();
+      final MessageSender ms = s.getMessageSenderManager().acquireSender();
 
       Assert.assertTrue(ms instanceof DummySender);
       Assert.assertEquals(((DummySender) ms).getDelay(), 12 * 1000);
       Assert.assertEquals(((DummySender) ms).getTarget(), "httpbin.org");
 
-      Reporter[] reporters = s.getReportManager().getReporters().toArray(new Reporter[1]);
+      final Reporter[] reporters = s.getReportManager().getReporters().toArray(new Reporter[1]);
       Assert.assertEquals(reporters.length, 3);
       Assert.assertTrue(reporters[0] instanceof WarmUpReporter);
       Assert.assertTrue(reporters[1] instanceof ThroughputStatsReporter);
@@ -128,7 +128,7 @@ public class DslFactoryTest extends TestSetup {
       Assert.assertFalse(s.getValidationManager().isEnabled());
       Assert.assertTrue(s.getValidationManager().isFastForward());
 
-      Message toValidate = new Message();
+      final Message toValidate = new Message();
       toValidate.setPayload("I am a fish!");
       Assert.assertTrue(s.getValidationManager().getValidators(Collections.singletonList("text1")).get(0).isValid(null, toValidate));
 

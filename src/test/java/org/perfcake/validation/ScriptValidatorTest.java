@@ -33,13 +33,13 @@ public class ScriptValidatorTest {
 
    @Test
    public void testScriptValidator() {
-      Message m = new Message();
+      final Message m = new Message();
       m.setPayload("Kdo šel z depa? Přece Pepa!");
 
-      Message mFail = new Message();
+      final Message mFail = new Message();
       mFail.setPayload("Kdo šel z depa? Přece Radek!");
 
-      ScriptValidator sv = new ScriptValidator();
+      final ScriptValidator sv = new ScriptValidator();
       sv.setEngine("groovy");
       sv.setScript("log.info('Be groovy!.....')\nreturn message.payload.toString().contains('Pepa')");
 

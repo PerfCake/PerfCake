@@ -34,7 +34,7 @@ public class FileQueueTest {
    public void fileQueueTest() throws Exception {
       final File tmpFile = File.createTempFile("perfcake", "queue");
       tmpFile.deleteOnExit();
-      FileQueue<Message> queue = new FileQueue<>(tmpFile);
+      final FileQueue<Message> queue = new FileQueue<>(tmpFile);
       Message m = new Message("A tribute to Benjamin C. Bradlee");
 
       queue.add(m);

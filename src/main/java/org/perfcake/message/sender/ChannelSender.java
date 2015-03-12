@@ -71,13 +71,13 @@ abstract public class ChannelSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
 
       // Encode message payload into buffer
       if (message != null && message.getPayload() != null) {
-         CharBuffer c = CharBuffer.wrap(message.getPayload().toString());
-         Charset charset = Charset.forName("UTF-8");
+         final CharBuffer c = CharBuffer.wrap(message.getPayload().toString());
+         final Charset charset = Charset.forName("UTF-8");
          messageBuffer = charset.encode(c);
       } else {
          messageBuffer = null;
@@ -91,7 +91,7 @@ abstract public class ChannelSender extends AbstractSender {
    }
 
    @Override
-   public void postSend(Message message) throws Exception {
+   public void postSend(final Message message) throws Exception {
       super.postSend(message);
    }
 

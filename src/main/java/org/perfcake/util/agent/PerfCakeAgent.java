@@ -116,8 +116,8 @@ public class PerfCakeAgent {
     *       Agent arguments.
     * @see java.lang.instrument
     */
-   public static void premain(String agentArgs) {
-      Thread agentThread = new Thread(new AgentThread(agentArgs));
+   public static void premain(final String agentArgs) {
+      final Thread agentThread = new Thread(new AgentThread(agentArgs));
       agentThread.setDaemon(true);
       agentThread.start();
    }

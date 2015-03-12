@@ -165,7 +165,7 @@ public class MeasurementUnit implements Serializable {
     *       The reference time to compare to the start of the measurement.
     * @return <code>true</code> if this measurement unit was first started after the specified reference time.
     */
-   public boolean startedAfter(long ref) {
+   public boolean startedAfter(final long ref) {
       return timeStarted > ref;
    }
 
@@ -193,7 +193,7 @@ public class MeasurementUnit implements Serializable {
    }
 
    @Override
-   public boolean equals(Object obj) {
+   public boolean equals(final Object obj) {
       if (this == obj) {
          return true;
       }
@@ -201,7 +201,7 @@ public class MeasurementUnit implements Serializable {
          return false;
       }
 
-      MeasurementUnit that = (MeasurementUnit) obj;
+      final MeasurementUnit that = (MeasurementUnit) obj;
 
       if (iteration != that.iteration) {
          return false;

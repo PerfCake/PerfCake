@@ -111,13 +111,13 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       private final String namePrefix;
 
       DaemonThreadFactory() {
-         SecurityManager s = System.getSecurityManager();
+         final SecurityManager s = System.getSecurityManager();
          group = (s != null) ? s.getThreadGroup() : Thread.currentThread().getThreadGroup();
          namePrefix = "PerfCake-" + poolNumber.getAndIncrement() + "-sender-thread-";
       }
 
       public Thread newThread(final Runnable r) {
-         Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
+         final Thread t = new Thread(group, r, namePrefix + threadNumber.getAndIncrement(), 0);
          t.setDaemon(true);
          t.setPriority(8);
          return t;

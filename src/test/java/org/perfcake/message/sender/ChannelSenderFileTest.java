@@ -61,13 +61,13 @@ public class ChannelSenderFileTest {
 
          sender.preSend(message, null);
 
-         Serializable response = sender.doSend(message, null, null);
+         final Serializable response = sender.doSend(message, null, null);
          Assert.assertEquals(response, "lion");
 
          Assert.assertEquals(new String(Files.readAllBytes(file.toPath())), finalContent);
 
          sender.postSend(message);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
       }
    }

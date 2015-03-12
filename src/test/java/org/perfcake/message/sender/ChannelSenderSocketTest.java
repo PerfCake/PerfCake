@@ -50,14 +50,14 @@ public class ChannelSenderSocketTest {
    private static final int PORT = 4444;
    private static String host;
    private String target;
-   private EchoSocketVerticle vert = new EchoSocketVerticle();
+   private final EchoSocketVerticle vert = new EchoSocketVerticle();
 
    @BeforeClass
    public void setUp() throws Exception {
       host = InetAddress.getLocalHost().getHostAddress();
       target = host + ":" + PORT;
 
-      Vertx vertx = VertxFactory.newVertx();
+      final Vertx vertx = VertxFactory.newVertx();
       vert.setVertx(vertx);
       vert.start();
    }
@@ -82,12 +82,12 @@ public class ChannelSenderSocketTest {
          sender.init();
          sender.preSend(message, null);
 
-         Serializable response = sender.doSend(message, null, null);
+         final Serializable response = sender.doSend(message, null, null);
          Assert.assertEquals(response, "fish");
 
          sender.postSend(message);
 
-      } catch (Exception e) {
+      } catch (final Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
       }
    }
@@ -103,11 +103,11 @@ public class ChannelSenderSocketTest {
          sender.init();
          sender.preSend(null, null);
 
-         Serializable response = sender.doSend(null, null, null);
+         final Serializable response = sender.doSend(null, null, null);
          Assert.assertNull(response);
 
          sender.postSend(null);
-      } catch (Exception e) {
+      } catch (final Exception e) {
          Assert.fail(e.getMessage(), e.getCause());
       }
    }

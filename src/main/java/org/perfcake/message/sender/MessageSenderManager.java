@@ -39,8 +39,8 @@ public class MessageSenderManager {
    private int senderPoolSize = 100;
    private String senderClass;
    private final Properties messageSenderProperties = new Properties();
-   private Queue<MessageSender> availableSenders = new ConcurrentLinkedQueue<>();
-   private List<MessageSender> allSenders = new ArrayList<>();
+   private final Queue<MessageSender> availableSenders = new ConcurrentLinkedQueue<>();
+   private final List<MessageSender> allSenders = new ArrayList<>();
 
    public void setMessageSenderProperty(final String property, final String value) {
       messageSenderProperties.put(property, value);
@@ -59,7 +59,7 @@ public class MessageSenderManager {
    public void init() throws Exception {
       availableSenders.clear();
       for (int i = 0; i < senderPoolSize; i++) {
-         MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
+         final MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
          addSenderInstance(sender);
       }
    }
@@ -71,14 +71,14 @@ public class MessageSenderManager {
     * @throws Exception
     *       When the initialization of the sender fails.
     */
-   public void addSenderInstance(MessageSender sender) throws Exception {
+   public void addSenderInstance(final MessageSender sender) throws Exception {
       sender.init();
       availableSenders.add(sender);
       allSenders.add(sender);
    }
 
    public MessageSender acquireSender() throws Exception {
-      MessageSender ms = availableSenders.poll();
+      final MessageSender ms = availableSenders.poll();
       if (ms != null) {
          return ms;
       } else {
@@ -91,7 +91,7 @@ public class MessageSenderManager {
    }
 
    public void releaseAllSenders() {
-      for (MessageSender ms : allSenders) {
+      for (final MessageSender ms : allSenders) {
          if (!availableSenders.contains(ms)) {
             availableSenders.offer(ms);
          }
@@ -103,7 +103,7 @@ public class MessageSenderManager {
    }
 
    public void close() throws PerfCakeException {
-      for (MessageSender ms : allSenders) {
+      for (final MessageSender ms : allSenders) {
          ms.close();
       }
    }

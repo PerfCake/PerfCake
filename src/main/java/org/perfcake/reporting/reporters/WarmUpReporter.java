@@ -81,7 +81,7 @@ public class WarmUpReporter extends AbstractReporter {
     *
     * @see #CHECKING_PERIOD
     */
-   private AtomicLong checkingPeriodIndex = new AtomicLong(0);
+   private final AtomicLong checkingPeriodIndex = new AtomicLong(0);
 
    private final LastValueAccumulator lastThroughput = new LastValueAccumulator();
 

@@ -92,7 +92,7 @@ public class DictionaryValidator implements MessageValidator {
     *       The payload string to be escaped.
     * @return Escaped payload.
     */
-   private String escapePayload(String payload) {
+   private String escapePayload(final String payload) {
       return payload.replaceAll("[\\n\\r\\\\:= ]", "_");
    }
 
@@ -121,7 +121,7 @@ public class DictionaryValidator implements MessageValidator {
          indexWriter.append("\n");
 
          responseWriter.write(response.getPayload().toString());
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new ValidationException(String.format("Cannot record correct response for message '%s': ", response.getPayload().toString()), e);
       }
    }
@@ -138,7 +138,7 @@ public class DictionaryValidator implements MessageValidator {
          indexCache = new Properties();
          try (final Reader indexReader = new BufferedReader(new InputStreamReader(new FileInputStream(getIndexFile()), StandardCharsets.UTF_8))) {
             indexCache.load(indexReader);
-         } catch (IOException e) {
+         } catch (final IOException e) {
             throw new ValidationException(String.format("Unable to load index file '%s': ", getIndexFile().getAbsolutePath()), e);
          }
       }
@@ -157,7 +157,7 @@ public class DictionaryValidator implements MessageValidator {
     * @throws ValidationException
     *       If any of the disk operations fails.
     */
-   private boolean validateResponse(Message originalMessage, Message response) throws ValidationException {
+   private boolean validateResponse(final Message originalMessage, final Message response) throws ValidationException {
       final String responseHashCode = getIndexCache().getProperty(escapePayload(originalMessage.getPayload().toString()));
       if (responseHashCode == null) { // we do not have any such message
          return false;
@@ -168,7 +168,7 @@ public class DictionaryValidator implements MessageValidator {
          final String responseString = new String(Files.readAllBytes(Paths.get(dictionaryDirectory, responseHashCode)), StandardCharsets.UTF_8);
 
          return newResponse.equals(responseString);
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new ValidationException(String.format("Cannot read correct response from file '%s': ", new File(dictionaryDirectory, responseHashCode).getAbsolutePath()), e);
       }
    }
@@ -206,13 +206,13 @@ public class DictionaryValidator implements MessageValidator {
                recordResponse(originalMessage, response);
 
                return true;
-            } catch (ValidationException e) {
+            } catch (final ValidationException e) {
                log.error("Error recording correct response: ", e);
             }
          } else {
             try { // in normal mode, validate the answer against already recorded responses
                return validateResponse(originalMessage, response);
-            } catch (ValidationException e) {
+            } catch (final ValidationException e) {
                log.error("Error validating response: ", e);
             }
          }
@@ -238,7 +238,7 @@ public class DictionaryValidator implements MessageValidator {
     *       The name of the dictionary directory.
     * @return Instance of this for fluent API.
     */
-   public DictionaryValidator setDictionaryDirectory(String dictionaryDirectory) {
+   public DictionaryValidator setDictionaryDirectory(final String dictionaryDirectory) {
       this.dictionaryDirectory = dictionaryDirectory;
       return this;
    }
@@ -259,7 +259,7 @@ public class DictionaryValidator implements MessageValidator {
     *       The file name of the dictionary index.
     * @return Instance of this for fluent API.
     */
-   public DictionaryValidator setDictionaryIndex(String dictionaryIndex) {
+   public DictionaryValidator setDictionaryIndex(final String dictionaryIndex) {
       this.dictionaryIndex = dictionaryIndex;
       return this;
    }
@@ -280,7 +280,7 @@ public class DictionaryValidator implements MessageValidator {
     *       <code>true</code> to activate the record mode.
     * @return Instance of this for fluent API.
     */
-   public DictionaryValidator setRecord(boolean record) {
+   public DictionaryValidator setRecord(final boolean record) {
       this.record = record;
       return this;
    }

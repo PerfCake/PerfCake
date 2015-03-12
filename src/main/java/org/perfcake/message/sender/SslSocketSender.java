@@ -34,7 +34,7 @@ public class SslSocketSender extends AbstractSocketSender {
     */
    @Override
    protected void openSocket() throws Exception {
-      SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+      final SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
       socket = factory.createSocket(host, port);
       ((SSLSocket) socket).startHandshake();
    }

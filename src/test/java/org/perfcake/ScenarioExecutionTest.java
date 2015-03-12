@@ -62,10 +62,10 @@ public class ScenarioExecutionTest extends TestSetup {
    }
 
    private class ScenarioExecutorStopper implements Runnable {
-      private Scenario scenario;
-      private int delay;
+      private final Scenario scenario;
+      private final int delay;
 
-      public ScenarioExecutorStopper(Scenario scenario, int delay) {
+      public ScenarioExecutorStopper(final Scenario scenario, final int delay) {
          this.scenario = scenario;
          this.delay = delay;
       }
@@ -76,7 +76,7 @@ public class ScenarioExecutionTest extends TestSetup {
             System.out.println("Stopping scenario execution in " + i + "s.");
             try {
                Thread.sleep(1000);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                e.printStackTrace();
             }
          }

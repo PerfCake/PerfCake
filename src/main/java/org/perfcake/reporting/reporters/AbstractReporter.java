@@ -74,7 +74,7 @@ public abstract class AbstractReporter implements Reporter {
    /**
     * Remembers the maximal value of observed MeasurementUnits.
     */
-   private MaxLongValueAccumulator maxIteration = new MaxLongValueAccumulator();
+   private final MaxLongValueAccumulator maxIteration = new MaxLongValueAccumulator();
 
    /**
     * Remembers the last observed percentage state of the measurement run. This is used to report change to this value only once.
@@ -120,7 +120,7 @@ public abstract class AbstractReporter implements Reporter {
       return maxIteration.getResult();
    }
 
-   private void reportIterationNumber(long iteration, final MeasurementUnit mu) {
+   private void reportIterationNumber(final long iteration, final MeasurementUnit mu) {
       if (mu.startedAfter(runInfo.getStartTime())) { // only MUs from the current run should be taken into account
          maxIteration.add(iteration);
       }
@@ -132,8 +132,8 @@ public abstract class AbstractReporter implements Reporter {
     * @return The new measurement with current values from run info.
     */
    public Measurement newMeasurement() {
-      Long iterations = maxIteration.getResult();
-      Measurement measurement = new Measurement(Math.round(runInfo.getPercentage(iterations)), runInfo.getRunTime(), iterations);
+      final Long iterations = maxIteration.getResult();
+      final Measurement measurement = new Measurement(Math.round(runInfo.getPercentage(iterations)), runInfo.getRunTime(), iterations);
       measurement.set(PerfCakeConst.WARM_UP_TAG, runInfo.hasTag(PerfCakeConst.WARM_UP_TAG));
       return measurement;
    }
@@ -146,12 +146,12 @@ public abstract class AbstractReporter implements Reporter {
     * @return The value associated with the given key.
     */
    protected Object getAccumulatedResult(final String key) {
-      Accumulator accumulator = accumulatedResults.get(key);
+      final Accumulator accumulator = accumulatedResults.get(key);
       return accumulator == null ? null : accumulator.getResult();
    }
 
    @Override
-   public void setReportManager(ReportManager reportManager) {
+   public void setReportManager(final ReportManager reportManager) {
       this.reportManager = reportManager;
    }
 

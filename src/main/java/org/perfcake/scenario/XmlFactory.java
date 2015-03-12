@@ -113,7 +113,7 @@ public class XmlFactory implements ScenarioFactory {
          if (log.isDebugEnabled()) {
             log.debug(String.format("Loaded scenario definition from '%s'.", scenarioURL.toString()));
          }
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
       }
 
@@ -125,8 +125,8 @@ public class XmlFactory implements ScenarioFactory {
       if (scenario == null) {
          scenario = new Scenario();
 
-         RunInfo runInfo = parseRunInfo();
-         AbstractMessageGenerator messageGenerator = parseGenerator();
+         final RunInfo runInfo = parseRunInfo();
+         final AbstractMessageGenerator messageGenerator = parseGenerator();
          messageGenerator.setRunInfo(runInfo);
 
          scenario.setGenerator(messageGenerator);
@@ -134,8 +134,8 @@ public class XmlFactory implements ScenarioFactory {
          scenario.setReportManager(parseReporting());
          scenario.getReportManager().setRunInfo(runInfo);
 
-         ValidationManager validationManager = parseValidation();
-         List<MessageTemplate> messageTemplates = parseMessages(validationManager);
+         final ValidationManager validationManager = parseValidation();
+         final List<MessageTemplate> messageTemplates = parseMessages(validationManager);
          scenario.setMessageStore(messageTemplates);
          scenario.setValidationManager(validationManager);
       }
@@ -168,13 +168,13 @@ public class XmlFactory implements ScenarioFactory {
          final Unmarshaller unmarshaller = context.createUnmarshaller();
          unmarshaller.setSchema(schema);
          return (org.perfcake.model.Scenario) unmarshaller.unmarshal(scenarioXML);
-      } catch (SAXException e) {
+      } catch (final SAXException e) {
          throw new PerfCakeException("Cannot validate scenario configuration: ", e);
-      } catch (JAXBException e) {
+      } catch (final JAXBException e) {
          throw new PerfCakeException("Cannot parse scenario configuration: ", e);
-      } catch (MalformedURLException e) {
+      } catch (final MalformedURLException e) {
          throw new PerfCakeException("Cannot read scenario schema to validate it: ", e);
-      } catch (UnsupportedEncodingException e) {
+      } catch (final UnsupportedEncodingException e) {
          throw new PerfCakeException("set encoding is not supported: ", e);
       }
    }
@@ -182,9 +182,9 @@ public class XmlFactory implements ScenarioFactory {
    private static Properties getPropertiesFromList(final List<Property> properties) throws PerfCakeException {
       final Properties props = new Properties();
 
-      for (Property p : properties) {
-         Element valueElement = p.getAny();
-         String valueString = p.getValue();
+      for (final Property p : properties) {
+         final Element valueElement = p.getAny();
+         final String valueString = p.getValue();
 
          if (valueElement != null && valueString != null) {
             throw new PerfCakeException(String.format("A property tag can either have an attribute value (%s) or the body (%s) set, not both at the same time.", valueString, valueElement.toString()));
@@ -235,14 +235,14 @@ public class XmlFactory implements ScenarioFactory {
             generatorClass = DEFAULT_GENERATOR_PACKAGE + "." + generatorClass;
          }
 
-         int threads = Integer.parseInt(gen.getThreads());
+         final int threads = Integer.parseInt(gen.getThreads());
 
          if (log.isDebugEnabled()) {
             log.debug("--- Generator (" + generatorClass + ") ---");
             log.debug("  threads=" + threads);
          }
 
-         Properties generatorProperties = getPropertiesFromList(gen.getProperty());
+         final Properties generatorProperties = getPropertiesFromList(gen.getProperty());
          Utils.logProperties(log, Level.DEBUG, generatorProperties, "   ");
 
          generator = (AbstractMessageGenerator) ObjectFactory.summonInstance(generatorClass, generatorProperties);
@@ -282,7 +282,7 @@ public class XmlFactory implements ScenarioFactory {
       msm = new MessageSenderManager();
       msm.setSenderClass(senderClass);
       msm.setSenderPoolSize(senderPoolSize);
-      for (Entry<Object, Object> sProperty : senderProperties.entrySet()) {
+      for (final Entry<Object, Object> sProperty : senderProperties.entrySet()) {
          msm.setMessageSenderProperty(sProperty.getKey(), sProperty.getValue());
       }
       return msm;
@@ -307,7 +307,7 @@ public class XmlFactory implements ScenarioFactory {
             if (log.isDebugEnabled()) {
                log.debug("--- Messages ---");
             }
-            for (Messages.Message m : messages.getMessage()) {
+            for (final Messages.Message m : messages.getMessage()) {
                URL messageUrl = null;
                String currentMessagePayload;
                if (m.getContent() != null) {
@@ -327,7 +327,7 @@ public class XmlFactory implements ScenarioFactory {
 
                final Properties currentMessageProperties = getPropertiesFromList(m.getProperty());
                final Properties currentMessageHeaders = new Properties();
-               for (Header h : m.getHeader()) {
+               for (final Header h : m.getHeader()) {
                   currentMessageHeaders.setProperty(h.getName(), h.getValue());
                }
 
@@ -343,8 +343,8 @@ public class XmlFactory implements ScenarioFactory {
                }
 
                final List<String> currentMessageValidatorIds = new ArrayList<>();
-               for (ValidatorRef ref : m.getValidatorRef()) {
-                  MessageValidator validator = validationManager.getValidator(ref.getId());
+               for (final ValidatorRef ref : m.getValidatorRef()) {
+                  final MessageValidator validator = validationManager.getValidator(ref.getId());
                   if (validator == null) {
                      throw new PerfCakeException(String.format("Validator with id %s not found.", ref.getId()));
                   }
@@ -366,7 +366,7 @@ public class XmlFactory implements ScenarioFactory {
                messageStore.add(currentMessageToSend);
             }
          }
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException("Cannot read messages content: ", e);
       }
       return messageStore;
@@ -393,20 +393,20 @@ public class XmlFactory implements ScenarioFactory {
 
             ObjectFactory.setPropertiesOnObject(reportManager, reportingProperties);
 
-            for (Reporting.Reporter r : reporting.getReporter()) {
+            for (final Reporting.Reporter r : reporting.getReporter()) {
                if (r.isEnabled()) {
-                  Properties currentReporterProperties = getPropertiesFromList(r.getProperty());
+                  final Properties currentReporterProperties = getPropertiesFromList(r.getProperty());
                   String reportClass = r.getClazz();
                   if (!reportClass.contains(".")) {
                      reportClass = DEFAULT_REPORTER_PACKAGE + "." + reportClass;
                   }
-                  Reporter currentReporter = (Reporter) ObjectFactory.summonInstance(reportClass, currentReporterProperties);
+                  final Reporter currentReporter = (Reporter) ObjectFactory.summonInstance(reportClass, currentReporterProperties);
 
                   if (log.isDebugEnabled()) {
                      log.debug("'- Reporter (" + reportClass + ")");
                   }
 
-                  for (Reporting.Reporter.Destination d : r.getDestination()) {
+                  for (final Reporting.Reporter.Destination d : r.getDestination()) {
                      if (d.isEnabled()) {
                         String destClass = d.getClazz();
                         if (!destClass.contains(".")) {
@@ -416,12 +416,12 @@ public class XmlFactory implements ScenarioFactory {
                         if (log.isDebugEnabled()) {
                            log.debug(" '- Destination (" + destClass + ")");
                         }
-                        Properties currentDestinationProperties = getPropertiesFromList(d.getProperty());
+                        final Properties currentDestinationProperties = getPropertiesFromList(d.getProperty());
                         Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
 
-                        Destination currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
-                        Set<Period> currentDestinationPeriodSet = new HashSet<>();
-                        for (org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period p : d.getPeriod()) {
+                        final Destination currentDestination = (Destination) ObjectFactory.summonInstance(destClass, currentDestinationProperties);
+                        final Set<Period> currentDestinationPeriodSet = new HashSet<>();
+                        for (final org.perfcake.model.Scenario.Reporting.Reporter.Destination.Period p : d.getPeriod()) {
                            currentDestinationPeriodSet.add(new Period(PeriodType.valueOf(p.getType().toUpperCase()), Long.parseLong(p.getValue())));
                         }
                         currentReporter.registerDestination(currentDestination, currentDestinationPeriodSet);
@@ -456,7 +456,7 @@ public class XmlFactory implements ScenarioFactory {
          final Validation validation = scenarioModel.getValidation();
          if (validation != null) {
 
-            for (Validation.Validator v : validation.getValidator()) {
+            for (final Validation.Validator v : validation.getValidator()) {
 
                String validatorClass = v.getClazz();
                if (!validatorClass.contains(".")) {
@@ -466,10 +466,10 @@ public class XmlFactory implements ScenarioFactory {
                if (log.isDebugEnabled()) {
                   log.debug(" '- Validation (" + validatorClass + ")");
                }
-               Properties currentValidationProperties = getPropertiesFromList(v.getProperty());
+               final Properties currentValidationProperties = getPropertiesFromList(v.getProperty());
                Utils.logProperties(log, Level.DEBUG, currentValidationProperties, "  '- ");
 
-               MessageValidator messageValidator = (MessageValidator) ObjectFactory.summonInstance(validatorClass, currentValidationProperties);
+               final MessageValidator messageValidator = (MessageValidator) ObjectFactory.summonInstance(validatorClass, currentValidationProperties);
 
                validationManager.addValidator(v.getId(), messageValidator);
             }

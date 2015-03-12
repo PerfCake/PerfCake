@@ -41,7 +41,7 @@ public class SlidingWindowMaxAccumulator extends AbstractSlidingWindowAccumulato
    public synchronized Double getResult() {
       double max = Double.MIN_VALUE;
       synchronized (fifo) {
-         for (Object o : fifo) {
+         for (final Object o : fifo) {
             max = Math.max(max, (Double) o);
          }
       }

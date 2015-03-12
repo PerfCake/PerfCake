@@ -55,7 +55,7 @@ public class ScenarioLoader {
       final URL scenarioUrl;
       try {
          scenarioUrl = Utils.locationToUrlWithCheck(scenario, PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"), ".xml", ".dsl");
-      } catch (MalformedURLException e) {
+      } catch (final MalformedURLException e) {
          throw new PerfCakeException("Cannot parse scenario configuration location: ", e);
       }
 
@@ -66,12 +66,12 @@ public class ScenarioLoader {
       }
 
       String extension = "UNKNOWN";
-      int lastDot = scenarioUrl.toString().lastIndexOf(".");
+      final int lastDot = scenarioUrl.toString().lastIndexOf(".");
       if (lastDot > -1) {
          extension = scenarioUrl.toString().substring(lastDot + 1).toLowerCase();
       }
 
-      ScenarioFactory scenarioFactory = getFactory(extension);
+      final ScenarioFactory scenarioFactory = getFactory(extension);
       scenarioFactory.init(scenarioUrl);
 
       return scenarioFactory.getScenario();

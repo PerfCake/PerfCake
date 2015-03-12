@@ -70,9 +70,9 @@ public class MemoryUsageReporterTest {
 
    @AfterClass
    public void tearDown() throws IOException {
-      File[] files = TEST_OUTPUT_DIR.listFiles();
+      final File[] files = TEST_OUTPUT_DIR.listFiles();
       if (files != null) {
-         for (File f : files) {
+         for (final File f : files) {
             f.delete();
          }
       }
@@ -209,7 +209,7 @@ public class MemoryUsageReporterTest {
       Assert.assertTrue(dumpFile0.exists(), "Dump file " + dumpFile0.getAbsolutePath() + " should exist.");
    }
 
-   private List<Measurement> testMemoryUsageReporter(Properties reporterProperties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+   private List<Measurement> testMemoryUsageReporter(final Properties reporterProperties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
       final MemoryUsageReporter mur = (MemoryUsageReporter) ObjectFactory.summonInstance(MemoryUsageReporter.class.getName(), reporterProperties);
 
       Assert.assertNotNull(mur, "Reporter's instance");
@@ -219,7 +219,7 @@ public class MemoryUsageReporterTest {
       final List<Measurement> measurementList = new LinkedList<>();
 
       final Properties destinationProperties = new Properties();
-      DummyDestination dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), destinationProperties);
+      final DummyDestination dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), destinationProperties);
 
       mur.registerDestination(dest, new Period(PeriodType.ITERATION, 100));
 

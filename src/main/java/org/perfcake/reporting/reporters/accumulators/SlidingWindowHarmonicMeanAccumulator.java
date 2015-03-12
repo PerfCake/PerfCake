@@ -33,7 +33,7 @@ public class SlidingWindowHarmonicMeanAccumulator extends AbstractSlidingWindowA
     * @param windowSize
     *       Size of the sliding window.
     */
-   public SlidingWindowHarmonicMeanAccumulator(int windowSize) {
+   public SlidingWindowHarmonicMeanAccumulator(final int windowSize) {
       super(windowSize);
    }
 
@@ -49,7 +49,7 @@ public class SlidingWindowHarmonicMeanAccumulator extends AbstractSlidingWindowA
       double size = 0;
 
       synchronized (fifo) {
-         for (Object o : fifo) {
+         for (final Object o : fifo) {
             accum = accum + (Double) o;
          }
          size = fifo.size();

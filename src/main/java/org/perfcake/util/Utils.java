@@ -86,8 +86,8 @@ public class Utils {
     * @return Filtered string.
     */
    public static String filterProperties(final String text) {
-      String propertyPattern = "[^\\\\](\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?})";
-      Matcher matcher = Pattern.compile(propertyPattern).matcher(text);
+      final String propertyPattern = "[^\\\\](\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?})";
+      final Matcher matcher = Pattern.compile(propertyPattern).matcher(text);
 
       return filterProperties(text, matcher, SystemPropertyGetter.INSTANCE);
    }
@@ -109,7 +109,7 @@ public class Utils {
       matcher.reset();
       while (matcher.find()) {
          String pValue = null;
-         String pName = matcher.group(2);
+         final String pName = matcher.group(2);
          String defaultValue = null;
          if (matcher.groupCount() == 3 && matcher.group(3) != null) {
             defaultValue = (matcher.group(3)).substring(1);
@@ -179,7 +179,7 @@ public class Utils {
     */
    public static void logProperties(final Logger logger, final Level level, final Properties properties, final String prefix) {
       if (logger.isEnabled(level)) {
-         for (Entry<Object, Object> property : properties.entrySet()) {
+         for (final Entry<Object, Object> property : properties.entrySet()) {
             logger.log(level, prefix + property.getKey() + "=" + property.getValue());
          }
       }
@@ -197,7 +197,7 @@ public class Utils {
    public static String readFilteredContent(final URL url) throws IOException {
       try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
          return filterProperties(scanner.useDelimiter("\\Z").next());
-      } catch (NoSuchElementException nsee) {
+      } catch (final NoSuchElementException nsee) {
          if (log.isWarnEnabled()) {
             log.warn("The content of " + url + " is empty.");
          }
@@ -283,7 +283,7 @@ public class Utils {
                if (defaultSuffix != null && defaultSuffix.length > 0) {
                   //                  boolean found = false;
 
-                  for (String suffix : defaultSuffix) {
+                  for (final String suffix : defaultSuffix) {
                      p = Paths.get(Utils.getProperty(defaultLocationProperty, defaultLocation), uri + suffix);
                      if (Files.exists(p)) {
                         found = true;
@@ -341,11 +341,11 @@ public class Utils {
     * @return The string representing the timestamp in H:MM:SS format.
     */
    public static String timeToHMS(final long time) {
-      long hours = TimeUnit.MILLISECONDS.toHours(time);
-      long minutes = TimeUnit.MILLISECONDS.toMinutes(time - TimeUnit.HOURS.toMillis(hours));
-      long seconds = TimeUnit.MILLISECONDS.toSeconds(time - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes));
+      final long hours = TimeUnit.MILLISECONDS.toHours(time);
+      final long minutes = TimeUnit.MILLISECONDS.toMinutes(time - TimeUnit.HOURS.toMillis(hours));
+      final long seconds = TimeUnit.MILLISECONDS.toSeconds(time - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes));
 
-      StringBuilder sb = new StringBuilder();
+      final StringBuilder sb = new StringBuilder();
       sb.append(hours).append(":").append(String.format("%02d", minutes)).append(":").append(String.format("%02d", seconds));
 
       return sb.toString();
@@ -367,7 +367,7 @@ public class Utils {
     *       Data on which to compute the trend.
     * @return The linear regression trend.
     */
-   public static double computeRegressionTrend(Collection<TimestampedRecord<Number>> data) {
+   public static double computeRegressionTrend(final Collection<TimestampedRecord<Number>> data) {
       final SimpleRegression simpleRegression = new SimpleRegression();
       final Iterator<TimestampedRecord<Number>> iterator = data.iterator();
       TimestampedRecord<Number> currentRecord;
@@ -388,8 +388,8 @@ public class Utils {
     * @param values
     *       The list of possibilities, the first not-null is used to set the property value.
     */
-   public static void setFirstNotNullProperty(Properties props, String propName, String... values) {
-      String notNull = getFirstNotNull(values);
+   public static void setFirstNotNullProperty(final Properties props, final String propName, final String... values) {
+      final String notNull = getFirstNotNull(values);
       if (notNull != null) {
          props.setProperty(propName, notNull);
       }
@@ -402,8 +402,8 @@ public class Utils {
     *       The list of possible values.
     * @return The first non-null value in the list.
     */
-   public static String getFirstNotNull(String... values) {
-      for (String value : values) {
+   public static String getFirstNotNull(final String... values) {
+      for (final String value : values) {
          if (value != null) {
             return value;
          }
@@ -441,7 +441,7 @@ public class Utils {
    public static String getResource(final String resource) throws PerfCakeException {
       try {
          return new File(Utils.class.getResource(resource).toURI()).getAbsolutePath();
-      } catch (URISyntaxException e) {
+      } catch (final URISyntaxException e) {
          throw new PerfCakeException(String.format("Cannot obtain resource %s:", resource), e);
       }
    }
@@ -496,8 +496,8 @@ public class Utils {
          final Path workFile = Paths.get(path.toString() + ".work");
          Files.write(workFile, content.getBytes(Utils.getDefaultEncoding()));
          Files.move(workFile, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-      } catch (IOException e) {
-         String message = String.format("Could not write content to the file %s:", path.toString());
+      } catch (final IOException e) {
+         final String message = String.format("Could not write content to the file %s:", path.toString());
          log.error(message, e);
          throw new PerfCakeException(message, e);
       }
@@ -526,10 +526,10 @@ public class Utils {
             }
          }
 
-         StringTemplate template = new StringTemplate(IOUtils.toString(Utils.class.getResourceAsStream(resource), Utils.getDefaultEncoding()), properties);
+         final StringTemplate template = new StringTemplate(IOUtils.toString(Utils.class.getResourceAsStream(resource), Utils.getDefaultEncoding()), properties);
          Utils.writeFileContent(target, template.toString());
-      } catch (IOException e) {
-         String message = String.format("Could not render template from resource %s:", resource);
+      } catch (final IOException e) {
+         final String message = String.format("Could not render template from resource %s:", resource);
          log.error(message, e);
          throw new PerfCakeException(message, e);
       }

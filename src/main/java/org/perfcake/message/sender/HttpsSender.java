@@ -60,7 +60,7 @@ public class HttpsSender extends HttpSender {
    }
 
    private KeyStore initKeyStore(final String keyStoreLocation, final String keyStorePassword) throws Exception {
-      KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+      final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
       try (InputStream is = Utils.locationToUrl(keyStoreLocation, KEYSTORES_DIR_PROPERTY, Utils.determineDefaultLocation("keystores"), "").openStream()) {
          keyStore.load(is, keyStorePassword.toCharArray());
       }
@@ -94,7 +94,7 @@ public class HttpsSender extends HttpSender {
          }
       }
 
-      SSLContext ctx = SSLContext.getInstance("TLS");
+      final SSLContext ctx = SSLContext.getInstance("TLS");
       ctx.init(keyManager == null ? null : keyManager.getKeyManagers(), trustManager == null ? null : trustManager.getTrustManagers(), null);
 
       return ctx.getSocketFactory();

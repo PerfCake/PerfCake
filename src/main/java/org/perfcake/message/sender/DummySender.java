@@ -97,7 +97,7 @@ public class DummySender extends AbstractSender {
          final long sleepStart = System.currentTimeMillis();
          try {
             Thread.sleep(delay);
-         } catch (InterruptedException ie) { // Snooze
+         } catch (final InterruptedException ie) { // Snooze
             final long snooze = delay - (System.currentTimeMillis() - sleepStart);
             if (snooze > 0) {
                Thread.sleep(snooze);

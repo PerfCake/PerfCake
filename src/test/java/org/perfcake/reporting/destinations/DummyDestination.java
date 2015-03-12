@@ -70,8 +70,8 @@ public class DummyDestination implements Destination {
       System.out.println(measurement.toString());
       try {
          throw new Throwable("BAFF");
-      } catch (Throwable t) {
-         StringWriter sw = new StringWriter();
+      } catch (final Throwable t) {
+         final StringWriter sw = new StringWriter();
          t.printStackTrace(new PrintWriter(sw));
          if (sw.toString().contains("reportIterations")) {
             lastType = PeriodType.ITERATION;

@@ -72,13 +72,13 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testResponseSend() throws Exception {
-      String queueName = "queue/test";
-      String replyQueueName = "queue/test_reply";
+      final String queueName = "queue/test";
+      final String replyQueueName = "queue/test_reply";
 
-      JmsHelper.Wiretap wiretap = JmsHelper.wiretap(queueName, replyQueueName);
+      final JmsHelper.Wiretap wiretap = JmsHelper.wiretap(queueName, replyQueueName);
       wiretap.start();
 
-      Properties props = new Properties();
+      final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
       props.setProperty("target", queueName);
       props.setProperty("responseTarget", replyQueueName);
@@ -86,7 +86,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
       props.setProperty("transacted", "true");
       props.setProperty("autoAck", "false");
 
-      RequestResponseJmsSender sender = (RequestResponseJmsSender) ObjectFactory.summonInstance(RequestResponseJmsSender.class.getName(), props);
+      final RequestResponseJmsSender sender = (RequestResponseJmsSender) ObjectFactory.summonInstance(RequestResponseJmsSender.class.getName(), props);
 
       Assert.assertEquals(sender.getMessageType(), RequestResponseJmsSender.MessageType.STRING);
       Assert.assertEquals(sender.getTarget(), queueName);
@@ -103,7 +103,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
          // STRING
          org.perfcake.message.Message message = new org.perfcake.message.Message();
-         String payload = "Hello World!";
+         final String payload = "Hello World!";
          message.setPayload(payload);
          sender.preSend(message, null);
          Serializable response = sender.send(message, null);
@@ -120,7 +120,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
          // OBJECT
          sender.setMessageType(JmsSender.MessageType.OBJECT);
          message = new org.perfcake.message.Message();
-         Long payloadObject = 42L;
+         final Long payloadObject = 42L;
          message.setPayload(payloadObject);
          sender.preSend(message, null);
          response = sender.send(message, null);
@@ -149,9 +149,9 @@ public class RequestResponseJmsSenderTest extends Arquillian {
          // what did the wiretap see
          jmsResponse = wiretap.getLastMessage();
          Assert.assertTrue(jmsResponse instanceof BytesMessage);
-         BytesMessage bytesMessage = (BytesMessage) jmsResponse;
+         final BytesMessage bytesMessage = (BytesMessage) jmsResponse;
          bytesMessage.reset();
-         byte[] bytes = new byte[(int) bytesMessage.getBodyLength()];
+         final byte[] bytes = new byte[(int) bytesMessage.getBodyLength()];
          bytesMessage.readBytes(bytes, bytes.length);
          Assert.assertEquals(new String(bytes, "UTF-8").trim(), payload);
 
@@ -167,19 +167,19 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testCorrelationId() throws Exception {
-      String queueName = "queue/test";
-      String replyQueueName = "queue/test_reply";
+      final String queueName = "queue/test";
+      final String replyQueueName = "queue/test_reply";
 
-      JmsHelper.Wiretap wiretap = JmsHelper.wiretap(queueName, replyQueueName);
+      final JmsHelper.Wiretap wiretap = JmsHelper.wiretap(queueName, replyQueueName);
       wiretap.start();
 
-      Properties props = new Properties();
+      final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
       props.setProperty("target", queueName);
       props.setProperty("responseTarget", replyQueueName);
       props.setProperty("useCorrelationId", "true");
 
-      RequestResponseJmsSender sender = (RequestResponseJmsSender) ObjectFactory.summonInstance(RequestResponseJmsSender.class.getName(), props);
+      final RequestResponseJmsSender sender = (RequestResponseJmsSender) ObjectFactory.summonInstance(RequestResponseJmsSender.class.getName(), props);
 
       Assert.assertEquals(sender.getMessageType(), RequestResponseJmsSender.MessageType.STRING);
       Assert.assertEquals(sender.getTarget(), queueName);
@@ -194,16 +194,16 @@ public class RequestResponseJmsSenderTest extends Arquillian {
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queueReply));
 
          // send colliding message
-         String collidePayload = "Collide Hello World!";
-         Properties collideProps = new Properties();
+         final String collidePayload = "Collide Hello World!";
+         final Properties collideProps = new Properties();
          collideProps.setProperty("messagetType", "STRING");
          collideProps.setProperty("target", replyQueueName);
-         JmsSender collideSender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), collideProps);
+         final JmsSender collideSender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), collideProps);
 
          try {
             collideSender.init();
 
-            org.perfcake.message.Message message = new org.perfcake.message.Message();
+            final org.perfcake.message.Message message = new org.perfcake.message.Message();
             message.setPayload(collidePayload);
             collideSender.preSend(message, null);
             collideSender.send(message, null);
@@ -212,11 +212,11 @@ public class RequestResponseJmsSenderTest extends Arquillian {
             collideSender.close();
          }
 
-         org.perfcake.message.Message message = new org.perfcake.message.Message();
-         String payload = "Correlating Hello World!";
+         final org.perfcake.message.Message message = new org.perfcake.message.Message();
+         final String payload = "Correlating Hello World!";
          message.setPayload(payload);
          sender.preSend(message, null);
-         Serializable response = sender.send(message, null);
+         final Serializable response = sender.send(message, null);
          sender.postSend(message);
 
          Assert.assertTrue(response instanceof String);
@@ -224,7 +224,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
          wiretap.stop();
 
-         Message collidingMessage = JmsHelper.readMessage(factory, 500, queueReply);
+         final Message collidingMessage = JmsHelper.readMessage(factory, 500, queueReply);
          Assert.assertTrue(collidingMessage instanceof TextMessage);
          Assert.assertEquals(((TextMessage) collidingMessage).getText(), collidePayload);
 
@@ -238,17 +238,17 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testNegativeTimeout() throws Exception {
-      String queueName = "queue/test";
-      String replyQueueName = "queue/test_reply";
+      final String queueName = "queue/test";
+      final String replyQueueName = "queue/test_reply";
 
-      Properties props = new Properties();
+      final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
       props.setProperty("target", queueName);
       props.setProperty("responseTarget", replyQueueName);
       props.setProperty("receivingTimeout", "10");
       props.setProperty("receiveAttempts", "2");
 
-      RequestResponseJmsSender sender = (RequestResponseJmsSender) ObjectFactory.summonInstance(RequestResponseJmsSender.class.getName(), props);
+      final RequestResponseJmsSender sender = (RequestResponseJmsSender) ObjectFactory.summonInstance(RequestResponseJmsSender.class.getName(), props);
 
       Assert.assertEquals(sender.getMessageType(), RequestResponseJmsSender.MessageType.STRING);
       Assert.assertEquals(sender.getTarget(), queueName);
@@ -263,19 +263,19 @@ public class RequestResponseJmsSenderTest extends Arquillian {
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queueReply));
 
-         org.perfcake.message.Message message = new org.perfcake.message.Message();
-         String payload = "Timeout Hello World!";
+         final org.perfcake.message.Message message = new org.perfcake.message.Message();
+         final String payload = "Timeout Hello World!";
          message.setPayload(payload);
          sender.preSend(message, null);
          try {
-            Serializable response = sender.send(message, null);
+            final Serializable response = sender.send(message, null);
             Assert.assertFalse(true, "The expected exception was not thrown.");
-         } catch (PerfCakeException pce) {
+         } catch (final PerfCakeException pce) {
             Assert.assertTrue(pce.getMessage().contains("No message"));
          }
 
          // read the original message from the queue
-         Message originalMessage = JmsHelper.readMessage(factory, 500, queue);
+         final Message originalMessage = JmsHelper.readMessage(factory, 500, queue);
          Assert.assertTrue(originalMessage instanceof TextMessage);
          Assert.assertEquals(((TextMessage) originalMessage).getText(), payload);
 

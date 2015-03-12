@@ -177,7 +177,7 @@ public class JmsSender extends AbstractSender {
          log.debug("Initializing...");
       }
       try {
-         Properties ctxProps = new Properties();
+         final Properties ctxProps = new Properties();
          if (jndiUrl != null) {
             ctxProps.setProperty(Context.PROVIDER_URL, jndiUrl);
          }
@@ -274,7 +274,7 @@ public class JmsSender extends AbstractSender {
             mess = session.createTextMessage((String) message.getPayload());
             break;
          case BYTEARRAY:
-            BytesMessage bytesMessage = session.createBytesMessage();
+            final BytesMessage bytesMessage = session.createBytesMessage();
             bytesMessage.writeUTF((String) message.getPayload());
             mess = bytesMessage;
             break;
@@ -282,13 +282,13 @@ public class JmsSender extends AbstractSender {
             mess = session.createObjectMessage(message.getPayload());
             break;
       }
-      Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
-      for (String property : propertyNameSet) {
+      final Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
+      for (final String property : propertyNameSet) {
          mess.setStringProperty(property, message.getProperty(property));
       }
       // set additional properties
       if (properties != null) {
-         for (Map.Entry<String, String> entry : properties.entrySet()) {
+         for (final Map.Entry<String, String> entry : properties.entrySet()) {
             mess.setStringProperty(entry.getKey(), entry.getValue());
          }
       }
@@ -309,7 +309,7 @@ public class JmsSender extends AbstractSender {
       }
       try {
          sender.send(mess);
-      } catch (JMSException e) {
+      } catch (final JMSException e) {
          throw new PerfCakeException("JMS Message cannot be sent", e);
       }
 
@@ -324,7 +324,7 @@ public class JmsSender extends AbstractSender {
     * @throws PerfCakeException
     *       If one of the credentials is not set.
     */
-   protected static boolean checkCredentials(String username, String password) throws PerfCakeException {
+   protected static boolean checkCredentials(final String username, final String password) throws PerfCakeException {
       if (username == null && password == null) {
          return false;
       } else if (username == null || password == null) {
@@ -425,7 +425,7 @@ public class JmsSender extends AbstractSender {
     *       The message type used to send the messages.
     * @return Instance of this for fluent API.
     */
-   public JmsSender setMessageType(MessageType messageType) {
+   public JmsSender setMessageType(final MessageType messageType) {
       this.messageType = messageType;
       return this;
    }

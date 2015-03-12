@@ -100,7 +100,7 @@ public class RequestResponseJmsSender extends JmsSender {
    /**
     * Correlation ID of this sender instance for it to read only the messages that it has sent.
     */
-   private String correlationId = UUID.randomUUID().toString();
+   private final String correlationId = UUID.randomUUID().toString();
 
    /**
     * Should the correlation ID be used in the JMS communication? Turning it off (false) allows the sender to read any response from the response destination.
@@ -156,7 +156,7 @@ public class RequestResponseJmsSender extends JmsSender {
          } else {
             initResponseConnection();
 
-            Destination responseDestination = (Destination) responseCtx.lookup(responseTarget);
+            final Destination responseDestination = (Destination) responseCtx.lookup(responseTarget);
 
             if (transacted && !autoAck) {
                log.warn("AutoAck setting is ignored with a transacted session. Creating a transacted session.");
@@ -180,7 +180,7 @@ public class RequestResponseJmsSender extends JmsSender {
          log.debug("Initializing JMS response connection...");
       }
       try {
-         Properties ctxProps = new Properties();
+         final Properties ctxProps = new Properties();
          Utils.setFirstNotNullProperty(ctxProps, Context.PROVIDER_URL, responseJndiUrl, jndiUrl);
          Utils.setFirstNotNullProperty(ctxProps, Context.INITIAL_CONTEXT_FACTORY, responseJndiContextFactory, jndiContextFactory);
          Utils.setFirstNotNullProperty(ctxProps, Context.SECURITY_PRINCIPAL, responseJndiSecurityPrincipal); // we want to be able not to specify security principal even when it is used for sending the messages
@@ -232,7 +232,7 @@ public class RequestResponseJmsSender extends JmsSender {
                }
             }
          }
-      } catch (JMSException e) {
+      } catch (final JMSException e) {
          throw new PerfCakeException(e);
       }
    }
@@ -259,7 +259,7 @@ public class RequestResponseJmsSender extends JmsSender {
          int attempts = 0;
          do {
             attempts++;
-            Message response = responseReceiver.receive(receivingTimeout);
+            final Message response = responseReceiver.receive(receivingTimeout);
             if (response == null) {
                if (log.isDebugEnabled()) {
                   log.debug("No message in " + responseTarget + " received within the specified timeout (" + receivingTimeout + " ms). Retrying (" + attempts + "/" + receiveAttempts + ") ...");
@@ -274,7 +274,7 @@ public class RequestResponseJmsSender extends JmsSender {
                } else if (response instanceof TextMessage) {
                   retVal = ((TextMessage) response).getText();
                } else if (response instanceof BytesMessage) {
-                  byte[] bytes = new byte[(int) (((BytesMessage) response).getBodyLength())];
+                  final byte[] bytes = new byte[(int) (((BytesMessage) response).getBodyLength())];
                   ((BytesMessage) response).readBytes(bytes);
                   retVal = bytes;
                } else {
@@ -293,7 +293,7 @@ public class RequestResponseJmsSender extends JmsSender {
          }
 
          return retVal;
-      } catch (JMSException e) {
+      } catch (final JMSException e) {
          throw new PerfCakeException(e);
       }
    }
@@ -305,7 +305,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *       When true, only the messages that are response to the original message can be read from the response destination. Otherwise, any response message can be read.
     * @return Instance of this for fluent API.
     */
-   public RequestResponseJmsSender setUseCorrelationId(boolean useCorrelationId) {
+   public RequestResponseJmsSender setUseCorrelationId(final boolean useCorrelationId) {
       this.useCorrelationId = useCorrelationId;
       return this;
    }
@@ -420,7 +420,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *       The connection factory used for the response reception.
     * @return Instance of this for fluent API.
     */
-   public RequestResponseJmsSender setResponseConnectionFactory(String responseConnectionFactory) {
+   public RequestResponseJmsSender setResponseConnectionFactory(final String responseConnectionFactory) {
       this.responseConnectionFactory = responseConnectionFactory;
       return this;
    }
@@ -441,7 +441,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *       The JNDI context factory used for the response reception.
     * @return Instance of this for fluent API.
     */
-   public RequestResponseJmsSender setResponseJndiContextFactory(String responseJndiContextFactory) {
+   public RequestResponseJmsSender setResponseJndiContextFactory(final String responseJndiContextFactory) {
       this.responseJndiContextFactory = responseJndiContextFactory;
       return this;
    }
@@ -463,7 +463,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *       The JNDI URL used for the response reception.
     * @return Instance of this for fluent API.
     */
-   public RequestResponseJmsSender setResponseJndiUrl(String responseJndiUrl) {
+   public RequestResponseJmsSender setResponseJndiUrl(final String responseJndiUrl) {
       this.responseJndiUrl = responseJndiUrl;
       return this;
    }
@@ -485,7 +485,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *       The security principal used for the response reception.
     * @return Instance of this for fluent API.
     */
-   public RequestResponseJmsSender setResponseJndiSecurityPrincipal(String responseJndiSecurityPrincipal) {
+   public RequestResponseJmsSender setResponseJndiSecurityPrincipal(final String responseJndiSecurityPrincipal) {
       this.responseJndiSecurityPrincipal = responseJndiSecurityPrincipal;
       return this;
    }
@@ -508,7 +508,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *       The JNDI security credentials to be used for the response reception.
     * @return Instance of this for fluent API.
     */
-   public RequestResponseJmsSender setResponseJndiSecurityCredentials(String responseJndiSecurityCredentials) {
+   public RequestResponseJmsSender setResponseJndiSecurityCredentials(final String responseJndiSecurityCredentials) {
       this.responseJndiSecurityCredentials = responseJndiSecurityCredentials;
       return this;
    }
@@ -529,7 +529,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *       The JMS username used for response reception.
     * @return Instance of this for fluent API.
     */
-   public RequestResponseJmsSender setResponseUsername(String responseUsername) {
+   public RequestResponseJmsSender setResponseUsername(final String responseUsername) {
       this.responseUsername = responseUsername;
       return this;
    }
@@ -550,7 +550,7 @@ public class RequestResponseJmsSender extends JmsSender {
     *       The JMS username used for response reception.
     * @return Instance of this for fluent API.
     */
-   public RequestResponseJmsSender setResponsePassword(String responsePassword) {
+   public RequestResponseJmsSender setResponsePassword(final String responsePassword) {
       this.responsePassword = responsePassword;
       return this;
    }

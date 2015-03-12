@@ -148,8 +148,8 @@ public class HttpSender extends AbstractSender {
     * @return Instance of this to support fluent API.
     */
    protected HttpSender setExpectedResponseCodesList(final String[] codes) {
-      LinkedList<Integer> numCodes = new LinkedList<Integer>();
-      for (String code : codes) {
+      final LinkedList<Integer> numCodes = new LinkedList<Integer>();
+      for (final String code : codes) {
          numCodes.add(Integer.parseInt(code.trim()));
       }
       expectedResponseCodeList = numCodes;
@@ -168,7 +168,7 @@ public class HttpSender extends AbstractSender {
       if (expectedResponseCodeList.isEmpty()) {
          return true;
       }
-      for (int i : expectedResponseCodeList) {
+      for (final int i : expectedResponseCodeList) {
          if (i == code) {
             return true;
          }
@@ -205,9 +205,9 @@ public class HttpSender extends AbstractSender {
 
       // set message properties as HTTP headers
       if (message != null) {
-         for (Entry<Object, Object> property : message.getProperties().entrySet()) {
-            String pKey = property.getKey().toString();
-            String pValue = property.getValue().toString();
+         for (final Entry<Object, Object> property : message.getProperties().entrySet()) {
+            final String pKey = property.getKey().toString();
+            final String pValue = property.getValue().toString();
             requestConnection.setRequestProperty(pKey, pValue);
             if (log.isDebugEnabled()) {
                log.debug(pKey + ": " + pValue);
@@ -218,9 +218,9 @@ public class HttpSender extends AbstractSender {
       // set message headers as HTTP headers
       if (message != null) {
          if (message.getHeaders().size() > 0) {
-            for (Entry<Object, Object> property : message.getHeaders().entrySet()) {
-               String pKey = property.getKey().toString();
-               String pValue = property.getValue().toString();
+            for (final Entry<Object, Object> property : message.getHeaders().entrySet()) {
+               final String pKey = property.getKey().toString();
+               final String pValue = property.getValue().toString();
                requestConnection.setRequestProperty(pKey, pValue);
                if (log.isDebugEnabled()) {
                   log.debug(pKey + ": " + pValue);
@@ -231,9 +231,9 @@ public class HttpSender extends AbstractSender {
 
       // set additional properties as HTTP headers
       if (properties != null) {
-         for (Entry<String, String> property : properties.entrySet()) {
-            String pKey = property.getKey();
-            String pValue = property.getValue();
+         for (final Entry<String, String> property : properties.entrySet()) {
+            final String pKey = property.getKey();
+            final String pValue = property.getValue();
             requestConnection.setRequestProperty(pKey, pValue);
             if (log.isDebugEnabled()) {
                log.debug(pKey + ": " + pValue);
@@ -247,7 +247,7 @@ public class HttpSender extends AbstractSender {
       int respCode = -1;
       requestConnection.connect();
       if (payload != null && (method == Method.POST || method == Method.PUT)) {
-         OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream(), Utils.getDefaultEncoding());
+         final OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream(), Utils.getDefaultEncoding());
          out.write(payload, 0, payloadLenght);
          out.flush();
          out.close();
@@ -256,9 +256,9 @@ public class HttpSender extends AbstractSender {
 
       respCode = requestConnection.getResponseCode();
       if (!checkResponseCode(respCode)) {
-         StringBuffer errorMess = new StringBuffer();
+         final StringBuffer errorMess = new StringBuffer();
          errorMess.append("The server returned an unexpected HTTP response code: ").append(respCode).append(" ").append("\"").append(requestConnection.getResponseMessage()).append("\". Expected HTTP codes are ");
-         for (int code : expectedResponseCodeList) {
+         for (final int code : expectedResponseCodeList) {
             errorMess.append(Integer.toString(code)).append(", ");
          }
          throw new PerfCakeException(errorMess.substring(0, errorMess.length() - 2) + ".");
@@ -272,10 +272,10 @@ public class HttpSender extends AbstractSender {
 
       String payload = null;
       if (rcis != null) {
-         char[] cbuf = new char[10 * 1024];
-         InputStreamReader read = new InputStreamReader(rcis, Utils.getDefaultEncoding());
+         final char[] cbuf = new char[10 * 1024];
+         final InputStreamReader read = new InputStreamReader(rcis, Utils.getDefaultEncoding());
          // note that Content-Length is available at this point
-         StringBuilder sb = new StringBuilder();
+         final StringBuilder sb = new StringBuilder();
          int ch = read.read(cbuf);
          while (ch != -1) {
             sb.append(cbuf, 0, ch);

@@ -64,7 +64,7 @@ public class ChartDestinationHelper {
    /**
     * Path specifying the location of the resulting charts.
     */
-   private Path target;
+   private final Path target;
 
    /**
     * Is the helper properly initialized without an exception? We cannot proceed on storing any data when this has failed.
@@ -83,7 +83,7 @@ public class ChartDestinationHelper {
       try {
          createOutputFileStructure();
 
-         List<String> attributes = new ArrayList<>(chartDestination.getAttributesAsList()); // must close to ArrayList, as the current impl. does not support adding at index
+         final List<String> attributes = new ArrayList<>(chartDestination.getAttributesAsList()); // must close to ArrayList, as the current impl. does not support adding at index
          switch (chartDestination.getxAxisType()) {
             case PERCENTAGE:
                attributes.add(0, Chart.COLUMN_PERCENT);
@@ -99,7 +99,7 @@ public class ChartDestinationHelper {
          mainChart = new Chart(target, chartDestination.getGroup(), attributes, chartDestination.getName(), chartDestination.getxAxisType(), chartDestination.getXAxis(), chartDestination.getYAxis());
 
          successInit = true;
-      } catch (PerfCakeException e) {
+      } catch (final PerfCakeException e) {
          log.error(String.format("%s did not get initialized properly:", this.getClass().getName()), e);
          successInit = false;
       }
@@ -136,7 +136,7 @@ public class ChartDestinationHelper {
          Files.copy(getClass().getResourceAsStream("/charts/google-chart.js"), Paths.get(target.toString(), "src", "google-chart.js"), StandardCopyOption.REPLACE_EXISTING);
          Files.copy(getClass().getResourceAsStream("/charts/report.css"), Paths.get(target.toString(), "src", "report.css"), StandardCopyOption.REPLACE_EXISTING);
          Files.copy(getClass().getResourceAsStream("/charts/report.js"), Paths.get(target.toString(), "src", "report.js"), StandardCopyOption.REPLACE_EXISTING);
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException("Cannot copy necessary chart resources to the output path: ", e);
       }
    }
@@ -271,7 +271,7 @@ public class ChartDestinationHelper {
       final Map<String, List<String>> seen = new HashMap<>();
       final Map<String, List<String>> result = new HashMap<>();
 
-      for (Chart c : charts) {
+      for (final Chart c : charts) {
          if (!seen.containsKey(c.getGroup())) {
             seen.put(c.getGroup(), new ArrayList<String>());
          }
@@ -279,7 +279,7 @@ public class ChartDestinationHelper {
             result.put(c.getGroup(), new ArrayList<String>());
          }
 
-         for (String attribute : c.getAttributes()) {
+         for (final String attribute : c.getAttributes()) {
             if (seen.get(c.getGroup()).contains(attribute) && !result.get(c.getGroup()).contains(attribute)) {
                result.get(c.getGroup()).add(attribute);
             } else {
@@ -308,13 +308,13 @@ public class ChartDestinationHelper {
       final Map<String, List<String>> matches = findMatchingAttributes(charts);
       final List<Chart> newCharts = new ArrayList<>();
 
-      for (Map.Entry<String, List<String>> entry : matches.entrySet()) {
-         for (String match : entry.getValue()) {
+      for (final Map.Entry<String, List<String>> entry : matches.entrySet()) {
+         for (final String match : entry.getValue()) {
             final List<Chart> matchingCharts = new ArrayList<>();
             PeriodType xAxisType = null;
             boolean compatible = true; // all charts have compatible xAxisType
 
-            for (Chart c : charts) {
+            for (final Chart c : charts) {
                if (entry.getKey().equals(c.getGroup()) && c.getAttributes().contains(match)) {
                   if (xAxisType == null) {
                      xAxisType = c.getxAxisType();
@@ -347,7 +347,7 @@ public class ChartDestinationHelper {
    private void deletePreviousCombinedCharts(final File descriptionsDirectory) throws IOException {
       final StringBuilder issues = new StringBuilder();
 
-      for (File f : descriptionsDirectory.listFiles(new CombinedJsFileFilter())) {
+      for (final File f : descriptionsDirectory.listFiles(new CombinedJsFileFilter())) {
          if (!f.delete()) {
             issues.append(String.format("Cannot delete file %s. %n", f.getAbsolutePath()));
          }
@@ -375,14 +375,14 @@ public class ChartDestinationHelper {
          final List<File> descriptionFiles = Arrays.asList(outputDir.listFiles(new DescriptionFileFilter()));
 
          for (final File f : descriptionFiles) {
-            Chart c = Chart.fromDescriptionFile(f);
+            final Chart c = Chart.fromDescriptionFile(f);
             if (!c.getBaseName().equals(mainChart.getBaseName())) {
                charts.add(c);
             }
          }
 
          charts.addAll(analyzeMatchingCharts(charts));
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException("Unable to parse stored results: ", e);
       }
 
@@ -455,7 +455,7 @@ public class ChartDestinationHelper {
                + "              <ul>");
 
          int counter = 0;
-         for (Map.Entry<String, String> entry : headings.entrySet()) {
+         for (final Map.Entry<String, String> entry : headings.entrySet()) {
             if (counter == half) {
                sb.append("              </ul>\n"
                      + "            </div>\n"

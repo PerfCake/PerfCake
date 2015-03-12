@@ -91,8 +91,8 @@ public class RulesValidator implements MessageValidator {
     * @throws Exception
     *       When it was not possible to read and process the assertions.
     */
-   private void processAssertions(BufferedReader assertionsReader) throws Exception {
-      HashMap<Integer, String> assertions = new HashMap<>();
+   private void processAssertions(final BufferedReader assertionsReader) throws Exception {
+      final HashMap<Integer, String> assertions = new HashMap<>();
       int lineNo = 0;
       String line;
 

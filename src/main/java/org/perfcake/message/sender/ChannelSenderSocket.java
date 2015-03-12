@@ -55,13 +55,13 @@ public class ChannelSenderSocket extends ChannelSender {
 
    @Override
    public void init() {
-      String[] parts = target.split(":", 2);
+      final String[] parts = target.split(":", 2);
       host = parts[0];
       port = Integer.parseInt(parts[1]);
    }
 
    @Override
-   public void preSend(Message message, Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
 
       // Open the Socket channel in non-blocking mode
@@ -70,20 +70,20 @@ public class ChannelSenderSocket extends ChannelSender {
 
       try {
          socketChannel.connect(new InetSocketAddress(host, port));
-      } catch (UnresolvedAddressException e) {
+      } catch (final UnresolvedAddressException e) {
          throw new PerfCakeException("Cannot connect to the socket channel: ", e);
       }
    }
 
    @Override
-   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       if (messageBuffer != null) {
          // write the message into channel
          try {
             while (messageBuffer.hasRemaining()) {
                socketChannel.write(messageBuffer);
             }
-         } catch (IOException e) {
+         } catch (final IOException e) {
             throw new PerfCakeException("Problem while writing to the socket channel: ", e);
          }
 
@@ -92,7 +92,7 @@ public class ChannelSenderSocket extends ChannelSender {
             if (responseBuffer != null) {
                try {
                   socketChannel.read(responseBuffer);
-               } catch (IOException e) {
+               } catch (final IOException e) {
                   throw new PerfCakeException("Problem while reading from the socket channel: ", e);
                }
 
@@ -106,11 +106,11 @@ public class ChannelSenderSocket extends ChannelSender {
    }
 
    @Override
-   public void postSend(Message message) throws Exception {
+   public void postSend(final Message message) throws Exception {
       super.postSend(message);
       try {
          socketChannel.close();
-      } catch (IOException e) {
+      } catch (final IOException e) {
          throw new PerfCakeException("Error while closing the socket channel: ", e);
       }
    }

@@ -102,7 +102,7 @@ public abstract class AbstractMessageGenerator {
     *       Semaphore that will be release upon completion of the sender task.
     * @return A sender task ready to work on another iteration.
     */
-   protected SenderTask newSenderTask(Semaphore semaphore) {
+   protected SenderTask newSenderTask(final Semaphore semaphore) {
       final SenderTask task = new SenderTask(semaphore);
 
       task.setMessageStore(messageStore);

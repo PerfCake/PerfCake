@@ -60,7 +60,7 @@ public class CsvDestinationTest {
    @BeforeClass
    public void beforeClass() throws IOException {
       System.setProperty(PerfCakeConst.TIMESTAMP_PROPERTY, TIMESTAMP);
-      File csvOutputDir = new File(TestSetup.createTempDir("csvdestination"));
+      final File csvOutputDir = new File(TestSetup.createTempDir("csvdestination"));
       csvOutputDir.deleteOnExit();
       csvFile = Paths.get(csvOutputDir.getAbsolutePath(), "perfcake-results-" + TIMESTAMP + ".csv").toFile();
    }
@@ -149,7 +149,7 @@ public class CsvDestinationTest {
          boolean except = false;
          try {
             destination.setPath(CHANGED_PATH);
-         } catch (UnsupportedOperationException expected) {
+         } catch (final UnsupportedOperationException expected) {
             except = true;
          }
          Assert.assertTrue(except);
@@ -291,7 +291,7 @@ public class CsvDestinationTest {
       } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
-      } catch (ReportingException re) {
+      } catch (final ReportingException re) {
          Assert.assertEquals(re.getMessage(), "Could not append a report to the file: " + readOnlyFile.getPath());
       } finally {
          readOnlyFile.delete();
@@ -412,16 +412,16 @@ public class CsvDestinationTest {
       delete(outf1);
    }
 
-   private void assertCSVFileContent(File file, String expected) {
+   private void assertCSVFileContent(final File file, final String expected) {
       try (Scanner scanner = new Scanner(file).useDelimiter("\\Z")) {
          Assert.assertEquals(scanner.next(), expected, "CSV file's content");
-      } catch (FileNotFoundException fnfe) {
+      } catch (final FileNotFoundException fnfe) {
          fnfe.printStackTrace();
          Assert.fail(fnfe.getMessage());
       }
    }
 
-   private void prepareFile(File file) {
+   private void prepareFile(final File file) {
       if (!file.getParentFile().exists()) {
          file.getParentFile().mkdirs();
       }
@@ -430,7 +430,7 @@ public class CsvDestinationTest {
       }
    }
 
-   private void delete(File f) {
+   private void delete(final File f) {
       if (!f.delete()) {
          log.warn(String.format("Temporary file %s could not be deleted.", f.getAbsolutePath()));
       }
