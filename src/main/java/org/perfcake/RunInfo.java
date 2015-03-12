@@ -42,14 +42,14 @@ public class RunInfo {
 
    /**
     * Unix time of the measurement start. If the system clock changes during the run, the results based
-    * on this value are influenced. The iterations however use {@link System.nanoTime()} so there is no
+    * on this value are influenced. The iterations however use {@link System#nanoTime()} so there is no
     * worry.
     */
    private long startTime = -1;
 
    /**
     * Unix time of the measurement end. If the system clock changes during the run, the results based
-    * on this value are influenced. The iterations however use {@link System.nanoTime()} so there is no
+    * on this value are influenced. The iterations however use {@link System#nanoTime()} so there is no
     * worry.
     */
    private long endTime = -1;
@@ -323,5 +323,4 @@ public class RunInfo {
    public void setThreads(int threads) {
       this.threads = threads;
    }
-
 }
