@@ -24,8 +24,8 @@ import java.io.Serializable;
 /**
  * Holds the couple of sent message and response recorded for it. This is used mainly for validation.
  *
- * @author <a href="mailto:lucie.fabrikova@gmail.com">Lucie Fabriková</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class ReceivedMessage implements Serializable {
 
