@@ -41,7 +41,7 @@ import javax.naming.ldap.LdapContext;
 /**
  * Queries LDAP server.
  *
- * @author Vojta Juránek
+ * @author Vojtěch Juránek
  */
 public class LdapSender extends AbstractSender {
 
@@ -58,7 +58,7 @@ public class LdapSender extends AbstractSender {
    /**
     * Gets the LDAP username.
     *
-    * @returns The LDAP username.
+    * @return The LDAP username.
     */
    public String getLdapUsername() {
       return ldapUsername;
@@ -79,7 +79,7 @@ public class LdapSender extends AbstractSender {
    /**
     * Gets the LDAP password.
     *
-    * @returns The LDAP password.
+    * @return The LDAP password.
     */
    public String getLdapPassword() {
       return ldapPassword;
@@ -100,7 +100,7 @@ public class LdapSender extends AbstractSender {
    /**
     * Gets the LDAP search base.
     *
-    * @returns The LDAP search base.
+    * @return The LDAP search base.
     */
    public String getSearchBase() {
       return searchBase;
@@ -121,7 +121,7 @@ public class LdapSender extends AbstractSender {
    /**
     * Gets the LDAP filter.
     *
-    * @returns The LDAP filter.
+    * @return The LDAP filter.
     */
    public String getFilter() {
       return filter;

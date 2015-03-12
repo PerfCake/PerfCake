@@ -23,15 +23,12 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
+ * Sends messages via SSL socket.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class SslSocketSender extends AbstractSocketSender {
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSocketSender#openSocket()
-    */
    @Override
    protected void openSocket() throws Exception {
       final SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();

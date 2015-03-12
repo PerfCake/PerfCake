@@ -117,7 +117,9 @@ public class HttpsSender extends HttpSender {
    /**
     * Sets the SSL key store.
     *
-    * @return The SSL key store.
+    * @param keyStore
+    *       The SSL key store.
+    * @return Instance of this to support fluent API.
     */
    public HttpsSender setKeyStore(final String keyStore) {
       this.keyStore = keyStore;
@@ -138,6 +140,7 @@ public class HttpsSender extends HttpSender {
     *
     * @param keyStorePassword
     *       The SSL key store password.
+    * @return Instance of this to support fluent API.
     */
    public HttpsSender setKeyStorePassword(final String keyStorePassword) {
       this.keyStorePassword = keyStorePassword;
@@ -158,6 +161,7 @@ public class HttpsSender extends HttpSender {
     *
     * @param trustStore
     *       The SSL trust store.
+    * @return Instance of this to support fluent API.
     */
    public HttpsSender setTrustStore(final String trustStore) {
       this.trustStore = trustStore;
@@ -178,6 +182,7 @@ public class HttpsSender extends HttpSender {
     *
     * @param trustStorePassword
     *       The SSL trust store password.
+    * @return Instance of this to support fluent API.
     */
    public HttpsSender setTrustStorePassword(final String trustStorePassword) {
       this.trustStorePassword = trustStorePassword;
