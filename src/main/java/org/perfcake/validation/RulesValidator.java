@@ -137,5 +137,4 @@ public class RulesValidator implements MessageValidator {
          log.error("Error creating Drools base message validator.", ex);
       }
    }
-
 }

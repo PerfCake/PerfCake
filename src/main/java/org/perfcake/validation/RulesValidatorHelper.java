@@ -38,7 +38,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Helper to build KieContainer based on the Drools rules provided. Used by {@link org.perfcake.validation.RulesValidator}.
+ * Helps to build KieContainer based on the Drools rules provided. Used by {@link org.perfcake.validation.RulesValidator}.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -171,5 +171,4 @@ class RulesValidatorHelper {
 
       return kieServices.newKieContainer(krp.getDefaultReleaseId());
    }
-
 }
