@@ -30,14 +30,45 @@ public class ReportingException extends PerfCakeException {
 
    private static final long serialVersionUID = -4067480238483727264L;
 
+   /**
+    * Defaults to {@link org.perfcake.PerfCakeException#PerfCakeException(String, Throwable)}.
+    *
+    * @param message
+    *       The detailed message. The detailed message is saved for
+    *       later retrieval by the {@link #getMessage()} method.
+    * @param cause
+    *       The cause (which is saved for later retrieval by the
+    *       {@link #getCause()} method). (A <tt>null</tt> value is
+    *       permitted, and indicates that the cause is nonexistent or
+    *       unknown.)
+    * @see org.perfcake.PerfCakeException#PerfCakeException(String, Throwable)
+    */
    public ReportingException(final String message, final Throwable cause) {
       super(message, cause);
    }
 
+   /**
+    * Defaults to {@link org.perfcake.PerfCakeException#PerfCakeException(String)}.
+    *
+    * @param message
+    *       The detailed message. The detailed message is saved for
+    *       later retrieval by the {@link #getMessage()} method.
+    * @see org.perfcake.PerfCakeException#PerfCakeException(String)
+    */
    public ReportingException(final String message) {
       super(message);
    }
 
+   /**
+    * Defaults to {@link org.perfcake.PerfCakeException#PerfCakeException(Throwable)}.
+    *
+    * @param cause
+    *       The cause (which is saved for later retrieval by the
+    *       {@link #getCause()} method). (A <tt>null</tt> value is
+    *       permitted, and indicates that the cause is nonexistent or
+    *       unknown.)
+    * @see org.perfcake.PerfCakeException#PerfCakeException(Throwable)
+    */
    public ReportingException(final Throwable cause) {
       super(cause);
    }

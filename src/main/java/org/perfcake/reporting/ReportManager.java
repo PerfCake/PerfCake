@@ -25,8 +25,8 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
- * ReportManager that controls the reporting facilities.
+ * Controls the reporting facilities.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -61,9 +61,9 @@ public class ReportManager {
    private Thread periodicThread;
 
    /**
-    * Create a new measurement unit with a unique iteration number.
+    * Creates a new {@link org.perfcake.reporting.MeasurementUnit measurement unit} with a unique iteration number.
     *
-    * @return A new measurement unit with a unique iteration number, or null if a measurement is not running or is already finished.
+    * @return A {@link org.perfcake.reporting.MeasurementUnit measurement unit} unit with a unique iteration number, or null if a measurement is not running or is already finished.
     */
    public MeasurementUnit newMeasurementUnit() {
       if (!runInfo.isRunning()) {
@@ -78,7 +78,7 @@ public class ReportManager {
    }
 
    /**
-    * Set {@link org.perfcake.RunInfo} for the current measurement run.
+    * Sets {@link org.perfcake.RunInfo} for the current measurement run.
     *
     * @param runInfo
     *       The RunInfo that contains information about the current measurement.
@@ -95,16 +95,16 @@ public class ReportManager {
    }
 
    /**
-    * Report a newly measured {@link MeasurementUnit}. Each Measurement Unit must be reported exactly once.
+    * Reports a newly measured {@link MeasurementUnit}. Each Measurement Unit must be reported exactly once.
     *
-    * @param mu
+    * @param measurementUnit
     *       A MeasurementUnit to be reported.
     * @throws ReportingException
     *       If reporting could not be done properly.
     */
-   public void report(final MeasurementUnit mu) throws ReportingException {
+   public void report(final MeasurementUnit measurementUnit) throws ReportingException {
       if (log.isTraceEnabled()) {
-         log.trace("Reporting a new measurement unit " + mu);
+         log.trace("Reporting a new measurement unit " + measurementUnit);
       }
 
       ReportingException e = null;
@@ -112,14 +112,14 @@ public class ReportManager {
       if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
          for (final Reporter r : getReporters()) {
             try {
-               r.report(mu);
+               r.report(measurementUnit);
             } catch (final ReportingException re) {
-               log.warn("Error reporting a measurement unit " + mu, re);
+               log.warn("Error reporting a measurement unit " + measurementUnit, re);
                e = re; // store the latest exception and give chance to other reporters as well
             }
          }
       } else {
-         log.debug("Skipping the measurement unit (" + mu + ") because the ReportManager is not started.");
+         log.debug("Skipping the measurement unit (" + measurementUnit + ") because the ReportManager is not started.");
       }
 
       if (e != null) {
@@ -198,7 +198,6 @@ public class ReportManager {
       }
 
       periodicThread = new Thread(new Runnable() {
-         @Override
          public void run() {
             long now;
             Long lastTime;
@@ -259,7 +258,7 @@ public class ReportManager {
    }
 
    /**
-    * After the end of the test make sure 100% is reported for time based destinations.
+    * Makes sure 100% is reported for time based destinations after the end of the test.
     */
    private void reportFinalTimeResults() {
       log.info("Reporting final results:");
@@ -300,5 +299,4 @@ public class ReportManager {
       }
       periodicThread = null;
    }
-
 }

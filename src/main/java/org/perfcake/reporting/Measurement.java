@@ -26,8 +26,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Measurement is a product of {@link org.perfcake.reporting.reporters.Reporter}. It is typically a combination of multiple {@link MeasurementUnit Measuremen Units}. The way they are combined is the
- * matter of a particular Reporter.
+ * Measurement is a product of {@link org.perfcake.reporting.reporters.Reporter}.
+ * It is typically a combination of multiple {@link MeasurementUnit Measuremen Units}.
+ * The way they are combined is the matter of a particular {@link org.perfcake.reporting.reporters.Reporter}
+ * implementation.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -62,9 +64,12 @@ public class Measurement {
    /**
     * Creates a new instance of Measurement.
     *
-    * @param percentage The current progress of the scenario execution in percents.
-    * @param time The current time of the scenario execution.
-    * @param iteration The current iteration of the scenario execution.
+    * @param percentage
+    *       The current progress of the scenario execution in percents.
+    * @param time
+    *       The current time of the scenario execution.
+    * @param iteration
+    *       The current iteration of the scenario execution.
     */
    public Measurement(final long percentage, final long time, final long iteration) {
       super();
@@ -74,16 +79,16 @@ public class Measurement {
    }
 
    /**
-    * Used to read the value of percentage.
+    * Gets the percentage value of progress of the scenario execution.
     *
-    * @return The percentage progress of the scenario execution..
+    * @return The percentage progress of the execution.
     */
    public long getPercentage() {
       return percentage;
    }
 
    /**
-    * Used to read the value of time.
+    * Gets the time of the scenario execution in milliseconds.
     *
     * @return The time of the execution.
     */
@@ -92,7 +97,7 @@ public class Measurement {
    }
 
    /**
-    * Used to read the value of iteration.
+    * Gets the number of iteration to which the {@link org.perfcake.reporting.Measurement} is related.
     *
     * @return The iteration of the execution.
     */
@@ -101,7 +106,7 @@ public class Measurement {
    }
 
    /**
-    * Used to read the value of results.
+    * Gets the map with the measured results.
     *
     * @return The measured results.
     */
@@ -110,7 +115,8 @@ public class Measurement {
    }
 
    /**
-    * Used to read the value of the default result.
+    * Gets a default result from the result map. The default value is placed in the result map
+    * under {@link org.perfcake.reporting.Measurement#DEFAULT_RESULT} key.
     *
     * @return The default result.
     */
@@ -121,7 +127,8 @@ public class Measurement {
    /**
     * Gets the result with the given name.
     *
-    * @param name The name of the result to get.
+    * @param name
+    *       The name of the result to get.
     * @return The result value.
     */
    public Object get(final String name) {
@@ -129,7 +136,7 @@ public class Measurement {
    }
 
    /**
-    * Sets a named result.
+    * Puts the <code>result</code> in the result map with a given <code>name</code> used as a key.
     *
     * @param name
     *       The name of the result.
@@ -141,7 +148,8 @@ public class Measurement {
    }
 
    /**
-    * Sets the default result.
+    * Puts the default result in the result map. The default value is placed in the result map
+    * under {@link org.perfcake.reporting.Measurement#DEFAULT_RESULT} key.
     *
     * @param result
     *       The default result value.
@@ -150,11 +158,6 @@ public class Measurement {
       results.put(DEFAULT_RESULT, result);
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see java.lang.Object#toString()
-    */
    @Override
    public String toString() {
       final StringBuffer sb = new StringBuffer();

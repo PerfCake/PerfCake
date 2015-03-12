@@ -95,7 +95,7 @@ public class MeasurementUnit implements Serializable {
    }
 
    /**
-    * Get immutable map with all the custom results.
+    * Gets immutable map with all the custom results.
     *
     * @return An immutable copy of the custom results map.
     */
@@ -104,7 +104,7 @@ public class MeasurementUnit implements Serializable {
    }
 
    /**
-    * Get a custom result for the given label.
+    * Gets a custom result for the given label.
     *
     * @param label
     *       The label of the custom result.
@@ -159,11 +159,11 @@ public class MeasurementUnit implements Serializable {
    }
 
    /**
-    * Checks whether this measurement unit was first started after the specified time (Unix time in millis)
+    * Checks whether this measurement unit was first started after the specified time (Unix time in millis).
     *
     * @param ref
-    *       The reference time to compare to the start of the measurement
-    * @return true if this measurement unit was first started after the specified reference time
+    *       The reference time to compare to the start of the measurement.
+    * @return <code>true</code> if this measurement unit was first started after the specified reference time.
     */
    public boolean startedAfter(long ref) {
       return timeStarted > ref;
