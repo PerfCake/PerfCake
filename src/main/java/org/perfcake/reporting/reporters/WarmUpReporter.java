@@ -100,7 +100,7 @@ public class WarmUpReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
+   public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
       throw new ReportingException("No destination is allowed on " + getClass().getSimpleName());
    }
 

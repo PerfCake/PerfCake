@@ -53,8 +53,8 @@ public class ThroughputStatsReporter extends StatsReporter {
    }
 
    @Override
-   protected Double computeResult(MeasurementUnit mu) {
-      return 1000d * runInfo.getThreads() / mu.getLastTime(); // per second
+   protected Double computeResult(MeasurementUnit measurementUnit) {
+      return 1000d * runInfo.getThreads() / measurementUnit.getLastTime(); // per second
    }
 
    @Override
