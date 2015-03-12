@@ -22,10 +22,10 @@ package org.perfcake.reporting.reporters;
 import org.perfcake.reporting.MeasurementUnit;
 
 /**
- * The reporter is able to report statistics of response time.
- * 
+ * Reports statistics of response time.
+ *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
- * @see StatsReporter Details about the actual statistic metrics.
+ * @see StatsReporter
  */
 public class ResponseTimeStatsReporter extends StatsReporter {
 

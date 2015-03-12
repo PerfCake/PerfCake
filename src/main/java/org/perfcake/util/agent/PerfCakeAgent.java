@@ -47,9 +47,46 @@ package org.perfcake.util.agent;
  *
  * <p><code>"... -javaagent:&lt;perfcake_jar_path&gt;=hostname=&lt;hostname&gt;,port=&lt;port&gt;</code></p>
  * <p>where <code>perfcake_jar_path</code> is a path to PerfCake JAR archive, <code>hostname</code> and <code>port</code>
- * specifes agent's socket.</p>
+ * specifies agent's socket.</p>
+ *
+ * <table summary="PerfCakeAgent Commands">
+ * <thead>
+ * <tr>
+ * <th>Command</th>
+ * <th>Description</th>
+ * </tr>
+ * </thead>
+ * <tbody>
+ * <tr>
+ * <td>"{@link org.perfcake.util.agent.PerfCakeAgent.Command#FREE FREE}"</td>
+ * <td>Returns the amount of free memory in the Java Virtual Machine.</td>
+ * </tr>
+ * <tr>
+ * <td>"{@link org.perfcake.util.agent.PerfCakeAgent.Command#USED USED}"</td>
+ * <td>Returns the amount of used memory in the Java Virtual Machine.</td>
+ * </tr>
+ * <tr>
+ * <td>"{@link org.perfcake.util.agent.PerfCakeAgent.Command#TOTAL TOTAL}"</td>
+ * <td>Returns the amount of total memory in the Java Virtual Machine.</td>
+ * </tr>
+ * <tr>
+ * <td>"{@link org.perfcake.util.agent.PerfCakeAgent.Command#MAX MAX}"</td>
+ * <td>Returns the maximum amount of memory that the Java virtual machine will attempt to use.</td>
+ * </tr>
+ * <tr>
+ * <td>"{@link org.perfcake.util.agent.PerfCakeAgent.Command#DUMP DUMP}(:&lt;dump-file&gt;)"</td>
+ * <td>Initiates a heap dump into <code>dump-file</code>. <code>dump-file</code> is optional - if not provided,
+ * the file name would be generated as <code>"dump-" + System.currentTimeMillis() + ".bin"</code>.</td>
+ * </tr>
+ * <tr>
+ * <td>"{@link org.perfcake.util.agent.PerfCakeAgent.Command#GC GC}"</td>
+ * <td>Calls {@link System#gc()}.</td>
+ * </tr>
+ * </tbody>
+ * </table>
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @see org.perfcake.util.agent.PerfCakeAgent.Command
  */
 public class PerfCakeAgent {
 

@@ -35,7 +35,7 @@ import org.perfcake.reporting.reporters.accumulators.SlidingWindowMaxAccumulator
 import org.perfcake.reporting.reporters.accumulators.SlidingWindowMinAccumulator;
 
 /**
- * This abstract reporter is able to report the minimal, maximal and average value from the beginning
+ * Reports the minimal, maximal and average value from the beginning
  * of the measuring to the moment when the results are published including. The actual value about what
  * the statistics are gathered is computed as a result of the {@link #computeResult(MeasurementUnit)} method.
  *
@@ -145,21 +145,21 @@ public abstract class StatsReporter extends AbstractReporter {
    protected abstract Double computeResult(final MeasurementUnit mu);
 
    @Override
-   protected void doReport(final MeasurementUnit mu) throws ReportingException {
-      final Double result = computeResult(mu);
+   protected void doReport(final MeasurementUnit measurementUnit) throws ReportingException {
+      final Double result = computeResult(measurementUnit);
 
-      mu.appendResult(Measurement.DEFAULT_RESULT, result);
+      measurementUnit.appendResult(Measurement.DEFAULT_RESULT, result);
 
       if (averageEnabled) {
-         mu.appendResult(AVERAGE, result);
+         measurementUnit.appendResult(AVERAGE, result);
       }
 
       if (minimumEnabled) {
-         mu.appendResult(MINIMUM, result);
+         measurementUnit.appendResult(MINIMUM, result);
       }
 
       if (maximumEnabled) {
-         mu.appendResult(MAXIMUM, result);
+         measurementUnit.appendResult(MAXIMUM, result);
       }
    }
 
@@ -213,7 +213,7 @@ public abstract class StatsReporter extends AbstractReporter {
    /**
     * Gets the status of the metric of a minimal value.
     *
-    * @return Returns <code>true</code> if the metric of a minimal value is enabled or <code>false</code> otherwise.
+    * @return <code>true</code> if the metric of a minimal value is enabled or <code>false</code> otherwise.
     */
    public boolean isMinimumEnabled() {
       return minimumEnabled;
@@ -223,7 +223,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * Enables or disables the metric of a minimal value.
     *
     * @param minimumEnabled
-    *       Set <code>true</code> to enable the metric of a minimal value or <code>false</code> to disable it.
+    *       <code>true</code> to enable the metric of a minimal value or <code>false</code> to disable it.
     * @return Instance of this for fluent API.
     */
    public StatsReporter setMinimumEnabled(boolean minimumEnabled) {
@@ -234,7 +234,7 @@ public abstract class StatsReporter extends AbstractReporter {
    /**
     * Gets the status of the metric of an average value.
     *
-    * @return Returns <code>true</code> if the metric of an average value is enabled or <code>false</code> otherwise.
+    * @return <code>true</code> if the metric of an average value is enabled or <code>false</code> otherwise.
     */
    public boolean isAverageEnabled() {
       return averageEnabled;
@@ -244,7 +244,7 @@ public abstract class StatsReporter extends AbstractReporter {
     * Enables or disables the metric of an average value.
     *
     * @param averageEnabled
-    *       Set <code>true</code> to enable the metric of an average value or <code>false</code> to disable it.
+    *       <code>true</code> to enable the metric of an average value or <code>false</code> to disable it.
     * @return Instance of this for fluent API.
     */
    public StatsReporter setAverageEnabled(boolean averageEnabled) {

@@ -34,11 +34,9 @@ import org.apache.logging.log4j.Logger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * <p>
- * The reporter is able to determine when the tested system is warmed up. The warming is enabled/disabled by the presence of the {@link WarmUpReporter} in the scenario. The minimal iteration count and
+ * Determines when the tested system is warmed up. The warming is enabled/disabled by the presence of the {@link WarmUpReporter} in the scenario. The minimal iteration count and
  * the warm-up period duration can be tweaked by the respective properties ({@link #minimalWarmUpCount} with the default value of 10,000 and {@link #minimalWarmUpDuration} with the default value of
  * 15,000 ms).
- * </p>
  * <p>
  * The system is considered warmed up when all of the following conditions are satisfied: The iteration length is not changing much over the time, the minimal iteration count has been executed and the
  * minimal duration from the very start has exceeded.
@@ -118,7 +116,7 @@ public class WarmUpReporter extends AbstractReporter {
    }
 
    @Override
-   protected void doReport(final MeasurementUnit mu) throws ReportingException {
+   protected void doReport(final MeasurementUnit measurementUnit) throws ReportingException {
       if (!warmed) {
          if (runInfo.getRunTime() / CHECKING_PERIOD > checkingPeriodIndex.get()) { // make sure we are in the next time interval and we should check for warm up end
             checkingPeriodIndex.incrementAndGet();
@@ -152,7 +150,7 @@ public class WarmUpReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of minimal warm-up period duration.
+    * Gets the value of minimal warm-up period duration.
     *
     * @return The minimal warm-up period duration.
     */
@@ -173,7 +171,7 @@ public class WarmUpReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of minimal warm-up iteration count.
+    * Gets the value of minimal warm-up iteration count.
     *
     * @return The value of minimal warm-up iteration count.
     */
@@ -194,19 +192,19 @@ public class WarmUpReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of relativeThreshold.
+    * Gets the value of relative threshold.
     *
-    * @return The value of relativeThreshold.
+    * @return The value of relative threshold.
     */
    public double getRelativeThreshold() {
       return relativeThreshold;
    }
 
    /**
-    * Sets the value of relativeThreshold.
+    * Sets the value of relative threshold.
     *
     * @param relativeThreshold
-    *       The value of relativeThreshold to set.
+    *       The value of relative threshold to set.
     * @return Instance of this for fluent API.
     */
    public WarmUpReporter setRelativeThreshold(final double relativeThreshold) {
@@ -215,24 +213,23 @@ public class WarmUpReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of absoluteThreshold.
+    * Gets the value of absolute threshold.
     *
-    * @return The value of absoluteThreshold.
+    * @return The value of absolute threshold.
     */
    public double getAbsoluteThreshold() {
       return absoluteThreshold;
    }
 
    /**
-    * Sets the value of absoluteThreshold.
+    * Sets the value of absolute threshold.
     *
     * @param absoluteThreshold
-    *       The value of absoluteThreshold to set.
+    *       The value of absolute threshold to set.
     * @return Instance of this for fluent API.
     */
    public WarmUpReporter setAbsoluteThreshold(final double absoluteThreshold) {
       this.absoluteThreshold = absoluteThreshold;
       return this;
    }
-
 }

@@ -193,7 +193,9 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    /**
-    * Gets an appropriate accumulator for a given key from the Measurement Unit's results map and its class. This should be overridden by the child classes. By default, last value accumulator is returned. This must remain at least for {@link org.perfcake.PerfCakeConst.WARM_UP_TAG}.
+    * Gets an appropriate accumulator for a given key from the Measurement Unit's results map and its class.
+    * This should be overridden by the child classes. By default, last value accumulator is returned.
+    * This must remain at least for {@link org.perfcake.PerfCakeConst#WARM_UP_TAG}.
     *
     * @param key
     *       Name of the key from the results map.
@@ -212,6 +214,7 @@ public abstract class AbstractReporter implements Reporter {
     * @param iteration
     *       Iteration number.
     * @throws ReportingException
+    *       Propagated from {@link #publishResult(org.perfcake.common.PeriodType, org.perfcake.reporting.destinations.Destination)}.
     */
    private void reportIterations(final long iteration) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
@@ -231,6 +234,7 @@ public abstract class AbstractReporter implements Reporter {
     * @param percentage
     *       Percentage status of the run.
     * @throws ReportingException
+    *       Propagated from {@link #publishResult(org.perfcake.common.PeriodType, org.perfcake.reporting.destinations.Destination)}.
     */
    private void reportPercentage(final long percentage) throws ReportingException {
       for (final BoundPeriod<Destination> bp : periods) {
@@ -294,13 +298,14 @@ public abstract class AbstractReporter implements Reporter {
    abstract protected void doReset();
 
    /**
-    * Process a new {@link org.perfcake.reporting.MeasurementUnit}.
+    * Processes a new {@link org.perfcake.reporting.MeasurementUnit}.
     *
-    * @param mu
+    * @param measurementUnit
     *       A {@link org.perfcake.reporting.MeasurementUnit} to be processed.
     * @throws ReportingException
+    *       When it was not possible to process given {@link org.perfcake.reporting.MeasurementUnit}.
     */
-   abstract protected void doReport(MeasurementUnit mu) throws ReportingException;
+   abstract protected void doReport(MeasurementUnit measurementUnit) throws ReportingException;
 
    @Override
    public final Set<Destination> getDestinations() {
