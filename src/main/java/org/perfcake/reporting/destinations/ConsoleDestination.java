@@ -23,41 +23,25 @@ import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 
 /**
- * The destination that appends the measurements to stdout.
+ * Appends a {@link org.perfcake.reporting.Measurement} to standard output.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ConsoleDestination implements Destination {
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.destinations.Destination#open()
-    */
    @Override
    public void open() {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.destinations.Destination#close()
-    */
    @Override
    public void close() {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.destinations.Destination#report(org.perfcake.reporting.Measurement)
-    */
    @Override
-   public void report(final Measurement m) throws ReportingException {
-      System.out.println(m.toString());
+   public void report(final Measurement measurement) throws ReportingException {
+      System.out.println(measurement.toString());
    }
-
 }

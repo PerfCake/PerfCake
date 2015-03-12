@@ -26,7 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * The destination that appends the measurements to Log4j to category org.perfcake.reporting.destinations.Log4jDestination.
+ * Appends the measurements to Log4j to category org.perfcake.reporting.destinations.Log4jDestination.
  * Make appropriate configurations to customize its output. You can configure a separate appender only for this category for instance.
  * Logging level can be set via the level attribute.
  *
@@ -37,65 +37,55 @@ public class Log4jDestination implements Destination {
    private static final Logger log = LogManager.getLogger(Log4jDestination.class);
 
    /**
-    * Level at which we should log the measurements
+    * Level at which we should log the measurements.
     */
    private Level level = Level.INFO;
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.destinations.Destination#open()
-    */
    @Override
    public void open() {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.destinations.Destination#close()
-    */
    @Override
    public void close() {
       // nop
    }
 
    /**
-    * Reports the measurement using log4j at the configured level.s
+    * Reports the measurement using log4j at the configured level.
     */
    @Override
-   public void report(final Measurement m) throws ReportingException {
+   public void report(final Measurement measurement) throws ReportingException {
       switch (level) {
          case DEBUG:
             if (log.isDebugEnabled()) {
-               log.debug(m.toString());
+               log.debug(measurement.toString());
             }
             break;
          case ERROR:
-            log.error(m.toString());
+            log.error(measurement.toString());
             break;
          case FATAL:
-            log.fatal(m.toString());
+            log.fatal(measurement.toString());
             break;
          case INFO:
             if (log.isInfoEnabled()) {
-               log.info(m.toString());
+               log.info(measurement.toString());
             }
             break;
          case TRACE:
             if (log.isTraceEnabled()) {
-               log.trace(m.toString());
+               log.trace(measurement.toString());
             }
             break;
          case WARN:
-            log.warn(m.toString());
+            log.warn(measurement.toString());
             break;
       }
    }
 
    /**
-    * Get the current logging level.
+    * Gets the current logging level.
     *
     * @return The current logging level.
     */
@@ -115,8 +105,11 @@ public class Log4jDestination implements Destination {
       return this;
    }
 
+   /**
+    * Log4j level.
+    */
    public static enum Level { // Log4j level is not an enum, so this would be hard to handle
-      TRACE, DEBUG, INFO, WARN, ERROR, FATAL;
+      TRACE, DEBUG, INFO, WARN, ERROR, FATAL
    }
 
 }

@@ -91,21 +91,11 @@ public class ChartDestination implements Destination {
     */
    private ChartDestinationHelper helper;
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.destinations.Destination#open()
-    */
    @Override
    public void open() {
       helper = new ChartDestinationHelper(this);
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.destinations.Destination#close()
-    */
    @Override
    public void close() {
       if (!helper.isSuccessInit()) {
@@ -120,18 +110,13 @@ public class ChartDestination implements Destination {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.destinations.Destination#report(org.perfcake.reporting.Measurement)
-    */
    @Override
-   public void report(final Measurement m) throws ReportingException {
+   public void report(final Measurement measurement) throws ReportingException {
       if (!helper.isSuccessInit()) {
          throw new ReportingException("Chart destination was not properly initialized.");
       }
 
-      helper.appendResult(m);
+      helper.appendResult(measurement);
    }
 
    /**

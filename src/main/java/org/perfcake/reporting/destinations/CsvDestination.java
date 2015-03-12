@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The destination that appends the {@link org.perfcake.reporting.Measurement} into a CSV file.
+ * Appends a {@link org.perfcake.reporting.Measurement} into a CSV file.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -221,13 +221,13 @@ public class CsvDestination implements Destination {
    }
 
    @Override
-   public void report(final Measurement m) throws ReportingException {
+   public void report(final Measurement measurement) throws ReportingException {
       // make sure the order of columns is consistent
       if (resultNames.isEmpty()) { // performance optimization before we enter the sync. block
          synchronized (this) {
             if (resultNames.isEmpty()) { // make sure the array did not get initialized while we were entering the sync. block
-               presetResultNames(m);
-               fileHeaders = getFileHeaders(m);
+               presetResultNames(measurement);
+               fileHeaders = getFileHeaders(measurement);
             }
          }
       }
@@ -236,7 +236,7 @@ public class CsvDestination implements Destination {
       if (linePrefix != null && !linePrefix.isEmpty()) {
          sb.append(linePrefix);
       }
-      sb.append(getResultsLine(m));
+      sb.append(getResultsLine(measurement));
       if (lineSuffix != null && !lineSuffix.isEmpty()) {
          sb.append(lineSuffix);
       }
