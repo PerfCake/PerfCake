@@ -52,7 +52,6 @@ import org.xml.sax.SAXException;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
@@ -61,7 +60,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
@@ -82,19 +80,39 @@ import javax.xml.validation.SchemaFactory;
  */
 public class XmlFactory implements ScenarioFactory {
 
+   /**
+    * A logger.
+    */
    private static final Logger log = LogManager.getLogger(XmlFactory.class);
+
+   /**
+    * DOM model of the scenario.
+    */
    private org.perfcake.model.Scenario scenarioModel;
+
+   /**
+    * The scenario definition loaded from the file.
+    */
    private String scenarioConfig;
+
+   /**
+    * Parsed scenario object.
+    */
    private Scenario scenario = null;
 
+   // the factory is not part of public API
    protected XmlFactory() {
 
    }
 
+   @Override
    public void init(final URL scenarioURL) throws PerfCakeException {
       try {
          this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
 
+         if (log.isDebugEnabled()) {
+            log.debug(String.format("Loaded scenario definition from '%s'.", scenarioURL.toString()));
+         }
       } catch (IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
       }
@@ -102,6 +120,7 @@ public class XmlFactory implements ScenarioFactory {
       this.scenarioModel = parse();
    }
 
+   @Override
    public synchronized Scenario getScenario() throws PerfCakeException {
       if (scenario == null) {
          scenario = new Scenario();
@@ -125,11 +144,11 @@ public class XmlFactory implements ScenarioFactory {
    }
 
    /**
-    * Do the parsing itself by using JAXB
+    * Does the parsing itself by using JAXB.
     *
-    * @return parsed JAXB scenario model
+    * @return Parsed JAXB scenario model.
     * @throws PerfCakeException
-    *       if XML is not valid or cannot be successfully parsed
+    *       If XML is not valid or cannot be successfully parsed.
     */
    private org.perfcake.model.Scenario parse() throws PerfCakeException {
       try {
@@ -160,8 +179,8 @@ public class XmlFactory implements ScenarioFactory {
       }
    }
 
-   private static Properties getPropertiesFromList(List<Property> properties) throws PerfCakeException {
-      Properties props = new Properties();
+   private static Properties getPropertiesFromList(final List<Property> properties) throws PerfCakeException {
+      final Properties props = new Properties();
 
       for (Property p : properties) {
          Element valueElement = p.getAny();
@@ -180,40 +199,48 @@ public class XmlFactory implements ScenarioFactory {
    }
 
    /**
-    * Parses RunInfo from generator configuration.
+    * Parses {@link org.perfcake.RunInfo} from the generator configuration.
     *
-    * @return RunInfo object representing the configuration
+    * @return {@link org.perfcake.RunInfo} representing the configuration.
     * @throws PerfCakeException
-    *       when there is a parse exception
+    *       When there is a parse exception.
     */
    protected RunInfo parseRunInfo() throws PerfCakeException {
-      Generator gen = scenarioModel.getGenerator();
-      Generator.Run run = gen.getRun();
+      final Generator gen = scenarioModel.getGenerator();
+      final Generator.Run run = gen.getRun();
+      final RunInfo runInfo = new RunInfo(new Period(PeriodType.valueOf(run.getType().toUpperCase()), Long.parseLong(run.getValue())));
 
-      return new RunInfo(new Period(PeriodType.valueOf(run.getType().toUpperCase()), Long.parseLong(run.getValue())));
+      if (log.isDebugEnabled()) {
+         log.debug("--- Run Info ---");
+         log.debug("  " + runInfo.toString());
+      }
+
+      return runInfo;
    }
 
    /**
-    * Parse the <code>generator</code> element into a {@link AbstractMessageGenerator} instance.
+    * Parses the <code>generator</code> element into an {@link org.perfcake.message.generator.AbstractMessageGenerator} instance.
     *
-    * @return A message generator.
-    * @throws InstantiationException
-    * @throws IllegalAccessException
-    * @throws ClassNotFoundException
+    * @return A particular implementation of {@link org.perfcake.message.generator.AbstractMessageGenerator}.
+    * @throws org.perfcake.PerfCakeException
+    *       When there is a parse exception.
     */
    protected AbstractMessageGenerator parseGenerator() throws PerfCakeException {
-      AbstractMessageGenerator generator = null;
+      final AbstractMessageGenerator generator;
 
       try {
-         Generator gen = scenarioModel.getGenerator();
+         final Generator gen = scenarioModel.getGenerator();
          String generatorClass = gen.getClazz();
          if (!generatorClass.contains(".")) {
             generatorClass = DEFAULT_GENERATOR_PACKAGE + "." + generatorClass;
          }
-         log.info("--- Generator (" + generatorClass + ") ---");
 
          int threads = Integer.parseInt(gen.getThreads());
-         log.info("  threads=" + threads);
+
+         if (log.isDebugEnabled()) {
+            log.debug("--- Generator (" + generatorClass + ") ---");
+            log.debug("  threads=" + threads);
+         }
 
          Properties generatorProperties = getPropertiesFromList(gen.getProperty());
          Utils.logProperties(log, Level.DEBUG, generatorProperties, "   ");
@@ -228,23 +255,28 @@ public class XmlFactory implements ScenarioFactory {
    }
 
    /**
-    * Parse the <code>sender</code> element into a {@link MessageSenderManager} instance.
+    * Parses the <code>sender</code> element into a {@link org.perfcake.message.sender.MessageSenderManager} instance.
     *
     * @param senderPoolSize
     *       Size of the message sender pool.
-    * @return A message sender manager.
+    * @return {@link org.perfcake.message.sender.MessageSenderManager} containing the parsed {@link org.perfcake.message.sender.MessageSender}s.
+    * @throws org.perfcake.PerfCakeException
+    *       When there is a parse exception.
     */
    protected MessageSenderManager parseSender(final int senderPoolSize) throws PerfCakeException {
-      MessageSenderManager msm;
+      final MessageSenderManager msm;
 
-      Sender sen = scenarioModel.getSender();
+      final Sender sen = scenarioModel.getSender();
       String senderClass = sen.getClazz();
       if (!senderClass.contains(".")) {
          senderClass = DEFAULT_SENDER_PACKAGE + "." + senderClass;
       }
-      log.info("--- Sender (" + senderClass + ") ---");
 
-      Properties senderProperties = getPropertiesFromList(sen.getProperty());
+      if (log.isDebugEnabled()) {
+         log.debug("--- Sender (" + senderClass + ") ---");
+      }
+
+      final Properties senderProperties = getPropertiesFromList(sen.getProperty());
       Utils.logProperties(log, Level.DEBUG, senderProperties, "   ");
 
       msm = new MessageSenderManager();
@@ -257,24 +289,24 @@ public class XmlFactory implements ScenarioFactory {
    }
 
    /**
-    * Parse the <code>messages</code> element into a message store.
+    * Parses the <code>messages</code> element into a list of {@link org.perfcake.message.MessageTemplate}s.
     *
     * @param validationManager
-    *       ValidationManager carrying all parsed validators, these will be associated with the message templates.
-    * @return Message store in a form of {@link Map}&lt;{@link Message}, {@link Long}&gt; where the keys are stored messages and the values
-    * are multiplicity of how many times the message is sent in a single
-    * iteration.
-    * @throws IOException
-    * @throws FileNotFoundException
+    *       {@link org.perfcake.validation.ValidationManager} carrying all parsed validators, these will be associated with the message templates.
+    * @return A list of {@link org.perfcake.message.MessageTemplate}s.
+    * @throws org.perfcake.PerfCakeException
+    *       When there is a parse exception.
     */
-   protected List<MessageTemplate> parseMessages(ValidationManager validationManager) throws PerfCakeException {
-      List<MessageTemplate> messageStore = new ArrayList<>();
+   protected List<MessageTemplate> parseMessages(final ValidationManager validationManager) throws PerfCakeException {
+      final List<MessageTemplate> messageStore = new ArrayList<>();
 
       try {
-         Messages messages = scenarioModel.getMessages();
+         final Messages messages = scenarioModel.getMessages();
          if (messages != null) {
 
-            log.info("--- Messages ---");
+            if (log.isDebugEnabled()) {
+               log.debug("--- Messages ---");
+            }
             for (Messages.Message m : messages.getMessage()) {
                URL messageUrl = null;
                String currentMessagePayload;
@@ -292,17 +324,18 @@ public class XmlFactory implements ScenarioFactory {
                      currentMessagePayload = null;
                   }
                }
-               Properties currentMessageProperties = getPropertiesFromList(m.getProperty());
-               Properties currentMessageHeaders = new Properties();
+
+               final Properties currentMessageProperties = getPropertiesFromList(m.getProperty());
+               final Properties currentMessageHeaders = new Properties();
                for (Header h : m.getHeader()) {
                   currentMessageHeaders.setProperty(h.getName(), h.getValue());
                }
 
-               Message currentMessage = new Message(currentMessagePayload);
+               final Message currentMessage = new Message(currentMessagePayload);
                currentMessage.setProperties(currentMessageProperties);
                currentMessage.setHeaders(currentMessageHeaders);
 
-               long currentMessageMultiplicity = -1;
+               long currentMessageMultiplicity;
                if (m.getMultiplicity() == null || m.getMultiplicity().equals("")) {
                   currentMessageMultiplicity = 1L;
                } else {
@@ -320,10 +353,10 @@ public class XmlFactory implements ScenarioFactory {
                }
 
                // create message to be send
-               MessageTemplate currentMessageToSend = new MessageTemplate(currentMessage, currentMessageMultiplicity, currentMessageValidatorIds);
+               final MessageTemplate currentMessageToSend = new MessageTemplate(currentMessage, currentMessageMultiplicity, currentMessageValidatorIds);
 
-               log.info("'- Message (" + (messageUrl != null ? messageUrl.toString() : "") + "), " + currentMessageMultiplicity + "x");
                if (log.isDebugEnabled()) {
+                  log.debug("'- Message (" + (messageUrl != null ? messageUrl.toString() : "") + "), " + currentMessageMultiplicity + "x");
                   log.debug("  '- Properties:");
                   Utils.logProperties(log, Level.DEBUG, currentMessageProperties, "   '- ");
                   log.debug("  '- Headers:");
@@ -340,21 +373,22 @@ public class XmlFactory implements ScenarioFactory {
    }
 
    /**
-    * Parse the <code>reporting</code> element into a {@link ReportManager} instance.
+    * Parse the <code>reporting</code> element into a {@link org.perfcake.reporting.ReportManager} instance.
     *
-    * @return Report manager.
-    * @throws InstantiationException
-    * @throws IllegalAccessException
-    * @throws ClassNotFoundException
+    * @return Parsed {@link org.perfcake.reporting.ReportManager}.
+    * @throws org.perfcake.PerfCakeException
+    *       When there is a parse exception.
     */
    protected ReportManager parseReporting() throws PerfCakeException {
-      ReportManager reportManager = new ReportManager();
+      final ReportManager reportManager = new ReportManager();
 
       try {
-         log.info("--- Reporting ---");
-         Reporting reporting = scenarioModel.getReporting();
+         if (log.isDebugEnabled()) {
+            log.debug("--- Reporting ---");
+         }
+         final Reporting reporting = scenarioModel.getReporting();
          if (reporting != null) {
-            Properties reportingProperties = getPropertiesFromList(reporting.getProperty());
+            final Properties reportingProperties = getPropertiesFromList(reporting.getProperty());
             Utils.logProperties(log, Level.DEBUG, reportingProperties, "   ");
 
             ObjectFactory.setPropertiesOnObject(reportManager, reportingProperties);
@@ -368,7 +402,9 @@ public class XmlFactory implements ScenarioFactory {
                   }
                   Reporter currentReporter = (Reporter) ObjectFactory.summonInstance(reportClass, currentReporterProperties);
 
-                  log.info("'- Reporter (" + reportClass + ")");
+                  if (log.isDebugEnabled()) {
+                     log.debug("'- Reporter (" + reportClass + ")");
+                  }
 
                   for (Reporting.Reporter.Destination d : r.getDestination()) {
                      if (d.isEnabled()) {
@@ -376,7 +412,10 @@ public class XmlFactory implements ScenarioFactory {
                         if (!destClass.contains(".")) {
                            destClass = DEFAULT_DESTINATION_PACKAGE + "." + destClass;
                         }
-                        log.info(" '- Destination (" + destClass + ")");
+
+                        if (log.isDebugEnabled()) {
+                           log.debug(" '- Destination (" + destClass + ")");
+                        }
                         Properties currentDestinationProperties = getPropertiesFromList(d.getProperty());
                         Utils.logProperties(log, Level.DEBUG, currentDestinationProperties, "  '- ");
 
@@ -399,13 +438,22 @@ public class XmlFactory implements ScenarioFactory {
       return reportManager;
    }
 
+   /**
+    * Parse the <code>validation</code> element into a {@link org.perfcake.validation.ValidationManager} instance.
+    *
+    * @return Parsed {@link org.perfcake.validation.ValidationManager}.
+    * @throws org.perfcake.PerfCakeException
+    *       When there is a parse exception.
+    */
    protected ValidationManager parseValidation() throws PerfCakeException {
       final ValidationManager validationManager = new ValidationManager();
 
-      log.info("--- Validation ---");
+      if (log.isDebugEnabled()) {
+         log.debug("--- Validation ---");
+      }
       try {
 
-         Validation validation = scenarioModel.getValidation();
+         final Validation validation = scenarioModel.getValidation();
          if (validation != null) {
 
             for (Validation.Validator v : validation.getValidator()) {
@@ -415,7 +463,9 @@ public class XmlFactory implements ScenarioFactory {
                   validatorClass = DEFAULT_VALIDATION_PACKAGE + "." + validatorClass;
                }
 
-               log.info(" '- Validation (" + validatorClass + ")");
+               if (log.isDebugEnabled()) {
+                  log.debug(" '- Validation (" + validatorClass + ")");
+               }
                Properties currentValidationProperties = getPropertiesFromList(v.getProperty());
                Utils.logProperties(log, Level.DEBUG, currentValidationProperties, "  '- ");
 
@@ -434,8 +484,17 @@ public class XmlFactory implements ScenarioFactory {
       return validationManager;
    }
 
+   /**
+    * Parse the <code>properties</code> element into a {@link java.util.Properties} instance.
+    *
+    * @return Parsed properties.
+    * @throws org.perfcake.PerfCakeException
+    *       When there is a parse exception.
+    */
    protected Properties parseScenarioProperties() throws PerfCakeException {
-      log.info("--- Scenario properties ---");
+      if (log.isDebugEnabled()) {
+         log.debug("--- Scenario properties ---");
+      }
       return getPropertiesFromList(scenarioModel.getProperties().getProperty());
    }
 }

@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 
 /**
- * Scenario encapsulates whole test execution, contains all information necessary to run the test.
+ * Encapsulates whole test execution, contains all information necessary to run the test.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
