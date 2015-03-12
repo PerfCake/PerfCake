@@ -40,7 +40,7 @@ import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
- * Dictionary validator can create a dictionary of valid responses and use this to validate them in another run.
+ * Creates a dictionary of valid responses and use this to validate them in another run.
  * It is also possible to create the dictionary manually, however, this is to complicated task and we always
  * recommend running the validation in record mode first. Any manual changes can be done later.
  * Dictionary validator creates an index file and a separate file for each response. A writable directory must
@@ -86,7 +86,7 @@ public class DictionaryValidator implements MessageValidator {
    private Properties indexCache;
 
    /**
-    * Escapes = and : in the payload string.
+    * Escapes characters <code>=</code> and <code>:</code> in the payload string.
     *
     * @param payload
     *       The payload string to be escaped.
@@ -127,9 +127,9 @@ public class DictionaryValidator implements MessageValidator {
    }
 
    /**
-    * Reads the index into memory, or return the previously read index.
+    * Reads the index into memory, or returns the previously read index.
     *
-    * @return the response index.
+    * @return The response index.
     * @throws ValidationException
     *       If any of the disk operations fails.
     */
@@ -185,7 +185,7 @@ public class DictionaryValidator implements MessageValidator {
    /**
     * Checks whether the index file exists.
     *
-    * @return True if and only if the index file exists.
+    * @return <code>true</code> if and only if the index file exists.
     */
    private boolean indexExists() {
       return (dictionaryDirectory != null && dictionaryIndex != null) && getIndexFile().exists();
@@ -274,10 +274,10 @@ public class DictionaryValidator implements MessageValidator {
    }
 
    /**
-    * Sets the record mode
+    * Sets the record mode.
     *
     * @param record
-    *       True to activate the record mode.
+    *       <code>true</code> to activate the record mode.
     * @return Instance of this for fluent API.
     */
    public DictionaryValidator setRecord(boolean record) {
