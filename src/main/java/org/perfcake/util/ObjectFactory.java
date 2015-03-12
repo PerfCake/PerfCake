@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * This class can create POJOs according to the given class name and a map of attributes and their values.
+ * Creates POJOs according to the given class name and a map of attributes and their values.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -226,5 +226,4 @@ public class ObjectFactory {
          return name.endsWith(extension);
       }
    }
-
 }
