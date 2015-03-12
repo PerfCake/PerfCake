@@ -74,7 +74,7 @@ public class CommandSender extends AbstractSender {
    private String commandPrefix = "";
 
    /**
-    * The actual command that is executed;
+    * The actual command that is executed.
     */
    private String command = "";
 

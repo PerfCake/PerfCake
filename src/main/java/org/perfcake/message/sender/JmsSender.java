@@ -216,11 +216,6 @@ public class JmsSender extends AbstractSender {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#close()
-    */
    @Override
    public void close() throws PerfCakeException {
       if (log.isDebugEnabled()) {
@@ -261,11 +256,6 @@ public class JmsSender extends AbstractSender {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
@@ -297,11 +287,6 @@ public class JmsSender extends AbstractSender {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       if (log.isDebugEnabled()) {

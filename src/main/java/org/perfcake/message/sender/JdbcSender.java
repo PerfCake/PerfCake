@@ -78,11 +78,6 @@ public class JdbcSender extends AbstractSender {
     */
    private Statement statement;
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#init()
-    */
    @Override
    public void init() throws Exception {
       this.jdbcUrl = target;
@@ -90,11 +85,6 @@ public class JdbcSender extends AbstractSender {
       connection = DriverManager.getConnection(jdbcUrl, username, password);
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#close()
-    */
    @Override
    public void close() {
       try {
@@ -104,22 +94,12 @@ public class JdbcSender extends AbstractSender {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
       statement = connection.createStatement();
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       final boolean result = statement.execute((String) message.getPayload());
@@ -161,11 +141,6 @@ public class JdbcSender extends AbstractSender {
       return retVal;
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
-    */
    @Override
    public void postSend(final Message message) throws Exception {
       super.postSend(message);
