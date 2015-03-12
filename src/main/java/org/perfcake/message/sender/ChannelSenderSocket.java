@@ -76,7 +76,7 @@ public class ChannelSenderSocket extends ChannelSender {
    }
 
    @Override
-   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws Exception {
+   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit measurementUnit) throws Exception {
       if (messageBuffer != null) {
          // write the message into channel
          try {

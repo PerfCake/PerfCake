@@ -68,7 +68,7 @@ public class ChannelSenderDatagram extends ChannelSender {
    }
 
    @Override
-   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws PerfCakeException {
+   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit measurementUnit) throws PerfCakeException {
       if (messageBuffer != null) {
          // write data into channel
          try {

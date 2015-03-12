@@ -121,7 +121,7 @@ public class WebSocketSender extends AbstractSender {
    }
 
    @Override
-   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit mu) throws Exception {
+   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit measurementUnit) throws Exception {
       if (remoteEndpointType == RemoteEndpointType.BASIC) {
          RemoteEndpoint.Basic basic = session.getBasicRemote();
          switch (payloadType) {

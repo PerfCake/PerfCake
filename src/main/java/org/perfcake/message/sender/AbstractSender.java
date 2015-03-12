@@ -30,7 +30,7 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * The common ancestor for all senders.
+ * The common ancestor for all senders. Facilitates logging and target specification.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -46,37 +46,17 @@ abstract public class AbstractSender implements MessageSender {
     */
    protected String target = "";
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.MessageSender#init()
-    */
    @Override
    abstract public void init() throws Exception;
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.MessageSender#close()
-    */
    @Override
    abstract public void close() throws PerfCakeException;
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
-   public final Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
-      return doSend(message, properties, mu);
+   public final Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+      return doSend(message, properties, measurementUnit);
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.MessageSender#preSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       if (log.isDebugEnabled()) {
@@ -87,27 +67,39 @@ abstract public class AbstractSender implements MessageSender {
       }
    }
 
-   /*
-    * (non-Javadoc)
+   /**
+    * Actually performs the send operation. Relies to {@link #doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)}.
+    * Marked as final to prevent overriding. Override {@link #doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)} instead.
     *
-    * @see org.perfcake.message.sender.MessageSender#doSend(org.perfcake.message.Message, org.perfcake.reporting.MeasurementUnit)
+    * @param message
+    *       Message to be sent.
+    * @param measurementUnit
+    *       Measurement unit carrying the current stop-watch.
+    * @return Response to the message.
+    * @throws Exception
+    *       When the sending operation failed.
+    * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message, org.perfcake.reporting.MeasurementUnit)
     */
-   final public Serializable doSend(final Message message, final MeasurementUnit mu) throws Exception {
-      return this.doSend(message, null, mu);
+   final public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
+      return this.doSend(message, null, measurementUnit);
    }
 
-   /*
-    * (non-Javadoc)
+   /**
+    * Actually performs the send operation. Should be overridden by specific implementations.
     *
-    * @see org.perfcake.message.sender.MessageSender#doSend(org.perfcake.message.Message, java.util.Properties, org.perfcake.reporting.MeasurementUnit)
+    * @param message
+    *       Message to be sent.
+    * @param properties
+    *       Additional properties that can influence the sending of the message.
+    * @param measurementUnit
+    *       Measurement unit carrying the current stop-watch.
+    * @return Response to the message.
+    * @throws Exception
+    *       When the sending operation failed.
+    * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)
     */
-   abstract public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception;
+   abstract public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception;
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.MessageSender#postSend(org.perfcake.message.Message)
-    */
    @Override
    public void postSend(final Message message) throws Exception {
       if (log.isDebugEnabled()) {
@@ -115,14 +107,9 @@ abstract public class AbstractSender implements MessageSender {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message)
-    */
    @Override
-   public final Serializable send(final Message message, final MeasurementUnit mu) throws Exception {
-      return send(message, null, mu);
+   public final Serializable send(final Message message, final MeasurementUnit measurementUnit) throws Exception {
+      return send(message, null, measurementUnit);
    }
 
    /**
