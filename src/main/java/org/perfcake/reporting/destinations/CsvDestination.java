@@ -277,7 +277,7 @@ public class CsvDestination implements Destination {
     *
     * @param path
     *       The output file path to be set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public CsvDestination setPath(final String path) {
       synchronized (this) {
@@ -312,7 +312,7 @@ public class CsvDestination implements Destination {
     *
     * @param delimiter
     *       The delimiter to be used between data elements in an output line.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public CsvDestination setDelimiter(final String delimiter) {
       this.delimiter = delimiter;
@@ -333,7 +333,7 @@ public class CsvDestination implements Destination {
     *
     * @param appendStrategy
     *       The appendStrategy value to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public CsvDestination setAppendStrategy(AppendStrategy appendStrategy) {
       this.appendStrategy = appendStrategy;
@@ -355,7 +355,7 @@ public class CsvDestination implements Destination {
     *
     * @param linePrefix
     *       The data lines prefix.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public CsvDestination setLinePrefix(String linePrefix) {
       this.linePrefix = linePrefix;
@@ -377,7 +377,7 @@ public class CsvDestination implements Destination {
     *
     * @param lineSuffix
     *       The data lines suffix.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public CsvDestination setLineSuffix(String lineSuffix) {
       this.lineSuffix = lineSuffix;
@@ -398,7 +398,7 @@ public class CsvDestination implements Destination {
     *
     * @param lineBreak
     *       The delimiter used to separate output lines.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public CsvDestination setLineBreak(String lineBreak) {
       this.lineBreak = lineBreak;
@@ -419,7 +419,7 @@ public class CsvDestination implements Destination {
     *
     * @param skipHeader
     *       When set to true, headers are not written.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public CsvDestination setSkipHeader(boolean skipHeader) {
       this.skipHeader = skipHeader;

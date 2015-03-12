@@ -347,7 +347,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * @param agentHostname
     *       The agent hostname value to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setAgentHostname(final String agentHostname) {
       this.agentHostname = agentHostname;
@@ -368,7 +368,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * @param agentPort
     *       The agent port value to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setAgentPort(final String agentPort) {
       this.agentPort = agentPort;
@@ -389,7 +389,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * @param timeWindowSize
     *       The usedMemoryTimeWindowSize value to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setUsedMemoryTimeWindowSize(int timeWindowSize) {
       this.usedMemoryTimeWindowSize = timeWindowSize;
@@ -410,7 +410,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * @param memoryLeakSlopeThreshold
     *       The memoryLeakSlopeThreshold value to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setMemoryLeakSlopeThreshold(double memoryLeakSlopeThreshold) {
       this.memoryLeakSlopeThreshold = memoryLeakSlopeThreshold;
@@ -431,7 +431,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * @param memoryLeakDetectionEnabled
     *       The memoryLeakDetectionEnabled value to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setMemoryLeakDetectionEnabled(boolean memoryLeakDetectionEnabled) {
       this.memoryLeakDetectionEnabled = memoryLeakDetectionEnabled;
@@ -452,7 +452,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * @param memoryLeakDetectionMonitoringPeriod
     *       The memoryLeakDetectionMonitoringPeriod value to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setMemoryLeakDetectionMonitoringPeriod(long memoryLeakDetectionMonitoringPeriod) {
       this.memoryLeakDetectionMonitoringPeriod = memoryLeakDetectionMonitoringPeriod;
@@ -473,7 +473,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * @param memoryDumpFile
     *       Memory dump file name.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setMemoryDumpFile(final String memoryDumpFile) {
       this.memoryDumpFile = memoryDumpFile;
@@ -496,7 +496,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * @param memoryDumpOnLeak
     *       Enables or disables the memory dump on leak.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setMemoryDumpOnLeak(final boolean memoryDumpOnLeak) {
       this.memoryDumpOnLeak = memoryDumpOnLeak;
@@ -524,7 +524,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     *
     * @param performGcOnMemoryUsage
     *       <code>true</code> to enable the feature. The <code>false</code> otherwise.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setPerformGcOnMemoryUsage(final boolean performGcOnMemoryUsage) {
       this.performGcOnMemoryUsage = performGcOnMemoryUsage;
