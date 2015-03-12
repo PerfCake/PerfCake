@@ -24,8 +24,8 @@ import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.util.Utils;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,7 +49,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
    protected String host;
 
    /**
-    * The port of the socket
+    * The port of the socket.
     */
    protected int port;
 
@@ -73,11 +73,6 @@ abstract public class AbstractSocketSender extends AbstractSender {
     */
    private final Logger log = LogManager.getLogger(AbstractSocketSender.class);
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#init()
-    */
    @Override
    public void init() throws Exception {
       String[] parts = target.split(":", 2);
@@ -85,11 +80,6 @@ abstract public class AbstractSocketSender extends AbstractSender {
       port = Integer.parseInt(parts[1]);
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#close()
-    */
    @Override
    public void close() {
       // closed per message
@@ -99,6 +89,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
     * Opens a socket on the {@link #host} address.
     *
     * @throws Exception
+    *       When it was not possible to open the socket.
     */
    abstract protected void openSocket() throws Exception;
 
@@ -106,6 +97,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
     * Opens the writer to an outbound socket's stream and the reader to read from inbound socket's stream.
     *
     * @throws Exception
+    *       When it was not possible to open socket streams.
     */
    private void openStreams() throws Exception {
       out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Utils.getDefaultEncoding()), true);
@@ -129,11 +121,6 @@ abstract public class AbstractSocketSender extends AbstractSender {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#preSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public void preSend(final Message message, final Map<String, String> properties) throws Exception {
       super.preSend(message, properties);
@@ -141,11 +128,6 @@ abstract public class AbstractSocketSender extends AbstractSender {
       openStreams();
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       out.print(message.getPayload().toString());
@@ -162,11 +144,6 @@ abstract public class AbstractSocketSender extends AbstractSender {
       return sb.toString();
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#postSend(org.perfcake.message.Message)
-    */
    @Override
    public void postSend(final Message message) throws Exception {
       super.postSend(message);

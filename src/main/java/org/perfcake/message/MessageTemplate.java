@@ -29,22 +29,53 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * TODO logging and javadoc
+ * Holds a message template based on a provided sample, keeps references to configured validators and renders the message before it is actually sent.
+ * Rendering means properties substitution in the message payload.
+ * Logging is very minimalistic as this class is very simple and we want to maximize its performance.
  *
- * @author <a href="mailto:lucie.fabrikova@gmail.com">Lucie Fabriková</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class MessageTemplate implements Serializable {
    private static final long serialVersionUID = 6172258079690233417L;
 
    private transient Logger log = LogManager.getLogger(MessageTemplate.class);
 
+   /**
+    * Original message sample.
+    */
    private final Message message;
+
+   /**
+    * How many times the message should be sent in one iteration?
+    */
    private final long multiplicity;
+
+   /**
+    * The list of validator references that should be used to validate a response to this message.
+    */
    private final List<String> validatorIds;
+
+   /**
+    * Does the original message contains anything to be replaced?
+    */
    private final boolean isStringMessage;
+
+   /**
+    * A template prepared to be rendered.
+    */
    private transient StringTemplate template;
 
+   /**
+    * Creates a new template based on the message sample. Multiplicity and validator references can be provided as well.
+    *
+    * @param message
+    *       A sample message.
+    * @param multiplicity
+    *       How many times the message should be sent in one iteration.
+    * @param validatorIds
+    *       List of validators to validate a response.
+    */
    public MessageTemplate(final Message message, final long multiplicity, final List<String> validatorIds) {
       this.message = message;
       this.isStringMessage = message.getPayload() instanceof String;
@@ -55,15 +86,36 @@ public class MessageTemplate implements Serializable {
       this.validatorIds = validatorIds;
    }
 
+   /**
+    * Gets the original sample message.
+    *
+    * @return The original sample message.
+    */
    public Message getMessage() {
       return message;
    }
 
-   public Message getFilteredMessage(final Properties props) {
-      if (isStringMessage && template != null && template.hasPlaceholders()) {
-         final Message m = MessageFactory.getMessage();
+   /**
+    * Gets a new message instance.
+    *
+    * @return A new message.
+    */
+   private static Message newMessage() {
+      return new Message();
+   }
 
-         m.setPayload(template.toString(props));
+   /**
+    * Renders the message template.
+    *
+    * @param properties
+    *       Properties to be replaced in the message payload.
+    * @return A new message instance with the rendered payload.
+    */
+   public Message getFilteredMessage(final Properties properties) {
+      if (isStringMessage && template != null && template.hasPlaceholders()) {
+         final Message m = newMessage();
+
+         m.setPayload(template.toString(properties));
          m.setHeaders(message.getHeaders());
          m.setProperties(message.getProperties());
 
@@ -88,10 +140,20 @@ public class MessageTemplate implements Serializable {
       }
    }
 
+   /**
+    * How many times the message should be sent in one iteration?
+    *
+    * @return The number of how many times the message should be sent in one iteration.
+    */
    public Long getMultiplicity() {
       return multiplicity;
    }
 
+   /**
+    * Gets the list of validator references that should be used to validate a response to this message.
+    *
+    * @return The list of validator references that should be used to validate a response to this message.
+    */
    public List<String> getValidatorIds() {
       return validatorIds;
    }
