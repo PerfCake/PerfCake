@@ -23,14 +23,14 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.Utils;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Builder class for creating {@link org.perfcake.scenario.Scenario} instance, which can be run by {@link org.perfcake.ScenarioExecution}
+ * Loads {@link org.perfcake.scenario.Scenario} instance, which can be run by {@link org.perfcake.ScenarioExecution} based on its file type.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -39,13 +39,13 @@ public class ScenarioLoader {
    private static final Logger log = LogManager.getLogger(ScenarioBuilder.class);
 
    /**
-    * Loads {@link org.perfcake.scenario.Scenario} from the location specified with the system property <code>-Dscenario=&lt;scenario name&gt;</code>
+    * Loads {@link org.perfcake.scenario.Scenario} from the location specified with the system property <code>-Dscenario=&lt;scenario name&gt;</code>.
     *
     * @param scenario
-    *       scenario location
-    * @return parsed scenario.
+    *       Scenario location.
+    * @return Parsed {@link org.perfcake.scenario.Scenario}.
     * @throws PerfCakeException
-    *       if scenario property is not set or there is some problem with loading the scenario.
+    *       If scenario property is not set or there is some problem with loading the scenario.
     */
    public static Scenario load(final String scenario) throws PerfCakeException {
       if (scenario == null) {

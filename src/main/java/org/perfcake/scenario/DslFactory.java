@@ -19,15 +19,17 @@
  */
 package org.perfcake.scenario;
 
-import groovy.lang.Binding;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.perfcake.PerfCakeException;
 import org.perfcake.scenario.dsl.ScenarioDelegate;
 import org.perfcake.util.Utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.URL;
+
+import groovy.lang.Binding;
 
 /**
  * Loads the scenario from a DSL script.
@@ -38,10 +40,27 @@ import java.net.URL;
  */
 public class DslFactory implements ScenarioFactory {
 
+   /**
+    * A logger.
+    */
    private static final Logger log = LogManager.getLogger(DslFactory.class);
+
+   /**
+    * The scenario definition loaded from the file.
+    */
    private String scenarioDefinition;
+
+   /**
+    * Parsed scenario object.
+    */
    private Scenario scenario = null;
 
+   // the factory is not part of public API
+   protected DslFactory() {
+
+   }
+
+   @Override
    public void init(final URL scenarioURL) throws PerfCakeException {
       try {
          this.scenarioDefinition = Utils.readFilteredContent(scenarioURL);
@@ -54,6 +73,7 @@ public class DslFactory implements ScenarioFactory {
       }
    }
 
+   @Override
    public synchronized Scenario getScenario() throws PerfCakeException {
       if (scenario == null) {
          final Binding binding = new Binding();
