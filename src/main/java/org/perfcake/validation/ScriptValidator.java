@@ -21,8 +21,8 @@ package org.perfcake.validation;
 
 import org.perfcake.message.Message;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
 import java.io.BufferedReader;
@@ -102,20 +102,44 @@ public class ScriptValidator implements MessageValidator {
       return result;
    }
 
+   /**
+    * Gets the Java Script Engine.
+    *
+    * @return The Java Script Engine.
+    */
    public String getEngine() {
       return engine;
    }
 
+   /**
+    * Sets the Java Script Engine.
+    *
+    * @param engine
+    *       The Java Script Engine.
+    * @return This instance for fluent API.
+    */
    public ScriptValidator setEngine(String engine) {
       this.compiledScript = null;
       this.engine = engine;
       return this;
    }
 
+   /**
+    * Gets the Java script.
+    *
+    * @return The Java script.
+    */
    public String getScript() {
       return script;
    }
 
+   /**
+    * Sets the Java script.
+    *
+    * @param script
+    *       The Java script.
+    * @return This instance for fluent API.
+    */
    public ScriptValidator setScript(String script) {
       this.scriptFile = null;
       this.compiledScript = null;
@@ -124,16 +148,34 @@ public class ScriptValidator implements MessageValidator {
       return this;
    }
 
+   /**
+    * Sets the Java script taken from {@link org.w3c.dom.Element Element}'s text content.
+    *
+    * @param script
+    *       The DOM element from whose content the Java script is taken.
+    */
    public void setScriptAsElement(Element script) {
       this.scriptFile = null;
       this.compiledScript = null;
       this.script = script.getTextContent();
    }
 
+   /**
+    * Gets the script file.
+    *
+    * @return The script file.
+    */
    public String getScriptFile() {
       return scriptFile;
    }
 
+   /**
+    * Sets the file from which the Java script is taken.
+    *
+    * @param scriptFile
+    *       The script file.
+    * @return This instance for fluent API.
+    */
    public ScriptValidator setScriptFile(String scriptFile) {
       this.script = null;
       this.compiledScript = null;
