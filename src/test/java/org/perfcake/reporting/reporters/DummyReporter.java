@@ -53,7 +53,7 @@ public class DummyReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
+   public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
       lastPercentage = newMeasurement().getPercentage();
       if (log.isDebugEnabled()) {
          log.debug("Publishing results...");

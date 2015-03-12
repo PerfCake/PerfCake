@@ -54,35 +54,35 @@ public interface Reporter {
     * This method is called each time a new {@link org.perfcake.reporting.MeasurementUnit Measurement Unit} is obtained. Each unit is reported once and only once to each of the reporters. The reporter
     * is not allowed to modify the Measurement Unit. This method must be thread-safe.
     *
-    * @param mu
+    * @param measurementUnit
     *       Measurement Unit from a run iteration
     * @throws org.perfcake.reporting.ReportingException
     *       When it was not possible to report the {@link org.perfcake.reporting.MeasurementUnit}.
     */
-   public void report(MeasurementUnit mu) throws ReportingException;
+   public void report(MeasurementUnit measurementUnit) throws ReportingException;
 
    /**
     * Registers a destination to receive resulting {@link org.perfcake.reporting.Measurement Measurements} in
     * a given period.
     *
-    * @param d
+    * @param destination
     *       The Destination to which the results should be published
-    * @param p
+    * @param period
     *       The period interval in which the destination should publish results
     */
-   public void registerDestination(Destination d, Period p);
+   public void registerDestination(Destination destination, Period period);
 
    /**
     * Publishes results to the destination. This method is called only when the results should be published.
     *
     * @param periodType
     *       A period type that caused the invocation of this method.
-    * @param d
+    * @param destination
     *       A destination to which the result should be reported.
     * @throws ReportingException
     *       When it was not possible to publish results to the given destination.
     */
-   public void publishResult(PeriodType periodType, Destination d) throws ReportingException;
+   public void publishResult(PeriodType periodType, Destination destination) throws ReportingException;
 
    /**
     * Registers a destination to receive resulting {@link org.perfcake.reporting.Measurement Measurements} in
@@ -93,21 +93,21 @@ public interface Reporter {
     * a destination with a period of iteration type that reports every 10 iterations, and with a period of
     * iteration type that reports every 100 iterations at the same time).
     *
-    * @param d
-    *       The Destination to which the results should be published
-    * @param p
-    *       The set of period intervals in which the destination should publish results
+    * @param destination
+    *       The Destination to which the results should be published.
+    * @param periods
+    *       The set of period intervals in which the destination should publish results.
     */
-   public void registerDestination(Destination d, Set<Period> p);
+   public void registerDestination(Destination destination, Set<Period> periods);
 
    /**
     * Removes a previously registered Destination. The method removes all occurrences of the destination
     * should it be registered with multiple periods. A Reporter should close the Destination if it is still open.
     *
-    * @param d
+    * @param destination
     *       The Destination to be unregistered (and stopped)
     */
-   public void unregisterDestination(Destination d);
+   public void unregisterDestination(Destination destination);
 
    /**
     * Gets an unmodifiable list of all registered destinations.
@@ -138,7 +138,7 @@ public interface Reporter {
     * prior to starting the reporter. Failed to do so can lead to an assertion error.
     *
     * @param runInfo
-    *       RunInfo for the current measurement run
+    *       RunInfo for the current measurement run.
     */
    public void setRunInfo(RunInfo runInfo);
 
@@ -147,7 +147,7 @@ public interface Reporter {
     * monitor the current status of reporting.
     *
     * @param reportManager
-    *       ReportManager that owns this Reporter
+    *       ReportManager that owns this Reporter.
     */
    public void setReportManager(ReportManager reportManager);
 

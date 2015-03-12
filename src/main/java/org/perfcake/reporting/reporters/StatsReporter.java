@@ -142,7 +142,7 @@ public abstract class StatsReporter extends AbstractReporter {
    /**
     * Computes the actual result value about what the reporter will collect the statistics.
     */
-   protected abstract Double computeResult(final MeasurementUnit mu);
+   protected abstract Double computeResult(final MeasurementUnit measurementUnit);
 
    @Override
    protected void doReport(final MeasurementUnit measurementUnit) throws ReportingException {
@@ -164,7 +164,7 @@ public abstract class StatsReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
+   public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
       final Measurement m = newMeasurement();
       publishAccumulatedResult(m);
       final String unit = getResultUnit();
@@ -174,13 +174,13 @@ public abstract class StatsReporter extends AbstractReporter {
          wrapResultByQuantity(m, MINIMUM, unit);
          wrapResultByQuantity(m, MAXIMUM, unit);
       }
-      d.report(m);
+      destination.report(m);
    }
 
-   private void wrapResultByQuantity(final Measurement m, final String key, final String unit) {
-      final Number result = (Number) m.get(key);
+   private void wrapResultByQuantity(final Measurement measurement, final String key, final String unit) {
+      final Number result = (Number) measurement.get(key);
       if (result != null) {
-         m.set(key, new Quantity<Number>(result, unit));
+         measurement.set(key, new Quantity<>(result, unit));
       }
    }
 

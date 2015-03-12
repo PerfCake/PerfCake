@@ -91,18 +91,18 @@ public abstract class AbstractReporter implements Reporter {
     * Reports a single {@link org.perfcake.reporting.MeasurementUnit} to this reporter. This calls {@link #doReport(MeasurementUnit)} overridden by a child, accumulates results and reports iteration change and percentage change (if any).
     */
    @Override
-   public final void report(final MeasurementUnit mu) throws ReportingException {
+   public final void report(final MeasurementUnit measurementUnit) throws ReportingException {
       if (runInfo == null) {
          throw new ReportingException("RunInfo has not been set for this reporter.");
       }
 
-      reportIterationNumber(mu.getIteration(), mu);
+      reportIterationNumber(measurementUnit.getIteration(), measurementUnit);
 
-      doReport(mu);
+      doReport(measurementUnit);
 
-      accumulateResults(mu.getResults());
+      accumulateResults(measurementUnit.getResults());
 
-      reportIterations(mu.getIteration());
+      reportIterations(measurementUnit.getIteration());
 
       // report each percentage value just once
       final long percentage = (long) Math.floor(runInfo.getPercentage());
@@ -133,9 +133,9 @@ public abstract class AbstractReporter implements Reporter {
     */
    public Measurement newMeasurement() {
       Long iterations = maxIteration.getResult();
-      Measurement m = new Measurement(Math.round(runInfo.getPercentage(iterations)), runInfo.getRunTime(), iterations);
-      m.set(PerfCakeConst.WARM_UP_TAG, runInfo.hasTag(PerfCakeConst.WARM_UP_TAG));
-      return m;
+      Measurement measurement = new Measurement(Math.round(runInfo.getPercentage(iterations)), runInfo.getRunTime(), iterations);
+      measurement.set(PerfCakeConst.WARM_UP_TAG, runInfo.hasTag(PerfCakeConst.WARM_UP_TAG));
+      return measurement;
    }
 
    /**
@@ -158,12 +158,12 @@ public abstract class AbstractReporter implements Reporter {
    /**
     * Copies current accumulated results to the provided {@link org.perfcake.reporting.Measurement}. This can be used in the child's {@link #doPublishResult(PeriodType, Destination)} method.
     *
-    * @param m
+    * @param measurement
     *       The {@link org.perfcake.reporting.Measurement} to be filled with the results.
     */
-   protected void publishAccumulatedResult(final Measurement m) {
+   protected void publishAccumulatedResult(final Measurement measurement) {
       for (final Entry<String, Accumulator> entry : accumulatedResults.entrySet()) {
-         m.set(entry.getKey(), entry.getValue().getResult());
+         measurement.set(entry.getKey(), entry.getValue().getResult());
       }
    }
 
@@ -217,9 +217,9 @@ public abstract class AbstractReporter implements Reporter {
     *       Propagated from {@link #publishResult(org.perfcake.common.PeriodType, org.perfcake.reporting.destinations.Destination)}.
     */
    private void reportIterations(final long iteration) throws ReportingException {
-      for (final BoundPeriod<Destination> bp : periods) {
-         if (bp.getPeriodType() == PeriodType.ITERATION && (iteration == 0 || (iteration + 1) % bp.getPeriod() == 0) || isLastIteration(iteration)) {
-            publishResult(PeriodType.ITERATION, bp.getBinding());
+      for (final BoundPeriod<Destination> boundPeriod : periods) {
+         if (boundPeriod.getPeriodType() == PeriodType.ITERATION && (iteration == 0 || (iteration + 1) % boundPeriod.getPeriod() == 0) || isLastIteration(iteration)) {
+            publishResult(PeriodType.ITERATION, boundPeriod.getBinding());
          }
       }
    }
@@ -237,35 +237,35 @@ public abstract class AbstractReporter implements Reporter {
     *       Propagated from {@link #publishResult(org.perfcake.common.PeriodType, org.perfcake.reporting.destinations.Destination)}.
     */
    private void reportPercentage(final long percentage) throws ReportingException {
-      for (final BoundPeriod<Destination> bp : periods) {
-         if (bp.getPeriodType() == PeriodType.PERCENTAGE && (percentage % bp.getPeriod() == 0 || percentage == 100)) {
-            publishResult(PeriodType.PERCENTAGE, bp.getBinding());
+      for (final BoundPeriod<Destination> boundPeriod : periods) {
+         if (boundPeriod.getPeriodType() == PeriodType.PERCENTAGE && (percentage % boundPeriod.getPeriod() == 0 || percentage == 100)) {
+            publishResult(PeriodType.PERCENTAGE, boundPeriod.getBinding());
          }
       }
    }
 
    @Override
-   public final void registerDestination(final Destination d, final Period p) {
-      if (p.getPeriodType() == PeriodType.TIME && p.getPeriod() < 500) {
+   public final void registerDestination(final Destination destination, final Period period) {
+      if (period.getPeriodType() == PeriodType.TIME && period.getPeriod() < 500) {
          log.error("Periodical reporting with time period smaller than 500ms! Ignoring this reporting configuration.");
       } else {
-         periods.add(new BoundPeriod<>(p, d));
+         periods.add(new BoundPeriod<>(period, destination));
       }
    }
 
    @Override
-   public final void registerDestination(final Destination d, final Set<Period> periods) {
-      for (final Period p : periods) {
-         registerDestination(d, p);
+   public final void registerDestination(final Destination destination, final Set<Period> periods) {
+      for (final Period period : periods) {
+         registerDestination(destination, period);
       }
    }
 
    @Override
-   public final void unregisterDestination(final Destination d) {
+   public final void unregisterDestination(final Destination destination) {
       final Set<BoundPeriod<Destination>> toBeRemoved = new HashSet<>();
-      for (final BoundPeriod<Destination> bp : periods) {
-         if (bp.getBinding().equals(d)) {
-            toBeRemoved.add(bp);
+      for (final BoundPeriod<Destination> boundPeriod : periods) {
+         if (boundPeriod.getBinding().equals(destination)) {
+            toBeRemoved.add(boundPeriod);
          }
       }
 
@@ -310,8 +310,8 @@ public abstract class AbstractReporter implements Reporter {
    @Override
    public final Set<Destination> getDestinations() {
       final Set<Destination> result = new HashSet<>();
-      for (final BoundPeriod<Destination> bp : periods) {
-         result.add(bp.getBinding());
+      for (final BoundPeriod<Destination> boundPeriod : periods) {
+         result.add(boundPeriod.getBinding());
       }
 
       return Collections.unmodifiableSet(result);
@@ -325,8 +325,8 @@ public abstract class AbstractReporter implements Reporter {
 
          reset();
 
-         for (final Destination d : getDestinations()) {
-            d.open();
+         for (final Destination destination : getDestinations()) {
+            destination.open();
          }
       }
    }
@@ -347,8 +347,8 @@ public abstract class AbstractReporter implements Reporter {
 
    @Override
    public void stop() {
-      for (final Destination d : getDestinations()) {
-         d.close();
+      for (final Destination destination : getDestinations()) {
+         destination.close();
       }
    }
 
@@ -361,5 +361,4 @@ public abstract class AbstractReporter implements Reporter {
    public final Set<BoundPeriod<Destination>> getReportingPeriods() {
       return Collections.unmodifiableSet(periods);
    }
-
 }

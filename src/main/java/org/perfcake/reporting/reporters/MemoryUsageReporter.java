@@ -221,7 +221,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(final PeriodType periodType, final Destination d) throws ReportingException {
+   public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
       try {
          final Measurement m = newMeasurement();
          if (performGcOnMemoryUsage) {
@@ -240,7 +240,7 @@ public class MemoryUsageReporter extends AbstractReporter {
                m.set("MemoryLeak", null);
             }
          }
-         d.report(m);
+         destination.report(m);
          if (log.isDebugEnabled()) {
             log.debug("Reporting: [" + m.toString() + "]");
          }
