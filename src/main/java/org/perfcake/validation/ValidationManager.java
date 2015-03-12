@@ -36,7 +36,8 @@ import java.util.Queue;
 import java.util.TreeMap;
 
 /**
- * A manager of validator that should validate message responses.
+ * Validates message responses returned by {@link org.perfcake.message.sender.MessageSender}
+ * using a set of {@link org.perfcake.validation.MessageValidator} instances.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:lucie.fabrikova@gmail.com">Lucie Fabriková</a>
@@ -46,7 +47,7 @@ public class ValidationManager {
    private static final String OVERALL_STAT_KEY = "overall";
 
    /**
-    * A map of validators: validator id => validator instance
+    * A map of validators: validator id => validator instance.
     */
    private final Map<String, MessageValidator> validators = new TreeMap<>();
 
@@ -227,7 +228,7 @@ public class ValidationManager {
    /**
     * Is validation facility enabled?
     *
-    * @return True if validation is enabled.
+    * @return <code>true</code> if validation is enabled.
     */
    public boolean isEnabled() {
       return enabled;
@@ -237,7 +238,7 @@ public class ValidationManager {
     * Enables/disables validation. This only takes effect before the validation is started and or finished.
     *
     * @param enabled
-    *       specifies whether we want the validation to be enabled.
+    *       Specifies whether we want the validation to be enabled.
     */
    public void setEnabled(final boolean enabled) {
       if (enabled || finished) {
@@ -250,16 +251,31 @@ public class ValidationManager {
    /**
     * Determines whether the validation process finished already.
     *
-    * @return True if the validation finished or was not started yet.
+    * @return <code>true</code> if the validation finished or was not started yet.
     */
    public boolean isFinished() {
       return finished;
    }
 
+   /**
+    * Determines whether the validation process is performed in a fast forward mode.
+    * <p>Unless specified in the scenario, the validation thread has some sleep for it not to influence measurement.
+    * At the end, when there is nothing else to do, we can go through the remaining responses faster.</p>
+    *
+    * <p>The fast forward mode removes the sleep.</p>
+    *
+    * @return <code>true</code> if the sleep period is disabled.
+    */
    public boolean isFastForward() {
       return fastForward;
    }
 
+   /**
+    * Enables/disables the fast forward mode of the validation.
+    *
+    * @param fastForward
+    *       <code>true</code> to enable the fast forward mode.
+    */
    public void setFastForward(boolean fastForward) {
       this.fastForward = fastForward;
    }
@@ -292,6 +308,7 @@ public class ValidationManager {
 
    /**
     * Gets the overall validation statistics.
+    *
     * @return The overall statistics score.
     */
    protected Score getOverallStatistics() {
@@ -324,7 +341,7 @@ public class ValidationManager {
    }
 
    /**
-    * Internal class representing the validator thread. The thread validates one message with all registered validators and then
+    * Represents the internal validator thread. The thread validates one message with all registered validators and then
     * sleeps for 500ms. This is needed for the validation not to influence measurement. After a call to {@link #waitForValidation()} the
     * sleeps are skipped.
     */
