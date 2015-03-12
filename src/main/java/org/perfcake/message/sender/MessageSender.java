@@ -81,13 +81,13 @@ public interface MessageSender {
     *
     * @param message
     *       Message to be sent.
-    * @param mu
+    * @param measurementUnit
     *       Measurement unit that carries the current send iteration information.
     * @return Received response.
     * @throws java.lang.Exception
     *       When the send operation failed.
     */
-   public Serializable send(final Message message, final MeasurementUnit mu) throws Exception;
+   public Serializable send(final Message message, final MeasurementUnit measurementUnit) throws Exception;
 
    /**
     * Sends a message with additional properties.
@@ -96,13 +96,13 @@ public interface MessageSender {
     *       Message to be sent.
     * @param properties
     *       Properties that can be used or anyhow influence the sending of the message. Typically carries message headers.
-    * @param mu
+    * @param measurementUnit
     *       Measurement unit that carries the current send iteration information.
     * @return Received response.
     * @throws java.lang.Exception
     *       When the send operation failed.
     */
-   public Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception;
+   public Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception;
 
    /**
     * Performs any action that needs to be done to complete the sending of  the message but is not directly related to the sending operation and thus not measured.

@@ -60,7 +60,7 @@ public class SoapSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)
     */
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       // TODO Auto-generated method stub
       return null;
    }

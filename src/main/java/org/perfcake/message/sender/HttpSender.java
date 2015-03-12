@@ -243,7 +243,7 @@ public class HttpSender extends AbstractSender {
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       int respCode = -1;
       requestConnection.connect();
       if (payload != null && (method == Method.POST || method == Method.PUT)) {

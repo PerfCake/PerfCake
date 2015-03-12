@@ -130,7 +130,7 @@ public class LdapSender extends AbstractSender {
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       NamingEnumeration<SearchResult> results = ctx.search(searchBase, filter, searchControls);
       ArrayList<SearchResult> res = new ArrayList<SearchResult>();
       while (results.hasMoreElements()) {

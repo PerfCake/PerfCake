@@ -246,9 +246,9 @@ public class RequestResponseJmsSender extends JmsSender {
    }
 
    @Override
-   public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
+   public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       // send the request message
-      super.doSend(message, properties, mu);
+      super.doSend(message, properties, measurementUnit);
 
       try {
          if (transacted) {

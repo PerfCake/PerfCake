@@ -303,7 +303,7 @@ public class JmsSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
+   public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       if (log.isDebugEnabled()) {
          log.debug("Sending a message: " + message.getPayload().toString());
       }

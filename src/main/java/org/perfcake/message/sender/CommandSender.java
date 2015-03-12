@@ -138,7 +138,7 @@ public class CommandSender extends AbstractSender {
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       process = Runtime.getRuntime().exec(command, environmentVariables);
       if (messagePayload != null && messageFrom == MessageFrom.STDIN) {
          writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(process.getOutputStream()), Utils.getDefaultEncoding()), true);

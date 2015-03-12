@@ -147,7 +147,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       out.print(message.getPayload().toString());
 
       if (out.checkError()) { // flush and check for error

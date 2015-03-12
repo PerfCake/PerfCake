@@ -85,7 +85,7 @@ public class DummySender extends AbstractSender {
     * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
     */
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit mu) throws Exception {
+   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       final long count = counter.incrementAndGet();
 
       if (log.isDebugEnabled()) {
