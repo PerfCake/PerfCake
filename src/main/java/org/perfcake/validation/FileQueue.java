@@ -67,6 +67,8 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
     *
     * @param filename
     *       Path to the file to store queue items.
+    * @throws org.perfcake.PerfCakeException
+    *       When it was not possible to create or open the file.
     */
    public FileQueue(final String filename) throws PerfCakeException {
       this(new File(filename));
@@ -77,6 +79,8 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
     *
     * @param queueFile
     *       File to store queue items.
+    * @throws org.perfcake.PerfCakeException
+    *       When it was not possible to create or open the file.
     */
    public FileQueue(final File queueFile) throws PerfCakeException {
       try {

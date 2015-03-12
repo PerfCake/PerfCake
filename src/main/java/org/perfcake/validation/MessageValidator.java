@@ -35,7 +35,7 @@ public interface MessageValidator {
     *       The message that has been sent.
     * @param response
     *       A response for the original message.
-    * @return True if the message passes all validations.
+    * @return <code>true</code> if the message passes all validations.
     */
    public boolean isValid(Message originalMessage, Message response);
 }

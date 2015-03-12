@@ -30,7 +30,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A validator that checks the message payload for the given regexp.
+ * Checks the message payload for the given regular expression.
  *
  * It is possible to set the {@link java.util.regex.Pattern#compile(String, int)} compile flags using the particular properties.
  *
@@ -105,86 +105,216 @@ public class RegExpValidator implements MessageValidator {
       return m.matches();
    }
 
+   /**
+    * Gets the regular expression pattern.
+    *
+    * @return The regular expression pattern.
+    */
    public String getPattern() {
       return pattern;
    }
 
+   /**
+    * Sets the regular expression pattern.
+    *
+    * @param pattern
+    *       The regular expression pattern.
+    * @return Returns this instance for fluent API.
+    */
    public RegExpValidator setPattern(String pattern) {
       this.pattern = pattern;
       return this;
    }
 
+   /**
+    * Sets the regular expression pattern taken from {@link org.w3c.dom.Element Element}'s text content.
+    *
+    * @param pattern
+    *       The DOM element from whose content the regular expression pattern is taken.
+    */
    public void setPatternAsElement(Element pattern) {
       this.pattern = pattern.getTextContent();
    }
 
+   /**
+    * Gets the value of {@link java.util.regex.Pattern#COMMENTS} flag used to compile the regular expression pattern.
+    *
+    * @return The value of {@link java.util.regex.Pattern#COMMENTS} flag.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public boolean isComments() {
       return comments;
    }
 
+   /**
+    * Sets the value of {@link java.util.regex.Pattern#COMMENTS} flag used to compile the regular expression pattern.
+    *
+    * @param comments
+    *       The value of {@link java.util.regex.Pattern#COMMENTS} flag.
+    * @return Returns this instance for fluent API.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public RegExpValidator setComments(final boolean comments) {
       this.comments = comments;
       return this;
    }
 
+   /**
+    * Gets the value of {@link java.util.regex.Pattern#CASE_INSENSITIVE} flag used to compile the regular expression pattern.
+    *
+    * @return The value of {@link java.util.regex.Pattern#CASE_INSENSITIVE} flag.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public boolean isCaseInsensitive() {
       return caseInsensitive;
    }
 
+   /**
+    * Sets the value of {@link java.util.regex.Pattern#CASE_INSENSITIVE} flag used to compile the regular expression pattern.
+    *
+    * @param caseInsensitive
+    *       The value of {@link java.util.regex.Pattern#CASE_INSENSITIVE} flag.
+    * @return Returns this instance for fluent API.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public RegExpValidator setCaseInsensitive(final boolean caseInsensitive) {
       this.caseInsensitive = caseInsensitive;
       return this;
    }
 
+   /**
+    * Gets the value of {@link java.util.regex.Pattern#MULTILINE} flag used to compile the regular expression pattern.
+    *
+    * @return The value of {@link java.util.regex.Pattern#MULTILINE} flag.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public boolean isMultiline() {
       return multiline;
    }
 
+   /**
+    * sets the value of {@link java.util.regex.Pattern#MULTILINE} flag used to compile the regular expression pattern.
+    *
+    * @param multiline
+    *       The value of {@link java.util.regex.Pattern#MULTILINE} flag.
+    * @return Returns this instance for fluent API.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public RegExpValidator setMultiline(final boolean multiline) {
       this.multiline = multiline;
       return this;
    }
 
+   /**
+    * Gets the value of {@link java.util.regex.Pattern#DOTALL} flag used to compile the regular expression pattern.
+    *
+    * @return The value of {@link java.util.regex.Pattern#DOTALL} flag.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public boolean isDotall() {
       return dotall;
    }
 
+   /**
+    * Sets the value of {@link java.util.regex.Pattern#DOTALL} flag used to compile the regular expression pattern.
+    *
+    * @param dotall
+    *       The value of {@link java.util.regex.Pattern#DOTALL} flag.
+    * @return Returns this instance for fluent API.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public RegExpValidator setDotall(final boolean dotall) {
       this.dotall = dotall;
       return this;
    }
 
+   /**
+    * Gets the value of {@link java.util.regex.Pattern#UNICODE_CASE} flag used to compile the regular expression pattern.
+    *
+    * @return The value of {@link java.util.regex.Pattern#UNICODE_CASE} flag.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public boolean isUnicodeCase() {
       return unicodeCase;
    }
 
+   /**
+    * Sets the value of {@link java.util.regex.Pattern#UNICODE_CASE} flag used to compile the regular expression pattern.
+    *
+    * @param unicodeCase
+    *       The value of {@link java.util.regex.Pattern#UNICODE_CASE} flag.
+    * @return Returns this instance for fluent API.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public RegExpValidator setUnicodeCase(final boolean unicodeCase) {
       this.unicodeCase = unicodeCase;
       return this;
    }
 
+   /**
+    * Gets the value of {@link java.util.regex.Pattern#CANON_EQ} flag used to compile the regular expression pattern.
+    *
+    * @return The value of {@link java.util.regex.Pattern#CANON_EQ} flag.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public boolean isCanonEq() {
       return canonEq;
    }
 
+   /**
+    * Sets the value of {@link java.util.regex.Pattern#CANON_EQ} flag used to compile the regular expression pattern.
+    *
+    * @param canonEq
+    *       The value of {@link java.util.regex.Pattern#CANON_EQ} flag.
+    * @return Returns this instance for fluent API.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public RegExpValidator setCanonEq(final boolean canonEq) {
       this.canonEq = canonEq;
       return this;
    }
 
+   /**
+    * Gets the value of {@link java.util.regex.Pattern#LITERAL} flag used to compile the regular expression pattern.
+    *
+    * @return The value of {@link java.util.regex.Pattern#LITERAL} flag.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public boolean isLiteral() {
       return literal;
    }
 
+   /**
+    * Sets the value of {@link java.util.regex.Pattern#LITERAL} flag used to compile the regular expression pattern.
+    *
+    * @param literal
+    *       The value of {@link java.util.regex.Pattern#LITERAL} flag.
+    * @return Returns this instance for fluent API.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public RegExpValidator setLiteral(final boolean literal) {
       this.literal = literal;
       return this;
    }
 
+   /**
+    * Gets the value of {@link java.util.regex.Pattern#UNICODE_CHARACTER_CLASS} flag used to compile the regular expression pattern.
+    *
+    * @return The value of {@link java.util.regex.Pattern#UNICODE_CHARACTER_CLASS} flag.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public boolean isUnicodeCharacterClass() {
       return unicodeCharacterClass;
    }
 
+   /**
+    * Sets the value of {@link java.util.regex.Pattern#UNICODE_CHARACTER_CLASS} flag used to compile the regular expression pattern.
+    *
+    * @param unicodeCharacterClass
+    *       The value of {@link java.util.regex.Pattern#UNICODE_CHARACTER_CLASS} flag.
+    * @return Returns this instance for fluent API.
+    * @see java.util.regex.Pattern#compile(String, int)
+    */
    public RegExpValidator setUnicodeCharacterClass(final boolean unicodeCharacterClass) {
       this.unicodeCharacterClass = unicodeCharacterClass;
       return this;
