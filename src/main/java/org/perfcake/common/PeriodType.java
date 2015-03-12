@@ -26,15 +26,15 @@ package org.perfcake.common;
  */
 public enum PeriodType {
    /**
-    * Period based on number of occurrences
+    * Period based on number of occurrences.
     */
    ITERATION,
    /**
-    * Period base on time units, typically milliseconds
+    * Period base on time units, typically milliseconds.
     */
    TIME,
    /**
-    * Period base on percents
+    * Period base on percents.
     */
    PERCENTAGE;
 }
