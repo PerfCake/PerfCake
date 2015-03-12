@@ -20,7 +20,7 @@
 package org.perfcake;
 
 /**
- * An exception to indicate generic problems in PerfCake.
+ * Indicates generic problems in PerfCake.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -31,14 +31,16 @@ public class PerfCakeException extends Exception {
 
    /**
     * Defaults to {@link java.lang.Exception#Exception(String, Throwable)}.
-    * @see java.lang.Exception#Exception(String, Throwable)
     *
-    * @param message The detailed message. The detailed message is saved for
-    *          later retrieval by the {@link #getMessage()} method.
-    * @param cause The cause (which is saved for later retrieval by the
-    *         {@link #getCause()} method). (A <tt>null</tt> value is
-    *         permitted, and indicates that the cause is nonexistent or
-    *         unknown.)
+    * @param message
+    *       The detailed message. The detailed message is saved for
+    *       later retrieval by the {@link #getMessage()} method.
+    * @param cause
+    *       The cause (which is saved for later retrieval by the
+    *       {@link #getCause()} method). (A <tt>null</tt> value is
+    *       permitted, and indicates that the cause is nonexistent or
+    *       unknown.)
+    * @see java.lang.Exception#Exception(String, Throwable)
     */
    public PerfCakeException(final String message, final Throwable cause) {
       super(message, cause);
@@ -46,12 +48,13 @@ public class PerfCakeException extends Exception {
 
    /**
     * Defaults to {@link java.lang.Exception#Exception(Throwable)}.
+    *
+    * @param cause
+    *       The cause (which is saved for later retrieval by the
+    *       {@link #getCause()} method). (A <tt>null</tt> value is
+    *       permitted, and indicates that the cause is nonexistent or
+    *       unknown.)
     * @see java.lang.Exception#Exception(Throwable)
-
-    * @param cause The cause (which is saved for later retrieval by the
-    *         {@link #getCause()} method). (A <tt>null</tt> value is
-    *         permitted, and indicates that the cause is nonexistent or
-    *         unknown.)
     */
    public PerfCakeException(final Throwable cause) {
       super(cause);
@@ -59,10 +62,11 @@ public class PerfCakeException extends Exception {
 
    /**
     * Defaults to {@link java.lang.Exception#Exception(String)}.
-    * @see java.lang.Exception#Exception(String)
     *
-    * @param message The detailed message. The detailed message is saved for
-    *          later retrieval by the {@link #getMessage()} method.
+    * @param message
+    *       The detailed message. The detailed message is saved for
+    *       later retrieval by the {@link #getMessage()} method.
+    * @see java.lang.Exception#Exception(String)
     */
    public PerfCakeException(final String message) {
       super(message);
