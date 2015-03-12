@@ -36,7 +36,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Implementats the PerfCake agent.
+ * Implements the PerfCake agent.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
@@ -172,21 +172,21 @@ public class AgentThread implements Runnable {
    /**
     * Logs a message to standard output.
     *
-    * @param msg
+    * @param message
     *       Message to be logged.
     */
 
-   private static void log(String msg) {
-      System.out.println(PerfCakeAgent.class.getSimpleName() + " > " + msg);
+   private static void log(String message) {
+      System.out.println(PerfCakeAgent.class.getSimpleName() + " > " + message);
    }
 
    /**
     * Logs a message to error output.
     *
-    * @param msg
+    * @param message
     *       Message to be logged.
     */
-   private static void err(String msg) {
-      System.err.println(PerfCakeAgent.class.getSimpleName() + " > ERROR: " + msg);
+   private static void err(String message) {
+      System.err.println(PerfCakeAgent.class.getSimpleName() + " > ERROR: " + message);
    }
 }
