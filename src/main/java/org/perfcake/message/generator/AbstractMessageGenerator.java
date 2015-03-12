@@ -32,10 +32,13 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * This represents the common ancestor for all generators. It can generate messages using a specified number ({@link #threads}) of concurrent messages senders (see {@link MessageSender}).
- * The generator should also have the ability to tag messages by the sequence number that indicated the order of messages.
+ * A common ancestor for all generators. It can generate messages in parallel using {@link MessageSender Message Senders} running
+ * concurrently in {@link #threads} number of threads.
+ * The generator should also have the ability to tag messages by the sequence number that indicated the order of messages
+ * (see {@link #setMessageNumberingEnabled(boolean)}).
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public abstract class AbstractMessageGenerator {
 
@@ -196,19 +199,20 @@ public abstract class AbstractMessageGenerator {
    public abstract void generate() throws Exception;
 
    /**
-    * Gets the value of threads.
+    * Gets the number of threads that should be used to generate the messages.
+    * The return value can change over time during the test execution.
     *
-    * @return The number of currently running threads.
+    * @return Number of currently running threads.
     */
    public int getThreads() {
       return threads;
    }
 
    /**
-    * Sets the number of threads.
+    * Sets the number of threads used to generate the messages.
     *
-    * @param threads
-    *       The number of threads.
+    * @param threads The number of threads to be used.
+    *
     * @return Returns this instance for fluent API.
     */
    public AbstractMessageGenerator setThreads(final int threads) {
@@ -221,19 +225,21 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-    * Used to read the value of messageNumberingEnabled.
+    * Is the message numbering enabled? When enabled, each message gets a unique number assigned. This should be disabled
+    * for maximal performance.
     *
-    * @return The messageNumberingEnabled value.
+    * @return True if and only if the numbering is enabled.
     */
    public boolean isMessageNumberingEnabled() {
       return messageNumberingEnabled;
    }
 
    /**
-    * Sets the value of messageNumberingEnabled.
+    * Enables or disables marking the messages with a unique number. Disable this for maximal performance.
     *
     * @param messageNumberingEnabled
-    *       The messageNumberingEnabled to set.
+    *       True to enable message numbering, false otherwise.
+    *
     * @return Returns this instance for fluent API.
     */
    public AbstractMessageGenerator setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
@@ -242,10 +248,9 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-   * Sets the value of validationManager {@link org.perfcake.validation.ValidationManager}.
+   * Configures the {@link org.perfcake.validation.ValidationManager} to be used for the performance test execution.
    *
-   * @param validationManager
-   *       The validationManager to set.
+   * @param validationManager {@link org.perfcake.validation.ValidationManager} to be used.s
    */
    public void setValidationManager(final ValidationManager validationManager) {
       this.validationManager = validationManager;
