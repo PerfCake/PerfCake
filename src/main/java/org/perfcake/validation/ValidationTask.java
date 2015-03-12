@@ -24,7 +24,7 @@ import org.perfcake.message.ReceivedMessage;
 import java.io.Serializable;
 
 /**
- * Represents a single unit of work for validator. This class is immutable.
+ * A single unit of work for validator. This class is immutable.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -37,9 +37,12 @@ public final class ValidationTask implements Serializable {
    private final String threadName;
 
    /**
-    * Create a new validation tasks consisting of the response and the thread used to receive the response.
-    * @param threadName The thread name.
-    * @param receivedMessage The received message.
+    * Creates a new validation task consisting of the response and the thread used to receive the response.
+    *
+    * @param threadName
+    *       The thread name.
+    * @param receivedMessage
+    *       The received message.
     */
    public ValidationTask(final String threadName, final ReceivedMessage receivedMessage) {
       this.threadName = threadName;
@@ -47,7 +50,8 @@ public final class ValidationTask implements Serializable {
    }
 
    /**
-    * Gets the the response in the form of a received message.
+    * Gets the response in the form of a received message.
+    *
     * @return The received message.
     */
    public ReceivedMessage getReceivedMessage() {
@@ -56,6 +60,7 @@ public final class ValidationTask implements Serializable {
 
    /**
     * Gets the thread name used to receive the response.
+    *
     * @return The thread name.
     */
    public String getThreadName() {
