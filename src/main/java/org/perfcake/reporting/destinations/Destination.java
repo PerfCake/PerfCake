@@ -25,7 +25,7 @@ import org.perfcake.reporting.ReportingException;
 import java.io.Closeable;
 
 /**
- * Destination represents a channel to which performance measurement results can be reported.
+ * A channel to which performance measurement results can be reported.
  * Destinations are registered with {@link org.perfcake.reporting.reporters.Reporter Reporters} and are completely controlled by them. The only responsibility of a destination is to open
  * a reporting channel, report measurements, and close the reporting channel.
  * It is the role of {@link org.perfcake.reporting.Measurement} to provide all the information
@@ -49,10 +49,10 @@ public interface Destination extends Closeable {
    /**
     * Report a new {@link org.perfcake.reporting.Measurement} to the destination.
     *
-    * @param m
+    * @param measurement
     *       A measurement to be reported
     * @throws ReportingException
     *       When an error occured during reporting the measurement like no space left on device. The root cause should be encapsulated.
     */
-   public void report(Measurement m) throws ReportingException;
+   public void report(Measurement measurement) throws ReportingException;
 }

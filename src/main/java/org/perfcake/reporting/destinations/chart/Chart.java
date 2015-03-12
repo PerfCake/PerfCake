@@ -57,8 +57,20 @@ public class Chart {
     * Prefix of the files of the charts created as a combination of measured results.
     */
    protected static final String DATA_ARRAY_PREFIX = "data_array_";
+
+   /**
+    * Name of the time column.
+    */
    protected static final String COLUMN_TIME = "Time";
+
+   /**
+    * Name of the iteration column.
+    */
    protected static final String COLUMN_ITERATION = "Iteration";
+
+   /**
+    * Name of the percentage column.
+    */
    protected static final String COLUMN_PERCENT = "Percents";
 
    /**
@@ -456,12 +468,12 @@ public class Chart {
     * Gets a JavaScript line to be written to the data file that represents the current Measurement.
     * All attributes required by the attributes list of this chart must be present in the measurement for the line to be returned.
     *
-    * @param m
+    * @param measurement
     *       The current measurement.
     * @return The line representing the data in measurement specified by the attributes list of this chart, or null when there was some of
     * the attributes missing.
     */
-   private String getResultLine(final Measurement m) {
+   private String getResultLine(final Measurement measurement) {
       final StringBuilder sb = new StringBuilder();
       boolean missingAttributes = false;
 
@@ -470,14 +482,14 @@ public class Chart {
       switch (xAxisType) {
          case TIME:
             sb.append("new Date(");
-            sb.append(m.getTime());
+            sb.append(measurement.getTime());
             sb.append(" + offset)");
             break;
          case ITERATION:
-            sb.append(m.getIteration());
+            sb.append(measurement.getIteration());
             break;
          case PERCENTAGE:
-            sb.append(m.getPercentage());
+            sb.append(measurement.getPercentage());
             break;
       }
 
@@ -486,13 +498,13 @@ public class Chart {
             sb.append(", ");
 
             // we do not have all required attributes, return an empty line
-            if (!m.getAll().containsKey(attr)) {
+            if (!measurement.getAll().containsKey(attr)) {
                missingAttributes = true;
                if (firstResultsLine) {
                   log.warn(String.format("Missing attribute %s, skipping the record.", attr));
                }
             } else {
-               Object data = m.get(attr);
+               Object data = measurement.get(attr);
                if (data instanceof String) {
                   sb.append("'");
                   sb.append((String) data);
@@ -520,13 +532,13 @@ public class Chart {
    /**
     * Appends results to this chart based on the given Measurement.
     *
-    * @param m
+    * @param measurement
     *       The Measurement to be stored.
     * @throws ReportingException
     *       When it was not possible to write the data.
     */
-   public void appendResult(final Measurement m) throws ReportingException {
-      String line = getResultLine(m);
+   public void appendResult(final Measurement measurement) throws ReportingException {
+      String line = getResultLine(measurement);
 
       if (line != null && !"".equals(line)) {
          try {
@@ -571,5 +583,4 @@ public class Chart {
    public boolean isCombined() {
       return concat;
    }
-
 }

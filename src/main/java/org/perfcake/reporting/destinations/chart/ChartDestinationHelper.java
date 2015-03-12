@@ -392,13 +392,13 @@ public class ChartDestinationHelper {
    /**
     * Appends the results in the current Measurement to the main chart.
     *
-    * @param m
+    * @param measurement
     *       The current measurement.
     * @throws ReportingException
     *       When it was not possible to append the results.
     */
-   public void appendResult(final Measurement m) throws ReportingException {
-      mainChart.appendResult(m);
+   public void appendResult(final Measurement measurement) throws ReportingException {
+      mainChart.appendResult(measurement);
    }
 
    /**

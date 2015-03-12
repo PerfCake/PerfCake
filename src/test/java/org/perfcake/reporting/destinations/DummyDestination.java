@@ -61,13 +61,13 @@ public class DummyDestination implements Destination {
    }
 
    @Override
-   public void report(final Measurement m) throws ReportingException {
+   public void report(final Measurement measurement) throws ReportingException {
       lastMethod = "report";
-      lastMeasurement = m;
+      lastMeasurement = measurement;
       if (reportAssert != null) {
-         reportAssert.report(m);
+         reportAssert.report(measurement);
       }
-      System.out.println(m.toString());
+      System.out.println(measurement.toString());
       try {
          throw new Throwable("BAFF");
       } catch (Throwable t) {
