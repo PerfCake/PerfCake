@@ -79,7 +79,7 @@ public abstract class AbstractMessageGenerator {
    private int threads = 1;
 
    /**
-    * Initialize the generator. During the initialization the {@link #messageSenderManager} is initialized as well.
+    * Initializes the generator. During the initialization the {@link #messageSenderManager} is initialized as well.
     *
     * @param messageSenderManager
     *       Message sender manager.
