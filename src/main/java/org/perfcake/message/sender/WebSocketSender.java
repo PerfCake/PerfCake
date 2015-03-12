@@ -23,8 +23,8 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -43,7 +43,9 @@ import javax.websocket.Session;
 import javax.websocket.WebSocketContainer;
 
 /**
- * The sender can be used to send a simple messages via websocket protocol to a remote websocket server endpoint.
+ * Sends a simple messages via websocket protocol to a remote websocket server endpoint.
+ *
+ * @author Jiří Sviták
  */
 public class WebSocketSender extends AbstractSender {
 
@@ -52,18 +54,35 @@ public class WebSocketSender extends AbstractSender {
    private WebSocketContainer container;
    private Session session;
 
+   /**
+    * Remote endpoint type.
+    *
+    * @author Jiří Sviták
+    */
    public enum RemoteEndpointType {
       BASIC, ASYNC
    }
 
    private RemoteEndpointType remoteEndpointType = RemoteEndpointType.BASIC;
 
+   /**
+    * Payload type.
+    *
+    * @author Jiří Sviták
+    */
    public enum PayloadType {
       TEXT, BINARY, PING
    }
 
    private PayloadType payloadType = PayloadType.TEXT;
 
+   /**
+    * Sets remote endpoint type.
+    *
+    * @param remoteEndpointType
+    *       The remote endpoint type. The value should be one of <code>basic</code> or <code>async</code>.
+    * @return Instance of this to support fluent API.
+    */
    public WebSocketSender setRemoteEndpointType(final String remoteEndpointType) {
       switch (remoteEndpointType) {
          case "basic":
@@ -79,6 +98,13 @@ public class WebSocketSender extends AbstractSender {
       return this;
    }
 
+   /**
+    * Sets payload type.
+    *
+    * @param payloadType
+    *       The remote endpoint type. The value should be one of <code>text</code>, <code>binary</code> or <code>ping</code>.
+    * @return Instance of this to support fluent API.
+    */
    public WebSocketSender setPayloadType(final String payloadType) {
       switch (payloadType) {
          case "text":
@@ -158,15 +184,34 @@ public class WebSocketSender extends AbstractSender {
       return null;
    }
 
+   /**
+    * Represents web socket client endpoint.
+    *
+    * @author Jiří Sviták
+    */
    @ClientEndpoint
    public class PerfCakeClientEndpoint {
 
+      /**
+       * Is called when a new web socket session is open.
+       *
+       * @param session
+       *       Web socket session.
+       */
       @OnOpen
       public void onOpen(final Session session) {
          logger.info("Connected ... " + session.getId());
          WebSocketSender.this.session = session;
       }
 
+      /**
+       * Receives incoming web socket messages.
+       *
+       * @param message
+       *       Incomming message.
+       * @param session
+       *       Web socket session.
+       */
       @OnMessage
       public void onMessage(final String message, final Session session) {
          if (logger.isDebugEnabled()) {
@@ -174,6 +219,14 @@ public class WebSocketSender extends AbstractSender {
          }
       }
 
+      /**
+       * Is called when a web socket session is closing.
+       *
+       * @param session
+       *       Web socket session.
+       * @param closeReason
+       *       The reason why a web socket has been closed, or why it is being asked to close
+       */
       @OnClose
       public void onClose(final Session session, final CloseReason closeReason) {
          logger.info(String.format("Session %s close because of %s", session.getId(), closeReason));
