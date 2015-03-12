@@ -211,7 +211,7 @@ public abstract class AbstractMessageGenerator {
     *
     * @param threads
     *       The number of threads to be used.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public AbstractMessageGenerator setThreads(final int threads) {
       this.threads = threads;
@@ -237,7 +237,7 @@ public abstract class AbstractMessageGenerator {
     *
     * @param messageNumberingEnabled
     *       True to enable message numbering, false otherwise.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public AbstractMessageGenerator setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
       this.messageNumberingEnabled = messageNumberingEnabled;

@@ -183,7 +183,7 @@ public class CommandSender extends AbstractSender {
     *
     * @param messageFrom
     *       The messageFrom to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public CommandSender setMessageFrom(final MessageFrom messageFrom) {
       this.messageFrom = messageFrom;
@@ -204,7 +204,7 @@ public class CommandSender extends AbstractSender {
     *
     * @param commandPrefix
     *       The commandPrefix to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    protected CommandSender setCommandPrefix(final String commandPrefix) {
       this.commandPrefix = commandPrefix;
@@ -221,7 +221,7 @@ public class CommandSender extends AbstractSender {
    /**
     * @param environmentVariables
     *       the environmentVariables to set
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public CommandSender setEnvironmentVariables(String[] environmentVariables) {
       this.environmentVariables = Arrays.copyOf(environmentVariables, environmentVariables.length); // ignore any later external modifications

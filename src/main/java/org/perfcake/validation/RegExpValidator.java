@@ -119,7 +119,7 @@ public class RegExpValidator implements MessageValidator {
     *
     * @param pattern
     *       The regular expression pattern.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public RegExpValidator setPattern(String pattern) {
       this.pattern = pattern;
@@ -151,7 +151,7 @@ public class RegExpValidator implements MessageValidator {
     *
     * @param comments
     *       The value of {@link java.util.regex.Pattern#COMMENTS} flag.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     * @see java.util.regex.Pattern#compile(String, int)
     */
    public RegExpValidator setComments(final boolean comments) {
@@ -174,7 +174,7 @@ public class RegExpValidator implements MessageValidator {
     *
     * @param caseInsensitive
     *       The value of {@link java.util.regex.Pattern#CASE_INSENSITIVE} flag.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     * @see java.util.regex.Pattern#compile(String, int)
     */
    public RegExpValidator setCaseInsensitive(final boolean caseInsensitive) {
@@ -197,7 +197,7 @@ public class RegExpValidator implements MessageValidator {
     *
     * @param multiline
     *       The value of {@link java.util.regex.Pattern#MULTILINE} flag.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     * @see java.util.regex.Pattern#compile(String, int)
     */
    public RegExpValidator setMultiline(final boolean multiline) {
@@ -220,7 +220,7 @@ public class RegExpValidator implements MessageValidator {
     *
     * @param dotall
     *       The value of {@link java.util.regex.Pattern#DOTALL} flag.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     * @see java.util.regex.Pattern#compile(String, int)
     */
    public RegExpValidator setDotall(final boolean dotall) {
@@ -243,7 +243,7 @@ public class RegExpValidator implements MessageValidator {
     *
     * @param unicodeCase
     *       The value of {@link java.util.regex.Pattern#UNICODE_CASE} flag.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     * @see java.util.regex.Pattern#compile(String, int)
     */
    public RegExpValidator setUnicodeCase(final boolean unicodeCase) {
@@ -266,7 +266,7 @@ public class RegExpValidator implements MessageValidator {
     *
     * @param canonEq
     *       The value of {@link java.util.regex.Pattern#CANON_EQ} flag.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     * @see java.util.regex.Pattern#compile(String, int)
     */
    public RegExpValidator setCanonEq(final boolean canonEq) {
@@ -289,7 +289,7 @@ public class RegExpValidator implements MessageValidator {
     *
     * @param literal
     *       The value of {@link java.util.regex.Pattern#LITERAL} flag.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     * @see java.util.regex.Pattern#compile(String, int)
     */
    public RegExpValidator setLiteral(final boolean literal) {
@@ -312,7 +312,7 @@ public class RegExpValidator implements MessageValidator {
     *
     * @param unicodeCharacterClass
     *       The value of {@link java.util.regex.Pattern#UNICODE_CHARACTER_CLASS} flag.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     * @see java.util.regex.Pattern#compile(String, int)
     */
    public RegExpValidator setUnicodeCharacterClass(final boolean unicodeCharacterClass) {

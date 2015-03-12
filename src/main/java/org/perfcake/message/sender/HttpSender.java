@@ -114,7 +114,7 @@ public class HttpSender extends AbstractSender {
     *
     * @param expectedResponseCodes
     *       The expectedResponseCodes property to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public HttpSender setExpectedResponseCodes(final String expectedResponseCodes) {
       this.expectedResponseCodes = expectedResponseCodes;
@@ -145,7 +145,7 @@ public class HttpSender extends AbstractSender {
     *
     * @param codes
     *       The array of codes.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    protected HttpSender setExpectedResponseCodesList(final String[] codes) {
       LinkedList<Integer> numCodes = new LinkedList<Integer>();
@@ -309,7 +309,7 @@ public class HttpSender extends AbstractSender {
     *
     * @param method
     *       The HTTP method to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public HttpSender setMethod(final Method method) {
       this.method = method;

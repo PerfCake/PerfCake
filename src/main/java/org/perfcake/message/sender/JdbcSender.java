@@ -186,7 +186,7 @@ public class JdbcSender extends AbstractSender {
     *
     * @param jdbcUrl
     *       The jdbcUrl to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public JdbcSender setJdbcUrl(final String jdbcUrl) {
       this.jdbcUrl = jdbcUrl;
@@ -207,7 +207,7 @@ public class JdbcSender extends AbstractSender {
     *
     * @param driverClass
     *       The driverClass to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public JdbcSender setDriverClass(final String driverClass) {
       this.driverClass = driverClass;
@@ -228,7 +228,7 @@ public class JdbcSender extends AbstractSender {
     *
     * @param username
     *       The username to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public JdbcSender setUsername(final String username) {
       this.username = username;
@@ -249,7 +249,7 @@ public class JdbcSender extends AbstractSender {
     *
     * @param password
     *       The password to set.
-    * @return Returns this instance for fluent API.
+    * @return Instance of this to support fluent API.
     */
    public JdbcSender setPassword(final String password) {
       this.password = password;
