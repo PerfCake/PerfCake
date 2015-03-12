@@ -130,7 +130,7 @@ public class RunInfo {
     * Get the next iteration counter value.
     * This automatically increases the iteration counter for the next call to obtain a different value.
     *
-    * @return The next available iteration counter value
+    * @return The next available iteration counter value.
     */
    public long getNextIteration() {
       return iterations.getAndIncrement();
@@ -140,7 +140,7 @@ public class RunInfo {
     * Gets the current measurement run time in millisecond. If the system clock changed
     * during the running measurement, this value will be influenced.
     *
-    * @return Current measurement run time
+    * @return Current measurement run time.
     */
    public long getRunTime() {
       if (startTime == -1) {
@@ -157,7 +157,7 @@ public class RunInfo {
     * If the run is limited by time based period and the system clock changed during the measurement,
     * the result value will be influenced.
     *
-    * @return Completed percents of the current measurement
+    * @return Completed percents of the current measurement.
     */
    public double getPercentage() {
       return getPercentage(getIteration());
@@ -169,7 +169,7 @@ public class RunInfo {
     * the result value will be influenced.
     *
     * @param iteration
-    *       the iteration for which we want to know the progress % number compared to the configured period duration
+    *       The iteration for which we want to know the progress % number compared to the configured period duration.
     * @return Completed percents of the theoretical measurement state. This cannot be more than 100% no matter what value is provided.
     */
    public double getPercentage(long iteration) {
@@ -197,7 +197,7 @@ public class RunInfo {
     * Gets Unix time of the measurement start. If the system clock changed during the measurement,
     * this value will not represent the real start.
     *
-    * @return Measurement start time
+    * @return Measurement start time.
     */
    public long getStartTime() {
       return startTime;
@@ -206,7 +206,7 @@ public class RunInfo {
    /**
     * Gets Unix time of the measurement end.
     *
-    * @return Measurement end time
+    * @return Measurement end time.
     */
    public long getEndTime() {
       return endTime;
@@ -216,7 +216,7 @@ public class RunInfo {
     * Is there a running measurement? This is true if and only if {@link #isStarted()} returns true and we did not reached
     * the final iterations.
     *
-    * @return True if the measurement is running
+    * @return True if the measurement is running.
     */
    public boolean isRunning() {
       return isStarted() && !reachedLastIteration();
@@ -244,7 +244,7 @@ public class RunInfo {
    /**
     * Gets an unmodifiable set of tags associated with this measurement run.
     *
-    * @return An unmodifiable set of tags
+    * @return An unmodifiable set of tags.
     */
    public Set<String> getTags() {
       return Collections.unmodifiableSet(tags);
@@ -254,8 +254,8 @@ public class RunInfo {
     * Checks for a presence of a given tag.
     *
     * @param tag
-    *       A tag to be checked
-    * @return True if the specified tag is set for this run info
+    *       A tag to be checked.
+    * @return <code>true</code> if the specified tag is set for this run info.
     */
    public boolean hasTag(final String tag) {
       return tags.contains(tag);
@@ -265,7 +265,7 @@ public class RunInfo {
     * Associate a new tag with this measurement.
     *
     * @param tag
-    *       A new tag to be associated
+    *       A new tag to be associated.
     */
    public void addTag(final String tag) {
       tags.add(tag);
@@ -275,7 +275,7 @@ public class RunInfo {
     * A set of tags to be associated with the current measurement.
     *
     * @param tags
-    *       A set of tags to be associated
+    *       A set of tags to be associated.
     */
    public void addTags(final Set<String> tags) {
       this.tags.addAll(tags);
@@ -285,7 +285,7 @@ public class RunInfo {
     * Removes a tag from this run.
     *
     * @param tag
-    *       A tag to be removed
+    *       A tag to be removed.
     */
    public void removeTag(final String tag) {
       this.tags.remove(tag);
@@ -294,7 +294,7 @@ public class RunInfo {
    /**
     * Gets the desired run duration
     *
-    * @return The run duration
+    * @return The run duration.
     */
    public Period getDuration() {
       return duration;
