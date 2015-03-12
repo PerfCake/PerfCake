@@ -644,6 +644,7 @@
                   <doctitle>${project.name} API Documentation (version ${project.version})</doctitle>
                   <show>public</show>
                   <excludePackageNames>org.perfcake.model</excludePackageNames>
+                  <stylesheetfile>src/main/javadoc/javadoc.css</stylesheetfile>
                </configuration>
             </plugin>
             <plugin>
