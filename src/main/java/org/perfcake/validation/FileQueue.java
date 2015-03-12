@@ -37,7 +37,7 @@ import java.util.NoSuchElementException;
 import java.util.Queue;
 
 /**
- * FileQueue is a persistent queue, which stores its items to specified file
+ * Stores items persistently to specified file.
  *
  * @author <a href="mailto:ravliv7@gmail.com">Pavel Drozd</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -62,10 +62,22 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
 
    private long queueSize = 0;
 
+   /**
+    * Creates a new {@link org.perfcake.validation.FileQueue} that stores items in a file on a specified path.
+    *
+    * @param filename
+    *       Path to the file to store queue items.
+    */
    public FileQueue(final String filename) throws PerfCakeException {
       this(new File(filename));
    }
 
+   /**
+    * Creates a new {@link org.perfcake.validation.FileQueue} that stores items in a specified file.
+    *
+    * @param queueFile
+    *       File to store queue items.
+    */
    public FileQueue(final File queueFile) throws PerfCakeException {
       try {
          final boolean fileExists = queueFile.exists();
@@ -201,8 +213,9 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
    }
 
    /**
+    * Gets the first item in queue.
     *
-    * @return The first item in queue
+    * @return The first item in queue.
     */
    @SuppressWarnings("unchecked")
    protected T getItem() {
@@ -257,5 +270,4 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
    public boolean retainAll(final Collection<?> c) {
       throw new UnsupportedOperationException();
    }
-
 }
