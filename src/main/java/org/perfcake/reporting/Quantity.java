@@ -20,7 +20,7 @@
 package org.perfcake.reporting;
 
 /**
- * A number with a unit
+ * A number with a unit.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -29,7 +29,7 @@ public class Quantity<N extends Number> {
    private final String unit;
 
    /**
-    * Create a new quantity
+    * Creates a new quantity.
     *
     * @param number
     *       The value
@@ -42,18 +42,18 @@ public class Quantity<N extends Number> {
    }
 
    /**
-    * Gets the current value
+    * Gets the current value.
     *
-    * @return the current value
+    * @return The current value.
     */
    public N getNumber() {
       return number;
    }
 
    /**
-    * Gets the unit of the value
+    * Gets the unit of the value.
     *
-    * @return the unit of the value
+    * @return The unit of the value.
     */
    public String getUnit() {
       return unit;
@@ -102,5 +102,4 @@ public class Quantity<N extends Number> {
    public String toString() {
       return number + " " + unit;
    }
-
 }

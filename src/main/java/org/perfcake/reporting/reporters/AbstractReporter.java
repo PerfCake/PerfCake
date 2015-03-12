@@ -44,7 +44,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Basic reporter that should be used to write any real reporter. This implementation makes sure that the contract defined as part of {@link Reporter} is held. The class is also well tested.
+ * Represents a basic reporter that makes sure that the contract defined as part of {@link Reporter} is held.
+ * The class is also well tested.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
