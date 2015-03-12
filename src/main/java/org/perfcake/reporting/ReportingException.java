@@ -22,7 +22,7 @@ package org.perfcake.reporting;
 import org.perfcake.PerfCakeException;
 
 /**
- * An exception to indicate problems while reporting results.
+ * Indicates problems while reporting results.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
