@@ -27,6 +27,12 @@ package org.perfcake.reporting.reporters.accumulators;
  */
 public class SlidingWindowMaxAccumulator extends AbstractSlidingWindowAccumulator {
 
+   /**
+    * Creates a new maximum accumulator with the sliding window of a given size.
+    *
+    * @param windowSize
+    *       Size of the sliding window.
+    */
    public SlidingWindowMaxAccumulator(final int windowSize) {
       super(windowSize);
    }

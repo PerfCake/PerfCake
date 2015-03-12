@@ -24,7 +24,8 @@ import org.apache.commons.collections.BufferUtils;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 
 /**
- * Accumulates a value over a set number of recently reported values.
+ * Accumulates a value over a set of recently reported values in a sliding window.
+ * The sliding window is a number of last values that are accumulated.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
@@ -34,10 +35,10 @@ public abstract class AbstractSlidingWindowAccumulator implements Accumulator<Do
    protected final Buffer fifo;
 
    /**
-    * Creates a new average accumulator with the sliding window of a given size.
+    * Creates a new accumulator with the sliding window of a given size.
     *
     * @param windowSize
-    *       Size of the sliding window
+    *       Size of the sliding window.
     */
    public AbstractSlidingWindowAccumulator(final int windowSize) {
       fifo = BufferUtils.synchronizedBuffer(new CircularFifoBuffer(windowSize));
@@ -53,5 +54,4 @@ public abstract class AbstractSlidingWindowAccumulator implements Accumulator<Do
    public void reset() {
       fifo.clear();
    }
-
 }

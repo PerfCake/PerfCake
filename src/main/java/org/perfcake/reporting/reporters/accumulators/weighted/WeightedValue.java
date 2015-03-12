@@ -33,9 +33,9 @@ public class WeightedValue<T extends Number> {
     * Create a new immutable instance with the specified value and weight.
     *
     * @param value
-    *       The value to be stored
+    *       The value to be stored.
     * @param weight
-    *       The weight of the value
+    *       The weight of the value.
     */
    public WeightedValue(final T value, final long weight) {
       this.value = value;

@@ -27,15 +27,10 @@ package org.perfcake.reporting.reporters.accumulators;
  */
 public class MaxLongValueAccumulator implements Accumulator<Long> {
    /**
-    * Sum of the reported values
+    * Sum of the reported values.
     */
    private long max = Long.MIN_VALUE;
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.reporters.accumulators.Accumulator#add(java.lang.Object)
-    */
    @Override
    public synchronized void add(final Long number) {
       if (number > max) {
@@ -43,24 +38,13 @@ public class MaxLongValueAccumulator implements Accumulator<Long> {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.reporters.accumulators.Accumulator#getResult()
-    */
    @Override
    public synchronized Long getResult() {
       return max;
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.reporters.accumulators.Accumulator#reset()
-    */
    @Override
    public synchronized void reset() {
       max = Long.MIN_VALUE;
    }
-
 }

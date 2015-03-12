@@ -32,11 +32,6 @@ public class MinAccumulator implements Accumulator<Double> {
     */
    private Double min = Double.POSITIVE_INFINITY;
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.reporters.accumulators.Accumulator#add(java.lang.Object)
-    */
    @Override
    public synchronized void add(final Double value) {
       if (value < min) {
@@ -44,24 +39,13 @@ public class MinAccumulator implements Accumulator<Double> {
       }
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.reporters.accumulators.Accumulator#getResult()
-    */
    @Override
    public synchronized Double getResult() {
       return min;
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.reporting.reporters.accumulators.Accumulator#reset()
-    */
    @Override
    public synchronized void reset() {
       min = Double.POSITIVE_INFINITY;
    }
-
 }

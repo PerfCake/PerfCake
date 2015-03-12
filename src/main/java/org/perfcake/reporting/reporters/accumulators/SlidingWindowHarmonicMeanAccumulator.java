@@ -27,6 +27,12 @@ package org.perfcake.reporting.reporters.accumulators;
  */
 public class SlidingWindowHarmonicMeanAccumulator extends AbstractSlidingWindowAccumulator {
 
+   /**
+    * Creates a new harmonic mean accumulator with the sliding window of a given size.
+    *
+    * @param windowSize
+    *       Size of the sliding window.
+    */
    public SlidingWindowHarmonicMeanAccumulator(int windowSize) {
       super(windowSize);
    }
