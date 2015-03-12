@@ -45,9 +45,9 @@ public class DummyReporter extends AbstractReporter {
    private static final Logger log = LogManager.getLogger(DummyReporter.class);
 
    @Override
-   protected void doReport(final MeasurementUnit mu) throws ReportingException {
+   protected void doReport(final MeasurementUnit measurementUnit) throws ReportingException {
       if (log.isDebugEnabled()) {
-         log.debug("Reporting " + mu.toString());
+         log.debug("Reporting " + measurementUnit.toString());
       }
       lastMethod = "doReport";
    }

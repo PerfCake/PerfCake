@@ -47,14 +47,17 @@ import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Reporter that is able to get the memory usage information from a remote JVM,
+ * Reports memory usage information from a remote JVM,
  * where {@link PerfCakeAgent} is deployed. It communicates with the {@link PerfCakeAgent} to
- * get the information.
+ * get the information via TCP sockets.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class MemoryUsageReporter extends AbstractReporter {
 
+   /**
+    * MiB to bytes conversion factor.
+    */
    private static final long BYTES_IN_MIB = 1_048_576L;
 
    /**
@@ -119,7 +122,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    private long memoryLeakDetectionMonitoringPeriod = 500L;
 
    /**
-    * The property is used to enable/disable performing garbage collection each time the memory usage of the
+    * Allows enabling/disabling of garbage collection performed each time the memory usage of the
     * tested system is measured and published.
     * Since the garbage collection is CPU intensive operation be careful to enable it and to how often
     * the memory usage is measured because it will have a significant impact on the measured system and naturally the
@@ -154,7 +157,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    private String memoryDumpFile = null;
 
    /**
-    * A task that gathers memory data for memory leak detection analysis.
+    * Gathers memory data for memory leak detection analysis.
     */
    private MemoryDataGatheringTask memoryDataGatheringTask = null;
 
@@ -173,7 +176,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    @Override
-   protected void doReport(final MeasurementUnit mu) throws ReportingException {
+   protected void doReport(final MeasurementUnit measurementUnit) throws ReportingException {
       // nop
    }
 
@@ -247,7 +250,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * An inner class of the task that gathers memory data for memory leak detection analysis.
+    * Gathers memory data internally for memory leak detection analysis.
     */
    private class MemoryDataGatheringTask implements Runnable {
 
@@ -316,6 +319,7 @@ public class MemoryUsageReporter extends AbstractReporter {
     * @return Command response code.
     * @throws IOException
     *       In the case of communication error.
+    * @see org.perfcake.util.agent.PerfCakeAgent
     */
    private long sendAgentCommand(final String command) throws IOException {
       if (log.isDebugEnabled()) {
