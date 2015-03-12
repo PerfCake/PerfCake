@@ -33,22 +33,22 @@ public class Period implements Serializable {
    private static final long serialVersionUID = 3195215553430520740L;
 
    /**
-    * Unit of the period
+    * Unit of the period.
     */
    private final PeriodType periodType;
 
    /**
-    * Length of the period
+    * Length of the period.
     */
    private final long period;
 
    /**
-    * Create a new Period
+    * Creates a new period of the given type and length.
     *
     * @param periodType
-    *       Type of the period
+    *       Type of the period.
     * @param period
-    *       Length of the period
+    *       Length of the period.
     */
    public Period(final PeriodType periodType, final long period) {
       this.periodType = periodType;
@@ -56,18 +56,18 @@ public class Period implements Serializable {
    }
 
    /**
-    * Gets current period type.
+    * Gets period type.
     *
-    * @return period type
+    * @return Period type.
     */
    public PeriodType getPeriodType() {
       return periodType;
    }
 
    /**
-    * Get current period length.
+    * Gets period length.
     *
-    * @return period length
+    * @return Period length.
     */
    public long getPeriod() {
       return period;

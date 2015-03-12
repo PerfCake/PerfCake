@@ -20,8 +20,8 @@
 package org.perfcake.common;
 
 /**
- * A record that is valid for a particular time stamp.
- * The record has a time stamp and a value.
+ * A recorded number matching with a particular time stamp.
+ * The record has a time stamp and a value. Instances are immutable.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
@@ -38,7 +38,7 @@ public class TimestampedRecord<T extends Number> {
    private T value;
 
    /**
-    * Creates a new record.
+    * Creates a new record using the provided time stamp and value bound to it.
     *
     * @param timestamp
     *       The time stamp of the record.
@@ -52,41 +52,21 @@ public class TimestampedRecord<T extends Number> {
    }
 
    /**
-    * Used to read the value of timestamp.
+    * Gets the timestamp of the record.
     *
-    * @return The timestamp value.
+    * @return The timestamp.
     */
    public long getTimestamp() {
       return timestamp;
    }
 
    /**
-    * Used to set the value of timestamp.
-    *
-    * @param timestamp
-    *       The timestamp value to set.
-    */
-   public void setTimestamp(long timestamp) {
-      this.timestamp = timestamp;
-   }
-
-   /**
-    * Used to read the value.
+    * Gets the value of the record.
     *
     * @return The value.
     */
    public T getValue() {
       return value;
-   }
-
-   /**
-    * Used to set the value of value.
-    *
-    * @param value
-    *       The value to set.
-    */
-   public void setValue(T value) {
-      this.value = value;
    }
 
 }
