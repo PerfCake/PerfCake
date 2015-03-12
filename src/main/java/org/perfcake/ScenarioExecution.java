@@ -49,7 +49,7 @@ import java.util.Map.Entry;
 import java.util.Properties;
 
 /**
- * The main class to start PerfCake from command line. It parses command line parameters, loads the scenario XML file and runs it.
+ * Parses command line parameters, loads the scenario from XML or DSL file and executes it.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
