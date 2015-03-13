@@ -69,6 +69,8 @@ public class HttpSender extends AbstractSender {
 
    /**
     * Enumeration on available HTTP methods.
+    *
+    * @see java.net.HttpURLConnection#setRequestMethod(String)
     */
    public static enum Method {
       GET, POST, HEAD, OPTIONS, PUT, DELETE, TRACE
