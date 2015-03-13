@@ -30,7 +30,7 @@ public class WeightedValue<T extends Number> {
    private final long weight;
 
    /**
-    * Create a new immutable instance with the specified value and weight.
+    * Creates a new immutable instance with the specified value and weight.
     *
     * @param value
     *       The value to be stored.
@@ -43,7 +43,7 @@ public class WeightedValue<T extends Number> {
    }
 
    /**
-    * Get the stored value.
+    * Gets the stored value.
     *
     * @return The stored value.
     */
