@@ -334,19 +334,19 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of agentHostname.
+    * Gets the agent hostname.
     *
-    * @return The agent hostname value.
+    * @return The agent hostname.
     */
    public String getAgentHostname() {
       return agentHostname;
    }
 
    /**
-    * Used to set the value of agentHostname.
+    * Sets the agent hostname.
     *
     * @param agentHostname
-    *       The agent hostname value to set.
+    *       The agent hostname.
     * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setAgentHostname(final String agentHostname) {
@@ -355,19 +355,19 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of agentPort.
+    * Gets the agent port.
     *
-    * @return The agent port value.
+    * @return The agent port.
     */
    public String getAgentPort() {
       return agentPort;
    }
 
    /**
-    * Used to set the value of agentPort.
+    * Sets the agent port.
     *
     * @param agentPort
-    *       The agent port value to set.
+    *       The agent port.
     * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setAgentPort(final String agentPort) {
@@ -376,19 +376,19 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of usedMemoryTimeWindowSize.
+    * Gets the size of the memory time window (number of latest records) for possible memory leak detection.
     *
-    * @return The usedMemoryTimeWindowSize value.
+    * @return The used memory time window size.
     */
    public int getUsedMemoryTimeWindowSize() {
       return usedMemoryTimeWindowSize;
    }
 
    /**
-    * Used to set the value of usedMemoryTimeWindowSize.
+    * Sets the size of the memory time window (number of latest records) for possible memory leak detection.
     *
     * @param timeWindowSize
-    *       The usedMemoryTimeWindowSize value to set.
+    *       The used memory time window size.
     * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setUsedMemoryTimeWindowSize(final int timeWindowSize) {
@@ -397,19 +397,21 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of memoryLeakSlopeThreshold.
+    * Gets the possible memory leak detection threshold. Possible memory leak is found,
+    * when the actual slope of the linear regression line computed from the time window data set is greater than the threshold.
     *
-    * @return The memoryLeakSlopeThreshold value.
+    * @return The memory leak slope threshold.
     */
    public double getMemoryLeakSlopeThreshold() {
       return memoryLeakSlopeThreshold;
    }
 
    /**
-    * Used to set the value of memoryLeakSlopeThreshold.
+    * Sets the possible memory leak detection threshold. Possible memory leak is found,
+    * when the actual slope of the linear regression line computed from the time window data set is greater than the threshold.
     *
     * @param memoryLeakSlopeThreshold
-    *       The memoryLeakSlopeThreshold value to set.
+    *       The memory leak slope threshold.
     * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setMemoryLeakSlopeThreshold(final double memoryLeakSlopeThreshold) {
@@ -418,19 +420,19 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of memoryLeakDetectionEnabled.
+    * Is the possible memory leak detection enabled?
     *
-    * @return The memoryLeakDetectionEnabled value.
+    * @return The memory leak detection status.
     */
    public boolean isMemoryLeakDetectionEnabled() {
       return memoryLeakDetectionEnabled;
    }
 
    /**
-    * Used to set the value of memoryLeakDetectionEnabled.
+    * Enables/disables the possible memory leak detection mechanism.
     *
     * @param memoryLeakDetectionEnabled
-    *       The memoryLeakDetectionEnabled value to set.
+    *       <code>true</code> to enable memory leak detection mechanism.
     * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setMemoryLeakDetectionEnabled(final boolean memoryLeakDetectionEnabled) {
@@ -439,19 +441,19 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Used to read the value of memoryLeakDetectionMonitoringPeriod.
+    * Gets the period in which a memory usage is gathered from the {@link org.perfcake.util.agent.PerfCakeAgent}.
     *
-    * @return The memoryLeakDetectionMonitoringPeriod value.
+    * @return The memory leak detection monitoring period.
     */
    public long getMemoryLeakDetectionMonitoringPeriod() {
       return memoryLeakDetectionMonitoringPeriod;
    }
 
    /**
-    * Used to set the value of memoryLeakDetectionMonitoringPeriod.
+    * Sets  the period in which a memory usage is gathered from the {@link org.perfcake.util.agent.PerfCakeAgent}.
     *
     * @param memoryLeakDetectionMonitoringPeriod
-    *       The memoryLeakDetectionMonitoringPeriod value to set.
+    *       The memory leak detection monitoring period.
     * @return Instance of this to support fluent API.
     */
    public MemoryUsageReporter setMemoryLeakDetectionMonitoringPeriod(final long memoryLeakDetectionMonitoringPeriod) {
@@ -460,7 +462,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Returns a the name of the memory dump file created by {@link org.perfcake.util.agent.PerfCakeAgent}.
+    * Gets the name of the memory dump file created by {@link org.perfcake.util.agent.PerfCakeAgent}.
     *
     * @return Name of the memory dump file.
     */
@@ -514,7 +516,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * The property is used to enable/disable performing garbage collection each time the memory usage of the
+    * Enables/disables garbage collection to be performed each time the memory usage of the
     * tested system is measured and published.
     * Since the garbage collection is CPU intensive operation be careful to enable it and to how often
     * the memory usage is measured because it will have a significant impact on the measured system and naturally the
