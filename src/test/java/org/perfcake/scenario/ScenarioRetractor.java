@@ -41,7 +41,9 @@ public class ScenarioRetractor {
 
    /**
     * Creates a new retractor to keep the Scenario insides visible to the outer world.
-    * @param scenario The scenario subject to inspection.
+    *
+    * @param scenario
+    *       The scenario subject to inspection.
     */
    public ScenarioRetractor(final Scenario scenario) {
       this.scenario = scenario;
@@ -49,6 +51,7 @@ public class ScenarioRetractor {
 
    /**
     * Gets the scenario generator.
+    *
     * @return The generator.
     */
    public AbstractMessageGenerator getGenerator() {
@@ -57,6 +60,7 @@ public class ScenarioRetractor {
 
    /**
     * Gets the message sender manager.
+    *
     * @return The message sender manager.
     */
    public MessageSenderManager getMessageSenderManager() {
@@ -65,6 +69,7 @@ public class ScenarioRetractor {
 
    /**
     * Gets the report manager.
+    *
     * @return The report manager.
     */
    public ReportManager getReportManager() {
@@ -73,6 +78,7 @@ public class ScenarioRetractor {
 
    /**
     * Gets the validation manager.
+    *
     * @return The validation manager.
     */
    public ValidationManager getValidationManager() {
@@ -81,6 +87,7 @@ public class ScenarioRetractor {
 
    /**
     * Gets the message store.
+    *
     * @return The list of all message templates.
     */
    public List<MessageTemplate> getMessageStore() {

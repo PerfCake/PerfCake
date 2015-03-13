@@ -40,7 +40,7 @@ public interface ScenarioFactory {
    static final String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
 
    /**
-    * Initialize all resources needed to prepare the scenario object. All I/O operations should happen here.
+    * Initializes all resources needed to prepare the scenario object. All I/O operations should happen here.
     *
     * @param scenarioURL
     *       Location of the scenario file.

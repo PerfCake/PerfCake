@@ -427,9 +427,11 @@ public class CsvDestination implements Destination {
    }
 
    /**
-    * Strategy that is used in case that the output file exists. {@link AppendStrategy#OVERWRITE} means that the file
+    * Determines the strategy for a case that the output file exists. {@link AppendStrategy#OVERWRITE} means that the file
     * is overwritten, {@link AppendStrategy#RENAME} means that the current output file is renamed by adding a number-based
     * suffix and {@link AppendStrategy#FORCE_APPEND} is for appending new results to the original file.
+    *
+    * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
     */
    public enum AppendStrategy {
       /**

@@ -32,7 +32,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * Sender that can send messages through NIO SocketChannel.
+ * Sends messages through NIO SocketChannel.
  *
  * @author <a href="mailto:domin.hanak@gmail.com">Dominik Hanák</a>
  */

@@ -19,18 +19,18 @@
  */
 package org.perfcake.message.sender;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * This sender is intended to work as a dummy sender and to be used for
- * scenario testing and developing purposes. It does not actually send any message.
+ * Serves as a dummy sender for scenario testing and developing purposes. It does not actually send any message.
  * It can simulate a synchronous waiting for a reply by setting the {@link #delay} property in milliseconds (with default values 0).
  * property.
  *
@@ -53,11 +53,6 @@ public class DummySender extends AbstractSender {
     */
    private long delay = 0;
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#init()
-    */
    @Override
    public void init() throws Exception {
       if (log.isDebugEnabled()) {
@@ -66,11 +61,6 @@ public class DummySender extends AbstractSender {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#close()
-    */
    @Override
    public void close() {
       if (log.isDebugEnabled()) {
@@ -79,11 +69,6 @@ public class DummySender extends AbstractSender {
       // nop
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#doSend(org.perfcake.message.Message, java.util.Map)
-    */
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       final long count = counter.incrementAndGet();
@@ -109,9 +94,9 @@ public class DummySender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of delay.
+    * Gets read the value of delay.
     *
-    * @return The delay.
+    * @return The delay in milliseconds.
     */
    public long getDelay() {
       return delay;
@@ -121,7 +106,7 @@ public class DummySender extends AbstractSender {
     * Sets the value of delay.
     *
     * @param delay
-    *       The delay to set.
+    *       The delay to set in milliseconds.
     * @return Instance of this for fluent API.
     */
    public DummySender setDelay(final long delay) {
@@ -130,14 +115,15 @@ public class DummySender extends AbstractSender {
    }
 
    /**
-    * Resets the iteration counter (how many times the doSend method has been called).
+    * Resets the iteration counter (how many times the {@link #doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)} method has been called).
     */
    public static void resetCounter() {
       counter.set(0);
    }
 
    /**
-    * Gets the iteration counter (how many times the doSend method has been called).
+    * Gets the iteration counter (how many times the {@link #doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)} method has been called).
+    *
     * @return The iteration counter value.
     */
    public static long getCounter() {

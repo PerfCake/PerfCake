@@ -45,7 +45,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
- * A sender that is the same with @{link JmsSender} and adds a response retrieval.
+ * Sends messages and receives responses over JMS.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -383,19 +383,19 @@ public class RequestResponseJmsSender extends JmsSender {
    }
 
    /**
-    * Used to read the value of autoAck.
+    * Is JMS message delivery automatically acknowledged?
     *
-    * @return The autoAck.
+    * @return The automatic acknowledgement mode.
     */
    public boolean isAutoAck() {
       return autoAck;
    }
 
    /**
-    * Sets the value of autoAck.
+    * Enables/disables the automatic acknowledgement of JMS message delivery.
     *
     * @param autoAck
-    *       The autoAck to set.
+    *       <code>true</code> to enable the automatic acknowledgement.
     * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setAutoAck(final boolean autoAck) {

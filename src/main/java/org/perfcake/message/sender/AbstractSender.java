@@ -113,7 +113,7 @@ abstract public class AbstractSender implements MessageSender {
    }
 
    /**
-    * Read the target where to send the messages.
+    * Gets the target where to send the messages.
     *
     * @return The current target.
     */

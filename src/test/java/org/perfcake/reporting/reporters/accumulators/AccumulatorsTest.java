@@ -164,7 +164,7 @@ public class AccumulatorsTest {
    }
 
    @Test(dataProvider = "accumulatorsTest")
-   @SuppressWarnings({"rawtypes", "unchecked"})
+   @SuppressWarnings({ "rawtypes", "unchecked" })
    public void accumulatorGenericTest(final Accumulator a, final Long start, final Long end, final Number result, final Number stressResult, final Number zero) {
       Assert.assertEquals(a.getResult(), zero);
       try {

@@ -24,8 +24,8 @@ import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.util.Utils;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

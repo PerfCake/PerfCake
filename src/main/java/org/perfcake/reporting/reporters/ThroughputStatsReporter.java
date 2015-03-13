@@ -26,7 +26,7 @@ import org.perfcake.reporting.reporters.accumulators.SlidingWindowHarmonicMeanAc
 
 /**
  * Reports statistics of throughput.
- * 
+ *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @see StatsReporter
  */

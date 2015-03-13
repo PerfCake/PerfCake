@@ -59,7 +59,7 @@ public class MessageSenderManagerTest {
       assertTrue(msm.availableSenderCount() == SENDER_COUNT);
       final MessageSender[] senders = new MessageSender[SENDER_COUNT];
       int i = 0;
-	final int n = 5;
+      final int n = 5;
       for (; i < n; i++) {
          senders[i] = msm.acquireSender();
       }

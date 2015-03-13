@@ -22,14 +22,22 @@ package org.perfcake.util.properties;
 import java.util.Properties;
 
 /**
+ * Provides properties from a {@link java.util.Properties} instance.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class DefaultPropertyGetter implements PropertyGetter {
 
    private final Properties p;
 
-   public DefaultPropertyGetter(final Properties props) {
-      this.p = props;
+   /**
+    * Creates a default property getter with a given {@link java.util.Properties} instance.
+    *
+    * @param properties
+    *       Object with properties.
+    */
+   public DefaultPropertyGetter(final Properties properties) {
+      this.p = properties;
    }
 
    @Override
@@ -41,5 +49,4 @@ public class DefaultPropertyGetter implements PropertyGetter {
    public String getProperty(final String propName) {
       return getProperty(propName, null);
    }
-
 }
