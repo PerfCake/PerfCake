@@ -55,7 +55,26 @@ public class JmsSender extends AbstractSender {
     * JMS message type.
     */
    public static enum MessageType {
-      OBJECT, STRING, BYTEARRAY
+      /**
+       * Object message.
+       *
+       * @see javax.jms.ObjectMessage
+       */
+      OBJECT,
+
+      /**
+       * String message.
+       *
+       * @see javax.jms.TextMessage
+       */
+      STRING,
+
+      /**
+       * Byte array message.
+       *
+       * @see javax.jms.BytesMessage
+       */
+      BYTEARRAY
    }
 
    /**
