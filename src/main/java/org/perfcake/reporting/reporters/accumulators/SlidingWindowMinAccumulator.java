@@ -20,7 +20,7 @@
 package org.perfcake.reporting.reporters.accumulators;
 
 /**
- * Accumulates a minimal value over a set number of recently reported values.
+ * Accumulates a minimal value over a set of the number of recently reported values.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>

@@ -71,12 +71,12 @@ package org.perfcake.util.agent;
  * </tr>
  * <tr>
  * <td>"{@link org.perfcake.util.agent.PerfCakeAgent.Command#MAX MAX}"</td>
- * <td>Returns the maximum amount of memory that the Java virtual machine will attempt to use.</td>
+ * <td>Returns the maximum amount of memory that the Java Virtual Machine will attempt to use.</td>
  * </tr>
  * <tr>
  * <td>"{@link org.perfcake.util.agent.PerfCakeAgent.Command#DUMP DUMP}(:&lt;dump-file&gt;)"</td>
  * <td>Initiates a heap dump into <code>dump-file</code>. <code>dump-file</code> is optional - if not provided,
- * the file name would be generated as <code>"dump-" + System.currentTimeMillis() + ".bin"</code>.</td>
+ * the file name would be generated as <code>"dump-" + {@link java.lang.System#currentTimeMillis()} + ".bin"</code>.</td>
  * </tr>
  * <tr>
  * <td>"{@link org.perfcake.util.agent.PerfCakeAgent.Command#GC GC}"</td>
@@ -101,12 +101,40 @@ public class PerfCakeAgent {
    public static final int DEFAULT_PORT = 8850;
 
    /**
-    * The command type.
+    * PerfCake Agent command type.
     *
     * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
     */
    public enum Command {
-      FREE, USED, TOTAL, MAX, DUMP, GC
+      /**
+       * Requests the amount of free memory in the Java Virtual Machine.
+       */
+      FREE,
+
+      /**
+       * Requests the amount of used memory in the Java Virtual Machine.
+       */
+      USED,
+
+      /**
+       * Requests the amount of total memory in the Java Virtual Machine.
+       */
+      TOTAL,
+
+      /**
+       * Requests the maximal amount of memory the Java Virtual Machine will attempt to use.
+       */
+      MAX,
+
+      /**
+       * Initiates a heap dump in the Java Virtual Machine.
+       */
+      DUMP,
+
+      /**
+       * Calls {@link java.lang.System#gc()} to perform a garbage collection.
+       */
+      GC
    }
 
    /**

@@ -120,7 +120,7 @@ public class Scenario {
    }
 
    /**
-    * Finalize the scenario.
+    * Finalizes the scenario.
     *
     * @throws PerfCakeException
     *       When it was not possible to perform all finalization operations.

@@ -20,7 +20,7 @@
 package org.perfcake.reporting;
 
 /**
- * A number with a unit.
+ * A number with an unit.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -32,9 +32,9 @@ public class Quantity<N extends Number> {
     * Creates a new quantity.
     *
     * @param number
-    *       The value
+    *       The value.
     * @param unit
-    *       The unit of the value
+    *       The unit of the value.
     */
    public Quantity(final N number, final String unit) {
       this.number = number;

@@ -86,7 +86,7 @@ public class ScenarioExecution {
    }
 
    /**
-    * The main method which creates an instance of ScenarioExecution and executes the scenario.
+    * Creates an instance of {@link org.perfcake.ScenarioExecution} and executes the scenario.
     *
     * @param args
     *       Command line arguments.
