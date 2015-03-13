@@ -57,12 +57,12 @@ public final class PerfCakeConst {
    public static final String DEFAULT_ENCODING_PROPERTY = "perfcake.encoding";
 
    /**
-    * Name of the system property that stores Unix timestamp number.
+    * Name of the system property that stores Unix timestamp.
     */
    public static final String TIMESTAMP_PROPERTY = "perfcake.run.timestamp";
 
    /**
-    * Name of the system property that stores timestamp in the format yyyyMMddHHmmss.
+    * Name of the system property that stores timestamp in the format <code>yyyyMMddHHmmss</code>.
     */
    public static final String NICE_TIMESTAMP_PROPERTY = "perfcake.run.nice.timestamp";
 

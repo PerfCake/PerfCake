@@ -506,7 +506,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Return the value of the property that indicate if performing garbage collection (each time the memory usage of the
+    * Returns the value of the property that indicate if performing garbage collection (each time the memory usage of the
     * tested system is measured and published) is enabled or disabled.
     *
     * @return <code>true</code> if the garbage collection feature is enabled, <code>false</code> otherwise.

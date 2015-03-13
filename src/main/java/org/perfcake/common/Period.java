@@ -22,11 +22,13 @@ package org.perfcake.common;
 import java.io.Serializable;
 
 /**
- * Period represent a certain amount of units of a given type. These units are represented
- * using {@link PeriodType}, i.e. time, iterations, percents.
+ * A certain amount of units of a given type. These units are represented
+ * by {@link org.perfcake.common.PeriodType}, i.e. {@link org.perfcake.common.PeriodType#TIME time},
+ * {@link org.perfcake.common.PeriodType#ITERATION iterations} or {@link org.perfcake.common.PeriodType#PERCENTAGE percents}.
  * Period is an immutable type.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @see org.perfcake.common.PeriodType
  */
 public class Period implements Serializable {
 
@@ -65,9 +67,9 @@ public class Period implements Serializable {
    }
 
    /**
-    * Gets period length.
+    * Gets period duration.
     *
-    * @return Period length.
+    * @return Period duration.
     */
    public long getPeriod() {
       return period;

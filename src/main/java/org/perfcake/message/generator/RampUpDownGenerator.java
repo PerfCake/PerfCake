@@ -34,19 +34,19 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  * Generates maximal load using a variable number of threads.
  * <p>The generating starts with the number of threads set to the value of the {@link #preThreadCount} property.
- * It continues to execute for the duration set by the {@link #preDuration} property,
- * which is called the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE PRE} phase.
+ * It continues to execute for the duration set by the {@link #preDuration} property.
+ * The period is called the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE PRE} phase.
  * When {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE PRE} phase ends,
  * the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP RAMP UP} phase starts.</p>
  *
  * <p>In the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_UP RAMP UP} phase
- * the number of the threads is changed by the value of the {@link #rampUpStep} property
+ * the number of threads is changed by the value of the {@link #rampUpStep} property
  * each period set by the {@link #rampUpStepPeriod} until it reaches the number of threads
  * set by the value of the {@link #mainThreadCount} property.</p>
  *
  * <p>In that moment {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#MAIN MAIN} phase starts
  * and the execution continues for the duration set by the {@link #mainDuration} property,
- * when the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_DOWN RAMP DOWN} phase starts.</p>
+ * after which the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_DOWN RAMP DOWN} phase starts.</p>
  *
  * <p>In the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#RAMP_DOWN RAMP DOWN} phase
  * the number of threads is again changed but this time in the opposite direction than
@@ -58,7 +58,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * <p>The {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#POST POST} phase ends by the end of the scenario execution.</p>
  *
  * <p>The outer borders of the number of threads and the duration is set by the maximum number of threads
- * specified by the threads attribute of the generator and by the maximum duration set by the run element.</p>
+ * specified by the <code>threads</code> attribute of the generator and by the maximum duration set by the <code>run</code> element.</p>
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */

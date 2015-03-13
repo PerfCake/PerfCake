@@ -83,7 +83,7 @@ public class MeasurementUnit implements Serializable {
    }
 
    /**
-    * Append a custom result.
+    * Appends a custom result.
     *
     * @param label
     *       The label of the result.

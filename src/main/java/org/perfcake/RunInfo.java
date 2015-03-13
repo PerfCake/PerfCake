@@ -116,7 +116,7 @@ public class RunInfo {
    }
 
    /**
-    * Get the current iteration counter value.
+    * Gets the current iteration counter value.
     * This can be used as an approximate value of passed iterations even though some of them
     * might still be pending their execution.
     *
@@ -127,7 +127,7 @@ public class RunInfo {
    }
 
    /**
-    * Get the next iteration counter value.
+    * Gets the next iteration counter value.
     * This automatically increases the iteration counter for the next call to obtain a different value.
     *
     * @return The next available iteration counter value.
@@ -262,7 +262,7 @@ public class RunInfo {
    }
 
    /**
-    * Associate a new tag with this measurement.
+    * Associates a new tag with this measurement.
     *
     * @param tag
     *       A new tag to be associated.
@@ -272,7 +272,7 @@ public class RunInfo {
    }
 
    /**
-    * A set of tags to be associated with the current measurement.
+    * Adds a set of tags to be associated with the current measurement.
     *
     * @param tags
     *       A set of tags to be associated.
