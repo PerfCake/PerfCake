@@ -109,7 +109,7 @@ public class StringUtil {
    }
 
    /**
-    * Remove white spaces from beginning and end of each line. Lines are terminated by CR, LF, or CR LF. Also removes empty lines.
+    * Removes white spaces from beginning and end of each line. Lines are terminated by CR, LF, or CR LF. Also removes empty lines.
     * Last line will be terminated with LF.
     *
     * @param multiline

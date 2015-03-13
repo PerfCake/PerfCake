@@ -42,6 +42,9 @@ public class TimerBenchmark {
     */
    private static final int CYCLES = 10 * 1024;
 
+   /**
+    * Measures system timer resolution.
+    **/
    public static void measureTimerResolution() {
       final long results[] = new long[CYCLES];
 

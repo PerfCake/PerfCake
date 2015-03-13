@@ -20,6 +20,8 @@
 package org.perfcake.util.properties;
 
 /**
+ * Provides system properties.
+ *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
