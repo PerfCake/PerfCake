@@ -189,7 +189,7 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-    * Generate the messages. This actually executes the whole performance test.
+    * Generates the messages. This actually executes the whole performance test.
     *
     * @throws Exception
     *       When it was not possible to generate the messages.

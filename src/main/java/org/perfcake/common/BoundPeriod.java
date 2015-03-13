@@ -20,7 +20,7 @@
 package org.perfcake.common;
 
 /**
- * This is a {@link Period} that can be bound to a specific object. The binding means that the
+ * A {@link Period} bound to a specific object. The binding means that the
  * BoundPeriod is valid only on the given object and an action should be taken only for this object.
  *
  * @param <T>
@@ -107,5 +107,4 @@ public class BoundPeriod<T> extends Period {
    public String toString() {
       return "BoundPeriod [binding=" + binding + ", periodType=" + getPeriodType() + ", period=" + getPeriod() + "]";
    }
-
 }

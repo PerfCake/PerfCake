@@ -65,7 +65,7 @@ public enum SystemPropertyGetter implements PropertyGetter {
                return defaultValue;
             }
          }
-         
+
          // try to find anywhere
          if (System.getProperty(name) != null) {
             return System.getProperty(name);

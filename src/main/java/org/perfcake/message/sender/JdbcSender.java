@@ -22,8 +22,8 @@ package org.perfcake.message.sender;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -35,7 +35,7 @@ import java.sql.Statement;
 import java.util.Map;
 
 /**
- * The sender that is able to send SQL queries via JDBC.
+ * Sends SQL queries via JDBC.
  *
  * TODO: Report individual result lines to result validator
  *
@@ -148,19 +148,19 @@ public class JdbcSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of jdbcUrl.
+    * Gets the JDBC URL.
     *
-    * @return The jdbcUrl.
+    * @return The JDBC URL.
     */
    public String getJdbcUrl() {
       return jdbcUrl;
    }
 
    /**
-    * Sets the value of jdbcUrl.
+    * Sets the JDBC URL.
     *
     * @param jdbcUrl
-    *       The jdbcUrl to set.
+    *       The JDBC URL.
     * @return Instance of this to support fluent API.
     */
    public JdbcSender setJdbcUrl(final String jdbcUrl) {
@@ -169,19 +169,19 @@ public class JdbcSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of driverClass.
+    * Gets the JDBC driver class.
     *
-    * @return The driverClass.
+    * @return The JDBC driver class.
     */
    public String getDriverClass() {
       return driverClass;
    }
 
    /**
-    * Sets the value of driverClass.
+    * Sets the JDBC driver class.
     *
     * @param driverClass
-    *       The driverClass to set.
+    *       The JDBC driver class.
     * @return Instance of this to support fluent API.
     */
    public JdbcSender setDriverClass(final String driverClass) {
@@ -190,19 +190,19 @@ public class JdbcSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of username.
+    * Gets the JDBC username.
     *
-    * @return The username.
+    * @return The JDBC username.
     */
    public String getUsername() {
       return username;
    }
 
    /**
-    * Sets the value of username.
+    * Sets the JDBC username.
     *
     * @param username
-    *       The username to set.
+    *       The JDBC username.
     * @return Instance of this to support fluent API.
     */
    public JdbcSender setUsername(final String username) {
@@ -211,7 +211,7 @@ public class JdbcSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of password.
+    * Gets the JDBC password.
     *
     * @return The password.
     */
@@ -220,15 +220,14 @@ public class JdbcSender extends AbstractSender {
    }
 
    /**
-    * Sets the value of password.
+    * Sets the JDBC password.
     *
     * @param password
-    *       The password to set.
+    *       The JDBC password.
     * @return Instance of this to support fluent API.
     */
    public JdbcSender setPassword(final String password) {
       this.password = password;
       return this;
    }
-
 }

@@ -43,7 +43,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 /**
- * The sender that is able to send messages via JMS.
+ * Sends messages via JMS.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
@@ -166,11 +166,6 @@ public class JmsSender extends AbstractSender {
       super();
    }
 
-   /*
-    * (non-Javadoc)
-    *
-    * @see org.perfcake.message.sender.AbstractSender#init()
-    */
    @Override
    public void init() throws Exception {
       if (log.isDebugEnabled()) {
@@ -320,19 +315,19 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of username.
+    * Gets the JMS username.
     *
-    * @return The username.
+    * @return The JMS username.
     */
    public String getUsername() {
       return username;
    }
 
    /**
-    * Sets the value of username.
+    * Sets the JMS username.
     *
     * @param username
-    *       The username to set.
+    *       The JMS username.
     * @return Instance of this for fluent API.
     */
    public JmsSender setUsername(final String username) {
@@ -341,19 +336,19 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of password.
+    * Gets the JMS password.
     *
-    * @return The password.
+    * @return The JMS password.
     */
    public String getPassword() {
       return password;
    }
 
    /**
-    * Sets the value of password.
+    * Sets the JMS password.
     *
     * @param password
-    *       The password to set.
+    *       The JMS password.
     * @return Instance of this for fluent API.
     */
    public JmsSender setPassword(final String password) {
@@ -362,19 +357,19 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of transacted.
+    * Is JMS message delivery transacted?
     *
-    * @return The transacted.
+    * @return The transacted mode.
     */
    public boolean isTransacted() {
       return transacted;
    }
 
    /**
-    * Sets the value of transacted.
+    * Sets the JMS delivery transaction mode.
     *
     * @param transacted
-    *       The transacted to set.
+    *       The transacted mode.
     * @return Instance of this for fluent API.
     */
    public JmsSender setTransacted(final boolean transacted) {
@@ -383,19 +378,19 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of persistent.
+    * Is JMS message persisted.
     *
-    * @return The persistent.
+    * @return <code>true</code> if JMS message is persisted.
     */
    public boolean isPersistent() {
       return persistent;
    }
 
    /**
-    * Sets the value of persistent.
+    * Enables/disables persistent delivery mode.
     *
     * @param persistent
-    *       The persistent to set.
+    *       <code>true</code> to persist JMS messages.
     * @return Instance of this for fluent API.
     */
    public JmsSender setPersistent(final boolean persistent) {
@@ -404,10 +399,10 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Set the value of messageType.
+    * Set the JMS message type.
     *
     * @param messageType
-    *       The message type used to send the messages.
+    *       The JMS message type.
     * @return Instance of this for fluent API.
     */
    public JmsSender setMessageType(final MessageType messageType) {
@@ -416,28 +411,28 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Get the value of messageType.
+    * Get the JMS message type.
     *
-    * @return The type of the payload
+    * @return The JMS message type.
     */
    public MessageType getMessageType() {
       return messageType;
    }
 
    /**
-    * Used to read the value of connectionFactory.
+    * Gets the connection factory.
     *
-    * @return The connectionFactory.
+    * @return The connection factory.
     */
    public String getConnectionFactory() {
       return connectionFactory;
    }
 
    /**
-    * Sets the value of connectionFactory.
+    * Sets the connection factory.
     *
     * @param connectionFactory
-    *       The connectionFactory to set.
+    *       The connectionf actory.
     * @return Instance of this for fluent API.
     */
    public JmsSender setConnectionFactory(final String connectionFactory) {
@@ -446,19 +441,19 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of jndiContextFactory.
+    * Gets the JNDI context factory.
     *
-    * @return The jndiContextFactory.
+    * @return The JNDI context factory.
     */
    public String getJndiContextFactory() {
       return jndiContextFactory;
    }
 
    /**
-    * Sets the value of jndiContextFactory.
+    * Sets the JNDI context factory.
     *
     * @param jndiContextFactory
-    *       The jndiContextFactory to set.
+    *       The JNDI context factory.
     * @return Instance of this for fluent API.
     */
    public JmsSender setJndiContextFactory(final String jndiContextFactory) {
@@ -467,19 +462,19 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of jndiUrl.
+    * Gets the JNDI URL.
     *
-    * @return The jndiUrl.
+    * @return The JNDI URL.
     */
    public String getJndiUrl() {
       return jndiUrl;
    }
 
    /**
-    * Sets the value of jndiUrl.
+    * Sets the value of JNDI URL.
     *
     * @param jndiUrl
-    *       The jndiUrl to set.
+    *       The JNDI URL.
     * @return Instance of this for fluent API.
     */
    public JmsSender setJndiUrl(final String jndiUrl) {
@@ -488,19 +483,19 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of jndiSecurityPrincipal.
+    * Gets the JNDI username.
     *
-    * @return The jndiSecurityPrincipal.
+    * @return The JNDI username.
     */
    public String getJndiSecurityPrincipal() {
       return jndiSecurityPrincipal;
    }
 
    /**
-    * Sets the value of jndiSecurityPrincipal.
+    * Sets the JNDI username.
     *
     * @param jndiSecurityPrincipal
-    *       The jndiSecurityPrincipal to set.
+    *       The JNDI username.
     * @return Instance of this for fluent API.
     */
    public JmsSender setJndiSecurityPrincipal(final String jndiSecurityPrincipal) {
@@ -509,19 +504,19 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of jndiSecurityCredentials.
+    * Gets the JNDI password.
     *
-    * @return The jndiSecurityCredentials.
+    * @return The JNDI password.
     */
    public String getJndiSecurityCredentials() {
       return jndiSecurityCredentials;
    }
 
    /**
-    * Sets the value of jndiSecurityCredentials.
+    * Sets the JNDI password.
     *
     * @param jndiSecurityCredentials
-    *       The jndiSecurityCredentials to set.
+    *       The JNDI password.
     * @return Instance of this for fluent API.
     */
    public JmsSender setJndiSecurityCredentials(final String jndiSecurityCredentials) {
@@ -530,24 +525,23 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of replyTo.
+    * Gets the value of <code>replyTo</code> header of the JMS message.
     *
-    * @return The replyTo.
+    * @return The <code>replyTo</code> header of the JMS message.
     */
    public String getReplyTo() {
       return replyTo;
    }
 
    /**
-    * Sets the value of replyTo.
+    * Sets the value of <code>replyTo</code> header of the JMS message.
     *
     * @param replyTo
-    *       The replyTo to set.
+    *       The <code>replyTo</code> header of the JMS message.
     * @return Instance of this for fluent API.
     */
    public JmsSender setReplyTo(final String replyTo) {
       this.replyTo = replyTo;
       return this;
    }
-
 }

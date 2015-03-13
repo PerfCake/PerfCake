@@ -47,12 +47,12 @@ public interface Destination extends Closeable {
    public void close();
 
    /**
-    * Report a new {@link org.perfcake.reporting.Measurement} to the destination.
+    * Reports a new {@link org.perfcake.reporting.Measurement} to the destination.
     *
     * @param measurement
-    *       A measurement to be reported
+    *       A measurement to be reported.
     * @throws ReportingException
-    *       When an error occured during reporting the measurement like no space left on device. The root cause should be encapsulated.
+    *       When an error occurred during reporting the measurement like no space left on device. The root cause should be encapsulated.
     */
    public void report(Measurement measurement) throws ReportingException;
 }

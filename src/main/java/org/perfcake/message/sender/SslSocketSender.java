@@ -23,7 +23,7 @@ import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
- * Sends messages via SSL socket.
+ * Sends messages via a SSL socket.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */

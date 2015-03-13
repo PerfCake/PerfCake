@@ -31,7 +31,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * Sender can send message through NIO FileChannel.
+ * Sends messages through NIO FileChannel.
  *
  * @author <a href="mailto:domin.hanak@gmail.com">Dominik Hanák</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>

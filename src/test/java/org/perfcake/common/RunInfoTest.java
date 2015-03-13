@@ -21,8 +21,8 @@ package org.perfcake.common;
 
 import org.perfcake.RunInfo;
 
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

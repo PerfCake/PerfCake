@@ -22,14 +22,22 @@ package org.perfcake.util.properties;
 import java.util.Properties;
 
 /**
+ * Provides properties from both {@link java.util.Properties} object and system properties.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class MixedPropertyGetter implements PropertyGetter {
 
    private final Properties p;
 
-   public MixedPropertyGetter(final Properties props) {
-      this.p = props;
+   /**
+    * Creates a mixed property getter with a given {@link java.util.Properties} instance.
+    *
+    * @param properties
+    *       Object with properties.
+    */
+   public MixedPropertyGetter(final Properties properties) {
+      this.p = properties;
    }
 
    @Override
@@ -41,5 +49,4 @@ public class MixedPropertyGetter implements PropertyGetter {
    public String getProperty(final String propName) {
       return getProperty(propName, null);
    }
-
 }

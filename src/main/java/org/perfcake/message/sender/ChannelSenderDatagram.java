@@ -32,7 +32,7 @@ import java.nio.charset.Charset;
 import java.util.Map;
 
 /**
- * Sender that can send messages through NIO DatagramChannel.
+ * Sends messages through NIO DatagramChannel.
  *
  * @author <a href="mailto:domin.hanak@gmail.com">Dominik Hanák</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -103,5 +103,4 @@ public class ChannelSenderDatagram extends ChannelSender {
          throw new PerfCakeException("Error while closing the datagram channel: ", e);
       }
    }
-
 }

@@ -20,12 +20,29 @@
 package org.perfcake.util.properties;
 
 /**
+ * Provides properties.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public interface PropertyGetter {
 
+   /**
+    * Gets a property with a given name. If the property is not found, returns the <code>defaultValue</code>.
+    *
+    * @param propName
+    *       Property name.
+    * @param defaultValue
+    *       The default value.
+    * @return Property value or the <code>defaultValue</code>, if property is not found.
+    */
    public String getProperty(String propName, String defaultValue);
 
+   /**
+    * Gets a property with a given name or a <code>null</code> value, if the property is not found.
+    *
+    * @param propName
+    *       Property name.
+    * @return Property value or a <code>null</code>, if property is not found.
+    */
    public String getProperty(String propName);
-
 }

@@ -36,14 +36,14 @@ public interface Accumulator<T> {
    public void add(T value);
 
    /**
-    * Get the accumulated result of currently added values.
+    * Gets the accumulated result of currently added values.
     *
     * @return The result of the accumulation.
     */
    public T getResult();
 
    /**
-    * Reset the accumulator to the default state.
+    * Resets the accumulator to the default state.
     */
    public void reset();
 }

@@ -24,6 +24,7 @@ import org.perfcake.TestSetup;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 

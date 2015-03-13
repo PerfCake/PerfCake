@@ -34,7 +34,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 /**
- * The sender that can invoke external command (specified by {@link #target} property)
+ * Invokes external command (specified by {@link #target} property)
  * in a separate process to send the message payload (if message is specified) passed to the standard input of
  * the process or as the command argument.
  *
@@ -83,8 +83,14 @@ public class CommandSender extends AbstractSender {
     */
    private String[] environmentVariables;
 
+   /**
+    * The origin where the messages are taken from..
+    *
+    * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+    * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+    */
    public static enum MessageFrom {
-      STDIN, ARGUMENTS;
+      STDIN, ARGUMENTS
    }
 
    @Override
@@ -170,9 +176,9 @@ public class CommandSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of messageFrom property.
+    * Gets the value of messageFrom property.
     *
-    * @return The messageFrom.
+    * @return The messageFrom value.
     */
    public MessageFrom getMessageFrom() {
       return messageFrom;
@@ -182,7 +188,7 @@ public class CommandSender extends AbstractSender {
     * Sets the value of messageFrom property.
     *
     * @param messageFrom
-    *       The messageFrom to set.
+    *       The messageFrom value.
     * @return Instance of this to support fluent API.
     */
    public CommandSender setMessageFrom(final MessageFrom messageFrom) {
@@ -191,19 +197,19 @@ public class CommandSender extends AbstractSender {
    }
 
    /**
-    * Used to read the value of commandPrefix.
+    * Gets the value of commandPrefix property value.
     *
-    * @return The commandPrefix.
+    * @return The commandPrefix value.
     */
    protected String getCommandPrefix() {
       return commandPrefix;
    }
 
    /**
-    * Sets the value of commandPrefix.
+    * Sets the value of commandPrefix property value.
     *
     * @param commandPrefix
-    *       The commandPrefix to set.
+    *       The commandPrefix value.
     * @return Instance of this to support fluent API.
     */
    protected CommandSender setCommandPrefix(final String commandPrefix) {
@@ -212,15 +218,19 @@ public class CommandSender extends AbstractSender {
    }
 
    /**
-    * @return the environmentVariables
+    * Gets an array of environment variables.
+    *
+    * @return The environment variables array.
     */
    public String[] getEnvironmentVariables() {
       return Arrays.copyOf(environmentVariables, environmentVariables.length); // do not allow external modifications
    }
 
    /**
+    * Sets the environment variables from an array.
+    *
     * @param environmentVariables
-    *       the environmentVariables to set
+    *       The environment variables array.
     * @return Instance of this to support fluent API.
     */
    public CommandSender setEnvironmentVariables(final String[] environmentVariables) {

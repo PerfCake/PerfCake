@@ -217,7 +217,7 @@ public class Chart {
    }
 
    /**
-    * Get a chart instance based on the given description file. The resulting instance will carry all the needed information but cannot
+    * Gets a chart instance based on the given description file. The resulting instance will carry all the needed information but cannot
     * be later changed and stored again.
     *
     * @param descriptionFile

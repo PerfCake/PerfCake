@@ -22,7 +22,7 @@ package org.perfcake.message.sender;
 import java.io.File;
 
 /**
- * The sender that is able to execute an external Groovy script and pass the message
+ * Executes an external Groovy script and pass the message
  * payload via the standard input or as a command argument. It extends the {@link CommandSender} and
  * executes the groovy script via groovy command with <code>groovy {@link #target}</code> passed as an argument.
  *
@@ -42,7 +42,7 @@ public class GroovySender extends CommandSender {
    }
 
    /**
-    * Used to read the value of groovyExecutable property.
+    * Gets the value of groovyExecutable property.
     *
     * @return The groovyExecutable.
     */

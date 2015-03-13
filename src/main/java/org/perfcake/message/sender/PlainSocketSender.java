@@ -22,6 +22,8 @@ package org.perfcake.message.sender;
 import java.net.Socket;
 
 /**
+ * Sends messages through a plain TCP socket.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class PlainSocketSender extends AbstractSocketSender {
