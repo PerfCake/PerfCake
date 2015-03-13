@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Utilities used for messages validation.
+ * Utilities used for messages validation. Used by the rules for {@link org.perfcake.validation.RulesValidator}.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:lucie.fabrikova@gmail.com">Lucie Fabriková</a>
@@ -39,7 +39,7 @@ import java.util.List;
 public final class ValidatorUtil {
 
    /**
-    * log4j logger.
+    * Log4j logger.
     */
    private static final Logger log = LogManager.getLogger(ValidatorUtil.class);
 
@@ -51,27 +51,78 @@ public final class ValidatorUtil {
    }
 
    /**
-    * TODO comment values' meaning
     * Validation operator applied to message part and validated value.
     */
    public enum Operator {
-      EQUALS, MATCHES, STARTS_WITH, CONTAINS, ENDS_WITH, EXISTS
+      /**
+       * Uses {@link java.lang.String#equals(Object)}.
+       */
+      EQUALS,
+
+      /**
+       * Uses {@link java.lang.String#matches(String)}.
+       */
+      MATCHES,
+
+      /**
+       * Uses {@link java.lang.String#startsWith(String)}.
+       */
+      STARTS_WITH,
+
+      /**
+       * Uses {@link java.lang.String#contains(CharSequence)}.
+       */
+      CONTAINS,
+
+      /**
+       * Uses {@link java.lang.String#endsWith(String)} )}.
+       */
+      ENDS_WITH,
+
+      /**
+       * A part exists.
+       */
+      EXISTS
    }
 
    /**
-    * TODO comment values' meaning
     * Message part that is validated.
     */
    public enum MessagePart {
-      BODY, BODY_PART, PROPERTY, ATTACHMENT, HEADER_MESSAGE_ID, HEADER_TO, HEADER_FROM, HEADER_REPLY_TO, HEADER_FAULT_TO, HEADER_RELATES_TO, HEADER_ACTION
+      /**
+       * Message body as a whole.
+       */
+      BODY,
+
+      /**
+       * Message body part.
+       */
+      BODY_PART, PROPERTY, ATTACHMENT, HEADER_MESSAGE_ID, HEADER_TO, HEADER_FROM, HEADER_REPLY_TO, HEADER_FAULT_TO, HEADER_RELATES_TO, HEADER_ACTION
    }
 
    /**
-    * TODO comment values' meaning
     * Message occurrence operator.
     */
    public enum Occurrence {
-      NONE, AT_LEAST, AT_MOST, EXACTLY
+      /**
+       * None such message exists.
+       */
+      NONE,
+
+      /**
+       * At least the specified number of messages exists.
+       */
+      AT_LEAST,
+
+      /**
+       * At most the specified number of messages exists.
+       */
+      AT_MOST,
+
+      /**
+       * Exactly the specified number of messages exists.
+       */
+      EXACTLY
    }
 
    /**
@@ -352,5 +403,4 @@ public final class ValidatorUtil {
       }
       return messageCount;
    }
-
 }
