@@ -27,6 +27,7 @@
          </includes>
          <excludes>
             <exclude>*javadoc.jar</exclude>
+            <exclude>*sources.jar</exclude>
          </excludes>
          <fileMode>0644</fileMode>
       </fileSet>
