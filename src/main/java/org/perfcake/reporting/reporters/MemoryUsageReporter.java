@@ -30,8 +30,8 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.util.Utils;
-import org.perfcake.util.agent.PerfCakeAgent;
-import org.perfcake.util.agent.PerfCakeAgent.Command;
+import org.perfcake.agent.PerfCakeAgent;
+import org.perfcake.agent.PerfCakeAgent.Command;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
