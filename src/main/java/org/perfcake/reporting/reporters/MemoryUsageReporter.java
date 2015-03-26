@@ -31,7 +31,7 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.util.Utils;
 import org.perfcake.agent.PerfCakeAgent;
-import org.perfcake.agent.PerfCakeAgent.Command;
+import org.perfcake.agent.AgentCommand;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -225,12 +225,12 @@ public class MemoryUsageReporter extends AbstractReporter {
       try {
          final Measurement m = newMeasurement();
          if (performGcOnMemoryUsage) {
-            sendAgentCommand(Command.GC.name());
+            sendAgentCommand(AgentCommand.GC.name());
          }
-         final long used = sendAgentCommand(Command.USED.name());
+         final long used = sendAgentCommand(AgentCommand.USED.name());
          m.set("Used", (new Quantity<Number>((double) used / BYTES_IN_MIB, "MiB")));
-         m.set("Total", (new Quantity<Number>((double) sendAgentCommand(Command.TOTAL.name()) / BYTES_IN_MIB, "MiB")));
-         m.set("Max", (new Quantity<Number>((double) sendAgentCommand(Command.MAX.name()) / BYTES_IN_MIB, "MiB")));
+         m.set("Total", (new Quantity<Number>((double) sendAgentCommand(AgentCommand.TOTAL.name()) / BYTES_IN_MIB, "MiB")));
+         m.set("Max", (new Quantity<Number>((double) sendAgentCommand(AgentCommand.MAX.name()) / BYTES_IN_MIB, "MiB")));
          if (memoryLeakDetectionEnabled) {
             if (usedMemoryTimeWindow.size() == usedMemoryTimeWindowSize) {
                m.set("UsedTrend", new Quantity<Number>(memoryTrendSlope, "B/s"));
@@ -262,7 +262,7 @@ public class MemoryUsageReporter extends AbstractReporter {
          long used = -1L;
          while (running) {
             try {
-               used = sendAgentCommand(Command.USED.name());
+               used = sendAgentCommand(AgentCommand.USED.name());
             } catch (final IOException e) {
                e.printStackTrace();
             }
@@ -277,7 +277,7 @@ public class MemoryUsageReporter extends AbstractReporter {
                if (memoryDumpOnLeak && !heapDumpSaved) {
                   try {
                      final StringBuffer cmd = new StringBuffer();
-                     cmd.append(Command.DUMP.name());
+                     cmd.append(AgentCommand.DUMP.name());
                      cmd.append(":");
                      if (memoryDumpFile != null) {
                         cmd.append(memoryDumpFile);
