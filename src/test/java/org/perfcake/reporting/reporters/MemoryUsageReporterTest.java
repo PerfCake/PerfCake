@@ -29,7 +29,7 @@ import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.util.ObjectFactory;
-import org.perfcake.util.agent.AgentThread;
+import org.perfcake.agent.AgentThread;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;

@@ -147,12 +147,12 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * The property to make a memory dump, when possible memory leak is detected. The {@link org.perfcake.reporting.reporters.MemoryUsageReporter}
-    * will send a command to {@link org.perfcake.util.agent.PerfCakeAgent} that will create a heap dump.
+    * will send a command to {@link org.perfcake.agent.PerfCakeAgent} that will create a heap dump.
     */
    private boolean memoryDumpOnLeak = false;
 
    /**
-    * The name of the memory dump file created by {@link org.perfcake.util.agent.PerfCakeAgent}.
+    * The name of the memory dump file created by {@link org.perfcake.agent.PerfCakeAgent}.
     */
    private String memoryDumpFile = null;
 
@@ -315,11 +315,11 @@ public class MemoryUsageReporter extends AbstractReporter {
     * Sends a command to the {@link PerfCakeAgent} the reporter is connected to.
     *
     * @param command
-    *       {@link org.perfcake.util.agent.PerfCakeAgent} command.
+    *       {@link org.perfcake.agent.PerfCakeAgent} command.
     * @return Command response code.
     * @throws IOException
     *       In the case of communication error.
-    * @see org.perfcake.util.agent.PerfCakeAgent
+    * @see org.perfcake.agent.PerfCakeAgent
     */
    private long sendAgentCommand(final String command) throws IOException {
       if (log.isDebugEnabled()) {
@@ -441,7 +441,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Gets the period in which a memory usage is gathered from the {@link org.perfcake.util.agent.PerfCakeAgent}.
+    * Gets the period in which a memory usage is gathered from the {@link org.perfcake.agent.PerfCakeAgent}.
     *
     * @return The memory leak detection monitoring period.
     */
@@ -450,7 +450,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Sets  the period in which a memory usage is gathered from the {@link org.perfcake.util.agent.PerfCakeAgent}.
+    * Sets  the period in which a memory usage is gathered from the {@link org.perfcake.agent.PerfCakeAgent}.
     *
     * @param memoryLeakDetectionMonitoringPeriod
     *       The memory leak detection monitoring period.
@@ -462,7 +462,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Gets the name of the memory dump file created by {@link org.perfcake.util.agent.PerfCakeAgent}.
+    * Gets the name of the memory dump file created by {@link org.perfcake.agent.PerfCakeAgent}.
     *
     * @return Name of the memory dump file.
     */
@@ -471,7 +471,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Sets a the name of the memory dump file created by {@link org.perfcake.util.agent.PerfCakeAgent}.
+    * Sets a the name of the memory dump file created by {@link org.perfcake.agent.PerfCakeAgent}.
     *
     * @param memoryDumpFile
     *       Memory dump file name.
@@ -484,7 +484,7 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Returns a value of the property to make a memory dump, when possible memory leak is detected. The {@link org.perfcake.reporting.reporters.MemoryUsageReporter}
-    * will send a command to {@link org.perfcake.util.agent.PerfCakeAgent} that will create a heap dump.
+    * will send a command to {@link org.perfcake.agent.PerfCakeAgent} that will create a heap dump.
     *
     * @return <code>true</code> if the memory dump on leak is enabled. <code>false</code> otherwise.
     */
@@ -494,7 +494,7 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Sets the value of the property to make a memory dump, when possible memory leak is detected. The {@link org.perfcake.reporting.reporters.MemoryUsageReporter}
-    * will send a command to {@link org.perfcake.util.agent.PerfCakeAgent} that will create a heap dump.
+    * will send a command to {@link org.perfcake.agent.PerfCakeAgent} that will create a heap dump.
     *
     * @param memoryDumpOnLeak
     *       Enables or disables the memory dump on leak.
