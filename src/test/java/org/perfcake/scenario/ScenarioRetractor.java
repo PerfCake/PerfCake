@@ -20,7 +20,7 @@
 package org.perfcake.scenario;
 
 import org.perfcake.message.MessageTemplate;
-import org.perfcake.message.generator.AbstractMessageGenerator;
+import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
@@ -54,7 +54,7 @@ public class ScenarioRetractor {
     *
     * @return The generator.
     */
-   public AbstractMessageGenerator getGenerator() {
+   public MessageGenerator getGenerator() {
       return scenario.getGenerator();
    }
 

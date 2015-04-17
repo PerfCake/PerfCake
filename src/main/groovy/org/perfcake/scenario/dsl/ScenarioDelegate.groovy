@@ -25,7 +25,7 @@ import org.perfcake.PerfCakeException
 import org.perfcake.common.Period
 import org.perfcake.common.PeriodType
 import org.perfcake.message.MessageTemplate
-import org.perfcake.message.generator.AbstractMessageGenerator
+import org.perfcake.message.generator.MessageGenerator
 import org.perfcake.scenario.Scenario
 import org.perfcake.scenario.ScenarioBuilder
 import org.perfcake.scenario.ScenarioFactory
@@ -222,7 +222,7 @@ class DslScenario extends PropertiesBacked {
 
    // builds the complete PerfCake scenario
    def Scenario buildScenario() {
-      AbstractMessageGenerator g = generator.buildMessageGenerator()
+      MessageGenerator g = generator.buildMessageGenerator()
       g.setThreads((int) runInfo.getThreads()) // get the number of threads from DSL run info
       ScenarioBuilder builder = new ScenarioBuilder(runInfo.buildRunInfo(), g, sender.messageSenderClassName, sender.messageSenderProperties)
 
@@ -314,7 +314,7 @@ class Generator extends ObjectWithClassName {
       "Generator: {${super.toString()}}"
    }
 
-   AbstractMessageGenerator buildMessageGenerator() {
+   MessageGenerator buildMessageGenerator() {
       def props = new Properties()
       props.putAll(properties)
 

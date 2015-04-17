@@ -27,8 +27,8 @@ import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
-import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.DefaultMessageGenerator;
+import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.destinations.Destination;
@@ -107,7 +107,7 @@ public class XmlFactoryTest extends TestSetup {
       try {
          final XmlFactory scenarioFactory = new XmlFactory();
          scenarioFactory.init(Utils.getResourceAsUrl("/scenarios/test-scenario.xml"));
-         final AbstractMessageGenerator generator = scenarioFactory.parseGenerator();
+         final MessageGenerator generator = scenarioFactory.parseGenerator();
          Assert.assertTrue(generator instanceof DefaultMessageGenerator, "The generator is not an instance of " + DefaultMessageGenerator.class.getName());
          final DefaultMessageGenerator dmg = (DefaultMessageGenerator) generator;
          dmg.setRunInfo(new RunInfo(new Period(PeriodType.TIME, 30L)));

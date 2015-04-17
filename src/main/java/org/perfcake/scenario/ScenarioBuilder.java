@@ -22,7 +22,7 @@ package org.perfcake.scenario;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
-import org.perfcake.message.generator.AbstractMessageGenerator;
+import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
@@ -56,7 +56,7 @@ public class ScenarioBuilder {
     * @throws PerfCakeException
     *       When any of the parameters are not set or creation of the underlying classes fails.
     */
-   public ScenarioBuilder(final RunInfo runInfo, final AbstractMessageGenerator messageGenerator, final MessageSender messageSender) throws PerfCakeException {
+   public ScenarioBuilder(final RunInfo runInfo, final MessageGenerator messageGenerator, final MessageSender messageSender) throws PerfCakeException {
       if (runInfo == null) {
          throw new PerfCakeException("RunInfo is not set.");
       }
@@ -91,7 +91,7 @@ public class ScenarioBuilder {
     * @throws PerfCakeException
     *       When any of the parameters are not set or creation of the underlying classes fails.
     */
-   public ScenarioBuilder(final RunInfo runInfo, final AbstractMessageGenerator messageGenerator, final String senderClass, final Properties senderProperties) throws PerfCakeException {
+   public ScenarioBuilder(final RunInfo runInfo, final MessageGenerator messageGenerator, final String senderClass, final Properties senderProperties) throws PerfCakeException {
       if (runInfo == null) {
          throw new PerfCakeException("RunInfo is not set.");
       }
@@ -105,7 +105,7 @@ public class ScenarioBuilder {
       initScenario(runInfo, messageGenerator, senderClass, senderProperties);
    }
 
-   private void initScenario(final RunInfo runInfo, final AbstractMessageGenerator messageGenerator, final String senderClass, final Properties senderProperties) throws PerfCakeException {
+   private void initScenario(final RunInfo runInfo, final MessageGenerator messageGenerator, final String senderClass, final Properties senderProperties) throws PerfCakeException {
       scenario = new Scenario();
       messageGenerator.setRunInfo(runInfo);
       scenario.setGenerator(messageGenerator);

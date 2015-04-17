@@ -32,7 +32,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * A common ancestor for all generators. It can generate messages in parallel using {@link MessageSender Message Senders} running
+ * A common ancestor for most generators. It can generate messages in parallel using {@link MessageSender Message Senders} running
  * concurrently in {@link #threads} number of threads.
  * The generator should also have the ability to tag messages by the sequence number that indicated the order of messages
  * (see {@link #setMessageNumberingEnabled(boolean)}).
@@ -40,7 +40,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public abstract class AbstractMessageGenerator {
+public abstract class AbstractMessageGenerator implements MessageGenerator {
 
    /**
     * Message sender manager.
@@ -88,6 +88,7 @@ public abstract class AbstractMessageGenerator {
     * @throws Exception
     *       When it was not possible to initialize the generator.
     */
+   @Override
    public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception {
       this.messageStore = messageStore;
       this.messageSenderManager = messageSenderManager;
@@ -115,21 +116,12 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-    * Sets the {@link org.perfcake.message.sender.MessageSenderManager} to be used for generating the messages.
-    *
-    * @param messageSenderManager
-    *       The message sender manager to set.
-    */
-   public void setMessageSenderManager(final MessageSenderManager messageSenderManager) {
-      this.messageSenderManager = messageSenderManager;
-   }
-
-   /**
     * Sets the current {@link org.perfcake.RunInfo} to control generating of the messages.
     *
     * @param runInfo
     *       {@link org.perfcake.RunInfo} to be used.
     */
+   @Override
    public void setRunInfo(final RunInfo runInfo) {
       this.runInfo = runInfo;
       this.runInfo.setThreads(threads);
@@ -147,6 +139,7 @@ public abstract class AbstractMessageGenerator {
     * @param reportManager
     *       {@link org.perfcake.reporting.ReportManager} to be used.
     */
+   @Override
    public void setReportManager(final ReportManager reportManager) {
       this.reportManager = reportManager;
    }
@@ -157,6 +150,7 @@ public abstract class AbstractMessageGenerator {
     * @throws PerfCakeException
     *       When it was not possible to smoothly finalize the generator.
     */
+   @Override
    public void close() throws PerfCakeException {
       messageSenderManager.close();
    }
@@ -178,22 +172,12 @@ public abstract class AbstractMessageGenerator {
    }
 
    /**
-    * Computes the current average speed at which the iterations are executed.
-    *
-    * @param cnt
-    *       Current iteration number.
-    * @return The current average iteration execution speed in iterations per second.
-    */
-   protected float getSpeed(final long cnt) {
-      return 1000f * cnt / runInfo.getRunTime();
-   }
-
-   /**
     * Generates the messages. This actually executes the whole performance test.
     *
     * @throws Exception
     *       When it was not possible to generate the messages.
     */
+   @Override
    public abstract void generate() throws Exception;
 
    /**
@@ -202,6 +186,7 @@ public abstract class AbstractMessageGenerator {
     *
     * @return Number of currently running threads.
     */
+   @Override
    public int getThreads() {
       return threads;
    }
@@ -213,7 +198,8 @@ public abstract class AbstractMessageGenerator {
     *       The number of threads to be used.
     * @return Instance of this to support fluent API.
     */
-   public AbstractMessageGenerator setThreads(final int threads) {
+   @Override
+   public MessageGenerator setThreads(final int threads) {
       this.threads = threads;
       if (runInfo != null) {
          runInfo.setThreads(threads);
@@ -239,7 +225,7 @@ public abstract class AbstractMessageGenerator {
     *       True to enable message numbering, false otherwise.
     * @return Instance of this to support fluent API.
     */
-   public AbstractMessageGenerator setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
+   public MessageGenerator setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
       this.messageNumberingEnabled = messageNumberingEnabled;
       return this;
    }
@@ -250,6 +236,7 @@ public abstract class AbstractMessageGenerator {
     * @param validationManager
     *       {@link org.perfcake.validation.ValidationManager} to be used.s
     */
+   @Override
    public void setValidationManager(final ValidationManager validationManager) {
       this.validationManager = validationManager;
    }

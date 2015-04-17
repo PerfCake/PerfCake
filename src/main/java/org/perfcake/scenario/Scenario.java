@@ -21,7 +21,7 @@ package org.perfcake.scenario;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageTemplate;
-import org.perfcake.message.generator.AbstractMessageGenerator;
+import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
@@ -47,7 +47,7 @@ public class Scenario {
    /**
     * Message generator.
     */
-   private AbstractMessageGenerator generator;
+   private MessageGenerator generator;
 
    /**
     * Manager of message senders.
@@ -146,7 +146,7 @@ public class Scenario {
     *
     * @return The current {@link org.perfcake.model.Scenario.Generator}.
     */
-   AbstractMessageGenerator getGenerator() {
+   MessageGenerator getGenerator() {
       return generator;
    }
 
@@ -156,7 +156,7 @@ public class Scenario {
     * @param generator
     *       The {@link org.perfcake.model.Scenario.Generator} to be set.
     */
-   void setGenerator(final AbstractMessageGenerator generator) {
+   void setGenerator(final MessageGenerator generator) {
       this.generator = generator;
    }
 

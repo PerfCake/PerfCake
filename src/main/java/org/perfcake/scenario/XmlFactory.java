@@ -26,7 +26,7 @@ import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
-import org.perfcake.message.generator.AbstractMessageGenerator;
+import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.model.Header;
 import org.perfcake.model.Property;
@@ -126,7 +126,7 @@ public class XmlFactory implements ScenarioFactory {
          scenario = new Scenario();
 
          final RunInfo runInfo = parseRunInfo();
-         final AbstractMessageGenerator messageGenerator = parseGenerator();
+         final MessageGenerator messageGenerator = parseGenerator();
          messageGenerator.setRunInfo(runInfo);
 
          scenario.setGenerator(messageGenerator);
@@ -219,14 +219,14 @@ public class XmlFactory implements ScenarioFactory {
    }
 
    /**
-    * Parses the <code>generator</code> element into an {@link org.perfcake.message.generator.AbstractMessageGenerator} instance.
+    * Parses the <code>generator</code> element into an {@link org.perfcake.message.generator.MessageGenerator} instance.
     *
-    * @return A particular implementation of {@link org.perfcake.message.generator.AbstractMessageGenerator}.
+    * @return A particular implementation of {@link org.perfcake.message.generator.MessageGenerator}.
     * @throws org.perfcake.PerfCakeException
     *       When there is a parse exception.
     */
-   protected AbstractMessageGenerator parseGenerator() throws PerfCakeException {
-      final AbstractMessageGenerator generator;
+   protected MessageGenerator parseGenerator() throws PerfCakeException {
+      final MessageGenerator generator;
 
       try {
          final Generator gen = scenarioModel.getGenerator();
@@ -245,7 +245,7 @@ public class XmlFactory implements ScenarioFactory {
          final Properties generatorProperties = getPropertiesFromList(gen.getProperty());
          Utils.logProperties(log, Level.DEBUG, generatorProperties, "   ");
 
-         generator = (AbstractMessageGenerator) ObjectFactory.summonInstance(generatorClass, generatorProperties);
+         generator = (MessageGenerator) ObjectFactory.summonInstance(generatorClass, generatorProperties);
          generator.setThreads(threads);
       } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
          throw new PerfCakeException("Cannot parse message generator configuration: ", e);
