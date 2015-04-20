@@ -145,9 +145,11 @@ fi
 # Set the PerfCake working directory
 cd "$PERFCAKE_HOME"
 
+PERFCAKE_JAR="$(find $PERFCAKE_HOME/lib -type f -regex '.*lib/perfcake-[0-9]+\.[0-9]+.*\.jar')"
+
 # Run PerfCake
 exec "$JAVACMD" \
   -Dlog4j.configurationFile="${PERFCAKE_HOME}/log4j2.xml" \
   -Djava.ext.dirs="${JAVA_HOME}/lib/ext:${JAVA_HOME}/jre/lib/ext:${PERFCAKE_HOME}/lib/ext" \
-  -jar "${PERFCAKE_HOME}"/lib/perfcake*.jar \
+  -jar "${PERFCAKE_JAR}" \
   "$@"
