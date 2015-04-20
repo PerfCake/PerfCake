@@ -91,6 +91,21 @@
    </distributionManagement>
    <properties>
       <maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
+      <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
+      <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
+      <maven.site.plugin.version>3.3</maven.site.plugin.version>
+      <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
+      <maven.license.plugin.version>1.5</maven.license.plugin.version>
+      <maven.release.plugin.version>2.4.1</maven.release.plugin.version>
+      <maven.findbugs.plugin.version>3.0.0</maven.findbugs.plugin.version>
+      <maven.project.info.plugin.version>2.7</maven.project.info.plugin.version>
+      <maven.exec.plugin.version>1.2</maven.exec.plugin.version>
+      <maven.source.plugin.version>2.4</maven.source.plugin.version>
+      <maven.javadoc.plugin.version>2.10.1</maven.javadoc.plugin.version>
+      <maven.gpg.plugin.version>1.5</maven.gpg.plugin.version>
+      <maven.xml.plugin.version>1.0</maven.xml.plugin.version>
+      <maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
+      <maven.dependency.plugin.version>2.8</maven.dependency.plugin.version>
    </properties>
    <modules>
       <module>perfcake-agent</module>
