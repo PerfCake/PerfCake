@@ -50,7 +50,7 @@ import java.util.List;
 public interface MessageGenerator {
 
    /**
-    * Initializes the generator. During the initialization the {@link #messageSenderManager} should be initialized as well.
+    * Initializes the generator. During the initialization the {@link MessageSenderManager} should be initialized as well.
     *
     * @param messageSenderManager
     *       Message sender manager.
@@ -70,7 +70,7 @@ public interface MessageGenerator {
    void generate() throws Exception;
 
    /**
-    * Closes and finalizes the generator. The {@link #messageSenderManager} must be closed as well.
+    * Closes and finalizes the generator. The {@link MessageSenderManager} must be closed as well.
     *
     * @throws PerfCakeException
     *       When it was not possible to smoothly finalize the generator.
