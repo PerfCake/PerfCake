@@ -26,7 +26,8 @@ function drawChart(dataArray, chartDiv, columns, xAxisType, xAxis, yAxis, chartN
       return neg + hours + ":" + minutes + ":" + seconds + "." + milliseconds;
    }
 
-   var offset = (new Date()).getTimezoneOffset() * 60 * 1000;
+   var ho = (new Date(0)).getHours();
+   var offset = - (ho >= 12 ? ho - 24 : ho) * 60 * 60 * 1000;
    columns = columns.sort();
 
    var warmUpCorrection = 0;

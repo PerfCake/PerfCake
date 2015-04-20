@@ -402,7 +402,8 @@ public class Chart {
       }
       dataHeader.append(" ] ];\n");
       if (xAxisType == PeriodType.TIME) {
-         dataHeader.append("var offset = (new Date()).getTimezoneOffset() * 60 * 1000;\n");
+         dataHeader.append("var ho = (new Date(0)).getHours();\n"
+               + "var offset = - (ho >= 12 ? ho - 24 : ho) * 60 * 60 * 1000;\n");
       }
       dataHeader.append("\n");
       Utils.writeFileContent(dataFile, dataHeader.toString());

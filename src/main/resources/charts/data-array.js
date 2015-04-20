@@ -1,7 +1,7 @@
 var ${baseName} = [ ['Time', ${chartsQuoted} ] ];
 
 var columns = [${chartCols}]; // 2, 2
-var limiter = [${chartLen}]; // arr.length, arrr.length
+var limiter = [${chartLen}]; // arr.length, arr.length
 var data = [${charts}];
 var len = data.length;
 
