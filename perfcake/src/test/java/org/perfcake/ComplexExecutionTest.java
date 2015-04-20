@@ -42,6 +42,7 @@ public class ComplexExecutionTest extends TestSetup {
       scenario = ScenarioLoader.load("test-iteration-scenario");
       scenario.init();
       scenario.run();
+      Thread.sleep(500);
       scenario.close();
 
       Assert.assertEquals(DummySender.getCounter(), 1);
