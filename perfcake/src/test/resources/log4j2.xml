@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+   <Appenders>
+      <Console name="CONSOLE" target="SYSTEM_OUT">
+         <PatternLayout pattern="%d %-5p [%t] {%c} %m%n"/>
+      </Console>
+      <RollingFile name="ROLLING" fileName="./perfcake.log" filePattern="./perfcake.log.%d{yyyy-MM-dd}">
+         <PatternLayout pattern="%d %-5p [%t] {%c} %m%n"/>
+         <Policies>
+            <TimeBasedTriggeringPolicy />
+         </Policies>
+         <DefaultRolloverStrategy max="10"/>
+      </RollingFile>
+      <RollingFile name="VALIDATION" fileName="./perfcake-validation.log" filePattern="./perfcake-validation.log.%d{yyyy-MM-dd}">
+         <PatternLayout pattern="%d %-5p [%t] {%c} %m%n"/>
+         <Policies>
+            <TimeBasedTriggeringPolicy />
+         </Policies>
+         <DefaultRolloverStrategy max="10"/>
+      </RollingFile>
+      <Async name="ASYNC">
+         <AppenderRef ref="ROLLING"/>
+         <AppenderRef ref="CONSOLE"/>
+      </Async>
+   </Appenders>
+   <Loggers>
+      <Logger name="com" level="info"/>
+      <Logger name="org" level="info"/>
+      <Logger name="org.perfcake" level="info"/>
+      <Logger name="org.perfcake.message.sender.JdbcSender" level="debug"/>
+      <Logger name="org.perfcake.validation" additivity="false" level="info">
+         <AppenderRef ref="VALIDATION"/>
+      </Logger>
+      <Logger name="org.perfcake.validation.ValidationManager" additivity="true" level="info">
+         <AppenderRef ref="ASYNC"/>
+      </Logger>
+      <Root level="info">
+         <AppenderRef ref="ASYNC"/>
+      </Root>
+   </Loggers>
+</Configuration>
