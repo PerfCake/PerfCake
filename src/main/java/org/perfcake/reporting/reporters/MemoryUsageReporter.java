@@ -20,6 +20,7 @@
 package org.perfcake.reporting.reporters;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.agent.AgentCommand;
 import org.perfcake.common.PeriodType;
 import org.perfcake.common.TimestampedRecord;
 import org.perfcake.reporting.Measurement;
@@ -30,8 +31,6 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.util.Utils;
-import org.perfcake.agent.PerfCakeAgent;
-import org.perfcake.agent.AgentCommand;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -48,7 +47,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Reports memory usage information from a remote JVM,
- * where {@link PerfCakeAgent} is deployed. It communicates with the {@link PerfCakeAgent} to
+ * where PerfCake agent is deployed. It communicates with the PerfCake agent to
  * get the information via TCP sockets.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
@@ -66,32 +65,32 @@ public class MemoryUsageReporter extends AbstractReporter {
    private static final Logger log = LogManager.getLogger(MemoryUsageReporter.class);
 
    /**
-    * Hostname where {@link PerfCakeAgent} is listening on.
+    * Hostname where PerfCake agent is listening on.
     */
    private String agentHostname = "localhost";
 
    /**
-    * Port number where {@link PerfCakeAgent} is listening on.
+    * Port number where PerfCake agent is listening on.
     */
    private String agentPort = "8850";
 
    /**
-    * IP address of the {@link PerfCakeAgent}.
+    * IP address of the PerfCake agent.
     */
    private InetAddress host;
 
    /**
-    * Socket used to communicate with the {@link PerfCakeAgent}.
+    * Socket used to communicate with the PerfCake agent.
     */
    private Socket socket;
 
    /**
-    * Reader to read response from {@link PerfCakeAgent}.
+    * Reader to read response from PerfCake agent.
     */
    private BufferedReader responseReader;
 
    /**
-    * Writer to send requests to {@link PerfCakeAgent}.
+    * Writer to send requests to PerfCake agent.
     */
    private PrintWriter requestWriter;
 
@@ -117,7 +116,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    private boolean memoryLeakDetectionEnabled = false;
 
    /**
-    * Determines the period in which a memory usage is gathered from the {@link PerfCakeAgent}.
+    * Determines the period in which a memory usage is gathered from the PerfCake agent.
     */
    private long memoryLeakDetectionMonitoringPeriod = 500L;
 
@@ -147,12 +146,12 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * The property to make a memory dump, when possible memory leak is detected. The {@link org.perfcake.reporting.reporters.MemoryUsageReporter}
-    * will send a command to {@link org.perfcake.agent.PerfCakeAgent} that will create a heap dump.
+    * will send a command to PerfCake agent that will create a heap dump.
     */
    private boolean memoryDumpOnLeak = false;
 
    /**
-    * The name of the memory dump file created by {@link org.perfcake.agent.PerfCakeAgent}.
+    * The name of the memory dump file created by PerfCake agent.
     */
    private String memoryDumpFile = null;
 
@@ -189,8 +188,8 @@ public class MemoryUsageReporter extends AbstractReporter {
             log.debug("Creating socket " + host + ":" + agentPort + "...");
          }
          socket = new Socket(host, Integer.parseInt(agentPort));
-         requestWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), PerfCakeAgent.DEFAULT_ENCODING), true);
-         responseReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), PerfCakeAgent.DEFAULT_ENCODING));
+         requestWriter = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), Utils.getDefaultEncoding()), true);
+         responseReader = new BufferedReader(new InputStreamReader(socket.getInputStream(), Utils.getDefaultEncoding()));
          usedMemoryTimeWindow = new LinkedBlockingQueue<>(usedMemoryTimeWindowSize);
 
          if (memoryLeakDetectionEnabled) { // start the thread only if memory leak detection is enabled
@@ -285,7 +284,7 @@ public class MemoryUsageReporter extends AbstractReporter {
                         cmd.append("dump-" + System.getProperty(PerfCakeConst.TIMESTAMP_PROPERTY) + ".bin");
                      }
                      if (sendAgentCommand(cmd.toString()) < 0) {
-                        throw new RuntimeException("An exception occured at " + PerfCakeAgent.class.getSimpleName() + " side.");
+                        throw new RuntimeException("An exception occured at PerfCake agent side.");
                      }
                      heapDumpSaved = true;
                   } catch (final IOException e) {
@@ -312,14 +311,13 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Sends a command to the {@link PerfCakeAgent} the reporter is connected to.
+    * Sends a command to the PerfCake agent the reporter is connected to.
     *
     * @param command
-    *       {@link org.perfcake.agent.PerfCakeAgent} command.
+    *       PerfCake agent command.
     * @return Command response code.
     * @throws IOException
     *       In the case of communication error.
-    * @see org.perfcake.agent.PerfCakeAgent
     */
    private long sendAgentCommand(final String command) throws IOException {
       if (log.isDebugEnabled()) {
@@ -441,7 +439,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Gets the period in which a memory usage is gathered from the {@link org.perfcake.agent.PerfCakeAgent}.
+    * Gets the period in which a memory usage is gathered from the PerfCake agent.
     *
     * @return The memory leak detection monitoring period.
     */
@@ -450,7 +448,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Sets  the period in which a memory usage is gathered from the {@link org.perfcake.agent.PerfCakeAgent}.
+    * Sets  the period in which a memory usage is gathered from the PerfCake agent.
     *
     * @param memoryLeakDetectionMonitoringPeriod
     *       The memory leak detection monitoring period.
@@ -462,7 +460,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Gets the name of the memory dump file created by {@link org.perfcake.agent.PerfCakeAgent}.
+    * Gets the name of the memory dump file created by PerfCake agent.
     *
     * @return Name of the memory dump file.
     */
@@ -471,7 +469,7 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Sets a the name of the memory dump file created by {@link org.perfcake.agent.PerfCakeAgent}.
+    * Sets a the name of the memory dump file created by PerfCake agent.
     *
     * @param memoryDumpFile
     *       Memory dump file name.
@@ -484,7 +482,7 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Returns a value of the property to make a memory dump, when possible memory leak is detected. The {@link org.perfcake.reporting.reporters.MemoryUsageReporter}
-    * will send a command to {@link org.perfcake.agent.PerfCakeAgent} that will create a heap dump.
+    * will send a command to PerfCake agent that will create a heap dump.
     *
     * @return <code>true</code> if the memory dump on leak is enabled. <code>false</code> otherwise.
     */
@@ -494,7 +492,7 @@ public class MemoryUsageReporter extends AbstractReporter {
 
    /**
     * Sets the value of the property to make a memory dump, when possible memory leak is detected. The {@link org.perfcake.reporting.reporters.MemoryUsageReporter}
-    * will send a command to {@link org.perfcake.agent.PerfCakeAgent} that will create a heap dump.
+    * will send a command to PerfCake agent that will create a heap dump.
     *
     * @param memoryDumpOnLeak
     *       Enables or disables the memory dump on leak.

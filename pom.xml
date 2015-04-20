@@ -6,12 +6,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake</artifactId>
-   <version>5.0-SNAPSHOT</version>
-   <!--parent>
-      <groupId>org.sonatype.oss</groupId>
-      <artifactId>oss-parent</artifactId>
-      <version>7</version>
-   </parent-->
+   <version>4.1-SNAPSHOT</version>
    <packaging>jar</packaging>
    <name>PerfCake</name>
    <organization>
@@ -263,11 +258,6 @@
          <version>${wildfly.version}</version>
          <scope>test</scope>
       </dependency>
-      <!--dependency>
-         <groupId>org.wildfly</groupId>
-         <artifactId>wildfly-embedded</artifactId>
-         <version>${wildfly.version}</version>
-      </dependency-->
       <dependency>
          <groupId>org.wildfly</groupId>
          <artifactId>wildfly-dist</artifactId>
@@ -306,10 +296,6 @@
          <version>${wildfly.version}</version>
          <scope>test</scope>
       </dependency>
-      <!--dependency>
-         <groupId>org.jboss.netty</groupId>
-         <artifactId>netty</artifactId>
-      </dependency-->
       <!-- /END OF HornetQ remote client -->
       <!-- Mockito -->
       <dependency>
