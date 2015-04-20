@@ -6,7 +6,7 @@
    <modelVersion>4.0.0</modelVersion>
    <parent>
       <groupId>org.perfcake</groupId>
-      <artifactId>perfcake-parent</artifactId>
+      <artifactId>perfcake-parent</artifactId> 
       <version>4.1-SNAPSHOT</version>
    </parent>
    <artifactId>perfcake-agent</artifactId> 
@@ -66,6 +66,15 @@
       <drools.version>6.1.0.Beta3</drools.version>
       <groovy.version>2.4.0</groovy.version>
       <jacoco.version>0.7.1.201405082137</jacoco.version>
+      <maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
+      <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
+      <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
+      <maven.site.plugin.version>3.3</maven.site.plugin.version>
+      <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
+      <maven.license.plugin.version>1.5</maven.license.plugin.version>
+      <maven.release.plugin.version>2.4.1</maven.release.plugin.version>
+      <maven.findbugs.plugin.version>3.0.0</maven.findbugs.plugin.version>
+      <maven.project.info.plugin.version>2.7</maven.project.info.plugin.version>
       <maven.exec.plugin.version>1.2</maven.exec.plugin.version>
       <maven.source.plugin.version>2.4</maven.source.plugin.version>
       <maven.javadoc.plugin.version>2.10.1</maven.javadoc.plugin.version>
@@ -157,7 +166,7 @@
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>license-maven-plugin</artifactId>
-            <version>1.5</version>
+            <version>${maven.license.plugin.version}</version>
             <configuration>
                <verbose>false</verbose>
                <addSvnKeyWords>false</addSvnKeyWords>
@@ -214,7 +223,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-site-plugin</artifactId>
-            <version>3.3</version>
+            <version>${maven.site.plugin.version}</version>
             <dependencies>
                <dependency>
                   <groupId>lt.velykis.maven.skins</groupId>
@@ -274,7 +283,7 @@
          <plugins>
             <plugin>
                <artifactId>maven-compiler-plugin</artifactId>
-               <version>3.2</version>
+               <version>${maven.compiler.plugin.version}</version>
                <configuration>
                   <source>1.5</source>
                   <target>1.5</target>
@@ -283,7 +292,7 @@
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-jar-plugin</artifactId>
-               <version>2.4</version>
+               <version>${maven.jar.plugin.version}</version>
                <configuration>
                   <archive>
                      <manifestEntries>
@@ -296,18 +305,19 @@
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-assembly-plugin</artifactId>
-               <version>2.2.2</version>
+               <version>${maven.assembly.plugin.version}</version>
                <configuration>
                   <descriptors>
-                     <descriptor>src/main/assembly/bin.xml</descriptor>
-                     <descriptor>src/main/assembly/src.xml</descriptor>
+                     <descriptor>${basedir}/src/main/assembly/bin.xml</descriptor>
+                     <descriptor>${basedir}/src/main/assembly/src.xml</descriptor>
                   </descriptors>
+                  <skipAssembly>false</skipAssembly>
                </configuration>
             </plugin>
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-clean-plugin</artifactId>
-               <version>2.5</version>
+               <version>${maven.clean.plugin.version}</version>
                <configuration>
                   <filesets>
                      <fileset>
@@ -327,7 +337,7 @@
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-release-plugin</artifactId>
-               <version>2.4.1</version>
+               <version>${maven.release.plugin.version}</version>
                <configuration>
                   <tagNameFormat>v@{project.version}</tagNameFormat>
                   <pushChanges>false</pushChanges>
@@ -415,8 +425,9 @@
    <reporting>
       <plugins>
          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-project-info-reports-plugin</artifactId>
-            <version>2.7</version>
+            <version>${maven.project.info.plugin.version}</version>
             <configuration>
                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
             </configuration>
@@ -424,17 +435,12 @@
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>findbugs-maven-plugin</artifactId>
-            <version>3.0.0</version>
+            <version>${maven.findbugs.plugin.version}</version>
          </plugin>
          <plugin>
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>${jacoco.version}</version>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-project-info-reports-plugin</artifactId>
-            <version>2.4</version>
          </plugin>
       </plugins>
    </reporting>

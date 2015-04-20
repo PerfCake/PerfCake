@@ -89,6 +89,9 @@
          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
       </repository>
    </distributionManagement>
+   <properties>
+      <maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
+   </properties>
    <modules>
       <module>perfcake-agent</module>
       <module>perfcake</module>
