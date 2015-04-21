@@ -111,4 +111,23 @@
       <module>perfcake-agent</module>
       <module>perfcake</module>
    </modules>
+   <build>
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-assembly-plugin</artifactId>
+               <version>${maven.assembly.plugin.version}</version>
+               <configuration>
+                  <descriptors>
+                     <descriptor>${basedir}/perfcake/src/main/assembly/bin.xml</descriptor>
+                     <descriptor>${basedir}/perfcake/src/main/assembly/src.xml</descriptor>
+                     <descriptor>${basedir}/perfcake-agent/src/main/assembly/bin.xml</descriptor>
+                     <descriptor>${basedir}/perfcake-agent/src/main/assembly/src.xml</descriptor>
+                  </descriptors>
+               </configuration>
+            </plugin>
+         </plugins>
+      </pluginManagement>
+   </build>
 </project>
