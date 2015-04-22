@@ -377,6 +377,9 @@
                <includes>
                   <include>org/perfcake/**</include>
                </includes>
+               <excludes>
+                  <exclude>org/perfcake/model/**</exclude>
+               </excludes>
             </configuration>
             <executions>
                <execution>
