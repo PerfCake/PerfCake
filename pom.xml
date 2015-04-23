@@ -90,6 +90,7 @@
       </repository>
    </distributionManagement>
    <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
       <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
       <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
