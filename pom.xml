@@ -130,4 +130,23 @@
          </plugins>
       </pluginManagement>
    </build>
+   <profiles>
+      <profile>
+         <id>production</id>
+         <build>
+            <pluginManagement>
+               <plugins>
+                  <plugin>
+                     <artifactId>maven-compiler-plugin</artifactId>
+                     <version>${maven.compiler.plugin.version}</version>
+                     <configuration>
+                        <debug>true</debug>
+                        <debuglevel>none</debuglevel>
+                     </configuration>
+                  </plugin>
+               </plugins>
+            </pluginManagement>
+         </build>
+      </profile>
+   </profiles>
 </project>
