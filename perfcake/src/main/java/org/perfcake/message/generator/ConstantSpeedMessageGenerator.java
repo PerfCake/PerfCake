@@ -19,9 +19,6 @@
  */
 package org.perfcake.message.generator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 /**
  * A generator that tries to achieve given speed of messages per second.
  * Uses the underlying buffer of {@link SenderTask SenderTasks} in {@link DefaultMessageGenerator}.
@@ -31,11 +28,6 @@ import org.apache.logging.log4j.Logger;
  * @author Martin Večeřa <marvenec@gmail.com>
  */
 public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
-
-   /**
-    * The generator's logger.
-    */
-   private static final Logger log = LogManager.getLogger(ConstantSpeedMessageGenerator.class);
 
    /**
     * The desired constant speed in messages per second.
