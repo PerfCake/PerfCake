@@ -25,7 +25,7 @@ import org.perfcake.PerfCakeException;
  * Represents an automatically generated sequence of values.
  * The resulting values can be used in the message body.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public interface Sequence {
 
@@ -38,6 +38,7 @@ public interface Sequence {
    /**
     * Resets the sequence.
     * This method is called at the very beginning, so it can be used to perform any initialization steps as well.
+    * @throws PerfCakeException When it was not possible to initialize the sequence to its original state.
     */
    default void reset() throws PerfCakeException {};
 }

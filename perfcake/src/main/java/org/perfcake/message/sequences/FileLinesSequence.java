@@ -36,7 +36,7 @@ import java.util.List;
  * The whole file is read in the memory, so make sure the file is of a reasonable size
  * given your expectations and memory limits.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class FileLinesSequence implements Sequence {
 
