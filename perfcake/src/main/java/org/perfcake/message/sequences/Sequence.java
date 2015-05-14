@@ -19,8 +19,10 @@
  */
 package org.perfcake.message.sequences;
 
+import org.perfcake.PerfCakeException;
+
 /**
- * Represents an automatically generated data row.
+ * Represents an automatically generated sequence of values.
  * The resulting values can be used in the message body.
  *
  * @author Martin Večeřa <marvenec@gmail.com>
@@ -28,14 +30,14 @@ package org.perfcake.message.sequences;
 public interface Sequence {
 
    /**
-    * Gets the next value in this data row. Must be thread safe. It is called once per message.
-    * @return The next value in this data row.
+    * Gets the next value in this sequence. Must be thread safe. It is called once per message.
+    * @return The next value in this sequence.
     */
    String getNext();
 
    /**
-    * Resets the data row.
+    * Resets the sequence.
     * This method is called at the very beginning, so it can be used to perform any initialization steps as well.
     */
-   default void reset() {};
+   default void reset() throws PerfCakeException {};
 }

@@ -20,6 +20,15 @@
 package org.perfcake.message.sequences;
 
 import org.perfcake.PerfCakeException;
+import org.perfcake.util.Utils;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Every single line in a given input file specifies a value of this sequence.
@@ -32,17 +41,53 @@ import org.perfcake.PerfCakeException;
 public class FileLinesSequence implements Sequence {
 
    /**
+    * The generator's logger.
+    */
+   private static final Logger log = LogManager.getLogger(FileLinesSequence.class);
+
+   /**
     * The location of the file to read ro
     */
    private String fileUrl;
 
+   /**
+    * Content of the input file as a list of lines.
+    */
+   private List<String> lines;
+
+   /**
+    * Current iterator in the list of {@link #lines}.
+    */
+   private Iterator<String> iterator = null;
+
    @Override
    public String getNext() {
-      return null;
+      if (iterator == null || !iterator.hasNext()) {
+         if (lines != null) {
+            iterator = lines.iterator();
+         } else {
+            return null;
+         }
+      }
+
+      return iterator.next();
    }
 
    @Override
    public void reset() throws PerfCakeException {
+      try {
+         lines = Utils.readLines(new URL(fileUrl));
+      } catch (IOException e) {
+         log.warn(String.format("Could not initialize file lines sequence for file %s: ", fileUrl), e);
+         throw new PerfCakeException(e);
+      }
+   }
 
+   public String getFileUrl() {
+      return fileUrl;
+   }
+
+   public void setFileUrl(final String fileUrl) {
+      this.fileUrl = fileUrl;
    }
 }

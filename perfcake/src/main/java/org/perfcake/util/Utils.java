@@ -32,9 +32,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
@@ -44,8 +46,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Properties;
@@ -203,6 +207,28 @@ public class Utils {
          }
          return "";
       }
+   }
+
+   /**
+    * Reads lines from the given URL as a list of strings.
+    * @param url The URL to read the content from.
+    * @return A list of lines in the content in the original order.
+    * @throws IOException When it was not possible to read the content of the given URL.
+    */
+   public static List<String> readLines(final URL url) throws IOException {
+      List<String> results = new ArrayList<>();
+
+      try (InputStream is = url.openStream();
+            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+            BufferedReader br = new BufferedReader(isr)) {
+
+         String line;
+         while ((line = br.readLine()) != null) {
+            results.add(line);
+         }
+      }
+
+      return results;
    }
 
    /**
