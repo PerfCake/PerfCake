@@ -25,7 +25,7 @@ package org.perfcake.message.generator;
  * This buffer smoothens the changes in the speed. If you need the generator to change its speed
  * more aggressively, configure {@link DefaultMessageGenerator#setSenderTaskQueueSize(int)}.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
 
