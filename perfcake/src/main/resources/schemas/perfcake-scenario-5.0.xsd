@@ -51,6 +51,7 @@
                               <xsd:element maxOccurs="unbounded" minOccurs="0" ref="pc:property"/>
                            </xsd:sequence>
                            <xsd:attribute name="class" type="xsd:string" />
+                           <xsd:attribute name="name" type="xsd:string" />
                         </xsd:complexType>
                      </xsd:element>
                   </xsd:sequence>

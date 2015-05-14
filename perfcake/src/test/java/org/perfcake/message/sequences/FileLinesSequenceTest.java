@@ -1,7 +1,5 @@
 package org.perfcake.message.sequences;
 
-import static org.testng.Assert.*;
-
 import org.perfcake.TestSetup;
 import org.perfcake.util.Utils;
 
@@ -9,7 +7,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 @Test(groups = { "unit" })
 public class FileLinesSequenceTest extends TestSetup {
