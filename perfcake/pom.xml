@@ -6,7 +6,7 @@
    <modelVersion>4.0.0</modelVersion>
    <parent>
       <groupId>org.perfcake</groupId>
-      <artifactId>perfcake-parent</artifactId> 
+      <artifactId>perfcake-parent</artifactId>
       <version>5.0-SNAPSHOT</version>
    </parent>
    <artifactId>perfcake</artifactId>
@@ -716,6 +716,14 @@
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>${jacoco.version}</version>
+            <configuration>
+               <includes>
+                  <include>org/perfcake/**</include>
+               </includes>
+               <excludes>
+                  <exclude>org/perfcake/model/**</exclude>
+               </excludes>
+            </configuration>
          </plugin>
       </plugins>
    </reporting>
