@@ -27,7 +27,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -51,32 +50,32 @@ public class FileLinesSequence implements Sequence {
    private String fileUrl;
 
    /**
-    * Content of the input file as a list of lines.
+    * Content of the input file as an array of lines.
     */
-   private List<String> lines;
+   private String[] lines;
 
    /**
-    * Current iterator in the list of {@link #lines}.
+    * Current position in the array of {@link #lines}. We use this primitive approach to be easily thread-safe.
+    * It is a dirty trick but does the job. Using AtomicInteger would lead to another synchronization.
     */
-   private Iterator<String> iterator = null;
+   private final Integer[] iterator = new Integer[1];
 
    @Override
    public String getNext() {
-      if (iterator == null || !iterator.hasNext()) {
-         if (lines != null) {
-            iterator = lines.iterator();
-         } else {
-            return null;
+      synchronized (iterator) {
+         if (iterator[0] >= lines.length) {
+            iterator[0] = 0;
          }
-      }
 
-      return iterator.next();
+         return lines[iterator[0]++];
+      }
    }
 
    @Override
    public void reset() throws PerfCakeException {
       try {
-         lines = Utils.readLines(new URL(fileUrl));
+         final List<String> linesArray = Utils.readLines(new URL(fileUrl));
+         lines = linesArray.toArray(new String[linesArray.size()]);
       } catch (IOException e) {
          log.warn(String.format("Could not initialize file lines sequence for file %s: ", fileUrl), e);
          throw new PerfCakeException(e);
