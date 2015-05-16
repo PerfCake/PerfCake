@@ -129,6 +129,7 @@ public class NumberSequence implements Sequence {
 
    /**
     * Sets the last value in the sequence.
+    * Set to {@link Long#MIN_VALUE} in case of positive steps (or to {@link Long#MAX_VALUE} in case of negative steps) to disable check of the last value in the interval.
     * @param end The last value in the sequence.
     */
    public void setEnd(final long end) {
@@ -144,10 +145,16 @@ public class NumberSequence implements Sequence {
    }
 
    /**
-    * Sets the step size.
+    * Sets the step size. If the check for the last value of the interval is disabled, this configuration is preserved even for step with negative numbers.
     * @param step The step size.
     */
    public void setStep(final long step) {
+      if (step < 0 && end == Long.MIN_VALUE) {
+         end = Long.MAX_VALUE;
+      } else if (step > 0 && end == Long.MAX_VALUE) {
+         end = Long.MIN_VALUE;
+      }
+
       this.step = step;
    }
 
