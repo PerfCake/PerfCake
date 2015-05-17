@@ -24,12 +24,16 @@ import org.perfcake.message.Message;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Properties;
+
 /**
  * Tests the script validator.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ScriptValidatorTest {
+
+   final Properties emptyProperties = new Properties();
 
    @Test
    public void testScriptValidator() {
@@ -43,9 +47,9 @@ public class ScriptValidatorTest {
       sv.setEngine("groovy");
       sv.setScript("log.info('Be groovy!.....')\nreturn message.payload.toString().contains('Pepa')");
 
-      Assert.assertTrue(sv.isValid(null, m));
-      Assert.assertTrue(sv.isValid(null, m)); // make sure the validator is reusable
-      Assert.assertFalse(sv.isValid(null, mFail));
+      Assert.assertTrue(sv.isValid(null, m, emptyProperties));
+      Assert.assertTrue(sv.isValid(null, m, emptyProperties)); // make sure the validator is reusable
+      Assert.assertFalse(sv.isValid(null, mFail, emptyProperties));
    }
 
 }

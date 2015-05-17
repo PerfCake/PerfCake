@@ -27,6 +27,7 @@ import org.testng.annotations.Test;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Tests the rules validator.
@@ -34,6 +35,8 @@ import java.io.IOException;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class RulesValidatorTest {
+
+   final Properties emptyProperties = new Properties();
 
    @Test
    public void rulesValidatorTest() throws IOException {
@@ -53,11 +56,11 @@ public class RulesValidatorTest {
          fw.close();
 
          rv.setRules(f.getAbsolutePath());
-         Assert.assertTrue(rv.isValid(null, m));
-         Assert.assertTrue(rv.isValid(null, m)); // the validation is repeatable
-         Assert.assertTrue(rv.isValid(mFail, m)); // we check for the response, not the original message
+         Assert.assertTrue(rv.isValid(null, m, emptyProperties));
+         Assert.assertTrue(rv.isValid(null, m, emptyProperties)); // the validation is repeatable
+         Assert.assertTrue(rv.isValid(mFail, m, emptyProperties)); // we check for the response, not the original message
 
-         Assert.assertFalse(rv.isValid(null, mFail));
+         Assert.assertFalse(rv.isValid(null, mFail, emptyProperties));
       } finally {
          f.delete();
       }

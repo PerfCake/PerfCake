@@ -41,6 +41,7 @@ import org.testng.annotations.Test;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
+import java.util.Properties;
 
 /**
  * Verifies the correct parsing of DSL scenarios.
@@ -49,6 +50,8 @@ import java.util.Collections;
  */
 @Test(groups = { "unit" })
 public class DslFactoryTest extends TestSetup {
+
+   final Properties emptyProperties = new Properties();
 
    @Test
    public void testDslScenarioParsing() throws Exception {
@@ -130,10 +133,10 @@ public class DslFactoryTest extends TestSetup {
 
       final Message toValidate = new Message();
       toValidate.setPayload("I am a fish!");
-      Assert.assertTrue(s.getValidationManager().getValidators(Collections.singletonList("text1")).get(0).isValid(null, toValidate));
+      Assert.assertTrue(s.getValidationManager().getValidators(Collections.singletonList("text1")).get(0).isValid(null, toValidate, emptyProperties));
 
       toValidate.setPayload("I was a fish!");
-      Assert.assertTrue(s.getValidationManager().getValidators(Collections.singletonList("text2")).get(0).isValid(null, toValidate));
+      Assert.assertTrue(s.getValidationManager().getValidators(Collections.singletonList("text2")).get(0).isValid(null, toValidate, emptyProperties));
 
       System.clearProperty(PerfCakeConst.SCENARIO_PROPERTY);
    }
