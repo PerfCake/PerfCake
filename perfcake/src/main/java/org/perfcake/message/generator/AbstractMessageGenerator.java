@@ -24,6 +24,7 @@ import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequences.SequenceManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 
@@ -61,18 +62,27 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     * Message store where the messages for senders to be send are taken from.
     */
    protected List<MessageTemplate> messageStore;
+
    /**
     * The executor service used to run the threads.
     */
    protected ThreadPoolExecutor executorService;
+
+   /**
+    * Manager of sequences that can be used to replace placeholders in a message template and sender's target.
+    */
+   protected SequenceManager sequenceManager;
+
    /**
     * The property of the generator indicating whether the message numbering feature is enabled or disabled.
     */
    protected boolean messageNumberingEnabled = false;
+
    /**
     * Represents the information about current run.
     */
    protected RunInfo runInfo;
+
    /**
     * Number of concurrent threads the generator will use to send the messages.
     */
@@ -111,6 +121,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
       task.setSenderManager(messageSenderManager);
       task.setValidationManager(validationManager);
       task.setMessageNumberingEnabled(isMessageNumberingEnabled());
+      task.setMessageAttributes(sequenceManager.getSnapshot());
 
       return task;
    }
@@ -234,10 +245,15 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     * Configures the {@link org.perfcake.validation.ValidationManager} to be used for the performance test execution.
     *
     * @param validationManager
-    *       {@link org.perfcake.validation.ValidationManager} to be used.s
+    *       {@link org.perfcake.validation.ValidationManager} to be used.
     */
    @Override
    public void setValidationManager(final ValidationManager validationManager) {
       this.validationManager = validationManager;
+   }
+
+   @Override
+   public void setSequenceManager(final SequenceManager sequenceManager) {
+      this.sequenceManager = sequenceManager;
    }
 }

@@ -19,6 +19,8 @@
  */
 package org.perfcake.message.sequences;
 
+import org.perfcake.PerfCakeConst;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -34,6 +36,13 @@ public class SequenceManager {
     * Registry of sequences.
     */
    private Map<String, Sequence> sequences = new HashMap<>();
+
+   /**
+    * Gets a default {@link SequenceManager} instance with a default number sequence prepared for message numbering (store under key {@link PerfCakeConst#MESSAGE_NUMBER_PROPERTY}).
+    */
+   public SequenceManager() {
+      addSequence(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, new NumberSequence());
+   }
 
    /**
     * Registers a new sequence in the registry.

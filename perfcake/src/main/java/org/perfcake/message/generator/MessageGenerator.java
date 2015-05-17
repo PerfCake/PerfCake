@@ -23,6 +23,7 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequences.SequenceManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 
@@ -100,6 +101,12 @@ public interface MessageGenerator {
     *       {@link org.perfcake.validation.ValidationManager} to be used.s
     */
    void setValidationManager(final ValidationManager validationManager);
+
+   /**
+    * Sets a manager of sequences that can be used to replace placeholders in a message template and sender's target.
+    * @param sequenceManager The {@link SequenceManager} to be used to replace placeholders in a message template and sender's target.
+    */
+   void setSequenceManager(final SequenceManager sequenceManager);
 
    /**
     * Gets the number of threads that should be used to generate the messages.

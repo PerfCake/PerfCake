@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,6 +20,8 @@
 package org.perfcake.validation;
 
 import org.perfcake.message.Message;
+
+import java.util.Properties;
 
 /**
  * A contract of a message validator.
@@ -35,7 +37,9 @@ public interface MessageValidator {
     *       The message that has been sent.
     * @param response
     *       A response for the original message.
+    * @param messageAttributes
+    *       A snapshot of sequences' values and possible other attributes used for sending a message. These attributes can be used by a validator to replace placeholders.
     * @return <code>true</code> if the message passes all validations.
     */
-   public boolean isValid(Message originalMessage, Message response);
+   boolean isValid(final Message originalMessage, final Message response, final Properties messageAttributes);
 }

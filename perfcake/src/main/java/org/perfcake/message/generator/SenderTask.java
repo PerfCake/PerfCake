@@ -25,6 +25,7 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.ReceivedMessage;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequences.SequenceManager;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
@@ -81,6 +82,11 @@ class SenderTask implements Runnable {
     * A reference to the current validator manager. It is used to validate message responses.
     */
    private ValidationManager validationManager;
+
+   /**
+    * Instance dependant message attributes of this sender tasks. These are filled in by the generator from a {@link SequenceManager}.
+    */
+   private Properties messageAttributes;
 
    /**
     * Controls the amount of prepared tasks in a buffer.
@@ -140,7 +146,6 @@ class SenderTask implements Runnable {
    public void run() {
       assert messageStore != null && reportManager != null && validationManager != null && senderManager != null : "SenderTask was not properly initialized.";
 
-      final Properties messageAttributes = new Properties();
       final HashMap<String, String> messageHeaders = new HashMap<>();
       MessageSender sender = null;
       ReceivedMessage receivedMessage = null;
@@ -150,9 +155,8 @@ class SenderTask implements Runnable {
          if (mu != null) {
             // only set numbering to headers if it is enabled, later there is no change to
             // filter out the headers before sending
-            if (messageNumberingEnabled) {
-               messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_HEADER, String.valueOf(mu.getIteration()));
-               messageAttributes.setProperty(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration()));
+            if (messageNumberingEnabled && messageAttributes != null) {
+               messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_HEADER, messageAttributes.getProperty(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration())));
             }
 
             sender = senderManager.acquireSender();
@@ -166,7 +170,7 @@ class SenderTask implements Runnable {
                   final long multiplicity = messageToSend.getMultiplicity();
 
                   for (int i = 0; i < multiplicity; i++) {
-                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend, currentMessage);
+                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend, currentMessage, messageAttributes);
                      if (validationManager.isEnabled()) {
                         validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                      }
@@ -174,7 +178,7 @@ class SenderTask implements Runnable {
 
                }
             } else {
-               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null, null);
+               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null, null, messageAttributes);
                if (validationManager.isEnabled()) {
                   validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                }
@@ -246,5 +250,13 @@ class SenderTask implements Runnable {
     */
    protected void setValidationManager(final ValidationManager validationManager) {
       this.validationManager = validationManager;
+   }
+
+   /**
+    * Sets instance dependant message attributes of this sender task. This should be done by a generator using {@link SequenceManager}.
+    * @param messageAttributes Current message attributes obtained from a {@link SequenceManager}.
+    */
+   public void setMessageAttributes(final Properties messageAttributes) {
+      this.messageAttributes = messageAttributes;
    }
 }

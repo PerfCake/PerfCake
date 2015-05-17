@@ -34,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Validates the message with the defined Drools rules. There is a custom DSL file making the rules specification easier.
@@ -59,13 +60,13 @@ public class RulesValidator implements MessageValidator {
    private RulesValidatorHelper rulesValidatorHelper;
 
    @Override
-   public boolean isValid(final Message originalMessage, final Message response) {
+   public boolean isValid(final Message originalMessage, final Message response, final Properties messageAttributes) {
       if (rulesValidatorHelper == null) {
          log.error("Rules were not properly loaded.");
          return false;
       }
 
-      final Map<Integer, String> unusedAssertions = rulesValidatorHelper.validate(originalMessage, response);
+      final Map<Integer, String> unusedAssertions = rulesValidatorHelper.validate(originalMessage, response, messageAttributes);
 
       for (final Entry<Integer, String> entry : unusedAssertions.entrySet()) {
          if (log.isDebugEnabled()) {

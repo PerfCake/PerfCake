@@ -20,6 +20,7 @@
 package org.perfcake.message;
 
 import java.io.Serializable;
+import java.util.Properties;
 
 /**
  * Holds the couple of sent message and response recorded for it. This is used mainly for validation.
@@ -42,6 +43,11 @@ public class ReceivedMessage implements Serializable {
    private final MessageTemplate sentMessageTemplate;
 
    /**
+    * Snapshot of sequences' values and possible other attributes used for sending a message. These attributes can be used by a validator to replace placeholders.
+    */
+   private final Properties messageAttributes;
+
+   /**
     * Original message that has been send (placeholders filled with values).
     */
    private final Message sentMessage;
@@ -56,10 +62,11 @@ public class ReceivedMessage implements Serializable {
     * @param sentMessage
     *       The real message sent with the placeholders filled with values.
     */
-   public ReceivedMessage(final Serializable response, final MessageTemplate sentMessageTemplate, final Message sentMessage) {
+   public ReceivedMessage(final Serializable response, final MessageTemplate sentMessageTemplate, final Message sentMessage, final Properties messageAttributes) {
       this.response = response;
       this.sentMessage = sentMessage;
       this.sentMessageTemplate = sentMessageTemplate;
+      this.messageAttributes = messageAttributes;
    }
 
    /**
@@ -87,5 +94,13 @@ public class ReceivedMessage implements Serializable {
     */
    public Message getSentMessage() {
       return sentMessage;
+   }
+
+   /**
+    * Gets the snapshot of sequences' values and possible other attributes used for sending a message. These attributes can be used by a validator to replace placeholders.
+    * @return The snapshot of sequences' values and possible other attributes used for sending a message.
+    */
+   public Properties getMessageAttributes() {
+      return messageAttributes;
    }
 }

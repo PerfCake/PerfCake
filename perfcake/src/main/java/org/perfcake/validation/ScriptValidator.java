@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.Properties;
 import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -78,7 +79,7 @@ public class ScriptValidator implements MessageValidator {
    }
 
    @Override
-   public boolean isValid(final Message originalMessage, final Message response) {
+   public boolean isValid(final Message originalMessage, final Message response, final Properties messageAttributes) {
       boolean result = false;
 
       try {
@@ -86,6 +87,7 @@ public class ScriptValidator implements MessageValidator {
          final Bindings b = script.getEngine().createBindings();
          b.put("originalMessage", originalMessage);
          b.put("message", response);
+         b.put("attributes", messageAttributes);
          b.put("log", log);
          final Object ret = script.eval(b);
          if (ret instanceof Boolean) {
