@@ -24,11 +24,12 @@ import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.message.sequences.SequenceManager;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -121,7 +122,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
       task.setSenderManager(messageSenderManager);
       task.setValidationManager(validationManager);
       task.setMessageNumberingEnabled(isMessageNumberingEnabled());
-      task.setMessageAttributes(sequenceManager.getSnapshot());
+      task.setMessageAttributes(sequenceManager != null ? sequenceManager.getSnapshot() : new Properties());
 
       return task;
    }

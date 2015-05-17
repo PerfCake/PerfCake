@@ -23,6 +23,7 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 
@@ -70,6 +71,11 @@ public class Scenario {
    private ValidationManager validationManager;
 
    /**
+    * Sequence manager.
+    */
+   private SequenceManager sequenceManager;
+
+   /**
     * Initializes the scenario execution.
     *
     * @throws org.perfcake.PerfCakeException
@@ -82,6 +88,7 @@ public class Scenario {
 
       generator.setReportManager(reportManager);
       generator.setValidationManager(validationManager);
+      generator.setSequenceManager(sequenceManager);
 
       try {
          generator.init(messageSenderManager, messageStore);
@@ -234,5 +241,23 @@ public class Scenario {
     */
    ValidationManager getValidationManager() {
       return validationManager;
+   }
+
+   /**
+    * Sets the current {@link SequenceManager}.
+    *
+    * @param sequenceManager
+    *       The {@link SequenceManager} to be set.
+    */
+   public void setSequenceManager(final SequenceManager sequenceManager) {
+      this.sequenceManager = sequenceManager;
+   }
+
+   /**
+    * Gets the current {@link SequenceManager}.
+    * @return The current {@link SequenceManager}.
+    */
+   SequenceManager getSequenceManager() {
+      return sequenceManager;
    }
 }

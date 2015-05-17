@@ -95,6 +95,7 @@ class DslScenario extends PropertiesBacked {
    def description
    def generator
    def sender
+   def sequences = []
    def reporters = []
    def messages = []
    def validation
@@ -105,6 +106,11 @@ class DslScenario extends PropertiesBacked {
       "DslScenario {description: $description, \n" +
             "   $runInfo, \n" +
             "   $generator, \n" +
+            "   Sequences: [" +
+            (sequences.empty ?
+                  "" :
+                  "\n      " + sequences.join(',\n      ') + "\n   ") +
+            "], \n" +
             "   $sender, \n" +
             "   Reporters: [" +
             (reporters.empty ?
@@ -146,6 +152,13 @@ class DslScenario extends PropertiesBacked {
    def sender(def className) {
       this.sender = new Sender(className)
       this.sender
+   }
+
+   // new sequence
+   def sequence(def className) {
+      def s = new Sequence(className)
+      this.sequences.add(s)
+      s
    }
 
    // new reporter
@@ -225,6 +238,12 @@ class DslScenario extends PropertiesBacked {
       MessageGenerator g = generator.buildMessageGenerator()
       g.setThreads((int) runInfo.getThreads()) // get the number of threads from DSL run info
       ScenarioBuilder builder = new ScenarioBuilder(runInfo.buildRunInfo(), g, sender.messageSenderClassName, sender.messageSenderProperties)
+
+      if (sequences) {
+         sequences.each {
+            builder.putSequence(it.name, it.buildSequence())
+         }
+      }
 
       if (reporters) {
          reporters.each {
@@ -319,6 +338,35 @@ class Generator extends ObjectWithClassName {
       props.putAll(properties)
 
       ObjectFactory.summonInstance(className.contains('.') ?: ScenarioFactory.DEFAULT_GENERATOR_PACKAGE + '.' + className, props)
+   }
+}
+
+class Sequences {
+
+}
+
+class Sequence extends ObjectWithClassName {
+
+   def name
+
+   Sequence(def className) {
+      super(className)
+   }
+
+   String toString() {
+      "Sequence: {name: ${name}, ${super.toString()}}"
+   }
+
+   def name(def name) {
+      this.name = name
+      this
+   }
+
+   org.perfcake.message.sequence.Sequence buildSequence() {
+      def props = new Properties()
+      props.putAll(properties)
+
+      ObjectFactory.summonInstance(className.contains('.') ?: ScenarioFactory.DEFAULT_SEQUENCE_PACKAGE + '.' + className, props)
    }
 }
 
@@ -621,6 +669,10 @@ abstract class BaseDslScriptClass extends Script {
       scenario.generator(className)
    }
 
+   def sequence(def className) {
+      scenario.sequence(className)
+   }
+
    // pass the call to the DSL scenario
    def sender(def className) {
       scenario.sender(className)
@@ -654,6 +706,11 @@ abstract class BaseDslScriptClass extends Script {
    // this provides the 'validation' keyword
    def getValidation() {
       scenario.validation(true, false)
+   }
+
+   // this provides the 'sequences' keyword
+   def getSequences() {
+      scenario
    }
 
    // this provides a generic 'enabled' keyword in the scenario, used for validation configuration,

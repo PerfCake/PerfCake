@@ -25,7 +25,7 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.ReceivedMessage;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
-import org.perfcake.message.sequences.SequenceManager;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;

@@ -97,8 +97,8 @@ public class ReceivedMessage implements Serializable {
    }
 
    /**
-    * Gets the snapshot of sequences' values and possible other attributes used for sending a message. These attributes can be used by a validator to replace placeholders.
-    * @return The snapshot of sequences' values and possible other attributes used for sending a message.
+    * Gets the snapshot of sequence' values and possible other attributes used for sending a message. These attributes can be used by a validator to replace placeholders.
+    * @return The snapshot of sequence' values and possible other attributes used for sending a message.
     */
    public Properties getMessageAttributes() {
       return messageAttributes;

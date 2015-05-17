@@ -17,15 +17,28 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake.message.sequences;
+package org.perfcake.message.sequence;
+
+import org.perfcake.PerfCakeException;
 
 /**
+ * Represents an automatically generated sequence of values.
+ * The resulting values can be used in the message body.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class TimeStampSequence implements Sequence {
+public interface Sequence {
 
-   @Override
-   public String getNext() {
-      return String.valueOf(System.currentTimeMillis());
-   }
+   /**
+    * Gets the next value in this sequence. Must be thread safe. It is called once per message.
+    * @return The next value in this sequence.
+    */
+   String getNext();
+
+   /**
+    * Resets the sequence.
+    * This method is called at the very beginning, so it can be used to perform any initialization steps as well.
+    * @throws PerfCakeException When it was not possible to initialize the sequence to its original state.
+    */
+   default void reset() throws PerfCakeException {};
 }

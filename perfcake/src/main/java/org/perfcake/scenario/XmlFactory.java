@@ -28,6 +28,8 @@ import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequence.Sequence;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.model.Header;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Generator;
@@ -138,6 +140,7 @@ public class XmlFactory implements ScenarioFactory {
          final List<MessageTemplate> messageTemplates = parseMessages(validationManager);
          scenario.setMessageStore(messageTemplates);
          scenario.setValidationManager(validationManager);
+         scenario.setSequenceManager(parseSequences());
       }
 
       return scenario;
@@ -252,6 +255,42 @@ public class XmlFactory implements ScenarioFactory {
       }
 
       return generator;
+   }
+
+   /**
+    * Parses the <code>sequences</code> element into a {@link SequenceManager} instance.
+    *
+    * @return {@link SequenceManager} containing the parsed {@link Sequence Sequences}.
+    * @throws org.perfcake.PerfCakeException
+    *       When there is a parse exception.
+    */
+   protected SequenceManager parseSequences() throws PerfCakeException {
+      final SequenceManager sequenceManager = new SequenceManager();
+
+      try {
+         for (org.perfcake.model.Scenario.Sequences.Sequence seq: scenarioModel.getSequences().getSequence()) {
+            final String sequenceName = seq.getName();
+            String sequenceClass = seq.getClazz();
+            final Properties sequenceProperties = getPropertiesFromList(seq.getProperty());
+
+            if (!sequenceClass.contains(".")) {
+               sequenceClass = DEFAULT_SEQUENCE_PACKAGE + "." + sequenceClass;
+            }
+
+            if (log.isDebugEnabled()) {
+               log.debug("--- Sequence (" + sequenceName + ":" + sequenceClass + ") ---");
+            }
+
+            Utils.logProperties(log, Level.DEBUG, sequenceProperties, "   ");
+
+            final Sequence sequence = (Sequence) ObjectFactory.summonInstance(sequenceClass, sequenceProperties);
+            sequenceManager.addSequence(sequenceName, sequence);
+         }
+      } catch (ReflectiveOperationException e) {
+         throw new PerfCakeException("Cannot parse sequences: ", e);
+      }
+
+      return sequenceManager;
    }
 
    /**
@@ -464,7 +503,7 @@ public class XmlFactory implements ScenarioFactory {
                }
 
                if (log.isDebugEnabled()) {
-                  log.debug(" '- Validation (" + validatorClass + ")");
+                  log.debug(" '- Validation (" + v.getId() + ":" + validatorClass + ")");
                }
                final Properties currentValidationProperties = getPropertiesFromList(v.getProperty());
                Utils.logProperties(log, Level.DEBUG, currentValidationProperties, "  '- ");

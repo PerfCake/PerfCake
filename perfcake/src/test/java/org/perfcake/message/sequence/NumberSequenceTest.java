@@ -1,4 +1,4 @@
-package org.perfcake.message.sequences;
+package org.perfcake.message.sequence;
 
 import org.perfcake.PerfCakeException;
 
