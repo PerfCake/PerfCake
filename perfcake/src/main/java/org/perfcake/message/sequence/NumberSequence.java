@@ -25,7 +25,7 @@ import org.perfcake.PerfCakeException;
  * Simple sequence of numbers.
  * Can go in both directions, can specify boundaries and a step.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class NumberSequence implements Sequence {
 

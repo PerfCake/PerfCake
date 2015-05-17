@@ -28,7 +28,7 @@ import java.util.Properties;
 /**
  * Keeps a registry of existing sequences.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class SequenceManager {
 
@@ -55,7 +55,7 @@ public class SequenceManager {
 
    /**
     * Gets a snapshot of current next values of all sequences in the registry using {@link Sequence#getNext()}.
-    * @return Snapshot of the values as properties in the form sequence name -> sequence next value.
+    * @return Snapshot of the values as properties in the form sequence name -&gt; sequence next value.
     */
    public Properties getSnapshot() {
       final Properties snapshot = new Properties();

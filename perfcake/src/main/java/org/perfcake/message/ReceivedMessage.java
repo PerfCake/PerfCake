@@ -61,6 +61,8 @@ public class ReceivedMessage implements Serializable {
     *       The original message template.
     * @param sentMessage
     *       The real message sent with the placeholders filled with values.
+    * @param messageAttributes
+    *       The message payload placeholder values based on the current state of sequences in the {@link org.perfcake.message.sequence.SequenceManager}.
     */
    public ReceivedMessage(final Serializable response, final MessageTemplate sentMessageTemplate, final Message sentMessage, final Properties messageAttributes) {
       this.response = response;
@@ -98,6 +100,7 @@ public class ReceivedMessage implements Serializable {
 
    /**
     * Gets the snapshot of sequence' values and possible other attributes used for sending a message. These attributes can be used by a validator to replace placeholders.
+    *
     * @return The snapshot of sequence' values and possible other attributes used for sending a message.
     */
    public Properties getMessageAttributes() {

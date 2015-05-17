@@ -268,23 +268,27 @@ public class XmlFactory implements ScenarioFactory {
       final SequenceManager sequenceManager = new SequenceManager();
 
       try {
-         for (org.perfcake.model.Scenario.Sequences.Sequence seq: scenarioModel.getSequences().getSequence()) {
-            final String sequenceName = seq.getName();
-            String sequenceClass = seq.getClazz();
-            final Properties sequenceProperties = getPropertiesFromList(seq.getProperty());
+         final org.perfcake.model.Scenario.Sequences sequences = scenarioModel.getSequences();
 
-            if (!sequenceClass.contains(".")) {
-               sequenceClass = DEFAULT_SEQUENCE_PACKAGE + "." + sequenceClass;
+         if (sequences != null) {
+            for (org.perfcake.model.Scenario.Sequences.Sequence seq : sequences.getSequence()) {
+               final String sequenceName = seq.getName();
+               String sequenceClass = seq.getClazz();
+               final Properties sequenceProperties = getPropertiesFromList(seq.getProperty());
+
+               if (!sequenceClass.contains(".")) {
+                  sequenceClass = DEFAULT_SEQUENCE_PACKAGE + "." + sequenceClass;
+               }
+
+               if (log.isDebugEnabled()) {
+                  log.debug("--- Sequence (" + sequenceName + ":" + sequenceClass + ") ---");
+               }
+
+               Utils.logProperties(log, Level.DEBUG, sequenceProperties, "   ");
+
+               final Sequence sequence = (Sequence) ObjectFactory.summonInstance(sequenceClass, sequenceProperties);
+               sequenceManager.addSequence(sequenceName, sequence);
             }
-
-            if (log.isDebugEnabled()) {
-               log.debug("--- Sequence (" + sequenceName + ":" + sequenceClass + ") ---");
-            }
-
-            Utils.logProperties(log, Level.DEBUG, sequenceProperties, "   ");
-
-            final Sequence sequence = (Sequence) ObjectFactory.summonInstance(sequenceClass, sequenceProperties);
-            sequenceManager.addSequence(sequenceName, sequence);
          }
       } catch (ReflectiveOperationException e) {
          throw new PerfCakeException("Cannot parse sequences: ", e);
