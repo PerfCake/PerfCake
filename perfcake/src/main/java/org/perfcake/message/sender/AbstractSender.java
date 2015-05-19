@@ -112,22 +112,12 @@ abstract public class AbstractSender implements MessageSender {
       return send(message, null, measurementUnit);
    }
 
-   /**
-    * Gets the target where to send the messages.
-    *
-    * @return The current target.
-    */
+   @Override
    public String getTarget() {
       return target;
    }
 
-   /**
-    * Sets the target where to send the messages.
-    *
-    * @param target
-    *       The target to be set.
-    * @return Instance of this for fluent API.
-    */
+   @Override
    public AbstractSender setTarget(final String target) {
       this.target = target;
       return this;

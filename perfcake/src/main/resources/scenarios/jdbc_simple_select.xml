@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:5.0">
-   <generator class="ImmediateMessageGenerator" threads="${perfcake.thread.count:500}">
-      <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:500000}"/>
-   </generator>
+   <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:500000}"/>
+   <generator class="ImmediateMessageGenerator" threads="${perfcake.thread.count:500}"/>
    <sender class="JdbcSender">
-      <property name="target" value="jdbc:postgres:/localhost:5432/postgres"/>
+      <target>jdbc:postgres:/localhost:5432/postgres</target>
       <property name="driverClass" value="org.postgresql.Driver"/>
       <property name="username" value="postgres"/>
       <property name="password" value="password"/>

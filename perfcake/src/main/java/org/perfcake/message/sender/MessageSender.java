@@ -54,7 +54,7 @@ public interface MessageSender {
     * @throws java.lang.Exception
     *       When anything fails, basically this happens when a connection to the target could not have been established.
     */
-   public void init() throws Exception;
+   void init() throws Exception;
 
    /**
     * Closes the sender.
@@ -62,7 +62,7 @@ public interface MessageSender {
     * @throws org.perfcake.PerfCakeException
     *       When it was not possible to close the target.
     */
-   public void close() throws PerfCakeException;
+   void close() throws PerfCakeException;
 
    /**
     * Performs any action that needs to be done to send the message but is not directly related to the sending operation and thus not measured.
@@ -74,7 +74,7 @@ public interface MessageSender {
     * @throws Exception
     *       In case anything fails during the preparation.
     */
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception;
+   void preSend(final Message message, final Map<String, String> properties) throws Exception;
 
    /**
     * Sends a message.
@@ -87,7 +87,7 @@ public interface MessageSender {
     * @throws java.lang.Exception
     *       When the send operation failed.
     */
-   public Serializable send(final Message message, final MeasurementUnit measurementUnit) throws Exception;
+   Serializable send(final Message message, final MeasurementUnit measurementUnit) throws Exception;
 
    /**
     * Sends a message with additional properties.
@@ -102,7 +102,7 @@ public interface MessageSender {
     * @throws java.lang.Exception
     *       When the send operation failed.
     */
-   public Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception;
+   Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception;
 
    /**
     * Performs any action that needs to be done to complete the sending of  the message but is not directly related to the sending operation and thus not measured.
@@ -112,5 +112,21 @@ public interface MessageSender {
     * @throws Exception
     *       In case anything fails during the finalization.
     */
-   public void postSend(final Message message) throws Exception;
+   void postSend(final Message message) throws Exception;
+
+   /**
+    * Gets the target where to send the messages.
+    *
+    * @return The current target.
+    */
+   String getTarget();
+
+   /**
+    * Sets the target where to send the messages.
+    *
+    * @param target
+    *       The target to be set.
+    * @return Instance of this for fluent API.
+    */
+   MessageSender setTarget(final String target);
 }

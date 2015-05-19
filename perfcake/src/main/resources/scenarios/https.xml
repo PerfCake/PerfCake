@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:5.0">
-   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}">
-      <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:300000}"/>
-   </generator>
+   <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:300000}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}"/>
    <sender class="HttpsSender">
-      <property name="target" value="https://${server.host}:8443/HTTPGatewayHTTPS/http/PerformanceTest/HTTPGatewayHTTPS"/>
+      <target>https://${server.host}:8443/HTTPGatewayHTTPS/http/PerformanceTest/HTTPGatewayHTTPS</target>
       <property name="trustStore" value="${my.keystores}/cacerts.jks"/>
       <property name="trustStorePassword" value="ts_password"/>
    </sender>

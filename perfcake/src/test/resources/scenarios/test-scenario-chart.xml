@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:5.0">
-   <generator class="DefaultMessageGenerator" threads="${threads:25}">
-      <run type="iteration" value="1000000"/>
-   </generator>
-   <sender class="DummySender">
-      <property name="target" value=""/>
-   </sender>
+   <run type="iteration" value="1000000"/>
+   <generator class="DefaultMessageGenerator" threads="${threads:25}"/>
+   <sender class="DummySender"/>
    <reporting>
       <reporter class="ThroughputStatsReporter">
          <destination class="ConsoleDestination">

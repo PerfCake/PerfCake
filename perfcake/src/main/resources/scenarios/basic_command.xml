@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:5.0">
+   <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:10}"/>
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}">
-      <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:10}"/>
    </generator>
    <sender class="CommandSender">
    </sender>

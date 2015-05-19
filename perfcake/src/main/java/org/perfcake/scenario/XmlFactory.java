@@ -43,6 +43,7 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.Utils;
+import org.perfcake.util.properties.SystemPropertyGetter;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;
 
@@ -127,6 +128,8 @@ public class XmlFactory implements ScenarioFactory {
       if (scenario == null) {
          scenario = new Scenario();
 
+         loadScenarioPropertiesToSystem(parseScenarioProperties());
+
          final RunInfo runInfo = parseRunInfo();
          final MessageGenerator messageGenerator = parseGenerator();
          messageGenerator.setRunInfo(runInfo);
@@ -182,6 +185,12 @@ public class XmlFactory implements ScenarioFactory {
       }
    }
 
+   private void loadScenarioPropertiesToSystem(final Properties properties) {
+      if (properties != null) {
+         properties.forEach(System.getProperties()::put);
+      }
+   }
+
    private static Properties getPropertiesFromList(final List<Property> properties) throws PerfCakeException {
       final Properties props = new Properties();
 
@@ -209,8 +218,7 @@ public class XmlFactory implements ScenarioFactory {
     *       When there is a parse exception.
     */
    protected RunInfo parseRunInfo() throws PerfCakeException {
-      final Generator gen = scenarioModel.getGenerator();
-      final Generator.Run run = gen.getRun();
+      final org.perfcake.model.Scenario.Run run = scenarioModel.getRun();
       final RunInfo runInfo = new RunInfo(new Period(PeriodType.valueOf(run.getType().toUpperCase()), Long.parseLong(run.getValue())));
 
       if (log.isDebugEnabled()) {
@@ -325,6 +333,9 @@ public class XmlFactory implements ScenarioFactory {
       msm = new MessageSenderManager();
       msm.setSenderClass(senderClass);
       msm.setSenderPoolSize(senderPoolSize);
+      if (sen.getTarget() != null) {
+         msm.setMessageSenderProperty("target", sen.getTarget());
+      }
       for (final Entry<Object, Object> sProperty : senderProperties.entrySet()) {
          msm.setMessageSenderProperty(sProperty.getKey(), sProperty.getValue());
       }
@@ -538,6 +549,13 @@ public class XmlFactory implements ScenarioFactory {
       if (log.isDebugEnabled()) {
          log.debug("--- Scenario properties ---");
       }
-      return getPropertiesFromList(scenarioModel.getProperties().getProperty());
+
+      if (scenarioModel.getProperties() != null) {
+         if (scenarioModel.getProperties().getProperty() != null) {
+            return getPropertiesFromList(scenarioModel.getProperties().getProperty());
+         }
+      }
+
+      return null;
    }
 }

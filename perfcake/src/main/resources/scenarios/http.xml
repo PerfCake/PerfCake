@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:5.0">
-   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}">
-      <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:300000}"/>
-   </generator>
+   <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:300000}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}"/>
    <sender class="HttpSender">
-      <property name="target" value="http://${server.host}:${server.port}/performance-plain-http-servlet/PlainHttpServlet"/>
+      <target>http://${server.host}:${server.port}/performance-plain-http-servlet/PlainHttpServlet</target>
       <property name="method" value="POST"/>
    </sender>
    <reporting>
