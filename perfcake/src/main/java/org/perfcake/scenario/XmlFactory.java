@@ -113,25 +113,37 @@ public class XmlFactory implements ScenarioFactory {
    @Override
    public void init(final URL scenarioURL) throws PerfCakeException {
       try {
-         this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
-
-         // two-pass parsing to first read the properties specified in the scenario and then use them
-         this.scenarioModel = parse();
-         loadScenarioPropertiesToSystem(parseScenarioProperties());
-
-         this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
-         this.scenarioModel = parse();
-         final Properties scenarioProperties = parseScenarioProperties();
-         loadScenarioPropertiesToSystem(scenarioProperties);
+         prepareModelTwoPass(scenarioURL);
 
          if (log.isDebugEnabled()) {
-            log.debug("--- Scenario Properties ---");
-            scenarioProperties.forEach((key, value) -> log.debug("'- {}:{}", key, value));
-
             log.debug(String.format("Loaded scenario definition from '%s'.", scenarioURL.toString()));
          }
       } catch (final IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
+      }
+   }
+
+   /**
+    * Parses the scenario twice, first to read the properties defined in it, second using the new properties directly
+    * in the scenario.
+    * @param scenarioURL Scenario location URL.
+    * @throws PerfCakeException When it was not possible to parse the scenario.
+    * @throws IOException When it was not possible to read the scenario definition.
+    */
+   private void prepareModelTwoPass(final URL scenarioURL) throws PerfCakeException, IOException {
+      // two-pass parsing to first read the properties specified in the scenario and then use them
+      this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
+      this.scenarioModel = parse();
+      loadScenarioPropertiesToSystem(parseScenarioProperties());
+
+      this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
+      this.scenarioModel = parse();
+      final Properties scenarioProperties = parseScenarioProperties();
+      loadScenarioPropertiesToSystem(scenarioProperties);
+
+      if (log.isDebugEnabled()) {
+         log.debug("--- Scenario Properties ---");
+         scenarioProperties.forEach((key, value) -> log.debug("'- {}:{}", key, value));
       }
    }
 
