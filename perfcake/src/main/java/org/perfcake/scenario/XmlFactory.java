@@ -103,7 +103,9 @@ public class XmlFactory implements ScenarioFactory {
     */
    private Scenario scenario = null;
 
-   // the factory is not part of public API
+   /**
+    * The factory is not part of public API.
+    */
    protected XmlFactory() {
 
    }
@@ -113,14 +115,24 @@ public class XmlFactory implements ScenarioFactory {
       try {
          this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
 
+         // two-pass parsing to first read the properties specified in the scenario and then use them
+         this.scenarioModel = parse();
+         loadScenarioPropertiesToSystem(parseScenarioProperties());
+
+         this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
+         this.scenarioModel = parse();
+         final Properties scenarioProperties = parseScenarioProperties();
+         loadScenarioPropertiesToSystem(scenarioProperties);
+
          if (log.isDebugEnabled()) {
+            log.debug("--- Scenario Properties ---");
+            scenarioProperties.forEach((key, value) -> log.debug("'- {}:{}", key, value));
+
             log.debug(String.format("Loaded scenario definition from '%s'.", scenarioURL.toString()));
          }
       } catch (final IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
       }
-
-      this.scenarioModel = parse();
    }
 
    @Override
@@ -128,7 +140,6 @@ public class XmlFactory implements ScenarioFactory {
       if (scenario == null) {
          scenario = new Scenario();
 
-         loadScenarioPropertiesToSystem(parseScenarioProperties());
 
          final RunInfo runInfo = parseRunInfo();
          final MessageGenerator messageGenerator = parseGenerator();
@@ -546,10 +557,6 @@ public class XmlFactory implements ScenarioFactory {
     *       When there is a parse exception.
     */
    protected Properties parseScenarioProperties() throws PerfCakeException {
-      if (log.isDebugEnabled()) {
-         log.debug("--- Scenario properties ---");
-      }
-
       if (scenarioModel.getProperties() != null) {
          if (scenarioModel.getProperties().getProperty() != null) {
             return getPropertiesFromList(scenarioModel.getProperties().getProperty());

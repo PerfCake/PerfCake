@@ -97,6 +97,7 @@ public class XmlFactoryTest extends TestSetup {
          final MessageSenderManager senderManager = scenarioFactory.parseSender(THREADS);
          Assert.assertEquals(senderManager.getSenderClass(), SENDER_CLASS, "senderClass");
          Assert.assertEquals(senderManager.getSenderPoolSize(), THREADS, "senderPoolSize");
+         Assert.assertEquals(System.getProperty("propWithQsName", ""), "testQS-name");
          // TODO: add assertions on a sender
       } catch (final PerfCakeException e) {
          e.printStackTrace();
