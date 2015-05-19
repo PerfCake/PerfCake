@@ -58,7 +58,7 @@ public class FileLinesSequence implements Sequence {
     * Current position in the array of {@link #lines}. We use this primitive approach to be easily thread-safe.
     * It is a dirty trick but does the job. Using AtomicInteger would lead to another synchronization.
     */
-   private final Integer[] iterator = new Integer[1];
+   private final Integer[] iterator = new Integer[] { 0 };
 
    @Override
    public String getNext() {
@@ -76,6 +76,7 @@ public class FileLinesSequence implements Sequence {
       try {
          final List<String> linesArray = Utils.readLines(new URL(fileUrl));
          lines = linesArray.toArray(new String[linesArray.size()]);
+         iterator[0] = 0;
       } catch (IOException e) {
          log.warn(String.format("Could not initialize file lines sequence for file %s: ", fileUrl), e);
          throw new PerfCakeException(e);
