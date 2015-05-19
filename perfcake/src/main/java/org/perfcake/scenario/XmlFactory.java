@@ -152,7 +152,6 @@ public class XmlFactory implements ScenarioFactory {
       if (scenario == null) {
          scenario = new Scenario();
 
-
          final RunInfo runInfo = parseRunInfo();
          final MessageGenerator messageGenerator = parseGenerator();
          messageGenerator.setRunInfo(runInfo);
