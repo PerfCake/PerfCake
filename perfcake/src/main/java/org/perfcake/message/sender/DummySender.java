@@ -26,6 +26,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -52,6 +54,16 @@ public class DummySender extends AbstractSender {
     * The delay duration to simulate a asonchronous waiting.
     */
    private long delay = 0;
+
+   /**
+    * Can switch on recording of each message payload sent.
+    */
+   private boolean recording = false;
+
+   /**
+    * Contains all recorded messages in case the {@link #recording} was switched on.
+    */
+   private List<String> recordedMessages = new ArrayList<>();
 
    @Override
    public void init() throws Exception {
@@ -89,8 +101,12 @@ public class DummySender extends AbstractSender {
             }
          }
       }
-      // nop
-      return (message == null) ? message : message.getPayload();
+
+      if (recording && message != null) {
+         recordedMessages.add(message.getPayload().toString());
+      }
+
+      return (message == null) ? null : message.getPayload();
    }
 
    /**
@@ -112,6 +128,30 @@ public class DummySender extends AbstractSender {
    public DummySender setDelay(final long delay) {
       this.delay = delay;
       return this;
+   }
+
+   /**
+    * Obtains the current state of the recording.
+    * @return True iff recording of message payloads passed through this sender is switched on.
+    */
+   public boolean isRecording() {
+      return recording;
+   }
+
+   /**
+    * Switches on recording of message payloads passed through this sender.
+    * @param recording True iff the recording should be turned on.
+    */
+   public void setRecording(final boolean recording) {
+      this.recording = recording;
+   }
+
+   /**
+    * Gets the list of recorded message payloads passed through this message sender while recording was switched on.
+    * @return The list of recorded message payloads passed through this message sender while recording was switched on.
+    */
+   public List<String> getRecordedMessages() {
+      return recordedMessages;
    }
 
    /**
