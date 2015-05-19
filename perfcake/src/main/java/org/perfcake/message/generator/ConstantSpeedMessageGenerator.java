@@ -70,7 +70,7 @@ public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
 
       // the size of the buffer = speed, so the smallest time should be around one second old
       // in case of a non-zero breakDuration, we cannot submit a task before the break passed
-      if (currentTime - getSmallest() > 1000 && breakDuration > 0 && currentTime - breakDuration >= getLast()) {
+      if (currentTime - getSmallest() > 1000 && (!(breakDuration > 0) || currentTime - breakDuration >= getLast())) {
          boolean res = super.prepareTask();
          if (res) {
             addTime(currentTime);
