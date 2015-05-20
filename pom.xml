@@ -127,6 +127,18 @@
                   </descriptors>
                </configuration>
             </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-javadoc-plugin</artifactId>
+               <version>${maven.javadoc.plugin.version}</version>
+               <configuration>
+                  <windowtitle>${project.name} API Documentation (version ${project.version})</windowtitle>
+                  <doctitle>${project.name} API Documentation (version ${project.version})</doctitle>
+                  <show>public</show>
+                  <excludePackageNames>org.perfcake.model,org.perfcake.scenario.dsl</excludePackageNames>
+                  <stylesheetfile>${basedir}/perfcake/src/main/javadoc/javadoc.css</stylesheetfile>
+               </configuration>
+            </plugin>
          </plugins>
       </pluginManagement>
    </build>

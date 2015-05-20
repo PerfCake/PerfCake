@@ -141,6 +141,8 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Computes the actual result value about what the reporter will collect the statistics.
+    * @param measurementUnit Provided {@link MeasurementUnit} with all the measured values.
+    * @return The processed result based on the input {@link MeasurementUnit}.
     */
    protected abstract Double computeResult(final MeasurementUnit measurementUnit);
 

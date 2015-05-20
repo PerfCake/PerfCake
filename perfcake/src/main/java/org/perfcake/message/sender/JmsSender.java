@@ -318,6 +318,8 @@ public class JmsSender extends AbstractSender {
    /**
     * Checks if both of the provided credentials are set.
     *
+    * @param username The user name credential.
+    * @param password The password credential.
     * @return <code>true</code> if both of the credentials
     * are set and <code>false</code> if neither of them is set.
     * @throws PerfCakeException

@@ -156,7 +156,7 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    /**
-    * Copies current accumulated results to the provided {@link org.perfcake.reporting.Measurement}. This can be used in the child's {@link #doPublishResult(PeriodType, Destination)} method.
+    * Copies current accumulated results to the provided {@link org.perfcake.reporting.Measurement}. This can be used in the child's {@link #publishResult(PeriodType, Destination)} method.
     *
     * @param measurement
     *       The {@link org.perfcake.reporting.Measurement} to be filled with the results.
