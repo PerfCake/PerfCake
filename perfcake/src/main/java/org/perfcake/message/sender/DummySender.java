@@ -27,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -63,7 +64,7 @@ public class DummySender extends AbstractSender {
    /**
     * Contains all recorded messages in case the {@link #recording} was switched on.
     */
-   private List<String> recordedMessages = new ArrayList<>();
+   private static List<String> recordedMessages = Collections.synchronizedList(new ArrayList<>());
 
    @Override
    public void init() throws Exception {
@@ -150,8 +151,15 @@ public class DummySender extends AbstractSender {
     * Gets the list of recorded message payloads passed through this message sender while recording was switched on.
     * @return The list of recorded message payloads passed through this message sender while recording was switched on.
     */
-   public List<String> getRecordedMessages() {
+   public static List<String> getRecordedMessages() {
       return recordedMessages;
+   }
+
+   /**
+    * Clears all recorded messages.
+    */
+   public static void resetRecordings() {
+      recordedMessages.clear();
    }
 
    /**
