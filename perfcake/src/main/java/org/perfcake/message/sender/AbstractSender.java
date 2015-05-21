@@ -22,12 +22,14 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.StringTemplate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * The common ancestor for all senders. Facilitates logging and target specification.
@@ -44,7 +46,7 @@ abstract public class AbstractSender implements MessageSender {
    /**
     * The target where to send the messages.
     */
-   protected String target = "";
+   protected StringTemplate target = new StringTemplate("");
 
    @Override
    abstract public void init() throws Exception;
@@ -114,12 +116,16 @@ abstract public class AbstractSender implements MessageSender {
 
    @Override
    public String getTarget() {
-      return target;
+      return target.toString();
+   }
+
+   public String getTarget(final Properties properties) {
+      return target.toString(properties);
    }
 
    @Override
    public AbstractSender setTarget(final String target) {
-      this.target = target;
+      this.target = new StringTemplate(target);
       return this;
    }
 }

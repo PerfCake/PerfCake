@@ -51,7 +51,7 @@ public class ChannelSenderDatagram extends ChannelSender {
 
    @Override
    public void init() {
-      final String[] parts = target.split(":", 2);
+      final String[] parts = getTarget().split(":", 2);
       final String host = parts[0];
       final int port = Integer.parseInt(parts[1]);
 

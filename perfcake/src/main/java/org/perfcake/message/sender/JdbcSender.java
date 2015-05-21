@@ -80,7 +80,7 @@ public class JdbcSender extends AbstractSender {
 
    @Override
    public void init() throws Exception {
-      this.jdbcUrl = target;
+      this.jdbcUrl = getTarget();
       Class.forName(driverClass);
       connection = DriverManager.getConnection(jdbcUrl, username, password);
    }

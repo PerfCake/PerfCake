@@ -75,7 +75,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
 
    @Override
    public void init() throws Exception {
-      final String[] parts = target.split(":", 2);
+      final String[] parts = getTarget().split(":", 2);
       host = parts[0];
       port = Integer.parseInt(parts[1]);
    }

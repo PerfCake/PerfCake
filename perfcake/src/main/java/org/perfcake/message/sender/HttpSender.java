@@ -103,7 +103,7 @@ public class HttpSender extends AbstractSender {
 
    @Override
    public void init() throws Exception {
-      url = new URL(target);
+      url = new URL(getTarget());
    }
 
    @Override

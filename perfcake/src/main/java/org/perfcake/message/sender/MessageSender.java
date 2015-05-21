@@ -25,6 +25,7 @@ import org.perfcake.reporting.MeasurementUnit;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * A contract of message sender. The ultimate goal of a message sender is to send a message (or any other unit of communication work),
@@ -120,6 +121,15 @@ public interface MessageSender {
     * @return The current target.
     */
    String getTarget();
+
+   /**
+    * Gets the target where to send the messages providing additional properties to replace placeholders in the
+    * tearget template.
+    *
+    * @param properties Additional properties to replace placeholders in the target template.
+    * @return The current target.
+    */
+   String getTarget(final Properties properties);
 
    /**
     * Sets the target where to send the messages.

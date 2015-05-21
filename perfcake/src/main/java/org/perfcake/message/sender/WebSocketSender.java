@@ -128,7 +128,7 @@ public class WebSocketSender extends AbstractSender {
       container = ContainerProvider.getWebSocketContainer();
       try {
          logger.info("Connecting to URI " + target);
-         container.connectToServer(new PerfCakeClientEndpoint(), new URI(target));
+         container.connectToServer(new PerfCakeClientEndpoint(), new URI(getTarget()));
       } catch (DeploymentException | URISyntaxException e) {
          throw new RuntimeException(e);
       }

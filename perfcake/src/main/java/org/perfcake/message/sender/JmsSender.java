@@ -217,7 +217,7 @@ public class JmsSender extends AbstractSender {
          } else {
             connection = qcf.createConnection();
          }
-         destination = (Destination) ctx.lookup(target);
+         destination = (Destination) ctx.lookup(getTarget());
          if (replyTo != null && !"".equals(replyTo)) {
             replyToDestination = (Destination) ctx.lookup(replyTo);
          }
