@@ -19,7 +19,10 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
+
 import java.io.File;
+import java.util.Properties;
 
 /**
  * Executes an external Groovy script and pass the message
@@ -37,7 +40,7 @@ public class GroovySender extends CommandSender {
    private String groovyExecutable = null;
 
    @Override
-   public void init() throws Exception {
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
       setCommandPrefix(getGroovyExecutable());
    }
 

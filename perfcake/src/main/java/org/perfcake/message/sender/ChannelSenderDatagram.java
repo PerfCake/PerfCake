@@ -30,6 +30,7 @@ import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Sends messages through NIO DatagramChannel.
@@ -50,8 +51,8 @@ public class ChannelSenderDatagram extends ChannelSender {
    private SocketAddress address;
 
    @Override
-   public void init() {
-      final String[] parts = getTarget().split(":", 2);
+   public void doInit(final Properties messageAttributes) {
+      final String[] parts = safeGetTarget(messageAttributes).split(":", 2);
       final String host = parts[0];
       final int port = Integer.parseInt(parts[1]);
 
@@ -59,8 +60,8 @@ public class ChannelSenderDatagram extends ChannelSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
 
       // Open the Datagram channel in blocking mode
       datagramChannel = DatagramChannel.open();

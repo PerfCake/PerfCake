@@ -26,6 +26,7 @@ import org.perfcake.util.Utils;
 import java.io.InputStream;
 import java.security.KeyStore;
 import java.util.Map;
+import java.util.Properties;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -53,14 +54,18 @@ public class HttpsSender extends HttpSender {
    public static final String KEYSTORES_DIR_PROPERTY = "perfcake.keystores.dir";
 
    @Override
-   public void init() throws Exception {
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
       super.init();
-      sslFactory = initKeyStores();
+      try {
+         sslFactory = initKeyStores();
+      } catch (Exception e) {
+         throw new PerfCakeException("Cannot load key store.", e);
+      }
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
       ((HttpsURLConnection) requestConnection).setSSLSocketFactory(sslFactory);
    }
 

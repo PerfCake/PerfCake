@@ -46,13 +46,32 @@ abstract public class AbstractSender implements MessageSender {
    /**
     * The target where to send the messages.
     */
-   protected StringTemplate target = new StringTemplate("");
+   private StringTemplate target = new StringTemplate("");
+
+   /**
+    * Keeps the same connection to the target between individual invocations.
+    * This can achieve higher throughput, however, target cannot be changed for individual
+    * invocations and it does not make sense to use placeholders in target.
+    */
+   protected boolean keepConnection = true;
 
    @Override
-   abstract public void init() throws Exception;
+   public final void init() throws PerfCakeException {
+      if (keepConnection) { // otherwise this is done in preSend()
+         doInit(null);
+      }
+   }
+
+   abstract public void doInit(final Properties messageAttributes) throws PerfCakeException;
 
    @Override
-   abstract public void close() throws PerfCakeException;
+   public final void close() throws PerfCakeException {
+      if (keepConnection) { // otherwise this is done in postSend()
+         doClose();
+      }
+   }
+
+   abstract public void doClose() throws PerfCakeException;
 
    @Override
    public final Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
@@ -60,12 +79,16 @@ abstract public class AbstractSender implements MessageSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
       if (log.isDebugEnabled()) {
          log.debug("Initializing sending of a message.");
          if (log.isTraceEnabled()) {
             log.trace(String.format("Message content: %s", message.toString()));
          }
+      }
+
+      if (!keepConnection) {
+         doInit(messageAttributes);
       }
    }
 
@@ -82,7 +105,7 @@ abstract public class AbstractSender implements MessageSender {
     *       When the sending operation failed.
     * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message, org.perfcake.reporting.MeasurementUnit)
     */
-   final public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
+   public final Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
       return this.doSend(message, null, measurementUnit);
    }
 
@@ -107,6 +130,10 @@ abstract public class AbstractSender implements MessageSender {
       if (log.isDebugEnabled()) {
          log.debug("Cleaning up after the message has been sent.");
       }
+
+      if (!keepConnection) {
+         doClose();
+      }
    }
 
    @Override
@@ -115,16 +142,24 @@ abstract public class AbstractSender implements MessageSender {
    }
 
    @Override
-   public String getTarget() {
+   public final String getTarget() {
       return target.toString();
    }
 
-   public String getTarget(final Properties properties) {
+   public final String getTarget(final Properties properties) {
       return target.toString(properties);
    }
 
+   public final String safeGetTarget(final Properties properties) {
+      if (properties == null) {
+         return getTarget();
+      } else {
+         return getTarget(properties);
+      }
+   }
+
    @Override
-   public AbstractSender setTarget(final String target) {
+   public final AbstractSender setTarget(final String target) {
       this.target = new StringTemplate(target);
       return this;
    }

@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Properties;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
@@ -124,13 +125,13 @@ public class WebSocketSender extends AbstractSender {
    }
 
    @Override
-   public void init() throws Exception {
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
       container = ContainerProvider.getWebSocketContainer();
       try {
-         logger.info("Connecting to URI " + target);
-         container.connectToServer(new PerfCakeClientEndpoint(), new URI(getTarget()));
-      } catch (DeploymentException | URISyntaxException e) {
-         throw new RuntimeException(e);
+         logger.info("Connecting to URI " + safeGetTarget(messageAttributes));
+         container.connectToServer(new PerfCakeClientEndpoint(), new URI(safeGetTarget(messageAttributes)));
+      } catch (IOException | DeploymentException | URISyntaxException e) {
+         throw new PerfCakeException("Cannot open web socket: ", e);
       }
       if (session == null) {
          throw new PerfCakeException("Web socket session cannot be null before the scenario run.");
@@ -138,7 +139,7 @@ public class WebSocketSender extends AbstractSender {
    }
 
    @Override
-   public void close() throws PerfCakeException {
+   public void doClose() throws PerfCakeException {
       try {
          session.close();
       } catch (final IOException e) {

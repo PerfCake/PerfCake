@@ -19,11 +19,13 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * TODO: Provide implementation. This is to cover jMeter functionality. Can be based on HTTP sender???
@@ -33,13 +35,13 @@ import java.util.Map;
 public class SoapSender extends AbstractSender {
 
    @Override
-   public void init() throws Exception {
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
       // TODO Auto-generated method stub
 
    }
 
    @Override
-   public void close() {
+   public void doClose() {
       // TODO Auto-generated method stub
 
    }

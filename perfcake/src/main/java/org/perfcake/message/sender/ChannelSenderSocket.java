@@ -30,6 +30,7 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.UnresolvedAddressException;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Sends messages through NIO SocketChannel.
@@ -54,15 +55,15 @@ public class ChannelSenderSocket extends ChannelSender {
    private String host;
 
    @Override
-   public void init() {
-      final String[] parts = getTarget().split(":", 2);
+   public void doInit(final Properties messageAttributes) {
+      final String[] parts = safeGetTarget(messageAttributes).split(":", 2);
       host = parts[0];
       port = Integer.parseInt(parts[1]);
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
 
       // Open the Socket channel in non-blocking mode
       socketChannel = SocketChannel.open();

@@ -26,6 +26,8 @@ import org.perfcake.util.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import sun.misc.Perf;
+
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;
@@ -93,7 +95,7 @@ public class RequestResponseJmsSender extends JmsSender {
    private long receivingTimeout = 1000; // default 1s
 
    /**
-    * Maximal number of attemts to read the response.
+    * Maximal number of attempts to read the response.
     */
    private int receiveAttempts = 5;
 
@@ -148,7 +150,7 @@ public class RequestResponseJmsSender extends JmsSender {
    protected String responsePassword = null;
 
    @Override
-   public void init() throws Exception {
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
       super.init();
       try {
          if (responseTarget == null || responseTarget.equals("")) {
@@ -170,8 +172,10 @@ public class RequestResponseJmsSender extends JmsSender {
             }
          }
 
-      } catch (JMSException | NamingException | RuntimeException | PerfCakeException e) {
-         throw new PerfCakeException(e);
+      } catch (PerfCakeException pce) {
+         throw pce;
+      } catch (Exception e) {
+         throw new PerfCakeException("Cannot initialize response receiver: ", e);
       }
    }
 
@@ -205,7 +209,7 @@ public class RequestResponseJmsSender extends JmsSender {
    }
 
    @Override
-   public void close() throws PerfCakeException {
+   public void doClose() throws PerfCakeException {
       try {
          try {
             super.close();
@@ -238,8 +242,8 @@ public class RequestResponseJmsSender extends JmsSender {
    }
 
    @Override
-   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
       if (useCorrelationId) { // set the correlation ID
          mess.setJMSCorrelationID(correlationId);
       }

@@ -19,6 +19,7 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.util.Utils;
@@ -31,6 +32,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -94,18 +96,18 @@ public class CommandSender extends AbstractSender {
    }
 
    @Override
-   public void init() throws Exception {
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
       // nop
    }
 
    @Override
-   public void close() {
+   public void doClose() {
       // nop
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
       if (message != null) {
          final Serializable payload = message.getPayload();
          if (payload != null) {
@@ -118,9 +120,9 @@ public class CommandSender extends AbstractSender {
       }
 
       if (messagePayload != null && messageFrom == MessageFrom.ARGUMENTS) {
-         command = (commandPrefix + " " + target + " " + messagePayload).trim();
+         command = (commandPrefix + " " + safeGetTarget(messageAttributes) + " " + messagePayload).trim();
       } else {
-         command = (commandPrefix + " " + target).trim();
+         command = (commandPrefix + " " + safeGetTarget(messageAttributes)).trim();
       }
 
       final Set<Entry<String, String>> propertiesEntrySet = properties.entrySet();
@@ -164,8 +166,7 @@ public class CommandSender extends AbstractSender {
          ch = reader.read(cbuf);
       }
 
-      final String result = sb.toString();
-      return result;
+      return sb.toString();
    }
 
    @Override

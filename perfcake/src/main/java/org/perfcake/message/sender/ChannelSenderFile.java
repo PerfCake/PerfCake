@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Sends messages through NIO FileChannel.
@@ -43,12 +44,12 @@ public class ChannelSenderFile extends ChannelSender {
    private FileChannel fileChannel;
 
    @Override
-   public void init() {
+   public void doInit(final Properties messageAttributes) {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
 
       fileChannel = new RandomAccessFile(getTarget(), "rw").getChannel();
 

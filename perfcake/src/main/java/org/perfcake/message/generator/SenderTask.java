@@ -107,9 +107,9 @@ class SenderTask implements Runnable {
       this.semaphore = semaphore;
    }
 
-   private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) {
+   private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final Properties messageAttributes, final MeasurementUnit mu) {
       try {
-         sender.preSend(message, messageHeaders);
+         sender.preSend(message, messageHeaders, messageAttributes);
       } catch (final Exception e) {
          if (log.isErrorEnabled()) {
             log.error("Exception occurred!", e);
@@ -170,7 +170,7 @@ class SenderTask implements Runnable {
                   final long multiplicity = messageToSend.getMultiplicity();
 
                   for (int i = 0; i < multiplicity; i++) {
-                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend, currentMessage, messageAttributes);
+                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
                      if (validationManager.isEnabled()) {
                         validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                      }
@@ -178,7 +178,7 @@ class SenderTask implements Runnable {
 
                }
             } else {
-               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null, null, messageAttributes);
+               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, messageAttributes, mu), null, null, messageAttributes);
                if (validationManager.isEnabled()) {
                   validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                }

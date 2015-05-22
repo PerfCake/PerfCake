@@ -19,6 +19,7 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -52,7 +54,7 @@ public class DummySender extends AbstractSender {
    private static AtomicLong counter = new AtomicLong(0);
 
    /**
-    * The delay duration to simulate a asonchronous waiting.
+    * The delay duration to simulate a asynchronous waiting.
     */
    private long delay = 0;
 
@@ -67,15 +69,15 @@ public class DummySender extends AbstractSender {
    private static List<String> recordedMessages = Collections.synchronizedList(new ArrayList<>());
 
    @Override
-   public void init() throws Exception {
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
       if (log.isDebugEnabled()) {
-         log.debug("Initializing... " + target);
+         log.debug("Initializing... " + safeGetTarget(messageAttributes));
       }
       // nop
    }
 
    @Override
-   public void close() {
+   public void doClose() {
       if (log.isDebugEnabled()) {
          log.debug("Closing...");
       }
@@ -83,11 +85,18 @@ public class DummySender extends AbstractSender {
    }
 
    @Override
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
+      if (log.isDebugEnabled()) {
+         log.debug("Sending to " + safeGetTarget(messageAttributes) + "...");
+      }
+   }
+
+   @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       final long count = counter.incrementAndGet();
 
       if (log.isDebugEnabled()) {
-         log.debug("Sending to " + target + "...");
          log.debug("Dummy counter: " + count);
       }
 

@@ -32,12 +32,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Sends messages via HTTP protocol.
@@ -97,17 +99,22 @@ public class HttpSender extends AbstractSender {
    private String payload;
 
    /**
-    * The request payload lenght.
+    * The request payload length.
     */
-   private int payloadLenght;
+   private int payloadLength;
 
    @Override
-   public void init() throws Exception {
-      url = new URL(getTarget());
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
+      final String targetUrl = safeGetTarget(messageAttributes);
+      try {
+         url = new URL(targetUrl);
+      } catch (MalformedURLException e) {
+         throw new PerfCakeException(String.format("Cannot initialize HTTP connection, invalid URL %s: ", targetUrl), e);
+      }
    }
 
    @Override
-   public void close() {
+   public void doClose() {
       // nop
    }
 
@@ -179,15 +186,15 @@ public class HttpSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
 
-      payloadLenght = 0;
+      payloadLength = 0;
       if (message == null) {
          payload = null;
       } else if (message.getPayload() != null) {
          payload = message.getPayload().toString();
-         payloadLenght = payload.length();
+         payloadLength = payload.length();
       }
 
       requestConnection = (HttpURLConnection) url.openConnection();
@@ -197,8 +204,8 @@ public class HttpSender extends AbstractSender {
          requestConnection.setDoOutput(true);
       }
       requestConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
-      if (payloadLenght > 0) {
-         requestConnection.setRequestProperty("Content-Length", Integer.toString(payloadLenght));
+      if (payloadLength > 0) {
+         requestConnection.setRequestProperty("Content-Length", Integer.toString(payloadLength));
       }
 
       if (log.isDebugEnabled()) {
@@ -250,7 +257,7 @@ public class HttpSender extends AbstractSender {
       requestConnection.connect();
       if (payload != null && (method == Method.POST || method == Method.PUT)) {
          final OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream(), Utils.getDefaultEncoding());
-         out.write(payload, 0, payloadLenght);
+         out.write(payload, 0, payloadLength);
          out.flush();
          out.close();
          requestConnection.getOutputStream().close();

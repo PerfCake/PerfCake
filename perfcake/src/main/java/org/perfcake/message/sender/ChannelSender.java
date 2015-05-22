@@ -29,6 +29,7 @@ import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Common ancestor to all sender's sending messages through NIO channels.
@@ -63,16 +64,13 @@ abstract public class ChannelSender extends AbstractSender {
    protected ByteBuffer responseBuffer;
 
    @Override
-   abstract public void init() throws PerfCakeException;
-
-   @Override
-   public void close() throws PerfCakeException {
+   public void doClose() throws PerfCakeException {
       // no-op
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
 
       // Encode message payload into buffer
       if (message != null && message.getPayload() != null) {

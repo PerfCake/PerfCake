@@ -35,6 +35,7 @@ import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.Socket;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * The common ancestor for all senders that are able to send messages through a socket.
@@ -74,14 +75,14 @@ abstract public class AbstractSocketSender extends AbstractSender {
    private final Logger log = LogManager.getLogger(AbstractSocketSender.class);
 
    @Override
-   public void init() throws Exception {
-      final String[] parts = getTarget().split(":", 2);
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
+      final String[] parts = safeGetTarget(messageAttributes).split(":", 2);
       host = parts[0];
       port = Integer.parseInt(parts[1]);
    }
 
    @Override
-   public void close() {
+   public void doClose() {
       // closed per message
    }
 
@@ -122,8 +123,8 @@ abstract public class AbstractSocketSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
       openSocket();
       openStreams();
    }

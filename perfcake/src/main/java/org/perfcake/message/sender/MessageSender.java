@@ -52,10 +52,10 @@ public interface MessageSender {
    /**
     * Initializes the sender. This method is executed once the sender is properly created based on the configuration in the scenario.
     *
-    * @throws java.lang.Exception
+    * @throws PerfCakeException
     *       When anything fails, basically this happens when a connection to the target could not have been established.
     */
-   void init() throws Exception;
+   void init() throws PerfCakeException;
 
    /**
     * Closes the sender.
@@ -72,10 +72,12 @@ public interface MessageSender {
     *       Message to be sent.
     * @param properties
     *       Additional properties that can influence the sending of the message.
+    * @param messageAttributes
+    *       Attributes that can be used to replace placeholders in message and or target.
     * @throws Exception
     *       In case anything fails during the preparation.
     */
-   void preSend(final Message message, final Map<String, String> properties) throws Exception;
+   void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception;
 
    /**
     * Sends a message.

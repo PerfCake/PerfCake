@@ -186,7 +186,7 @@ public class JmsSender extends AbstractSender {
    }
 
    @Override
-   public void init() throws Exception {
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
       if (log.isDebugEnabled()) {
          log.debug("Initializing...");
       }
@@ -217,7 +217,7 @@ public class JmsSender extends AbstractSender {
          } else {
             connection = qcf.createConnection();
          }
-         destination = (Destination) ctx.lookup(getTarget());
+         destination = (Destination) ctx.lookup(safeGetTarget(messageAttributes));
          if (replyTo != null && !"".equals(replyTo)) {
             replyToDestination = (Destination) ctx.lookup(replyTo);
          }
@@ -231,7 +231,7 @@ public class JmsSender extends AbstractSender {
    }
 
    @Override
-   public void close() throws PerfCakeException {
+   public void doClose() throws PerfCakeException {
       if (log.isDebugEnabled()) {
          log.debug("Closing...");
       }
@@ -271,8 +271,8 @@ public class JmsSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
       switch (messageType) {
          case STRING:
             mess = session.createTextMessage((String) message.getPayload());
