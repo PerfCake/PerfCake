@@ -70,5 +70,15 @@ public class SequencesIntegrationTest extends TestSetup {
       Assert.assertEquals(messages.get(7), "Test message: counter:null-counter:3,double:null-double:6-testQS,testQS");
 
       Assert.assertEquals(targets.size(), 10);
+      Assert.assertEquals(targets.get(0), "test-null-0");
+      Assert.assertEquals(targets.get(1), "test-null-0");
+      Assert.assertEquals(targets.get(2), "test-null-1");
+      Assert.assertEquals(targets.get(3), "test-null-1");
+      Assert.assertEquals(targets.get(4), "test-null-2");
+      Assert.assertEquals(targets.get(5), "test-null-2");
+      Assert.assertEquals(targets.get(6), "test-null-3");
+      Assert.assertEquals(targets.get(7), "test-null-3");
+      Assert.assertEquals(targets.get(8), "test-null-4");
+      Assert.assertEquals(targets.get(9), "test-null-4");
    }
 }
