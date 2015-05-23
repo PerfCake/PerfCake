@@ -4,7 +4,7 @@
    <generator class="DefaultMessageGenerator" threads="10">
       <property name="shutdownPeriod" value="5500" />
    </generator>
-   <sender class="DummySender">
+   <sender class="TestSender">
       <target>Out there!</target>
       <property name="delay" value="5000" />
    </sender>

@@ -91,7 +91,6 @@ if $mingw ; then
     PERFCAKE_HOME="`(cd "$PERFCAKE_HOME"; pwd)`"
   [ -n "$JAVA_HOME" ] &&
     JAVA_HOME="`(cd "$JAVA_HOME"; pwd)`"
-  # TODO classpath?
 fi
 
 if [ -z "$JAVA_HOME" ]; then

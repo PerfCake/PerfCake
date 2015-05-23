@@ -20,14 +20,16 @@
 package org.perfcake.message.sequence;
 
 import org.perfcake.TestSetup;
-import org.perfcake.message.sender.DummySender;
+import org.perfcake.message.sender.TestSender;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -37,14 +39,19 @@ public class SequencesIntegrationTest extends TestSetup {
 
    public void basicIntegrationTest() throws Exception {
       final Scenario scenario = ScenarioLoader.load("test-sequences");
+      final List<String> targets = new ArrayList<>();
 
-      DummySender.resetRecordings();
+      TestSender.setOnInitListener(targets::add);
+      TestSender.resetRecordings();
+
       scenario.init();
       scenario.run();
       Thread.sleep(500);
       scenario.close();
 
-      final List<String> messages = DummySender.getRecordedMessages();
+      TestSender.setOnInitListener(null);
+
+      final List<String> messages = TestSender.getRecordedMessages();
 
       Assert.assertEquals(messages.size(), 10);
 
@@ -61,5 +68,7 @@ public class SequencesIntegrationTest extends TestSetup {
 
       Assert.assertEquals(messages.get(6), "counter:null-counter:3,double:null-double:6-testQS,testQS");
       Assert.assertEquals(messages.get(7), "Test message: counter:null-counter:3,double:null-double:6-testQS,testQS");
+
+      Assert.assertEquals(targets.size(), 10);
    }
 }

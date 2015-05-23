@@ -43,7 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MessageSenderManagerTest {
 
    private static final int SENDER_COUNT = 100;
-   private static final String SENDER_CLASS_NAME = DummySender.class.getName();
+   private static final String SENDER_CLASS_NAME = TestSender.class.getName();
    private static final int THREAD_COUNT = 100;
    private static final int SENDER_TASK_COUNT = 2000;
    private static final int THREAD_SLEEP_MILLIS = 1000;
@@ -72,7 +72,7 @@ public class MessageSenderManagerTest {
       for (i = 0; i < SENDER_COUNT; i++) {
          senders[i] = msm.acquireSender();
       }
-      assertTrue(senders[0] instanceof DummySender, "Sender is an instance of " + senders[0].getClass().getName() + ". It should be instance of " + SENDER_CLASS_NAME);
+      assertTrue(senders[0] instanceof TestSender, "Sender is an instance of " + senders[0].getClass().getName() + ". It should be instance of " + SENDER_CLASS_NAME);
       assertTrue(msm.availableSenderCount() == 0);
       try {
          msm.acquireSender();

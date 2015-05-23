@@ -163,4 +163,26 @@ abstract public class AbstractSender implements MessageSender {
       this.target = new StringTemplate(target);
       return this;
    }
+
+   /**
+    * Should we try to preserve connection between sending of individual messages?
+    * Placeholders in the target address cannot be replaced with properties nor sequences when set to true.
+    * Defaults to true.
+    *
+    * @return True iff the connection is kept open.
+    */
+   public boolean isKeepConnection() {
+      return keepConnection;
+   }
+
+   /**
+    * Should we try to preserve connection between sending of individual messages?
+    * Placeholders in the target address cannot be replaced with properties nor sequences when set to true.
+    * Defaults to true.
+    *
+    * @param keepConnection True when the connection should be kept open.
+    */
+   public void setKeepConnection(final boolean keepConnection) {
+      this.keepConnection = keepConnection;
+   }
 }

@@ -19,7 +19,7 @@
  */
 package org.perfcake;
 
-import org.perfcake.message.sender.DummySender;
+import org.perfcake.message.sender.TestSender;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 
@@ -37,7 +37,7 @@ public class ComplexExecutionTest extends TestSetup {
    public void iterationScenarioTest() throws Exception {
       final Scenario scenario;
 
-      DummySender.resetCounter();
+      TestSender.resetCounter();
 
       scenario = ScenarioLoader.load("test-iteration-scenario");
       scenario.init();
@@ -45,7 +45,7 @@ public class ComplexExecutionTest extends TestSetup {
       Thread.sleep(500);
       scenario.close();
 
-      Assert.assertEquals(DummySender.getCounter(), 1);
+      Assert.assertEquals(TestSender.getCounter(), 1);
    }
 
 }

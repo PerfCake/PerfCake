@@ -27,7 +27,7 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.DefaultMessageGenerator;
-import org.perfcake.message.sender.DummySender;
+import org.perfcake.message.sender.TestSender;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.reporting.destinations.CsvDestination;
 import org.perfcake.reporting.reporters.Reporter;
@@ -74,9 +74,9 @@ public class DslFactoryTest extends TestSetup {
 
       final MessageSender ms = s.getMessageSenderManager().acquireSender();
 
-      Assert.assertTrue(ms instanceof DummySender);
-      Assert.assertEquals(((DummySender) ms).getDelay(), 12 * 1000);
-      Assert.assertEquals(((DummySender) ms).getTarget(), "httpbin.org");
+      Assert.assertTrue(ms instanceof TestSender);
+      Assert.assertEquals(((TestSender) ms).getDelay(), 12 * 1000);
+      Assert.assertEquals(((TestSender) ms).getTarget(), "httpbin.org");
 
       final Reporter[] reporters = s.getReportManager().getReporters().toArray(new Reporter[1]);
       Assert.assertEquals(reporters.length, 3);

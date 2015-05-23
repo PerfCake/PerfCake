@@ -27,17 +27,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Serves as a dummy sender for scenario testing and developing purposes. It does not actually send any message.
+ * Serves as a dummy sender to start developing a new sender. It does not actually send any message.
  * It can simulate a synchronous waiting for a reply by setting the {@link #delay} property in milliseconds (with default values 0).
- * property.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -49,39 +44,24 @@ public class DummySender extends AbstractSender {
    private static final Logger log = LogManager.getLogger(DummySender.class);
 
    /**
-    * Iteration counter (how many times the doSend method has been called).
-    */
-   private static AtomicLong counter = new AtomicLong(0);
-
-   /**
     * The delay duration to simulate a asynchronous waiting.
     */
    private long delay = 0;
 
-   /**
-    * Can switch on recording of each message payload sent.
-    */
-   private boolean recording = false;
-
-   /**
-    * Contains all recorded messages in case the {@link #recording} was switched on.
-    */
-   private static List<String> recordedMessages = Collections.synchronizedList(new ArrayList<>());
-
    @Override
    public void doInit(final Properties messageAttributes) throws PerfCakeException {
+      final String currentTarget = safeGetTarget(messageAttributes);
+
       if (log.isDebugEnabled()) {
-         log.debug("Initializing... " + safeGetTarget(messageAttributes));
+         log.debug("Initializing... " + currentTarget);
       }
-      // nop
    }
 
    @Override
-   public void doClose() {
+   public void doClose() throws PerfCakeException {
       if (log.isDebugEnabled()) {
-         log.debug("Closing...");
+         log.debug("Closing Dummy sender.");
       }
-      // nop
    }
 
    @Override
@@ -94,12 +74,6 @@ public class DummySender extends AbstractSender {
 
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
-      final long count = counter.incrementAndGet();
-
-      if (log.isDebugEnabled()) {
-         log.debug("Dummy counter: " + count);
-      }
-
       if (delay > 0) {
          final long sleepStart = System.currentTimeMillis();
          try {
@@ -110,10 +84,6 @@ public class DummySender extends AbstractSender {
                Thread.sleep(snooze);
             }
          }
-      }
-
-      if (recording && message != null) {
-         recordedMessages.add(message.getPayload().toString());
       }
 
       return (message == null) ? null : message.getPayload();
@@ -138,52 +108,5 @@ public class DummySender extends AbstractSender {
    public DummySender setDelay(final long delay) {
       this.delay = delay;
       return this;
-   }
-
-   /**
-    * Obtains the current state of the recording.
-    * @return True iff recording of message payloads passed through this sender is switched on.
-    */
-   public boolean isRecording() {
-      return recording;
-   }
-
-   /**
-    * Switches on recording of message payloads passed through this sender.
-    * @param recording True iff the recording should be turned on.
-    */
-   public void setRecording(final boolean recording) {
-      this.recording = recording;
-   }
-
-   /**
-    * Gets the list of recorded message payloads passed through this message sender while recording was switched on.
-    * @return The list of recorded message payloads passed through this message sender while recording was switched on.
-    */
-   public static List<String> getRecordedMessages() {
-      return recordedMessages;
-   }
-
-   /**
-    * Clears all recorded messages.
-    */
-   public static void resetRecordings() {
-      recordedMessages.clear();
-   }
-
-   /**
-    * Resets the iteration counter (how many times the {@link #doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)} method has been called).
-    */
-   public static void resetCounter() {
-      counter.set(0);
-   }
-
-   /**
-    * Gets the iteration counter (how many times the {@link #doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)} method has been called).
-    *
-    * @return The iteration counter value.
-    */
-   public static long getCounter() {
-      return counter.get();
    }
 }

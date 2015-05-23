@@ -22,7 +22,7 @@ package org.perfcake.reporting.destinations;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.TestSetup;
 import org.perfcake.common.PeriodType;
-import org.perfcake.message.sender.DummySender;
+import org.perfcake.message.sender.TestSender;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.scenario.Scenario;
@@ -178,7 +178,7 @@ public class ChartDestinationTest extends TestSetup {
       final Scenario scenario;
 
       System.setProperty(PerfCakeConst.SCENARIO_PROPERTY, "1chart-scenario$");
-      DummySender.resetCounter();
+      TestSender.resetCounter();
 
       scenario = ScenarioLoader.load("test-scenario-chart");
       scenario.init();
@@ -200,7 +200,7 @@ public class ChartDestinationTest extends TestSetup {
 
       Assert.assertNotNull(chartDestination);
       Assert.assertEquals(chartDestination.getGroup(), correctGroup);
-      Assert.assertEquals(DummySender.getCounter(), 1_000_000);
+      Assert.assertEquals(TestSender.getCounter(), 1_000_000);
 
       final Path dir = Paths.get("target/test-chart");
 
@@ -218,7 +218,7 @@ public class ChartDestinationTest extends TestSetup {
       final Scenario scenario;
 
       System.setProperty(PerfCakeConst.SCENARIO_PROPERTY, "default");
-      DummySender.resetCounter();
+      TestSender.resetCounter();
 
       scenario = ScenarioLoader.load("test-scenario-chart");
 

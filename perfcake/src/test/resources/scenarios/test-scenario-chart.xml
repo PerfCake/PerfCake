@@ -2,7 +2,7 @@
 <scenario xmlns="urn:perfcake:scenario:5.0">
    <run type="iteration" value="1000000"/>
    <generator class="DefaultMessageGenerator" threads="${threads:25}"/>
-   <sender class="DummySender"/>
+   <sender class="TestSender"/>
    <reporting>
       <reporter class="ThroughputStatsReporter">
          <destination class="ConsoleDestination">
