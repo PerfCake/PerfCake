@@ -36,8 +36,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  * A common ancestor for most generators. It can generate messages in parallel using {@link MessageSender Message Senders} running
  * concurrently in {@link #threads} number of threads.
- * The generator should also have the ability to tag messages by the sequence number that indicated the order of messages
- * (see {@link #setMessageNumberingEnabled(boolean)}).
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -73,11 +71,6 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     * Manager of sequences that can be used to replace placeholders in a message template and sender's target.
     */
    protected SequenceManager sequenceManager;
-
-   /**
-    * The property of the generator indicating whether the message numbering feature is enabled or disabled.
-    */
-   protected boolean messageNumberingEnabled = false;
 
    /**
     * Represents the information about current run.
@@ -121,7 +114,6 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
       task.setReportManager(reportManager);
       task.setSenderManager(messageSenderManager);
       task.setValidationManager(validationManager);
-      task.setMessageNumberingEnabled(isMessageNumberingEnabled());
       task.setMessageAttributes(sequenceManager != null ? sequenceManager.getSnapshot() : new Properties());
 
       return task;
@@ -217,28 +209,6 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
          runInfo.setThreads(threads);
       }
 
-      return this;
-   }
-
-   /**
-    * Is the message numbering enabled? When enabled, each message gets a unique number assigned. This should be disabled
-    * for maximal performance.
-    *
-    * @return True if and only if the numbering is enabled.
-    */
-   public boolean isMessageNumberingEnabled() {
-      return messageNumberingEnabled;
-   }
-
-   /**
-    * Enables or disables marking the messages with a unique number. Disable this for maximal performance.
-    *
-    * @param messageNumberingEnabled
-    *       True to enable message numbering, false otherwise.
-    * @return Instance of this to support fluent API.
-    */
-   public MessageGenerator setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
-      this.messageNumberingEnabled = messageNumberingEnabled;
       return this;
    }
 

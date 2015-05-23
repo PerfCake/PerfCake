@@ -69,11 +69,6 @@ class SenderTask implements Runnable {
    private List<MessageTemplate> messageStore;
 
    /**
-    * Indicates whether the message numbering is enabled or disabled.
-    */
-   private boolean messageNumberingEnabled;
-
-   /**
     * Reference to a report manager.
     */
    private ReportManager reportManager;
@@ -148,14 +143,14 @@ class SenderTask implements Runnable {
 
       final HashMap<String, String> messageHeaders = new HashMap<>();
       MessageSender sender = null;
-      ReceivedMessage receivedMessage = null;
+      ReceivedMessage receivedMessage;
       try {
          final MeasurementUnit mu = reportManager.newMeasurementUnit();
 
          if (mu != null) {
             // only set numbering to headers if it is enabled, later there is no change to
             // filter out the headers before sending
-            if (messageNumberingEnabled && messageAttributes != null) {
+            if (messageAttributes != null) {
                messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_HEADER, messageAttributes.getProperty(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration())));
             }
 
@@ -223,16 +218,6 @@ class SenderTask implements Runnable {
    }
 
    /**
-    * Enables or disables marking the messages with a unique number. Disable this for maximal performance.
-    *
-    * @param messageNumberingEnabled
-    *       True to enable message numbering, false otherwise.
-    */
-   protected void setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
-      this.messageNumberingEnabled = messageNumberingEnabled;
-   }
-
-   /**
     * Configures a {@link org.perfcake.reporting.ReportManager} for the sender task.
     *
     * @param reportManager
@@ -254,7 +239,9 @@ class SenderTask implements Runnable {
 
    /**
     * Sets instance dependant message attributes of this sender task. This should be done by a generator using {@link SequenceManager}.
-    * @param messageAttributes Current message attributes obtained from a {@link SequenceManager}.
+    *
+    * @param messageAttributes
+    *       Current message attributes obtained from a {@link SequenceManager}.
     */
    public void setMessageAttributes(final Properties messageAttributes) {
       this.messageAttributes = messageAttributes;
