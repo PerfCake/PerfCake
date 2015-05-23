@@ -55,7 +55,7 @@ public class HttpsSender extends HttpSender {
 
    @Override
    public void doInit(final Properties messageAttributes) throws PerfCakeException {
-      super.init();
+      super.doInit(messageAttributes);
       try {
          sslFactory = initKeyStores();
       } catch (Exception e) {

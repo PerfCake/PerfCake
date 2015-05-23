@@ -130,4 +130,9 @@ public final class PerfCakeConst {
     * Result name indicating whether the scenario
     */
    public static final String WARM_UP_TAG = "warmUp";
+
+   /**
+    * Property that can disable templating engine (HTTL) in {@link org.perfcake.util.StringTemplate}.
+    */
+   public static final String DISABLE_TEMPLATES_PROPERTY = "perfcake.templates.disabled";
 }

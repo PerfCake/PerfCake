@@ -229,7 +229,7 @@ public class HttpSenderTest {
    private String _sendMessage(final MessageSender sender, final Message message, final Map<String, String> additionalProperties) throws Exception {
       String response = null;
       sender.init();
-      sender.preSend(message, additionalProperties);
+      sender.preSend(message, additionalProperties, null);
       response = (String) sender.send(message, additionalProperties, null);
       sender.postSend(message);
       sender.close();

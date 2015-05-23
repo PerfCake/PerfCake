@@ -26,8 +26,6 @@ import org.perfcake.util.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import sun.misc.Perf;
-
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Properties;
@@ -151,7 +149,7 @@ public class RequestResponseJmsSender extends JmsSender {
 
    @Override
    public void doInit(final Properties messageAttributes) throws PerfCakeException {
-      super.init();
+      super.doInit(messageAttributes);
       try {
          if (responseTarget == null || responseTarget.equals("")) {
             throw new PerfCakeException("responseTarget property is not defined in the scenario or is empty");
@@ -212,7 +210,7 @@ public class RequestResponseJmsSender extends JmsSender {
    public void doClose() throws PerfCakeException {
       try {
          try {
-            super.close();
+            super.doClose();
          } finally {
             try {
                if (responseReceiver != null) {

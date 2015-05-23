@@ -147,7 +147,7 @@ public class JdbcSenderTest {
 
       final org.perfcake.message.Message message = new org.perfcake.message.Message();
       message.setPayload(sql);
-      sender.preSend(message, null);
+      sender.preSend(message, null, null);
       final Serializable response = sender.send(message, null);
       sender.postSend(message);
       sender.close();
@@ -202,7 +202,7 @@ public class JdbcSenderTest {
 
       final org.perfcake.message.Message message = new org.perfcake.message.Message();
       message.setPayload(sql);
-      sender.preSend(message, null);
+      sender.preSend(message, null, null);
       final Serializable response = sender.send(message, null);
       sender.postSend(message);
       sender.close();
