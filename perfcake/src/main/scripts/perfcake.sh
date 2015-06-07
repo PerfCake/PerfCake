@@ -35,11 +35,36 @@ case "`uname`" in
   CYGWIN*) cygwin=true ;;
   MINGW*) mingw=true;;
   Darwin*) darwin=true
-           if [ -z "$JAVA_VERSION" ] ; then
-             JAVA_VERSION="CurrentJDK"
+           #
+           # Look for the Apple JDKs first to preserve the existing behaviour, and then look
+           # for the new JDKs provided by Oracle.
+           # 
+           if [ -z "$JAVA_HOME" ] && [ -L /System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK ] ; then
+             #
+             # Apple JDKs
+             #
+             export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home
            fi
-           if [ -z "$JAVA_HOME" ] ; then
-             JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/${JAVA_VERSION}/Home
+           
+           if [ -z "$JAVA_HOME" ] && [ -L /System/Library/Java/JavaVirtualMachines/CurrentJDK ] ; then
+             #
+             # Apple JDKs
+             #
+             export JAVA_HOME=/System/Library/Java/JavaVirtualMachines/CurrentJDK/Contents/Home
+           fi
+             
+           if [ -z "$JAVA_HOME" ] && [ -L "/Library/Java/JavaVirtualMachines/CurrentJDK" ] ; then
+             #
+             # Oracle JDKs
+             #
+             export JAVA_HOME=/Library/Java/JavaVirtualMachines/CurrentJDK/Contents/Home
+           fi           
+
+           if [ -z "$JAVA_HOME" ] && [ -x "/usr/libexec/java_home" ]; then
+             #
+             # Apple JDKs
+             #
+             export JAVA_HOME=`/usr/libexec/java_home`
            fi
            ;;
 esac
@@ -139,6 +164,15 @@ if $cygwin; then
     JAVA_HOME=`cygpath --path --windows "$JAVA_HOME"`
   [ -n "$CLASSPATH" ] &&
     CLASSPATH=`cygpath --path --windows "$CLASSPATH"`
+fi
+
+sedExecutable=`which sed`
+if [ -n "$sedExecutable" ]; then
+  javaVersion=`java -version 2>&1 | sed 's/.*version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q'`
+  if [ "$javaVersion" -lt 18 ]; then
+  	echo "Unsupported Java version. PerfCake requires Java 8 and higher."
+  	exit 2
+  fi
 fi
 
 # Set the PerfCake working directory
