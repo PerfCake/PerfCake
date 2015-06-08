@@ -20,6 +20,8 @@
 package org.perfcake.message.sequence;
 
 /**
+ * Sequence that returns current timestamp.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class TimeStampSequence implements Sequence {
