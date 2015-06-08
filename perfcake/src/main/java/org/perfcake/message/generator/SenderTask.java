@@ -79,9 +79,9 @@ class SenderTask implements Runnable {
    private ValidationManager validationManager;
 
    /**
-    * Instance dependant message attributes of this sender tasks. These are filled in by the generator from a {@link SequenceManager}.
+    * A reference to the current sequence manager. This is used for determining message specific sequence values.
     */
-   private Properties messageAttributes;
+   private SequenceManager sequenceManager;
 
    /**
     * Controls the amount of prepared tasks in a buffer.
@@ -140,6 +140,8 @@ class SenderTask implements Runnable {
    @Override
    public void run() {
       assert messageStore != null && reportManager != null && validationManager != null && senderManager != null : "SenderTask was not properly initialized.";
+
+      final Properties messageAttributes = sequenceManager != null ? sequenceManager.getSnapshot() : new Properties();
 
       final HashMap<String, String> messageHeaders = new HashMap<>();
       MessageSender sender = null;
@@ -238,12 +240,12 @@ class SenderTask implements Runnable {
    }
 
    /**
-    * Sets instance dependant message attributes of this sender task. This should be done by a generator using {@link SequenceManager}.
+    * Configures a {@link SequenceManager} for the sender task.
     *
-    * @param messageAttributes
-    *       Current message attributes obtained from a {@link SequenceManager}.
+    * @param sequenceManager
+    *       {@link SequenceManager} to be used by the sender task.
     */
-   public void setMessageAttributes(final Properties messageAttributes) {
-      this.messageAttributes = messageAttributes;
+   public void setSequenceManager(final SequenceManager sequenceManager) {
+      this.sequenceManager = sequenceManager;
    }
 }

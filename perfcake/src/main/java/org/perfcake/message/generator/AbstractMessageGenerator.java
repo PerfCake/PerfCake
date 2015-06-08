@@ -114,7 +114,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
       task.setReportManager(reportManager);
       task.setSenderManager(messageSenderManager);
       task.setValidationManager(validationManager);
-      task.setMessageAttributes(sequenceManager != null ? sequenceManager.getSnapshot() : new Properties());
+      task.setSequenceManager(sequenceManager != null ? sequenceManager.getSnapshot() : new Properties());
 
       return task;
    }
