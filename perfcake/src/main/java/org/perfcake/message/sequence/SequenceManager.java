@@ -42,6 +42,7 @@ public class SequenceManager {
     */
    public SequenceManager() {
       addSequence(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, new NumberSequence());
+      addSequence(PerfCakeConst.CURRENT_TIMESTAMP_PROPERTY, new TimeStampSequence());
    }
 
    /**

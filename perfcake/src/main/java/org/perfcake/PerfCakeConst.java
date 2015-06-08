@@ -42,9 +42,19 @@ public final class PerfCakeConst {
    public static final String MESSAGE_NUMBER_HEADER = "PerfCake_Performance_Message_Number";
 
    /**
-    * Name of the system property that stores message number. It can be used in messages as a placeholder.
+    * Name of the sequence and property placeholder that stores message number. It can be used in message templates.
     */
    public static final String MESSAGE_NUMBER_PROPERTY = "MessageNumber";
+
+   /**
+    * Name of the sequence and property placeholder that stores current timestamp. It can be used in message templates.
+    */
+   public static final String CURRENT_TIMESTAMP_PROPERTY = "CurrentTimestamp";
+
+   /**
+    * Name of the sequence and property placeholder that stores thread ID. It can be used in message templates.
+    */
+   public static final String THREAD_ID_PROPERTY = "ThreadId";
 
    /**
     * Name of the system property that stores name of scenario that is executed.
