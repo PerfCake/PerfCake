@@ -21,6 +21,7 @@ package org.perfcake.message;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.TestSetup;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
@@ -41,6 +42,8 @@ public class MessageTemplateTest extends TestSetup {
    private static final String HELLO_NAME = "hello";
    private static final String HELLO_VALUE = "hello.value";
    private static final String NUMBER_NAME = "number";
+   private static final String TEST_HEADER = "testHeader";
+   private static final String TEST_PROPERTY = "testProperty";
    private static final int NUMBER_VALUE = 1;
 
    private static final String EXPECTED_MESSAGE_FROM_URI = NUMBER_VALUE + " 2 " + HELLO_VALUE + " 1 " + (NUMBER_VALUE - 1) + " " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name") + "I'm a fish!";
@@ -57,13 +60,17 @@ public class MessageTemplateTest extends TestSetup {
       final Scenario scenario = sl.load("test-scenario-unfiltered");
       final ScenarioRetractor sr = new ScenarioRetractor(scenario);
       final List<MessageTemplate> messageStore = sr.getMessageStore();
+      final SequenceManager sequenceManager = new SequenceManager();
       Assert.assertEquals(messageStore.size(), 6);
 
       final Properties propertiesToBeFiltered = new Properties();
+      sequenceManager.getSnapshot().forEach(propertiesToBeFiltered::put);
       propertiesToBeFiltered.setProperty(HELLO_NAME, HELLO_VALUE);
       propertiesToBeFiltered.setProperty(NUMBER_NAME, String.valueOf(NUMBER_VALUE));
       final Message m0 = messageStore.get(0).getFilteredMessage(propertiesToBeFiltered);
       Assert.assertEquals(m0.getPayload(), EXPECTED_MESSAGE_FROM_URI);
+      Assert.assertEquals(m0.getHeader(TEST_HEADER), "1");
+      Assert.assertEquals(m0.getProperty(TEST_PROPERTY), "0");
 
       Message m1 = messageStore.get(1).getFilteredMessage(propertiesToBeFiltered);
       Assert.assertEquals(m1.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_1);
