@@ -21,7 +21,6 @@ package org.perfcake.message;
 
 import org.perfcake.util.StringTemplate;
 
-import com.sun.java.swing.plaf.windows.TMSchema;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -95,7 +94,9 @@ public class MessageTemplate implements Serializable {
 
    /**
     * Converts string properties to templates when there are placeholders in them.
-    * @param input Properties to be processed.
+    *
+    * @param input
+    *       Properties to be processed.
     * @return New properties with string containing properties converted to templates.
     */
    private Properties templatize(final Properties input) {
@@ -115,8 +116,11 @@ public class MessageTemplate implements Serializable {
 
    /**
     * Converts template properties back to string while rendering the placeholders with specific values.
-    * @param input Properties to be processed.
-    * @param placeholders Placeholder values to be placed in the resulting property values.
+    *
+    * @param input
+    *       Properties to be processed.
+    * @param placeholders
+    *       Placeholder values to be placed in the resulting property values.
     * @return New properties with rendered string values.
     */
    private Properties untemplatize(final Properties input, final Properties placeholders) {
