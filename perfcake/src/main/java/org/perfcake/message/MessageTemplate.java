@@ -21,6 +21,7 @@ package org.perfcake.message;
 
 import org.perfcake.util.StringTemplate;
 
+import com.sun.java.swing.plaf.windows.TMSchema;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -66,6 +67,10 @@ public class MessageTemplate implements Serializable {
     */
    private transient StringTemplate template;
 
+   private Properties headerTemplates;
+
+   private Properties propertyTemplates;
+
    /**
     * Creates a new template based on the message sample. Multiplicity and validator references can be provided as well.
     *
@@ -84,6 +89,48 @@ public class MessageTemplate implements Serializable {
       }
       this.multiplicity = multiplicity;
       this.validatorIds = validatorIds;
+      this.headerTemplates = templatize(message.getHeaders());
+      this.propertyTemplates = templatize(message.getProperties());
+   }
+
+   /**
+    * Converts string properties to templates when there are placeholders in them.
+    * @param input Properties to be processed.
+    * @return New properties with string containing properties converted to templates.
+    */
+   private Properties templatize(final Properties input) {
+      final Properties result = new Properties();
+
+      input.forEach((key, value) -> {
+         final StringTemplate template = new StringTemplate(value.toString());
+         if (template.hasPlaceholders()) {
+            result.put(key, template);
+         } else {
+            result.put(key, value);
+         }
+      });
+
+      return result;
+   }
+
+   /**
+    * Converts template properties back to string while rendering the placeholders with specific values.
+    * @param input Properties to be processed.
+    * @param placeholders Placeholder values to be placed in the resulting property values.
+    * @return New properties with rendered string values.
+    */
+   private Properties untemplatize(final Properties input, final Properties placeholders) {
+      final Properties result = new Properties();
+
+      input.forEach((key, value) -> {
+         if (value instanceof StringTemplate) {
+            result.put(key, ((StringTemplate) value).toString(placeholders));
+         } else {
+            result.put(key, value);
+         }
+      });
+
+      return result;
    }
 
    /**
@@ -116,8 +163,8 @@ public class MessageTemplate implements Serializable {
          final Message m = newMessage();
 
          m.setPayload(template.toString(properties));
-         m.setHeaders(message.getHeaders());
-         m.setProperties(message.getProperties());
+         m.setHeaders(untemplatize(headerTemplates, properties));
+         m.setProperties(untemplatize(propertyTemplates, properties));
 
          return m;
       } else {
