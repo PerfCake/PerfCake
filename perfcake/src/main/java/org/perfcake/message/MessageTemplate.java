@@ -66,8 +66,14 @@ public class MessageTemplate implements Serializable {
     */
    private transient StringTemplate template;
 
+   /**
+    * Message headers templates.
+    */
    private Properties headerTemplates;
 
+   /**
+    * Message properties templates.
+    */
    private Properties propertyTemplates;
 
    /**

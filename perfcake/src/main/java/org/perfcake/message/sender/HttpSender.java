@@ -22,6 +22,7 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.StringTemplate;
 import org.perfcake.util.Utils;
 
 import org.apache.logging.log4j.LogManager;
@@ -50,11 +51,6 @@ import java.util.Properties;
 public class HttpSender extends AbstractSender {
 
    /**
-    * Default expected response code.
-    */
-   protected static final int DEFAULT_EXPECTED_CODE = 200;
-
-   /**
     * The sender's logger.
     */
    private static final Logger log = LogManager.getLogger(HttpSender.class);
@@ -68,6 +64,17 @@ public class HttpSender extends AbstractSender {
     * The HTTP method that will be used.
     */
    private Method method = Method.POST;
+
+   /**
+    * A string template determining the HTTP method to be used dynamically for each request.
+    * If not configured (set to null), static configuration in {@link #method} is used instead.
+    */
+   private StringTemplate dynamicMethod = null;
+
+   /**
+    * HTTP method that should be used for the current send operation, pre-calculated in {@link #preSend(Message, Map, Properties)}.
+    */
+   private Method currentMethod;
 
    /**
     * Enumeration on available HTTP methods.
@@ -189,6 +196,8 @@ public class HttpSender extends AbstractSender {
    public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
       super.preSend(message, properties, messageAttributes);
 
+      currentMethod = getDynamicMethod(messageAttributes);
+
       payloadLength = 0;
       if (message == null) {
          payload = null;
@@ -198,9 +207,9 @@ public class HttpSender extends AbstractSender {
       }
 
       requestConnection = (HttpURLConnection) url.openConnection();
-      requestConnection.setRequestMethod(method.name());
+      requestConnection.setRequestMethod(currentMethod.name());
       requestConnection.setDoInput(true);
-      if (method == Method.POST || method == Method.PUT) {
+      if (currentMethod == Method.POST || currentMethod == Method.PUT) {
          requestConnection.setDoOutput(true);
       }
       requestConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
@@ -255,7 +264,7 @@ public class HttpSender extends AbstractSender {
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       int respCode = -1;
       requestConnection.connect();
-      if (payload != null && (method == Method.POST || method == Method.PUT)) {
+      if (payload != null && (currentMethod == Method.POST || currentMethod == Method.PUT)) {
          final OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream(), Utils.getDefaultEncoding());
          out.write(payload, 0, payloadLength);
          out.flush();
@@ -265,7 +274,7 @@ public class HttpSender extends AbstractSender {
 
       respCode = requestConnection.getResponseCode();
       if (!checkResponseCode(respCode)) {
-         final StringBuffer errorMess = new StringBuffer();
+         final StringBuilder errorMess = new StringBuilder();
          errorMess.append("The server returned an unexpected HTTP response code: ").append(respCode).append(" ").append("\"").append(requestConnection.getResponseMessage()).append("\". Expected HTTP codes are ");
          for (final int code : expectedResponseCodeList) {
             errorMess.append(Integer.toString(code)).append(", ");
@@ -323,6 +332,30 @@ public class HttpSender extends AbstractSender {
    public HttpSender setMethod(final Method method) {
       this.method = method;
       return this;
+   }
+
+   /**
+    * Sets the template used to determine HTTP method dynamically.
+    *
+    * @param dynamicMethod
+    *       The string template to dynamically determine HTTP method.
+    * @return Instance of this to support fluent API.
+    */
+   public HttpSender setDynamicMethod(final String dynamicMethod) {
+      if (dynamicMethod == null || dynamicMethod.isEmpty()) {
+         this.dynamicMethod = null;
+      } else {
+         this.dynamicMethod = new StringTemplate(dynamicMethod);
+      }
+      return this;
+   }
+
+   public Method getDynamicMethod(final Properties placeholders) {
+      if (dynamicMethod == null) {
+         return this.method;
+      } else {
+         return Method.valueOf(dynamicMethod.toString(placeholders));
+      }
    }
 
 }

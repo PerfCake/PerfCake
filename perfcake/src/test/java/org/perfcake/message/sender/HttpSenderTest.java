@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -51,6 +51,8 @@ public class HttpSenderTest {
    private static final String TEST_ADDITIONAL_PROPERTY_NAME = "Test-Additional_Property-Name";
    private static final String TEST_ADDITIONAL_PROPERTY_VALUE = "test-Additional_property-value...";
    private static final String POST_PAYLOAD = "I'm the fish!";
+   private static final String METHOD_PROPERTY = "method";
+   private static final String METHOD_VALUE = "GET";
 
    @Test
    public void testGetMethod() {
@@ -82,6 +84,33 @@ public class HttpSenderTest {
       Assert.assertTrue(response.contains("\"url\": \"" + URL_GET + "\""));
       Assert.assertTrue(response.contains("\"" + TEST_HEADER_NAME + "\": \"" + TEST_HEADER_VALUE + "\""));
       Assert.assertTrue(response.contains("\"" + TEST_PROPERTY_NAME + "\": \"" + TEST_PROPERTY_VALUE + "\""));
+   }
+
+   @Test
+   public void testDynamicMethod() {
+      final Properties senderProperties = new Properties();
+      senderProperties.setProperty("dynamicMethod", "@{" + METHOD_PROPERTY + "}");
+      senderProperties.setProperty("target", URL_GET);
+
+      String response = null;
+      try {
+         final HttpSender sender = (HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties);
+
+         final Properties messageAttributes = new Properties();
+         messageAttributes.setProperty(METHOD_PROPERTY, METHOD_VALUE);
+
+         final Message noPayloadMessage = new Message();
+
+         response = _sendMessage(sender, noPayloadMessage, null, messageAttributes);
+
+         Assert.assertEquals(sender.getDynamicMethod(messageAttributes), Method.valueOf(METHOD_VALUE));
+      } catch (final Exception e) {
+         e.printStackTrace();
+         Assert.fail(e.getMessage());
+      }
+
+      Assert.assertNotNull(response);
+      Assert.assertTrue(response.contains("\"url\": \"" + URL_GET + "\""));
    }
 
    @Test
@@ -227,9 +256,13 @@ public class HttpSenderTest {
    }
 
    private String _sendMessage(final MessageSender sender, final Message message, final Map<String, String> additionalProperties) throws Exception {
+      return _sendMessage(sender, message, additionalProperties, null);
+   }
+
+   private String _sendMessage(final MessageSender sender, final Message message, final Map<String, String> additionalProperties, final Properties messageAttributes) throws Exception {
       String response = null;
       sender.init();
-      sender.preSend(message, additionalProperties, null);
+      sender.preSend(message, additionalProperties, messageAttributes);
       response = (String) sender.send(message, additionalProperties, null);
       sender.postSend(message);
       sender.close();
