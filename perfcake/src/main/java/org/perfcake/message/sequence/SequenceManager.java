@@ -59,7 +59,7 @@ public class SequenceManager {
     * Gets a snapshot of current next values of all sequences in the registry using {@link Sequence#getNext()}.
     * @return Snapshot of the values as properties in the form sequence name -&gt; sequence next value.
     */
-   public Properties getSnapshot() {
+   public synchronized Properties getSnapshot() {
       final Properties snapshot = new Properties();
 
       sequences.forEach((name, sequence) -> snapshot.setProperty(name, sequence.getNext()));
