@@ -222,17 +222,17 @@ public class ChartDestinationTest extends TestSetup {
 
       scenario = ScenarioLoader.load("test-scenario-chart");
 
-      final String origTime = System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
 
       scenario.init();
+      final String origTime = System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
       scenario.run();
       scenario.close();
 
       beforeMethod();
 
-      final String newTime = System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
 
       scenario.init();
+      final String newTime = System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
       scenario.run();
       scenario.close();
 
