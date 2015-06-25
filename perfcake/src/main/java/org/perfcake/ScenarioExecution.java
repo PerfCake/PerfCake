@@ -200,9 +200,6 @@ public class ScenarioExecution {
       }
 
       parseUserProperties();
-
-      System.setProperty(PerfCakeConst.TIMESTAMP_PROPERTY, String.valueOf(Calendar.getInstance().getTimeInMillis()));
-      System.setProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY, (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date()));
    }
 
    /**
