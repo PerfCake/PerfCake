@@ -63,7 +63,7 @@ public class RegExpValidator implements MessageValidator {
 
    @Override
    public boolean isValid(final Message originalMessage, final Message response, final Properties messageAttributes) {
-      final String trimmedLinesOfPayload = StringUtil.trimLines(response == null ? "" : response.getPayload().toString());
+      final String trimmedLinesOfPayload = StringUtil.trimLines((response == null || response.getPayload() == null) ? "" : response.getPayload().toString());
       final String resultPayload = StringUtil.trim(trimmedLinesOfPayload);
 
       if (!matches(resultPayload, pattern.toString(messageAttributes))) {
