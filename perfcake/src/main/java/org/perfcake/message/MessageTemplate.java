@@ -39,7 +39,7 @@ import java.util.Properties;
 public class MessageTemplate implements Serializable {
    private static final long serialVersionUID = 6172258079690233417L;
 
-   private transient Logger log = LogManager.getLogger(MessageTemplate.class);
+   private static transient Logger log = LogManager.getLogger(MessageTemplate.class);
 
    /**
     * Original message sample.
