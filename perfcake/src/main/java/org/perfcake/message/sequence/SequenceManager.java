@@ -20,6 +20,10 @@
 package org.perfcake.message.sequence;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.PerfCakeException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +36,8 @@ import java.util.Properties;
  */
 public class SequenceManager {
 
+   private static final Logger log = LogManager.getLogger(SequenceManager.class);
+
    /**
     * Registry of sequences.
     */
@@ -41,18 +47,24 @@ public class SequenceManager {
     * Gets a default {@link SequenceManager} instance with a default number sequence prepared for message numbering (store under key {@link PerfCakeConst#MESSAGE_NUMBER_PROPERTY}).
     */
    public SequenceManager() {
-      addSequence(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, new NumberSequence());
-      addSequence(PerfCakeConst.CURRENT_TIMESTAMP_PROPERTY, new TimeStampSequence());
-      addSequence(PerfCakeConst.THREAD_ID_PROPERTY, new ThreadIdSequence());
+      try {
+         addSequence(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, new NumberSequence());
+         addSequence(PerfCakeConst.CURRENT_TIMESTAMP_PROPERTY, new TimeStampSequence());
+         addSequence(PerfCakeConst.THREAD_ID_PROPERTY, new ThreadIdSequence());
+      } catch (PerfCakeException e) {
+         log.warn("Cannot initialize default sequences: ", e);
+      }
    }
 
    /**
     * Registers a new sequence in the registry.
     * @param name Sequence name.
     * @param sequence Sequence instance.
+    * @throws PerfCakeException When it was not possible to properly initialize the newly added sequence.
     */
-   public void addSequence(final String name, final Sequence sequence) {
+   public void addSequence(final String name, final Sequence sequence) throws PerfCakeException {
       sequences.put(name, sequence);
+      sequence.reset();
    }
 
    /**

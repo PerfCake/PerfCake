@@ -10,6 +10,9 @@
       <sequence name="doubleCounter" class="NumberSequence">
          <property name="step" value="2"/>
       </sequence>
+      <sequence name="counterPlus" class="NumberSequence">
+         <property name="start" value="10"/>
+      </sequence>
    </sequences>
    <sender class="TestSender">
       <target>test-${counter}-@{counter}</target>

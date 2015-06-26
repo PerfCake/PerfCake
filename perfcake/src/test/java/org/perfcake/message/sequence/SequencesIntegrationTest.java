@@ -23,6 +23,7 @@ import org.perfcake.TestSetup;
 import org.perfcake.message.sender.TestSender;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
+import org.perfcake.scenario.ScenarioRetractor;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -80,5 +81,8 @@ public class SequencesIntegrationTest extends TestSetup {
       Assert.assertEquals(targets.get(7), "test-null-3");
       Assert.assertEquals(targets.get(8), "test-null-4");
       Assert.assertEquals(targets.get(9), "test-null-4");
+
+      ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+      Assert.assertEquals(retractor.getSequenceManager().getSnapshot().getProperty("counterPlus"), "15");
    }
 }
