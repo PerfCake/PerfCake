@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *  
  * Copyright (C) 2010 - 2013 the original author or authors.
- *  
+ *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,6 +24,7 @@ import org.perfcake.util.ObjectFactory;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.annotations.BeforeClass;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,11 +43,22 @@ import java.util.Properties;
  */
 @Test(groups = { "unit" })
 public class CommandSenderTest {
+
+   private static String scriptFile;
+
+   @BeforeClass
+   public static void determineOS() {
+      if(System.getProperty("os.name").toLowerCase().contains("windows")) {
+         scriptFile = "greeting.bat";
+      } else {
+         scriptFile = "greeting.sh";
+      }
+   }
    
    @Test
    public void nullMessageNoPayloadFakeArgumentTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/greeting.sh Pepo");
+      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile + " Pepo");
       final Message message = null;
       String response = null;
       try {
@@ -64,7 +76,7 @@ public class CommandSenderTest {
    @Test
    public void emptyMessageNoPayloadFakeArgumentTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/greeting.sh Pepo");
+      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile + " Pepo");
       final Message message = new Message();
       String response = null;
       try {
@@ -82,7 +94,7 @@ public class CommandSenderTest {
    @Test
    public void messageWithPayloadFromStdinTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/greeting.sh");
+      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile);
       final Message message = new Message();
       message.setPayload("Pepo");
       String response = null;
@@ -101,7 +113,7 @@ public class CommandSenderTest {
    @Test
    public void messageWithPayloadFromArgumentTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/greeting.sh");
+      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile);
       senderProperties.setProperty("messageFrom", "ARGUMENTS");
       final Message message = new Message();
       message.setPayload("Pepo");
@@ -121,7 +133,7 @@ public class CommandSenderTest {
    @Test
    public void messageWithPayloadFromArgumentWithGlobalPropertyTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/greeting.sh");
+      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile);
       senderProperties.setProperty("messageFrom", "ARGUMENTS");
       final Message message = new Message();
       message.setPayload("Pepo");
@@ -141,7 +153,7 @@ public class CommandSenderTest {
    @Test
    public void messageWithHeaderAndPayloadFromArgumentTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/greeting.sh");
+      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile);
       senderProperties.setProperty("messageFrom", "ARGUMENTS");
       final Message message = new Message();
       message.setPayload("Pepo");
@@ -161,7 +173,7 @@ public class CommandSenderTest {
    @Test
    public void messageWithPropertyAndPayloadFromArgumentTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/greeting.sh");
+      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile);
       senderProperties.setProperty("messageFrom", "ARGUMENTS");
       final Message message = new Message();
       message.setPayload("Pepo");
