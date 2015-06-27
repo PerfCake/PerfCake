@@ -214,7 +214,7 @@ public class StringTemplate {
       config.setProperty("preload", "false");
       config.setProperty("null.value", "null");
       config.setProperty("modes", "");
-//      config.setProperty("compiler", "httl.spi.compilers.JavassistCompiler");
+      config.setProperty("compiler", "httl.spi.compilers.JavassistCompiler");
 
       return Engine.getEngine(config);
    }
