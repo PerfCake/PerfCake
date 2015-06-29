@@ -128,7 +128,11 @@ goto Win9xApp
 SET PERFCAKE_JAVA_EXE="%JAVA_HOME%\bin\java.exe"
 
 @REM Check Java version
-for /f "tokens=1-2" "delims=.-_" %%j in ('"%PERFCAKE_JAVA_EXE%" -version 2>&1') do set "jver=%%j%%k%%l%%m"
+for /f tokens^=2-4^ delims^=.-_^" %%j in ('"%PERFCAKE_JAVA_EXE%" -version 2^>^&1') do (
+  set jver=%%j%%k
+  goto :breakVer
+)
+:breakVer
 if not %jver% LSS 18 goto runPERFCAKE
 echo Unsupported Java version. PerfCake requires Java 8 and higher.
 goto error
