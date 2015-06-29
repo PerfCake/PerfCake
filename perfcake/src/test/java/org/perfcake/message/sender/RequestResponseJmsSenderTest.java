@@ -70,6 +70,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
       return ShrinkWrap.create(JavaArchive.class).addPackages(true,
             "org.perfcake",
             "httl",
+            "javassist",
             "org.apache.commons.beanutils",
             "org.apache.logging.log4j",
             "org.apache.commons.collections")
