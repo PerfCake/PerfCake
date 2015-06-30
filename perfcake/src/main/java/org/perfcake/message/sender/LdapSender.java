@@ -25,6 +25,7 @@ import org.perfcake.reporting.MeasurementUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -53,7 +54,10 @@ public class LdapSender extends AbstractSender {
    private String ldapPassword = null;
    private final SearchControls searchControls = new SearchControls();
 
+   @MandatoryProperty
    private String searchBase = null;
+
+   @MandatoryProperty
    private String filter = null;
 
    /**

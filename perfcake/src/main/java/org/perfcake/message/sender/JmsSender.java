@@ -24,6 +24,7 @@ import org.perfcake.reporting.MeasurementUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -151,16 +152,19 @@ public class JmsSender extends AbstractSender {
    /**
     * JMS connection factory property.
     */
+   @MandatoryProperty
    protected String connectionFactory = "ConnectionFactory";
 
    /**
     * JNDI context factory property.
     */
+   @MandatoryProperty
    protected String jndiContextFactory = null;
 
    /**
     * JNDI URL property.
     */
+   @MandatoryProperty
    protected String jndiUrl = null;
 
    /**

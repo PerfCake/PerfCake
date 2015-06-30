@@ -25,6 +25,7 @@ import org.perfcake.reporting.MeasurementUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -58,6 +59,7 @@ public class JdbcSender extends AbstractSender {
    /**
     * JDBC driver class.
     */
+   @MandatoryProperty
    private String driverClass = "";
 
    /**

@@ -28,6 +28,7 @@ import org.perfcake.reporting.destinations.chart.ChartDestinationHelper;
 import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -54,6 +55,7 @@ public class ChartDestination implements Destination {
    /**
     * Attributes that should be stored in the chart.
     */
+   @MandatoryProperty
    private List<String> attributes;
 
    /**
@@ -74,7 +76,7 @@ public class ChartDestination implements Destination {
    /**
     * Y axis legend.
     */
-   private String yAxis = "Iterations";
+   private String yAxis = "Value";
 
    /**
     * X axis legend.
