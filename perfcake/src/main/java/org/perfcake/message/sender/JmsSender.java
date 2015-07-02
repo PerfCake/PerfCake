@@ -403,7 +403,7 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Is JMS message persisted.
+    * Is JMS message persisted?
     *
     * @return <code>true</code> if JMS message is persisted.
     */

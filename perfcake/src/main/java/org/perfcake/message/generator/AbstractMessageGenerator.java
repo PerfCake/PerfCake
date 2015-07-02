@@ -104,7 +104,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     * The provided semaphore can be used to control parallel execution of sender tasks in multiple threads.
     *
     * @param semaphore
-    *       Semaphore that will be release upon completion of the sender task.
+    *       Semaphore that will be released upon completion of the sender task.
     * @return A sender task ready to work on another iteration.
     */
    protected SenderTask newSenderTask(final Semaphore semaphore) {

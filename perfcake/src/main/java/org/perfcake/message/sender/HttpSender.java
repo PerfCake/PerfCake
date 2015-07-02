@@ -56,7 +56,7 @@ public class HttpSender extends AbstractSender {
    private static final Logger log = LogManager.getLogger(HttpSender.class);
 
    /**
-    * The URL where the HTTP request is send.
+    * The URL where the HTTP request is sent.
     */
    private URL url;
 

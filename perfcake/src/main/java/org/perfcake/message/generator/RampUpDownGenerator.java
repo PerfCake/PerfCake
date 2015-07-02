@@ -81,7 +81,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    private int preThreadCount = super.getThreads(); // default value taken from parent's threads
 
    /**
-    * An final number of threads.
+    * A final number of threads.
     */
    private int postThreadCount = super.getThreads(); // default value taken from parent's threads
 

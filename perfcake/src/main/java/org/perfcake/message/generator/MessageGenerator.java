@@ -98,7 +98,7 @@ public interface MessageGenerator {
     * Configures the {@link org.perfcake.validation.ValidationManager} to be used for the performance test execution.
     *
     * @param validationManager
-    *       {@link org.perfcake.validation.ValidationManager} to be used.s
+    *       {@link org.perfcake.validation.ValidationManager} to be used
     */
    void setValidationManager(final ValidationManager validationManager);
 

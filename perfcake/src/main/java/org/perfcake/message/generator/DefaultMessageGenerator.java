@@ -129,7 +129,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     *
     * @return True if and only if the task has been successfully submitted.
     * @throws java.lang.InterruptedException
-    *       When it was not possible to place another task because the queue was empty
+    *       When it was not possible to place another task because the queue was empty.
     */
    protected boolean prepareTask() throws InterruptedException {
       if (log.isTraceEnabled()) {
