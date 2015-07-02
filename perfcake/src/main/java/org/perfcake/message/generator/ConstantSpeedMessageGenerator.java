@@ -82,10 +82,21 @@ public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
       return false;
    }
 
+   /**
+    * Gets the desired constant speed in messages per second.
+    * 
+    * @return The speed.
+    */
    public int getSpeed() {
       return speed;
    }
 
+   /**
+    * Sets the desired constant speed in messages per second.
+    * 
+    * @param speed
+    *       The speed in messages per second.
+    */
    public void setSpeed(final int speed) {
       this.speed = speed;
       buffer = new long[speed];

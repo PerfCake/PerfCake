@@ -58,7 +58,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    /**
     * Gets the shutdown period.
     * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
-    * It the same amount of threads keeps running for this period, they are forcefully stopped.
+    * If the same amount of threads keeps running for this period, they are forcefully stopped.
     *
     * @return Current shutdown period in ms.
     */
@@ -69,7 +69,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    /**
     * Sets the shutdown period which tells how frequently we should check for threads finishing their work.
     * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
-    * It the same amount of threads keeps running for this period, they are forcefully stopped.
+    * If the same amount of threads keeps running for this period, they are forcefully stopped.
     *
     * @param shutdownPeriod
     *       The new shutdown period.
@@ -80,7 +80,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
-    * It the same amount of threads keeps running for this period, they are forcefully stopped.
+    * If the same amount of threads keeps running for this period, they are forcefully stopped.
     * The unit of this value is milliseconds. The default value is 1000ms.
     */
    protected long shutdownPeriod = 1000;

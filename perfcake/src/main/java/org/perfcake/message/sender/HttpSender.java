@@ -350,6 +350,13 @@ public class HttpSender extends AbstractSender {
       return this;
    }
 
+   /**
+    * Gets the template used to determine HTTP method dynamically.
+    * 
+    * @param placeholders
+    *       The properties to render the string template. 
+    * @return The HTTP method.
+    */
    public Method getDynamicMethod(final Properties placeholders) {
       if (dynamicMethod == null) {
          return this.method;

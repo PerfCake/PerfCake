@@ -223,6 +223,12 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
       this.validationManager = validationManager;
    }
 
+   /**
+    * Configures the {@link org.perfcake.message.sequence.SequenceManager} to be used for the performance test execution.
+    * 
+    * @param sequenceManager
+    *       {@link org.perfcake.message.sequence.SequenceManager} to be used.
+    */
    @Override
    public void setSequenceManager(final SequenceManager sequenceManager) {
       this.sequenceManager = sequenceManager;
