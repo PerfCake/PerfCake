@@ -169,9 +169,13 @@ fi
 sedExecutable=`which sed`
 if [ -n "$sedExecutable" ]; then
   javaVersion=`java -version 2>&1 | sed 's/.*version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q'`
-  if [ "$javaVersion" -lt 18 ]; then
-  	echo "Unsupported Java version. PerfCake requires Java 8 and higher."
-  	exit 2
+  if [[ $javaVersion =~ ^[1-9][0-9]$ ]]; then
+     if [ "$javaVersion" -lt 18 ]; then
+        echo "Unsupported Java version. PerfCake requires Java 8 and higher."
+        exit 2
+     fi
+  else
+     echo "WARNING: Unable to detect Java version."
   fi
 fi
 
