@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE htmlEntities [
       <!ENTITY nbsp "&#xa0;">
       ]>
@@ -748,6 +748,7 @@
                   <artifactId>maven-surefire-plugin</artifactId>
                   <configuration>
                      <excludedGroups>ueber</excludedGroups>
+                     <argLine>-Dlog4j.skipJansi=true</argLine>
                   </configuration>
                </plugin>
             </plugins>
