@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:camel="http://camel.apache.org/schema/spring"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:amq="http://activemq.apache.org/schema/core"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+		http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+	<bean id="cptBean" class="org.pmacik.cpt.mqtt.CptBean"/>
+	<amq:broker useJmx="true" persistent="false">
+		<amq:transportConnectors>
+			<amq:transportConnector name="mqtt" uri="mqtt://localhost:616161"/>
+		</amq:transportConnectors>
+	</amq:broker>
+	<camel:camelContext trace="false">
+		<camel:route customId="true" id="consumer-route">
+			<camel:from uri="mqtt://mqtt-server?subscribeTopicName=mqtt-topic&amp;host=tcp://localhost:616161/&amp;qualityOfService=ExactlyOnce"/>
+			<camel:to uri="mqtt://mqtt-server?publishTopicName=mqtt-response-topic&amp;host=tcp://localhost:616161/&amp;qualityOfService=ExactlyOnce"/>
+		</camel:route>
+	</camel:camelContext>
+</beans>
