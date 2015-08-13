@@ -108,6 +108,11 @@
       <server.host>localhost</server.host>
       <server.port>8080</server.port>
       <transform.scenarios.outputDir>${project.build.directory}/scenarios</transform.scenarios.outputDir>
+      <!-- Test properties -->
+      <camel.version>2.15.1</camel.version>
+      <amq.version>5.11.2</amq.version>
+      <version.slf4j>1.7.5</version.slf4j>
+      <version.log4j>1.2.17</version.log4j>
    </properties>
    <dependencyManagement>
       <dependencies>
@@ -147,6 +152,68 @@
       </dependencies>
    </dependencyManagement>
    <dependencies>
+      <!-- camel -->
+      <dependency>
+         <groupId>org.apache.camel</groupId>
+         <artifactId>camel-mqtt</artifactId>
+         <version>${camel.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.camel</groupId>
+         <artifactId>camel-core</artifactId>
+         <version>${camel.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.camel</groupId>
+         <artifactId>camel-spring</artifactId>
+         <version>${camel.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.activemq</groupId>
+         <artifactId>activemq-camel</artifactId>
+         <version>${amq.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.activemq</groupId>
+         <artifactId>activemq-mqtt</artifactId>
+         <version>${amq.version}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>com.sun.xml.bind</groupId>
+         <artifactId>jaxb-impl</artifactId>
+         <version>2.2.5-5</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>${version.slf4j}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+         <version>${version.slf4j}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>jcl-over-slf4j</artifactId>
+         <version>${version.slf4j}</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>log4j</groupId>
+         <artifactId>log4j</artifactId>
+         <version>${version.log4j}</version>
+         <scope>test</scope>
+      </dependency>
+
       <dependency>
          <groupId>org.perfcake</groupId>
          <artifactId>perfcake-agent</artifactId>
@@ -339,6 +406,13 @@
          <artifactId>annotations</artifactId>
          <version>1.3.2</version>
          <scope>provided</scope>
+      </dependency>
+
+      <!-- MQTT-->
+      <dependency>
+         <groupId>org.fusesource.mqtt-client</groupId>
+         <artifactId>mqtt-client</artifactId>
+         <version>1.10</version>
       </dependency>
    </dependencies>
    <build>
@@ -584,7 +658,7 @@
                      <argument>-Dlog4j.configurationFile=file://${basedir}/src/main/resources/log4j2.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath />
+                     <classpath/>
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
@@ -665,7 +739,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <ignore />
+                              <ignore/>
                            </action>
                         </pluginExecution>
                         <pluginExecution>
@@ -678,7 +752,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <execute />
+                              <execute/>
                            </action>
                         </pluginExecution>
                         <pluginExecution>
@@ -691,7 +765,7 @@
                               </goals>
                            </pluginExecutionFilter>
                            <action>
-                              <execute />
+                              <execute/>
                            </action>
                         </pluginExecution>
                      </pluginExecutions>
