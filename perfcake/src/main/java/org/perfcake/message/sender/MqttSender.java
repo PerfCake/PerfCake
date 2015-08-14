@@ -81,7 +81,6 @@ public class MqttSender extends AbstractSender {
                   responseTopicName = responseTarget;
                   mqttResponseConnection = mqttConnection;
                }
-               System.out.println("rtn=" + responseTopicName);
                final Topic[] responseTopic = { new Topic(responseTopicName, QoS.valueOf(responseQos)) };
                mqttResponseConnection.subscribe(responseTopic);
             }
