@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:amq="http://activemq.apache.org/schema/core"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+		http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core.xsd">
+   <amq:broker brokerName="mqtt1" useJmx="true" persistent="false">
+      <amq:transportConnectors>
+         <amq:transportConnector name="mqtt1" uri="mqtt://127.0.0.1:61616"/>
+      </amq:transportConnectors>
+   </amq:broker>
+   <amq:broker brokerName="mqtt2" useJmx="true" persistent="false">
+      <amq:transportConnectors>
+         <amq:transportConnector name="mqtt2" uri="mqtt://127.0.0.1:62626"/>
+      </amq:transportConnectors>
+   </amq:broker>
+   <camel:camelContext trace="false">
+      <camel:route customId="true" id="route-single-broker">
+         <camel:from uri="mqtt://mqtt-server?subscribeTopicName=mqtt-topic&amp;host=tcp://127.0.0.1:61616/&amp;qualityOfService=ExactlyOnce"/>
+         <camel:log message="${body}"/>
+      </camel:route>
+      <camel:route customId="true" id="route-one-broker">
+         <camel:from uri="mqtt://mqtt-server?subscribeTopicName=mqtt-topic-1&amp;host=tcp://127.0.0.1:61616/&amp;qualityOfService=ExactlyOnce"/>
+         <camel:transform>
+            <camel:simple>1:${body}</camel:simple>
+         </camel:transform>
+         <camel:to uri="mqtt://mqtt-server?publishTopicName=mqtt-response-topic-1&amp;host=tcp://127.0.0.1:61616/&amp;qualityOfService=ExactlyOnce"/>
+      </camel:route>
+      <camel:route customId="true" id="route-two-brokers">
+         <camel:from uri="mqtt://mqtt-server?subscribeTopicName=mqtt-topic-2&amp;host=tcp://127.0.0.1:61616/&amp;qualityOfService=ExactlyOnce"/>
+         <camel:transform>
+            <camel:simple>2:${body}</camel:simple>
+         </camel:transform>
+         <camel:to uri="mqtt://mqtt-server?publishTopicName=mqtt-response-topic-2&amp;host=tcp://127.0.0.1:62626/&amp;qualityOfService=ExactlyOnce"/>
+      </camel:route>
+   </camel:camelContext>
+</beans>
