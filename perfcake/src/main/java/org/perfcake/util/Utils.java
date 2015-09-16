@@ -302,16 +302,16 @@ public class Utils {
          boolean found = false;
          Path p = Paths.get(uri);
 
-         if (!Files.exists(p)) {
+         if (!Files.exists(p) || Files.isDirectory(p)) {
             p = Paths.get(Utils.getProperty(defaultLocationProperty, defaultLocation), uri);
 
-            if (!Files.exists(p)) {
+            if (!Files.exists(p) || Files.isDirectory(p)) {
                if (defaultSuffix != null && defaultSuffix.length > 0) {
                   //                  boolean found = false;
 
                   for (final String suffix : defaultSuffix) {
                      p = Paths.get(Utils.getProperty(defaultLocationProperty, defaultLocation), uri + suffix);
-                     if (Files.exists(p)) {
+                     if (Files.exists(p) && !Files.isDirectory(p)) {
                         found = true;
                         break;
                      }
