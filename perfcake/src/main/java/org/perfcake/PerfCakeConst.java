@@ -137,9 +137,14 @@ public final class PerfCakeConst {
    public static final String SKIP_TIMER_BENCHMARK_OPT = "skip-timer-benchmark";
 
    /**
-    * Result name indicating whether the scenario
+    * Result name indicating whether the scenario.
     */
    public static final String WARM_UP_TAG = "warmUp";
+
+   /**
+    * Result name the number of threads.
+    */
+   public static final String THREADS_TAG = "Threads";
 
    /**
     * Property that can disable templating engine (HTTL) in {@link org.perfcake.util.StringTemplate}.

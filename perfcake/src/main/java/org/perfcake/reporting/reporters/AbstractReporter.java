@@ -135,6 +135,7 @@ public abstract class AbstractReporter implements Reporter {
       final Long iterations = maxIteration.getResult();
       final Measurement measurement = new Measurement(Math.round(runInfo.getPercentage(iterations)), runInfo.getRunTime(), iterations);
       measurement.set(PerfCakeConst.WARM_UP_TAG, runInfo.hasTag(PerfCakeConst.WARM_UP_TAG));
+      measurement.set(PerfCakeConst.THREADS_TAG, runInfo.getThreads());
       return measurement;
    }
 
@@ -195,7 +196,7 @@ public abstract class AbstractReporter implements Reporter {
    /**
     * Gets an appropriate accumulator for a given key from the Measurement Unit's results map and its class.
     * This should be overridden by the child classes. By default, last value accumulator is returned.
-    * This must remain at least for {@link org.perfcake.PerfCakeConst#WARM_UP_TAG}.
+    * This must remain at least for {@link org.perfcake.PerfCakeConst#WARM_UP_TAG} and {@link org.perfcake.PerfCakeConst#THREADS_TAG}.
     *
     * @param key
     *       Name of the key from the results map.
