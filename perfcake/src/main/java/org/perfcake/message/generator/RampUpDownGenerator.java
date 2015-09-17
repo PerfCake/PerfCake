@@ -78,17 +78,17 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    /**
     * An initial number of threads.
     */
-   private int preThreadCount = super.getThreads(); // default value taken from parent's threads
+   private int preThreadCount = -1; // default value taken from parent's threads
 
    /**
     * A final number of threads.
     */
-   private int postThreadCount = super.getThreads(); // default value taken from parent's threads
+   private int postThreadCount = -1; // default value taken from parent's threads
 
    /**
     * A maximal number of threads.
     */
-   private int mainThreadCount = super.getThreads();
+   private int mainThreadCount = -1; // default value taken from parent's threads
 
    /**
     * A duration period of the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE} phase,
@@ -131,6 +131,15 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
       super.init(messageSenderManager, messageStore);
       if (log.isInfoEnabled()) {
          log.info("Initiating " + getClass().getSimpleName());
+      }
+      if (preThreadCount <= 0) {
+         preThreadCount = super.getThreads();
+      }
+      if (mainThreadCount <= 0) {
+         mainThreadCount = super.getThreads();
+      }
+      if (postThreadCount <= 0) {
+         postThreadCount = super.getThreads();
       }
    }
 
