@@ -57,12 +57,13 @@ public class NumberSequence implements Sequence {
    @Override
    public synchronized String getNext() {
       final long res = value;
+      final boolean internalCycle = isCycle();
 
       long newValue = value + step;
 
       if (step > 0) {
          if (newValue < value && end > Long.MIN_VALUE) { // overflow
-            if (!cycle) {
+            if (!internalCycle) {
                newValue = Long.MAX_VALUE;
             }
          }
@@ -70,7 +71,7 @@ public class NumberSequence implements Sequence {
          value = newValue;
 
          if (end > Long.MIN_VALUE && value > end) {
-            if (cycle) {
+            if (internalCycle) {
                value = start;
             } else {
                value = end;
@@ -78,7 +79,7 @@ public class NumberSequence implements Sequence {
          }
       } else {
          if (newValue > value && end < Long.MAX_VALUE) { // underflow
-            if (!cycle) {
+            if (!internalCycle) {
                newValue = Long.MIN_VALUE;
             }
          }
@@ -86,7 +87,7 @@ public class NumberSequence implements Sequence {
          value = newValue;
 
          if (end < Long.MAX_VALUE && value < end) {
-            if (cycle) {
+            if (internalCycle) {
                value = start;
             } else {
                value = end;
@@ -100,7 +101,7 @@ public class NumberSequence implements Sequence {
 
    @Override
    public synchronized void reset() throws PerfCakeException {
-      value = start;
+      value = getStart();
    }
 
    /**

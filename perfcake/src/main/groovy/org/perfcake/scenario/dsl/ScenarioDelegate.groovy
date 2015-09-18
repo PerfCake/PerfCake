@@ -762,8 +762,8 @@ enum TimeUnit {
    hour('h', 1000L * 60L * 60L),
    day('d', 1000L * 60L * 60L * 24L)
 
-   String abbreviation
-   Long multiplier
+   final String abbreviation
+   final Long multiplier
 
    TimeUnit(String abbreviation, Long multiplier) {
       this.abbreviation = abbreviation

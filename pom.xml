@@ -9,7 +9,7 @@
    <version>5.0-SNAPSHOT</version>
    <packaging>pom</packaging>
    <name>PerfCake parent</name>
-   <organization>
+     <organization>
       <name>PerfCake Community</name>
       <url>https://www.perfcake.org</url>
    </organization>
@@ -44,10 +44,6 @@
       <contributor>
          <name>Lenka Vašková</name>
          <email>vaskova.lenka@gmail.com</email>
-      </contributor>
-      <contributor>
-         <name>Jiří Sedláček</name>
-         <email>jiri@sedlackovi.cz</email>
       </contributor>
       <contributor>
          <name>Dominik Hanák</name>
@@ -89,7 +85,7 @@
          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
       </repository>
    </distributionManagement>
-   <properties>
+  <properties>
       <maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
       <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
       <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
@@ -106,11 +102,23 @@
       <maven.xml.plugin.version>1.0</maven.xml.plugin.version>
       <maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
       <maven.dependency.plugin.version>2.8</maven.dependency.plugin.version>
+      <maven.pit.version>0.33</maven.pit.version>
    </properties>
    <modules>
       <module>perfcake-agent</module>
       <module>perfcake</module>
    </modules>
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>org.perfcake</groupId>
+            <artifactId>perfcake-bom</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
    <build>
       <pluginManagement>
          <plugins>

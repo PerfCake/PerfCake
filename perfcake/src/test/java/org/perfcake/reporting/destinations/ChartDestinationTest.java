@@ -36,11 +36,14 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Tests {@link org.perfcake.reporting.destinations.ChartDestination}.
@@ -222,14 +225,12 @@ public class ChartDestinationTest extends TestSetup {
 
       scenario = ScenarioLoader.load("test-scenario-chart");
 
-
       scenario.init();
       final String origTime = System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
       scenario.run();
       scenario.close();
 
       beforeMethod();
-
 
       scenario.init();
       final String newTime = System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
@@ -246,10 +247,9 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertTrue(dir.resolve(Paths.get("data", "default_throughput" + newTime + ".dat")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "default_throughput" + newTime + ".js")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "default_throughput" + newTime + ".html")).toFile().exists());
-      Assert.assertTrue(dir.resolve(Paths.get("data", "data_array_1.js")).toFile().exists());
-      Assert.assertTrue(dir.resolve(Paths.get("data", "data_array_2.js")).toFile().exists());
-      Assert.assertTrue(dir.resolve(Paths.get("data", "data_array_3.js")).toFile().exists());
-      Assert.assertTrue(dir.resolve(Paths.get("data", "data_array_4.js")).toFile().exists());
+      int dataArrays = dir.resolve(Paths.get("data")).toFile().listFiles((directory, name) -> name.startsWith("data_array_") && name.endsWith(".js")).length;
+
+      Assert.assertEquals(dataArrays, 4);
 
       FileUtils.deleteDirectory(dir.toFile());
    }

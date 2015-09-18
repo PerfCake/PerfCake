@@ -3,6 +3,7 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.Utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -103,11 +104,11 @@ public class MqttSender extends AbstractSender {
    @Override
    public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit measurementUnit) throws Exception {
       String response = null;
-      mqttConnection.publish(topicName, message.getPayload().toString().getBytes(), QoS.valueOf(qos.toUpperCase()), false);
+      mqttConnection.publish(topicName, message.getPayload().toString().getBytes(Utils.getDefaultEncoding()), QoS.valueOf(qos.toUpperCase()), false);
       if (isResponseExpected) {
          mqttResponse = mqttResponseConnection.receive();
          if (mqttResponse != null) {
-            response = new String(mqttResponse.getPayload());
+            response = new String(mqttResponse.getPayload(), Utils.getDefaultEncoding());
          }
       }
       return response;

@@ -77,7 +77,7 @@ public class ValidationIntegrationTest extends TestSetup {
       lastCalled2 = v.getLastCalledTimestamp();
       timeDiff = lastCalled2 - lastCalled;
 
-      Assert.assertTrue(timeDiff >= 1 && timeDiff < 20, String.format("Validation did not switch to normal speed operation (timeDiff = %d).", timeDiff));
+      Assert.assertTrue(timeDiff >= 1 && timeDiff < 100, String.format("Validation did not switch to normal speed operation (timeDiff = %d).", timeDiff));
    }
 
    /**
@@ -102,7 +102,7 @@ public class ValidationIntegrationTest extends TestSetup {
       final long lastCalled2 = v.getLastCalledTimestamp();
       final long timeDiff = lastCalled2 - lastCalled;
 
-      Assert.assertTrue(timeDiff >= 1 && timeDiff < 20, "Validation did not switch to normal speed operation.");
+      Assert.assertTrue(timeDiff >= 1 && timeDiff < 100, String.format("Validation did not switch to normal speed operation (timeDiff = %d).", timeDiff));
    }
 
    /**
@@ -123,7 +123,7 @@ public class ValidationIntegrationTest extends TestSetup {
       long lastCalled2 = v.getLastCalledTimestamp();
       long timeDiff = lastCalled2 - lastCalled;
 
-      Assert.assertTrue(timeDiff >= 0 && timeDiff < 20, "Validation was too slow while being in the fastForward mode.");
+      Assert.assertTrue(timeDiff >= 0 && timeDiff < 100, String.format("Validation did not switch to normal speed operation (timeDiff = %d).", timeDiff));
 
       scenario.close();
 
@@ -133,7 +133,7 @@ public class ValidationIntegrationTest extends TestSetup {
       lastCalled2 = v.getLastCalledTimestamp();
       timeDiff = lastCalled2 - lastCalled;
 
-      Assert.assertTrue(timeDiff >= 0 && timeDiff < 20, "Validation was too slow while being in the fastForward mode.");
+      Assert.assertTrue(timeDiff >= 0 && timeDiff < 100, String.format("Validation did not switch to normal speed operation (timeDiff = %d).", timeDiff));
    }
 
    /**
