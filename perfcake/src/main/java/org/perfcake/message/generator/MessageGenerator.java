@@ -60,7 +60,7 @@ public interface MessageGenerator {
     * @throws Exception
     *       When it was not possible to initialize the generator.
     */
-   void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception;
+   void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws PerfCakeException;
 
    /**
     * Generates the messages. This actually executes the whole performance test.

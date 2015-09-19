@@ -97,7 +97,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     *       When it was not possible to initialize the generator.
     */
    @Override
-   public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception {
+   public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws PerfCakeException {
       this.messageStore = messageStore;
       this.messageSenderManager = messageSenderManager;
       this.messageSenderManager.init();

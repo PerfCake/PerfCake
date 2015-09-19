@@ -19,6 +19,7 @@
  */
 package org.perfcake.message.generator;
 
+import org.perfcake.PerfCakeException;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSenderManager;
@@ -127,7 +128,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    private Phase currentPhase;
 
    @Override
-   public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception {
+   public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws PerfCakeException {
       super.init(messageSenderManager, messageStore);
       if (preThreadCount <= 0) {
          preThreadCount = super.getThreads();

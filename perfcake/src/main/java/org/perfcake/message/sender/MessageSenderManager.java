@@ -1,22 +1,22 @@
 /*
- * -----------------------------------------------------------------------\
- * PerfCake
- *  
- * Copyright (C) 2010 - 2013 the original author or authors.
- *  
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * -----------------------------------------------------------------------/
- */
+* -----------------------------------------------------------------------\
+* PerfCake
+*  
+* Copyright (C) 2010 - 2013 the original author or authors.
+*  
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* -----------------------------------------------------------------------/
+*/
 package org.perfcake.message.sender;
 
 import org.perfcake.PerfCakeException;
@@ -64,10 +64,8 @@ public class MessageSenderManager {
    /**
     * Sets a message sender property.
     *
-    * @param property
-    *       Property name to be set.
-    * @param value
-    *       A new property string value.
+    * @param property Property name to be set.
+    * @param value    A new property string value.
     */
    public void setMessageSenderProperty(final String property, final String value) {
       messageSenderProperties.put(property, value);
@@ -76,10 +74,8 @@ public class MessageSenderManager {
    /**
     * Sets a message sender property.
     *
-    * @param property
-    *       Object referencing the property to be set.
-    * @param value
-    *       A new property value.
+    * @param property Object referencing the property to be set.
+    * @param value    A new property value.
     */
    public void setMessageSenderProperty(final Object property, final Object value) {
       messageSenderProperties.put(property, value);
@@ -88,8 +84,7 @@ public class MessageSenderManager {
    /**
     * Copies properties to message sender properties.
     *
-    * @param properties
-    *       Properties to be added.
+    * @param properties Properties to be added.
     */
    public void addMessageSenderProperties(final Properties properties) {
       if (properties != null) {
@@ -100,24 +95,26 @@ public class MessageSenderManager {
    /**
     * Initializes the message sender by creating all the message sender instances.
     *
-    * @throws Exception
-    *       When it was not possible to create the instances.
+    * @throws Exception When it was not possible to create the instances.
     */
-   public void init() throws Exception {
+   public void init() throws PerfCakeException {
       availableSenders.clear();
       for (int i = 0; i < senderPoolSize; i++) {
-         final MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
-         addSenderInstance(sender);
+
+         try {
+            final MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
+            addSenderInstance(sender);
+         } catch (Exception e) {
+            throw new PerfCakeException("Unable to instantiate sender class: ", e);
+         }
       }
    }
 
    /**
     * Adds {@link MessageSender} into available senders and initializes it.
     *
-    * @param sender
-    *       Sender to be registered with this manager.
-    * @throws Exception
-    *       When the initialization of the sender fails.
+    * @param sender Sender to be registered with this manager.
+    * @throws Exception When the initialization of the sender fails.
     */
    public void addSenderInstance(final MessageSender sender) throws PerfCakeException {
       sender.init();
@@ -129,8 +126,7 @@ public class MessageSenderManager {
     * Gets a free sender from the pool.
     *
     * @return A sender that is ready to send a message.
-    * @throws org.perfcake.PerfCakeException
-    *       When the pool is empty.
+    * @throws org.perfcake.PerfCakeException When the pool is empty.
     */
    public MessageSender acquireSender() throws PerfCakeException {
       final MessageSender ms = availableSenders.poll();
@@ -144,8 +140,7 @@ public class MessageSenderManager {
    /**
     * Returns a sender that has been already used to the pool of available senders for later reuse.
     *
-    * @param messageSender
-    *       The sender to be returned to the pool.
+    * @param messageSender The sender to be returned to the pool.
     */
    public void releaseSender(final MessageSender messageSender) {
       availableSenders.offer(messageSender);
@@ -174,8 +169,7 @@ public class MessageSenderManager {
    /**
     * Finalizes the message sender manager and disconnects all message senders from their target.
     *
-    * @throws PerfCakeException
-    *       When the disconnection operation failed.
+    * @throws PerfCakeException When the disconnection operation failed.
     */
    public void close() throws PerfCakeException {
       for (final MessageSender ms : allSenders) {
@@ -195,8 +189,7 @@ public class MessageSenderManager {
    /**
     * Sets the size of the pool of senders.
     *
-    * @param senderPoolSize
-    *       The size of the pool of senders.
+    * @param senderPoolSize The size of the pool of senders.
     */
    public void setSenderPoolSize(final int senderPoolSize) {
       this.senderPoolSize = senderPoolSize;
@@ -214,8 +207,7 @@ public class MessageSenderManager {
    /**
     * Sets the name of the class implementing the message sender.
     *
-    * @param senderClass
-    *       The name of the class implementing the message sender.
+    * @param senderClass The name of the class implementing the message sender.
     */
    public void setSenderClass(final String senderClass) {
       this.senderClass = senderClass;
