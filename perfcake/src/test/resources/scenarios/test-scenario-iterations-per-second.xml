@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:5.0">
+   <run type="time" value="5000"/>
+   <generator class="DefaultMessageGenerator" threads="10"/>
+   <sender class="DummySender">
+      <target></target>
+      <property name="delay" value="100"/>
+   </sender>
+   <reporting>
+      <reporter class="IterationsPerSecondReporter">
+         <destination class="DummyDestination">
+            <period type="time" value="1000"/>
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message content="'We cannot solve our problems with the same thinking we used when creating them.' Albert Einstein"/>
+   </messages>
+</scenario>
