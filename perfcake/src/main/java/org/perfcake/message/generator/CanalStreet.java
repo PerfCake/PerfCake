@@ -36,8 +36,6 @@ public class CanalStreet {
     */
    private MessageGenerator generator;
 
-   private static boolean failFast = Boolean.parseBoolean(Utils.getProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false"));
-
    /**
     * A {@link Semaphore} that will be released upon successful sending of a message. Can be null.
     */
@@ -74,6 +72,8 @@ public class CanalStreet {
     *       The root cause of the interruption.
     */
    protected void senderError(final Exception e) {
+      boolean failFast = Boolean.parseBoolean(Utils.getProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false"));
+
       if (failFast) {
          generator.interrupt(e);
       }

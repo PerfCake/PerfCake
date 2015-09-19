@@ -19,6 +19,8 @@
  */
 package org.perfcake;
 
+import org.perfcake.common.Period;
+import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.reporters.DummyReporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
