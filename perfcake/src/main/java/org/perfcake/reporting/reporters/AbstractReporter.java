@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Represents a basic reporter that makes sure that the contract defined as part of {@link Reporter} is held.
@@ -263,24 +264,17 @@ public abstract class AbstractReporter implements Reporter {
 
    @Override
    public final void unregisterDestination(final Destination destination) {
-      final Set<BoundPeriod<Destination>> toBeRemoved = new HashSet<>();
-      for (final BoundPeriod<Destination> boundPeriod : periods) {
-         if (boundPeriod.getBinding().equals(destination)) {
-            toBeRemoved.add(boundPeriod);
-         }
-      }
+      final Set<BoundPeriod<Destination>> toBeRemoved = periods.stream().filter(boundPeriod -> boundPeriod.getBinding().equals(destination)).collect(Collectors.toSet());
 
       periods.removeAll(toBeRemoved);
 
       // close destinations (only once) if the measurement is running
       final Set<Destination> closed = new HashSet<>();
       if (runInfo.isRunning()) {
-         for (final BoundPeriod<Destination> bp : toBeRemoved) {
-            if (!closed.contains(bp.getBinding())) {
-               bp.getBinding().close();
-               closed.add(bp.getBinding());
-            }
-         }
+         toBeRemoved.stream().filter(bp -> !closed.contains(bp.getBinding())).forEach(bp -> {
+            bp.getBinding().close();
+            closed.add(bp.getBinding());
+         });
       }
    }
 
@@ -310,10 +304,7 @@ public abstract class AbstractReporter implements Reporter {
 
    @Override
    public final Set<Destination> getDestinations() {
-      final Set<Destination> result = new HashSet<>();
-      for (final BoundPeriod<Destination> boundPeriod : periods) {
-         result.add(boundPeriod.getBinding());
-      }
+      final Set<Destination> result = periods.stream().map(BoundPeriod::getBinding).collect(Collectors.toSet());
 
       return Collections.unmodifiableSet(result);
    }
@@ -326,9 +317,7 @@ public abstract class AbstractReporter implements Reporter {
 
          reset();
 
-         for (final Destination destination : getDestinations()) {
-            destination.open();
-         }
+         getDestinations().forEach(org.perfcake.reporting.destinations.Destination::open);
       }
    }
 
@@ -348,9 +337,7 @@ public abstract class AbstractReporter implements Reporter {
 
    @Override
    public void stop() {
-      for (final Destination destination : getDestinations()) {
-         destination.close();
-      }
+      getDestinations().forEach(org.perfcake.reporting.destinations.Destination::close);
    }
 
    @Override

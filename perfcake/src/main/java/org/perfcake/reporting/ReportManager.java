@@ -139,9 +139,7 @@ public class ReportManager {
 
       runInfo.reset();
       resetLastTimes = true;
-      for (final Reporter r : reporters) {
-         r.reset();
-      }
+      reporters.forEach(org.perfcake.reporting.reporters.Reporter::reset);
    }
 
    /**
@@ -290,9 +288,7 @@ public class ReportManager {
 
       reportFinalTimeResults();
 
-      for (final Reporter r : reporters) {
-         r.stop();
-      }
+      reporters.forEach(org.perfcake.reporting.reporters.Reporter::stop);
 
       if (periodicThread != null) {
          periodicThread.interrupt();

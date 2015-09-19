@@ -107,6 +107,11 @@ public final class PerfCakeConst {
    public static final String LOGGING_LEVEL_PROPERTY = "perfcake.logging.level";
 
    /**
+    * Name of the system property to cause immediate scenario termination when there is an exception thrown by a sender.
+    */
+   public static final String FAIL_FAST_PROPERTY = "perfcake.fail.fast";
+
+   /**
     * Name of the CLI argument to specify scenario name.
     */
    public static final String SCENARIO_OPT = "scenario";

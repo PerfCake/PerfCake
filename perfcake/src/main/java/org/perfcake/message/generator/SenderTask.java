@@ -86,20 +86,20 @@ class SenderTask implements Runnable {
    /**
     * Controls the amount of prepared tasks in a buffer.
     */
-   private final Semaphore semaphore;
+   private final CanalStreet canalStreet;
 
    /**
     * Creates a new task to send a message.
-    * The semaphore is released when the task is finished. This is used to control the maximum number sender tasks created and waiting for execution.
+    * There is a communication channel established that allows and requires the sender task to report the task completion and any possible error.
     * The visibility of this constructor is limited as it is not intended for normal use.
     * To obtain a new instance of a sender task properly initialized call
     * {@link org.perfcake.message.generator.AbstractMessageGenerator#newSenderTask(java.util.concurrent.Semaphore)}.
-    *
-    * @param semaphore
-    *       A semaphore to be released once the task is finished.
+
+    * @param canalStreet
+    *       The communication channel between this sender task instance and a generator.
     */
-   protected SenderTask(final Semaphore semaphore) {
-      this.semaphore = semaphore;
+   protected SenderTask(final CanalStreet canalStreet) {
+      this.canalStreet = canalStreet;
    }
 
    private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final Properties messageAttributes, final MeasurementUnit mu) {
@@ -109,6 +109,7 @@ class SenderTask implements Runnable {
          if (log.isErrorEnabled()) {
             log.error("Unable to initialize sending of a message: ", e);
          }
+         canalStreet.senderError(e);
       }
 
       mu.startMeasure();
@@ -120,6 +121,7 @@ class SenderTask implements Runnable {
          if (log.isErrorEnabled()) {
             log.error("Unable to send a message: ", e);
          }
+         canalStreet.senderError(e);
       }
       mu.stopMeasure();
 
@@ -129,6 +131,7 @@ class SenderTask implements Runnable {
          if (log.isErrorEnabled()) {
             log.error("Unable to finish sending of a message: ", e);
          }
+         canalStreet.senderError(e);
       }
 
       return result;
@@ -189,9 +192,7 @@ class SenderTask implements Runnable {
       } catch (final Exception e) {
          e.printStackTrace();
       } finally {
-         if (semaphore != null) {
-            semaphore.release();
-         }
+         canalStreet.acknowledgeSend();
 
          if (sender != null) {
             senderManager.releaseSender(sender);

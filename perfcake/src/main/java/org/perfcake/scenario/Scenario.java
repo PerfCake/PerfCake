@@ -174,7 +174,7 @@ public class Scenario {
     * @return True if all threads were terminated.
     */
    public boolean areAllThreadsTerminated() {
-      return generator.getAActiveThreadsCount() <= 0;
+      return generator.getActiveThreadsCount() <= 0;
    }
 
    /**

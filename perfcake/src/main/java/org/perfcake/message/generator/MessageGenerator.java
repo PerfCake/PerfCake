@@ -71,6 +71,14 @@ public interface MessageGenerator {
    void generate() throws Exception;
 
    /**
+    * Interrupts the execution with a message from failed sender.
+    *
+    * @param exception
+    *       The cause of the interruption.
+    */
+   void interrupt(final Exception exception);
+
+   /**
     * Closes and finalizes the generator. The {@link MessageSenderManager} must be closed as well.
     *
     * @throws PerfCakeException
@@ -104,7 +112,9 @@ public interface MessageGenerator {
 
    /**
     * Sets a manager of sequences that can be used to replace placeholders in a message template and sender's target.
-    * @param sequenceManager The {@link SequenceManager} to be used to replace placeholders in a message template and sender's target.
+    *
+    * @param sequenceManager
+    *       The {@link SequenceManager} to be used to replace placeholders in a message template and sender's target.
     */
    void setSequenceManager(final SequenceManager sequenceManager);
 
@@ -131,5 +141,5 @@ public interface MessageGenerator {
     *
     * @return Number of active threads in use.
     */
-   int getAActiveThreadsCount();
+   int getActiveThreadsCount();
 }

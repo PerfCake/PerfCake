@@ -28,6 +28,9 @@ import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -40,6 +43,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public abstract class AbstractMessageGenerator implements MessageGenerator {
+
+   private final static Logger log = LogManager.getLogger(AbstractMessageGenerator.class);
 
    /**
     * Message sender manager.
@@ -98,16 +103,24 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
       this.messageSenderManager.init();
    }
 
+   @Override
+   public void interrupt(final Exception exception) {
+      log.error("Execution interrupted prematurely by an error in message sender: ", exception);
+
+      // we cloned the behavior of Scenario.stop() here as we do not have direct access to the Scenario object
+      reportManager.stop();
+   }
+
    /**
     * Gets a new instance of a {@link org.perfcake.message.generator.SenderTask}.
     * The provided semaphore can be used to control parallel execution of sender tasks in multiple threads.
     *
     * @param semaphore
-    *       Semaphore that will be released upon completion of the sender task.
+    *       Semaphore that will be released upon completion of the sender task. Can be null.
     * @return A sender task ready to work on another iteration.
     */
    protected SenderTask newSenderTask(final Semaphore semaphore) {
-      final SenderTask task = new SenderTask(semaphore);
+      final SenderTask task = new SenderTask(new CanalStreet(this, semaphore));
 
       task.setMessageStore(messageStore);
       task.setReportManager(reportManager);
@@ -239,7 +252,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     * @return The number of active threads.
     */
    @Override
-   public int getAActiveThreadsCount() {
+   public int getActiveThreadsCount() {
       return executorService.getActiveCount();
    }
 }
