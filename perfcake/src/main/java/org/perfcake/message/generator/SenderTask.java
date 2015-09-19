@@ -107,7 +107,7 @@ class SenderTask implements Runnable {
          sender.preSend(message, messageHeaders, messageAttributes);
       } catch (final Exception e) {
          if (log.isErrorEnabled()) {
-            log.error("Exception occurred!", e);
+            log.error("Unable to initialize sending of a message: ", e);
          }
       }
 
@@ -118,7 +118,7 @@ class SenderTask implements Runnable {
          result = sender.send(message, messageHeaders, mu);
       } catch (final Exception e) {
          if (log.isErrorEnabled()) {
-            log.error("Exception occurred!", e);
+            log.error("Unable to send a message: ", e);
          }
       }
       mu.stopMeasure();
@@ -127,7 +127,7 @@ class SenderTask implements Runnable {
          sender.postSend(message);
       } catch (final Exception e) {
          if (log.isErrorEnabled()) {
-            log.error("Exception occurred!", e);
+            log.error("Unable to finish sending of a message: ", e);
          }
       }
 

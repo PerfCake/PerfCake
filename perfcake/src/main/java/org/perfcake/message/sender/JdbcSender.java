@@ -98,7 +98,7 @@ public class JdbcSender extends AbstractSender {
       try {
          connection.close();
       } catch (final SQLException ex) {
-         log.error(ex.getMessage());
+         log.error("Unable to close JDBC connection: " + ex.getMessage(), ex);
       }
    }
 

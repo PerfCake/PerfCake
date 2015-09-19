@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -78,17 +78,17 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    /**
     * An initial number of threads.
     */
-   private int preThreadCount = -1; // default value taken from parent's threads
+   private int preThreadCount = -1;
 
    /**
     * A final number of threads.
     */
-   private int postThreadCount = -1; // default value taken from parent's threads
+   private int postThreadCount = -1;
 
    /**
     * A maximal number of threads.
     */
-   private int mainThreadCount = -1; // default value taken from parent's threads
+   private int mainThreadCount = -1;
 
    /**
     * A duration period of the {@link org.perfcake.message.generator.RampUpDownGenerator.Phase#PRE} phase,
@@ -129,9 +129,6 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    @Override
    public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception {
       super.init(messageSenderManager, messageStore);
-      if (log.isInfoEnabled()) {
-         log.info("Initiating " + getClass().getSimpleName());
-      }
       if (preThreadCount <= 0) {
          preThreadCount = super.getThreads();
       }

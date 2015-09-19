@@ -29,7 +29,6 @@ import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -225,12 +224,22 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
 
    /**
     * Configures the {@link org.perfcake.message.sequence.SequenceManager} to be used for the performance test execution.
-    * 
+    *
     * @param sequenceManager
     *       {@link org.perfcake.message.sequence.SequenceManager} to be used.
     */
    @Override
    public void setSequenceManager(final SequenceManager sequenceManager) {
       this.sequenceManager = sequenceManager;
+   }
+
+   /**
+    * Gets the number of active threads in the internal executor service.
+    *
+    * @return The number of active threads.
+    */
+   @Override
+   public int getAActiveThreadsCount() {
+      return executorService.getActiveCount();
    }
 }

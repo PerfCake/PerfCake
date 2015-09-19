@@ -80,11 +80,8 @@ abstract public class AbstractSender implements MessageSender {
 
    @Override
    public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      if (log.isDebugEnabled()) {
-         log.debug("Initializing sending of a message.");
-         if (log.isTraceEnabled()) {
-            log.trace(String.format("Message content: %s", message.toString()));
-         }
+      if (log.isTraceEnabled()) {
+         log.trace(String.format("Message content: %s", message.toString()));
       }
 
       if (!keepConnection) {
@@ -127,10 +124,6 @@ abstract public class AbstractSender implements MessageSender {
 
    @Override
    public void postSend(final Message message) throws Exception {
-      if (log.isDebugEnabled()) {
-         log.debug("Cleaning up after the message has been sent.");
-      }
-
       if (!keepConnection) {
          doClose();
       }
@@ -180,7 +173,8 @@ abstract public class AbstractSender implements MessageSender {
     * Placeholders in the target address cannot be replaced with properties nor sequences when set to true.
     * Defaults to true.
     *
-    * @param keepConnection True when the connection should be kept open.
+    * @param keepConnection
+    *       True when the connection should be kept open.
     */
    public void setKeepConnection(final boolean keepConnection) {
       this.keepConnection = keepConnection;

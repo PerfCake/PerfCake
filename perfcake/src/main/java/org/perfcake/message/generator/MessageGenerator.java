@@ -124,4 +124,12 @@ public interface MessageGenerator {
     * @return Instance of this to support fluent API.
     */
    MessageGenerator setThreads(final int threads);
+
+   /**
+    * Gets the number of active threads used currently by the generator.
+    * This can help determine if there were some threads blocked waiting for reply.
+    *
+    * @return Number of active threads in use.
+    */
+   int getAActiveThreadsCount();
 }

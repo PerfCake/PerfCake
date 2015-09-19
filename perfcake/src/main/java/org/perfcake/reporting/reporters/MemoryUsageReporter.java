@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -320,13 +320,13 @@ public class MemoryUsageReporter extends AbstractReporter {
     *       In the case of communication error.
     */
    private long sendAgentCommand(final String command) throws IOException {
-      if (log.isDebugEnabled()) {
-         log.debug("sending " + command);
+      if (log.isTraceEnabled()) {
+         log.trace("sending " + command);
       }
       requestWriter.println(command);
       final long retVal = Long.parseLong(responseReader.readLine());
-      if (log.isDebugEnabled()) {
-         log.debug("received " + retVal);
+      if (log.isTraceEnabled()) {
+         log.trace("received " + retVal);
       }
       return retVal;
    }

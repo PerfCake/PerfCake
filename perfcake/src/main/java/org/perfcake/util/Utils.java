@@ -37,8 +37,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -75,11 +73,6 @@ public class Utils {
     * Default name of plugin directory.
     */
    public static final File DEFAULT_PLUGINS_DIR = new File("lib/plugins");
-
-   /**
-    * Logger.
-    */
-   private static final Logger log = LogManager.getLogger(Utils.class);
 
    /**
     * Replaces all ${&lt;property.name&gt;} placeholders in a string
@@ -202,18 +195,18 @@ public class Utils {
       try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
          return filterProperties(scanner.useDelimiter("\\Z").next());
       } catch (final NoSuchElementException nsee) {
-         if (log.isWarnEnabled()) {
-            log.warn("The content of " + url + " is empty.");
-         }
-         return "";
+         throw new IOException("The content of " + url + " is empty.");
       }
    }
 
    /**
     * Reads lines from the given URL as a list of strings.
-    * @param url The URL to read the content from.
+    *
+    * @param url
+    *       The URL to read the content from.
     * @return A list of lines in the content in the original order.
-    * @throws IOException When it was not possible to read the content of the given URL.
+    * @throws IOException
+    *       When it was not possible to read the content of the given URL.
     */
    public static List<String> readLines(final URL url) throws IOException {
       List<String> results = new ArrayList<>();
@@ -512,19 +505,11 @@ public class Utils {
     */
    public static void writeFileContent(final Path path, final String content) throws PerfCakeException {
       try {
-         if (log.isDebugEnabled()) {
-            log.debug(String.format("Writing content to the file %s", path.toString()));
-            if (log.isTraceEnabled()) {
-               log.trace(String.format("File content: \"%s\"", content));
-            }
-         }
-
          final Path workFile = Paths.get(path.toString() + ".work");
          Files.write(workFile, content.getBytes(Utils.getDefaultEncoding()));
          Files.move(workFile, path, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
       } catch (final IOException e) {
          final String message = String.format("Could not write content to the file %s:", path.toString());
-         log.error(message, e);
          throw new PerfCakeException(message, e);
       }
    }
@@ -543,20 +528,10 @@ public class Utils {
     */
    public static void copyTemplateFromResource(final String resource, final Path target, final Properties properties) throws PerfCakeException {
       try {
-         if (log.isDebugEnabled()) {
-            log.debug(String.format("Copying template from resource %s to the file %s", resource, target.toString()));
-            if (log.isTraceEnabled()) {
-               final StringWriter sw = new StringWriter();
-               properties.list(new PrintWriter(sw));
-               log.trace(String.format("Properties for the template: \"%s\"", sw.toString()));
-            }
-         }
-
          final StringTemplate template = new StringTemplate(IOUtils.toString(Utils.class.getResourceAsStream(resource), Utils.getDefaultEncoding()), properties);
          Utils.writeFileContent(target, template.toString());
       } catch (final IOException e) {
          final String message = String.format("Could not render template from resource %s:", resource);
-         log.error(message, e);
          throw new PerfCakeException(message, e);
       }
    }
@@ -568,8 +543,9 @@ public class Utils {
     *       The desired level.
     */
    public static void setLoggingLevel(final Level level) {
+      final Logger log = LogManager.getLogger(Utils.class);
       final org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) log;
-      final LoggerContext context = (LoggerContext) coreLogger.getContext();
+      final LoggerContext context = coreLogger.getContext();
 
       context.getConfiguration().getLoggers().get("org.perfcake").setLevel(level);
       context.updateLoggers();

@@ -5,8 +5,6 @@ import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.util.Utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.fusesource.mqtt.client.BlockingConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
@@ -24,11 +22,6 @@ import java.util.Properties;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class MqttSender extends AbstractSender {
-
-   /**
-    * The sender's logger.
-    */
-   private static final Logger log = LogManager.getLogger(JmsSender.class);
 
    private BlockingConnection mqttConnection;
 

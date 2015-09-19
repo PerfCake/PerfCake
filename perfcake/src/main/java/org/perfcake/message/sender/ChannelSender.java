@@ -22,9 +22,6 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
@@ -38,10 +35,6 @@ import java.util.Properties;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 abstract public class ChannelSender extends AbstractSender {
-   /**
-    * The sender's logger.
-    */
-   protected static final Logger log = LogManager.getLogger(ChannelSender.class);
 
    /**
     * Buffer for writing to and reading from NIO channel.

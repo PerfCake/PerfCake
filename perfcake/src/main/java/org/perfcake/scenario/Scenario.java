@@ -26,6 +26,7 @@ import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
+import org.perfcake.validation.ValidationException;
 import org.perfcake.validation.ValidationManager;
 
 import org.apache.logging.log4j.LogManager;
@@ -158,8 +159,22 @@ public class Scenario {
       }
 
       if (log.isTraceEnabled()) {
-         log.trace("Scenario finished successfully!");
+         if (validationManager.isAllMessagesValid()) {
+            log.trace("Scenario finished successfully!");
+         } else {
+            log.trace("Scenario finished but there were validation errors.");
+            throw new ValidationException("Some messages did not pass validation, please check validation log.");
+         }
       }
+   }
+
+   /**
+    * Checks if all threads used for message generating were terminated successfully.
+    *
+    * @return True if all threads were terminated.
+    */
+   public boolean areAllThreadsTerminated() {
+      return generator.getAActiveThreadsCount() <= 0;
    }
 
    /**
@@ -269,6 +284,7 @@ public class Scenario {
 
    /**
     * Gets the current {@link SequenceManager}.
+    *
     * @return The current {@link SequenceManager}.
     */
    SequenceManager getSequenceManager() {

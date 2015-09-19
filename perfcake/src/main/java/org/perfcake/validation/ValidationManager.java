@@ -280,7 +280,7 @@ public class ValidationManager {
       this.fastForward = fastForward;
    }
 
-   protected boolean isAllMessagesValid() {
+   public boolean isAllMessagesValid() {
       return allMessagesValid;
    }
 

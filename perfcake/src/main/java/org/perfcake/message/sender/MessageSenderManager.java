@@ -119,7 +119,7 @@ public class MessageSenderManager {
     * @throws Exception
     *       When the initialization of the sender fails.
     */
-   public void addSenderInstance(final MessageSender sender) throws Exception {
+   public void addSenderInstance(final MessageSender sender) throws PerfCakeException {
       sender.init();
       availableSenders.add(sender);
       allSenders.add(sender);

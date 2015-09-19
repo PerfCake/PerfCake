@@ -21,9 +21,6 @@ package org.perfcake.message;
 
 import org.perfcake.util.StringTemplate;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
@@ -38,8 +35,6 @@ import java.util.Properties;
  */
 public class MessageTemplate implements Serializable {
    private static final long serialVersionUID = 6172258079690233417L;
-
-   private static transient Logger log = LogManager.getLogger(MessageTemplate.class);
 
    /**
     * Original message sample.
@@ -187,9 +182,6 @@ public class MessageTemplate implements Serializable {
       final StringTemplate tmpTemplate = new StringTemplate((String) message.getPayload());
 
       if (tmpTemplate.hasPlaceholders()) {
-         if (log.isDebugEnabled()) {
-            log.debug("Created matching pattern for the message payload with properties.");
-         }
          this.template = tmpTemplate;
       } else {
          // return the rendered template back, it might not have any placeholders now, but there could have been some math replacements etc.

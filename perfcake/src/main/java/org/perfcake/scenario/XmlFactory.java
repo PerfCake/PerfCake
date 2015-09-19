@@ -43,7 +43,6 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.Utils;
-import org.perfcake.util.properties.SystemPropertyGetter;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;
 
@@ -126,20 +125,24 @@ public class XmlFactory implements ScenarioFactory {
    /**
     * Parses the scenario twice, first to read the properties defined in it, second using the new properties directly
     * in the scenario.
-    * @param scenarioURL Scenario location URL.
-    * @throws PerfCakeException When it was not possible to parse the scenario.
-    * @throws IOException When it was not possible to read the scenario definition.
+    *
+    * @param scenarioURL
+    *       Scenario location URL.
+    * @throws PerfCakeException
+    *       When it was not possible to parse the scenario.
+    * @throws IOException
+    *       When it was not possible to read the scenario definition.
     */
    private void prepareModelTwoPass(final URL scenarioURL) throws PerfCakeException, IOException {
       // two-pass parsing to first read the properties specified in the scenario and then use them
       this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
       this.scenarioModel = parse();
-      loadScenarioPropertiesToSystem(parseScenarioProperties());
+      putScenarioPropertiesToSystem(parseScenarioProperties());
 
       this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
       this.scenarioModel = parse();
       final Properties scenarioProperties = parseScenarioProperties();
-      loadScenarioPropertiesToSystem(scenarioProperties);
+      putScenarioPropertiesToSystem(scenarioProperties);
 
       if (log.isDebugEnabled()) {
          log.debug("--- Scenario Properties ---");
@@ -207,7 +210,7 @@ public class XmlFactory implements ScenarioFactory {
       }
    }
 
-   private void loadScenarioPropertiesToSystem(final Properties properties) {
+   private void putScenarioPropertiesToSystem(final Properties properties) {
       if (properties != null) {
          properties.forEach(System.getProperties()::put);
       }

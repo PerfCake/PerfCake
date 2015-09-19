@@ -151,8 +151,8 @@ class RulesValidatorHelper {
          }
       }
 
-      if (log.isDebugEnabled()) {
-         log.debug("Built rules:\n" + sBuilder.toString());
+      if (log.isTraceEnabled()) {
+         log.trace("Built rules:\n" + sBuilder.toString());
       }
 
       final KieRepository krp = kieServices.getRepository();

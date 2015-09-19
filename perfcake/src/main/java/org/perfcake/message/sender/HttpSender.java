@@ -218,7 +218,7 @@ public class HttpSender extends AbstractSender {
       }
 
       if (log.isDebugEnabled()) {
-         log.debug("Setting HTTP headers");
+         log.debug("Setting HTTP headers: ");
       }
 
       // set message properties as HTTP headers
@@ -257,6 +257,10 @@ public class HttpSender extends AbstractSender {
                log.debug(pKey + ": " + pValue);
             }
          }
+      }
+
+      if (log.isDebugEnabled()) {
+         log.debug("End of HTTP headers.");
       }
    }
 
@@ -352,9 +356,9 @@ public class HttpSender extends AbstractSender {
 
    /**
     * Gets the template used to determine HTTP method dynamically.
-    * 
+    *
     * @param placeholders
-    *       The properties to render the string template. 
+    *       The properties to render the string template.
     * @return The HTTP method.
     */
    public Method getDynamicMethod(final Properties placeholders) {
