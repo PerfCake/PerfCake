@@ -35,13 +35,22 @@ import java.util.Properties;
 public class GroovySender extends CommandSender {
 
    /**
+    * Classpath for groovy executable - specifies where to find the class files.
+    */
+   private String classpath = null;
+
+   /**
     * The groovy executable prefix.
     */
    private String groovyExecutable = null;
 
    @Override
    public void doInit(final Properties messageAttributes) throws PerfCakeException {
-      setCommandPrefix(getGroovyExecutable());
+      if (classpath != null) {
+         setCommandPrefix(getGroovyExecutable() + " -classpath " + classpath);
+      } else {
+         setCommandPrefix(getGroovyExecutable());
+      }
    }
 
    /**
@@ -68,4 +77,24 @@ public class GroovySender extends CommandSender {
       return this;
    }
 
+   /**
+    * Gets a classpath used by the groovy command.
+    *
+    * @return Classpath for groovy command.
+    */
+   public String getClasspath() {
+      return classpath;
+   }
+
+   /**
+    * Sets a classpath used by the groovy command.
+    *
+    * @param classpath
+    *       Classpath for groovy command.
+    * @return Instance of this to support fluent API.
+    */
+   public GroovySender setClasspath(final String classpath) {
+      this.classpath = classpath;
+      return this;
+   }
 }
