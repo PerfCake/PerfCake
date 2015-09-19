@@ -21,8 +21,6 @@ package org.perfcake.message.sender;
 
 import org.perfcake.PerfCakeException;
 
-import org.codehaus.groovy.ant.Groovy;
-
 import java.io.File;
 import java.util.Properties;
 
