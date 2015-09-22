@@ -93,7 +93,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     *       Message sender manager.
     * @param messageStore
     *       Message store where the messages are taken from.
-    * @throws Exception
+    * @throws PerfCakeException
     *       When it was not possible to initialize the generator.
     */
    @Override

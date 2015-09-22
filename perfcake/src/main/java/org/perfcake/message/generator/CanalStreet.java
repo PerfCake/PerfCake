@@ -27,7 +27,7 @@ import java.util.concurrent.Semaphore;
 /**
  * A bidirectional communication channel between {@link MessageGenerator} and {@link SenderTask}.
  *
- * @author Martin Večeřa <marvenec@gmail.com>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class CanalStreet {
 
