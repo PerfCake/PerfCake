@@ -51,7 +51,7 @@
       <version.slf4j>1.7.7</version.slf4j>
       <version.log4j>2.1</version.log4j>
       <version.jms-api>1.1-rev-1</version.jms-api>
-      <version.mqtt>1.10</version.mqtt>
+      <version.mqtt>1.11</version.mqtt>
       <version.testng>6.8.5</version.testng>
       <version.websocket-api>1.0</version.websocket-api>
       <version.commons.math3>3.4.1</version.commons.math3>
