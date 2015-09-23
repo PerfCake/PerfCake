@@ -147,6 +147,16 @@
                   <stylesheetfile>${basedir}/perfcake/src/main/javadoc/javadoc.css</stylesheetfile>
                </configuration>
             </plugin>
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-release-plugin</artifactId>
+               <version>${maven.release.plugin.version}</version>
+               <configuration>
+                  <tagNameFormat>v@{project.version}</tagNameFormat>
+                  <pushChanges>false</pushChanges>
+                  <localCheckout>true</localCheckout>
+               </configuration>
+            </plugin>
          </plugins>
       </pluginManagement>
    </build>
