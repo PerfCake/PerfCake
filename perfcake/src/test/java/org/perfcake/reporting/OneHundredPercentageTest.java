@@ -25,7 +25,7 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.DefaultMessageGenerator;
-import org.perfcake.message.sender.DummySender;
+import org.perfcake.message.sender.TestSender;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.reporting.reporters.ThroughputStatsReporter;
 import org.perfcake.scenario.Scenario;
@@ -57,7 +57,7 @@ public class OneHundredPercentageTest {
 
       final MessageTemplate mt = new MessageTemplate(m, 1, null);
 
-      final ScenarioBuilder sb = new ScenarioBuilder(ri, mg, DummySender.class.getName(), null);
+      final ScenarioBuilder sb = new ScenarioBuilder(ri, mg, TestSender.class.getName(), null);
       sb.addReporter(atr);
       sb.addMessage(mt);
 

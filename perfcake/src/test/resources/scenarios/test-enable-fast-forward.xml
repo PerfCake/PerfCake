@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:4.0">
-    <generator class="DefaultMessageGenerator" threads="1">
-        <run type="time" value="5000"/>
-    </generator>
-   <sender class="DummySender">
-      <property name="target" value="Out there!"/>
+<scenario xmlns="urn:perfcake:scenario:5.0">
+   <run type="time" value="5000"/>
+    <generator class="DefaultMessageGenerator" threads="1"/>
+   <sender class="TestSender">
+      <target>Out there!</target>
    </sender>
    <reporting>
         <reporter class="DummyReporter">

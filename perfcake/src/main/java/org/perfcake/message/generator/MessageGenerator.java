@@ -23,6 +23,7 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 
@@ -56,10 +57,10 @@ public interface MessageGenerator {
     *       Message sender manager.
     * @param messageStore
     *       Message store where the messages are taken from.
-    * @throws Exception
+    * @throws PerfCakeException
     *       When it was not possible to initialize the generator.
     */
-   void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception;
+   void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws PerfCakeException;
 
    /**
     * Generates the messages. This actually executes the whole performance test.
@@ -68,6 +69,14 @@ public interface MessageGenerator {
     *       When it was not possible to generate the messages.
     */
    void generate() throws Exception;
+
+   /**
+    * Interrupts the execution with a message from failed sender.
+    *
+    * @param exception
+    *       The cause of the interruption.
+    */
+   void interrupt(final Exception exception);
 
    /**
     * Closes and finalizes the generator. The {@link MessageSenderManager} must be closed as well.
@@ -97,9 +106,17 @@ public interface MessageGenerator {
     * Configures the {@link org.perfcake.validation.ValidationManager} to be used for the performance test execution.
     *
     * @param validationManager
-    *       {@link org.perfcake.validation.ValidationManager} to be used.s
+    *       {@link org.perfcake.validation.ValidationManager} to be used
     */
    void setValidationManager(final ValidationManager validationManager);
+
+   /**
+    * Sets a manager of sequences that can be used to replace placeholders in a message template and sender's target.
+    *
+    * @param sequenceManager
+    *       The {@link SequenceManager} to be used to replace placeholders in a message template and sender's target.
+    */
+   void setSequenceManager(final SequenceManager sequenceManager);
 
    /**
     * Gets the number of threads that should be used to generate the messages.
@@ -117,4 +134,12 @@ public interface MessageGenerator {
     * @return Instance of this to support fluent API.
     */
    MessageGenerator setThreads(final int threads);
+
+   /**
+    * Gets the number of active threads used currently by the generator.
+    * This can help determine if there were some threads blocked waiting for reply.
+    *
+    * @return Number of active threads in use.
+    */
+   int getActiveThreadsCount();
 }

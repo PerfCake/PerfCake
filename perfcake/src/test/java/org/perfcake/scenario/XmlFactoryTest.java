@@ -67,6 +67,8 @@ public class XmlFactoryTest extends TestSetup {
    private static final String FILTERED_PROPERTY_VALUE = "filtered-property-value";
    private static final String DEFAULT_PROPERTY_VALUE = "default-property-value";
 
+   final Properties emptyProperties = new Properties();
+
    @BeforeClass
    public void prepareScenarioParser() throws PerfCakeException, URISyntaxException, IOException {
       System.setProperty("test.filtered.property", FILTERED_PROPERTY_VALUE);
@@ -95,6 +97,7 @@ public class XmlFactoryTest extends TestSetup {
          final MessageSenderManager senderManager = scenarioFactory.parseSender(THREADS);
          Assert.assertEquals(senderManager.getSenderClass(), SENDER_CLASS, "senderClass");
          Assert.assertEquals(senderManager.getSenderPoolSize(), THREADS, "senderPoolSize");
+         Assert.assertEquals(System.getProperty("propWithQsName", ""), "testQS-name");
          // TODO: add assertions on a sender
       } catch (final PerfCakeException e) {
          e.printStackTrace();
@@ -150,10 +153,10 @@ public class XmlFactoryTest extends TestSetup {
          // Message 1 validatorIds
          final List<MessageValidator> validatorsList1 = validationManager.getValidators(mts1.getValidatorIds());
          Assert.assertEquals(validatorsList1.size(), 2, "message1 validatorIdList size");
-         Assert.assertTrue(validatorsList1.get(0).isValid(null, new Message("Hello, this is Stupid validator")));
-         Assert.assertFalse(validatorsList1.get(0).isValid(null, new Message("Hello, this is Smart validator")));
-         Assert.assertTrue(validatorsList1.get(1).isValid(null, new Message("Hello, this is happy validator :)")));
-         Assert.assertFalse(validatorsList1.get(1).isValid(null, new Message("Hello, this is sad validator :(")));
+         Assert.assertTrue(validatorsList1.get(0).isValid(null, new Message("Hello, this is Stupid validator"), emptyProperties));
+         Assert.assertFalse(validatorsList1.get(0).isValid(null, new Message("Hello, this is Smart validator"), emptyProperties));
+         Assert.assertTrue(validatorsList1.get(1).isValid(null, new Message("Hello, this is happy validator :)"), emptyProperties));
+         Assert.assertFalse(validatorsList1.get(1).isValid(null, new Message("Hello, this is sad validator :("), emptyProperties));
 
          // Message 2
          final MessageTemplate mts2 = messageStore.get(1);
@@ -170,8 +173,8 @@ public class XmlFactoryTest extends TestSetup {
          // Message 2 validatorIds
          final List<MessageValidator> validatorsList2 = validationManager.getValidators(mts2.getValidatorIds());
          Assert.assertEquals(validatorsList2.size(), 1, "message2 validatorIdList size");
-         Assert.assertTrue(validatorsList2.get(0).isValid(null, new Message("Go for fishing!")));
-         Assert.assertFalse(validatorsList2.get(0).isValid(null, new Message("Go for mushroom picking! There are no Fish.")));
+         Assert.assertTrue(validatorsList2.get(0).isValid(null, new Message("Go for fishing!"), emptyProperties));
+         Assert.assertFalse(validatorsList2.get(0).isValid(null, new Message("Go for mushroom picking! There are no Fish."), emptyProperties));
 
          // Message 3
          final MessageTemplate mts3 = messageStore.get(2);

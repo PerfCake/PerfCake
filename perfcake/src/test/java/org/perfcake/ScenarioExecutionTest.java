@@ -19,8 +19,12 @@
  */
 package org.perfcake;
 
+import org.perfcake.common.Period;
+import org.perfcake.common.PeriodType;
+import org.perfcake.reporting.reporters.DummyReporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
+import org.perfcake.scenario.ScenarioRetractor;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
@@ -49,6 +53,36 @@ public class ScenarioExecutionTest extends TestSetup {
       final long post = System.currentTimeMillis();
       final long diff = post - pre;
       Assert.assertTrue(diff >= 5000 && diff <= 6000, "The elapsed time was expected between 5s and 6s, but actualy was " + (double) diff / 1000 + "s");
+   }
+
+   @Test
+   public void failFastTest() throws Exception {
+      System.setProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "true");
+
+      try {
+         long tm = System.currentTimeMillis();
+         scenario.init();
+         ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+         retractor.getMessageStore().get(0).getMessage().setPayload("fail me please");
+         scenario.run();
+
+         tm = System.currentTimeMillis() - tm;
+         Assert.assertTrue(tm < 1000, String.format("The scenario did not fail fast enough. Time needed to fail: %d", tm));
+      } finally {
+         System.setProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false");
+      }
+   }
+
+   @Test
+   public void noFailFastTest() throws Exception {
+      long tm = System.currentTimeMillis();
+      scenario.init();
+      ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+      retractor.getMessageStore().get(0).getMessage().setPayload("fail me please");
+      scenario.run();
+
+      tm = System.currentTimeMillis() - tm;
+      Assert.assertTrue(tm > 1000, String.format("The scenario failed fast while it was not supposed to. Time needed to fail: %d", tm));
    }
 
    @Test

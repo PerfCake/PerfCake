@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:4.0">
-   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:200}">
-      <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:500000}"/>
-   </generator>
+<scenario xmlns="urn:perfcake:scenario:5.0">
+   <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:500000}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:200}"/>
    <sender class="HttpSender">
-      <property name="target" value="http://${server.host}:${server.port}//jaxws-benchmark-basic/EndpointImpl"/>
+      <target>http://${server.host}:${server.port}//jaxws-benchmark-basic/EndpointImpl</target>
    </sender>
    <messages>
       <message uri="5kB_basic_reply.xml"/>

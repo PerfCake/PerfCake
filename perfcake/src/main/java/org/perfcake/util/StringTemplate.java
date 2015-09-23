@@ -19,6 +19,9 @@
  */
 package org.perfcake.util;
 
+import org.perfcake.PerfCakeConst;
+import org.perfcake.util.properties.SystemPropertyGetter;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -67,6 +70,11 @@ public class StringTemplate {
    private static final Logger log = LogManager.getLogger(StringTemplate.class);
 
    /**
+    * Template engine can be disable by a system property.
+    */
+   private static boolean disableTemplateEngine = Boolean.valueOf(SystemPropertyGetter.INSTANCE.getProperty(PerfCakeConst.DISABLE_TEMPLATES_PROPERTY, "false"));
+
+   /**
     * Cached compiled template.
     */
    private Template template = null;
@@ -108,16 +116,18 @@ public class StringTemplate {
    public StringTemplate(final String template, final Properties properties) {
       this.originalTemplate = template;
 
-      vars.put("env", System.getenv());
-      vars.put("props", System.getProperties());
-      if (properties != null) {
-         vars.putAll(properties);
-      }
+      if (!disableTemplateEngine) {
+         vars.put("env", System.getenv());
+         vars.put("props", System.getProperties());
+         if (properties != null) {
+            vars.putAll(properties);
+         }
 
-      try {
-         preParse(template);
-      } catch (final ParseException pe) {
-         log.error("Unable to parse template. Continue with un-parsed content: ", pe);
+         try {
+            preParse(template);
+         } catch (final ParseException pe) {
+            log.error("Unable to parse template. Continue with un-parsed content: ", pe);
+         }
       }
    }
 
@@ -185,7 +195,7 @@ public class StringTemplate {
    }
 
    private String renderTemplate(final Template template, final Map variables) {
-      if (template != null) {
+      if (template != null && !disableTemplateEngine) {
          try {
             return template.evaluate(variables).toString();
          } catch (final ParseException pe) {
@@ -203,6 +213,8 @@ public class StringTemplate {
       config.setProperty("text.filters", "");
       config.setProperty("preload", "false");
       config.setProperty("null.value", "null");
+      config.setProperty("modes", "");
+      config.setProperty("compiler", "httl.spi.compilers.JavassistCompiler");
 
       return Engine.getEngine(config);
    }

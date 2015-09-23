@@ -1,0 +1,1 @@
+Test message: counter:${counter}-counter:@{counter},double:${doubleCounter}-double:@{doubleCounter}-${testProp},@{props.testProp}

@@ -19,16 +19,22 @@
  */
 package org.perfcake.scenario;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
+import org.perfcake.validation.ValidationException;
 import org.perfcake.validation.ValidationManager;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,6 +76,19 @@ public class Scenario {
    private ValidationManager validationManager;
 
    /**
+    * Sequence manager.
+    */
+   private SequenceManager sequenceManager;
+
+   /**
+    * Refreshes or sets the system properties carrying scenario start timestamp and human-readable timestamp.
+    */
+   private void initTimeStamps() {
+      System.setProperty(PerfCakeConst.TIMESTAMP_PROPERTY, String.valueOf(Calendar.getInstance().getTimeInMillis()));
+      System.setProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY, (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date()));
+   }
+
+   /**
     * Initializes the scenario execution.
     *
     * @throws org.perfcake.PerfCakeException
@@ -80,8 +99,11 @@ public class Scenario {
          log.trace("Scenario initialization...");
       }
 
+      initTimeStamps();
+
       generator.setReportManager(reportManager);
       generator.setValidationManager(validationManager);
+      generator.setSequenceManager(sequenceManager);
 
       try {
          generator.init(messageSenderManager, messageStore);
@@ -137,8 +159,22 @@ public class Scenario {
       }
 
       if (log.isTraceEnabled()) {
-         log.trace("Scenario finished successfully!");
+         if (validationManager.isAllMessagesValid()) {
+            log.trace("Scenario finished successfully!");
+         } else {
+            log.trace("Scenario finished but there were validation errors.");
+            throw new ValidationException("Some messages did not pass validation, please check validation log.");
+         }
       }
+   }
+
+   /**
+    * Checks if all threads used for message generating were terminated successfully.
+    *
+    * @return True if all threads were terminated.
+    */
+   public boolean areAllThreadsTerminated() {
+      return generator.getActiveThreadsCount() <= 0;
    }
 
    /**
@@ -234,5 +270,24 @@ public class Scenario {
     */
    ValidationManager getValidationManager() {
       return validationManager;
+   }
+
+   /**
+    * Sets the current {@link SequenceManager}.
+    *
+    * @param sequenceManager
+    *       The {@link SequenceManager} to be set.
+    */
+   public void setSequenceManager(final SequenceManager sequenceManager) {
+      this.sequenceManager = sequenceManager;
+   }
+
+   /**
+    * Gets the current {@link SequenceManager}.
+    *
+    * @return The current {@link SequenceManager}.
+    */
+   SequenceManager getSequenceManager() {
+      return sequenceManager;
    }
 }

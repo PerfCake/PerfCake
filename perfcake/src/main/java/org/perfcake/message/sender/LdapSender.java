@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,11 +25,13 @@ import org.perfcake.reporting.MeasurementUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
@@ -52,7 +54,10 @@ public class LdapSender extends AbstractSender {
    private String ldapPassword = null;
    private final SearchControls searchControls = new SearchControls();
 
+   @MandatoryProperty
    private String searchBase = null;
+
+   @MandatoryProperty
    private String filter = null;
 
    /**
@@ -140,7 +145,7 @@ public class LdapSender extends AbstractSender {
    }
 
    @Override
-   public void init() throws Exception {
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
       final Hashtable<String, Object> env = new Hashtable<String, Object>();
       env.put(Context.SECURITY_AUTHENTICATION, "simple");
       if (ldapUsername != null) {
@@ -150,18 +155,22 @@ public class LdapSender extends AbstractSender {
          env.put(Context.SECURITY_CREDENTIALS, ldapPassword);
       }
       env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-      env.put(Context.PROVIDER_URL, target);
+      env.put(Context.PROVIDER_URL, safeGetTarget(messageAttributes));
 
-      if (logger.isDebugEnabled()) {
-         logger.debug("Connecting to " + target);
+      if (logger.isTraceEnabled()) {
+         logger.trace("Connecting to " + safeGetTarget(messageAttributes));
       }
-      ctx = new InitialLdapContext(env, null);
+      try {
+         ctx = new InitialLdapContext(env, null);
+      } catch (NamingException e) {
+         throw new PerfCakeException("Cannot create LDAP context: ", e);
+      }
 
       searchControls.setSearchScope(SearchControls.SUBTREE_SCOPE);
    }
 
    @Override
-   public void close() throws PerfCakeException {
+   public void doClose() throws PerfCakeException {
       try {
          ctx.close();
       } catch (final NamingException e) {
@@ -170,8 +179,8 @@ public class LdapSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
       if (searchBase == null || filter == null) {
          throw new PerfCakeException("LDAP search base or filter is not set. Both properties have to be set up");
       }

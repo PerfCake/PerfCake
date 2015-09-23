@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -93,7 +93,7 @@ public class RequestResponseJmsSender extends JmsSender {
    private long receivingTimeout = 1000; // default 1s
 
    /**
-    * Maximal number of attemts to read the response.
+    * Maximal number of attempts to read the response.
     */
    private int receiveAttempts = 5;
 
@@ -148,8 +148,8 @@ public class RequestResponseJmsSender extends JmsSender {
    protected String responsePassword = null;
 
    @Override
-   public void init() throws Exception {
-      super.init();
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
+      super.doInit(messageAttributes);
       try {
          if (responseTarget == null || responseTarget.equals("")) {
             throw new PerfCakeException("responseTarget property is not defined in the scenario or is empty");
@@ -170,15 +170,14 @@ public class RequestResponseJmsSender extends JmsSender {
             }
          }
 
-      } catch (JMSException | NamingException | RuntimeException | PerfCakeException e) {
-         throw new PerfCakeException(e);
+      } catch (PerfCakeException pce) {
+         throw pce;
+      } catch (Exception e) {
+         throw new PerfCakeException("Cannot initialize response receiver: ", e);
       }
    }
 
    private void initResponseConnection() throws Exception {
-      if (log.isDebugEnabled()) {
-         log.debug("Initializing JMS response connection...");
-      }
       try {
          final Properties ctxProps = new Properties();
          Utils.setFirstNotNullProperty(ctxProps, Context.PROVIDER_URL, responseJndiUrl, jndiUrl);
@@ -205,10 +204,10 @@ public class RequestResponseJmsSender extends JmsSender {
    }
 
    @Override
-   public void close() throws PerfCakeException {
+   public void doClose() throws PerfCakeException {
       try {
          try {
-            super.close();
+            super.doClose();
          } finally {
             try {
                if (responseReceiver != null) {
@@ -238,8 +237,8 @@ public class RequestResponseJmsSender extends JmsSender {
    }
 
    @Override
-   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
       if (useCorrelationId) { // set the correlation ID
          mess.setJMSCorrelationID(correlationId);
       }

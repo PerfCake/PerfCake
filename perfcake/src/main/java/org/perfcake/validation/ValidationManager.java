@@ -280,7 +280,7 @@ public class ValidationManager {
       this.fastForward = fastForward;
    }
 
-   protected boolean isAllMessagesValid() {
+   public boolean isAllMessagesValid() {
       return allMessagesValid;
    }
 
@@ -369,7 +369,7 @@ public class ValidationManager {
                   receivedMessage = validationTask.getReceivedMessage();
 
                   for (final MessageValidator validator : getValidators(receivedMessage.getSentMessageTemplate().getValidatorIds())) {
-                     isMessageValid = validator.isValid(receivedMessage.getSentMessage(), new Message(receivedMessage.getResponse()));
+                     isMessageValid = validator.isValid(receivedMessage.getSentMessage(), new Message(receivedMessage.getResponse()), receivedMessage.getMessageAttributes());
                      if (log.isTraceEnabled()) {
                         log.trace(String.format("Message response %s validated with %s returns %s.", receivedMessage.getResponse().toString(), validator.toString(), String.valueOf(isMessageValid)));
                      }

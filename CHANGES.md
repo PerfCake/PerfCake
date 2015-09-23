@@ -56,7 +56,7 @@ Bug Fixes
 * https://github.com/PerfCake/PerfCake/issues/146 - The XSLT for scenario conversion from v2 to v3 does not cover RequestResponseJmsSender properly.
 
 Release 3.2
-==========================
+===========
 
 Features
 --------
@@ -157,7 +157,7 @@ Release 1.0
 
 Features
 --------
-* TODO: fill in changes.
+* Basic performance testing functionality including Generators, Senders, Reporters, Destinations and Validators.
 
 Bug Fixes
 ---------

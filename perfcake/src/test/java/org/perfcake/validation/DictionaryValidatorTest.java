@@ -28,6 +28,7 @@ import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 public class DictionaryValidatorTest {
    final static String SVRATKA = "Na břehu řeky Svratky kvete rozrazil,\n"
@@ -72,6 +73,8 @@ public class DictionaryValidatorTest {
          + "jsou možná hezčí řeky, mají větší třpyt,\n"
          + "však ty jsi moje vlast, má vlast, má věčná matka.";
 
+   final Properties emptyProperties = new Properties();
+
    @Test
    public void testBasicOperation() throws IOException {
       final Message m1 = new Message();
@@ -85,21 +88,21 @@ public class DictionaryValidatorTest {
          DictionaryValidator dv = new DictionaryValidator();
          dv.setDictionaryDirectory(dir);
          dv.setRecord(true);
-         Assert.assertTrue(dv.isValid(m1, m2));
-         Assert.assertTrue(dv.isValid(m2, m1));
+         Assert.assertTrue(dv.isValid(m1, m2, emptyProperties));
+         Assert.assertTrue(dv.isValid(m2, m1, emptyProperties));
 
          // now check the index cannot be overwritten
          dv = new DictionaryValidator();
          dv.setDictionaryDirectory(dir);
          dv.setRecord(true);
-         Assert.assertFalse(dv.isValid(m1, m2));
+         Assert.assertFalse(dv.isValid(m1, m2, emptyProperties));
 
          // now verify what we recorded
          dv = new DictionaryValidator();
          dv.setDictionaryDirectory(dir);
          dv.setRecord(false);
-         Assert.assertTrue(dv.isValid(m1, m2));
-         Assert.assertTrue(dv.isValid(m2, m1));
+         Assert.assertTrue(dv.isValid(m1, m2, emptyProperties));
+         Assert.assertTrue(dv.isValid(m2, m1, emptyProperties));
       } finally {
          FileUtils.deleteDirectory(new File(dir));
       }
@@ -118,15 +121,15 @@ public class DictionaryValidatorTest {
          DictionaryValidator dv = new DictionaryValidator();
          dv.setDictionaryDirectory(dir);
          dv.setRecord(true);
-         Assert.assertTrue(dv.isValid(m1, m2));
-         Assert.assertTrue(dv.isValid(m2, m1));
+         Assert.assertTrue(dv.isValid(m1, m2, emptyProperties));
+         Assert.assertTrue(dv.isValid(m2, m1, emptyProperties));
 
          // now verify what we recorded
          dv = new DictionaryValidator();
          dv.setDictionaryDirectory(dir);
          dv.setRecord(false);
-         Assert.assertTrue(dv.isValid(m1, m2));
-         Assert.assertTrue(dv.isValid(m2, m1));
+         Assert.assertTrue(dv.isValid(m1, m2, emptyProperties));
+         Assert.assertTrue(dv.isValid(m2, m1, emptyProperties));
       } finally {
          FileUtils.deleteDirectory(new File(dir));
       }
@@ -145,16 +148,16 @@ public class DictionaryValidatorTest {
          DictionaryValidator dv = new DictionaryValidator();
          dv.setDictionaryDirectory(dir);
          dv.setRecord(true);
-         Assert.assertTrue(dv.isValid(m1, m2));
-         Assert.assertTrue(dv.isValid(m2, m1));
-         Assert.assertFalse(dv.isValid(m1, m2));
+         Assert.assertTrue(dv.isValid(m1, m2, emptyProperties));
+         Assert.assertTrue(dv.isValid(m2, m1, emptyProperties));
+         Assert.assertFalse(dv.isValid(m1, m2, emptyProperties));
 
          // now verify what we recorded
          dv = new DictionaryValidator();
          dv.setDictionaryDirectory(dir);
          dv.setRecord(false);
-         Assert.assertTrue(dv.isValid(m1, m2));
-         Assert.assertTrue(dv.isValid(m2, m1));
+         Assert.assertTrue(dv.isValid(m1, m2, emptyProperties));
+         Assert.assertTrue(dv.isValid(m2, m1, emptyProperties));
       } finally {
          FileUtils.deleteDirectory(new File(dir));
       }

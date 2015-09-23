@@ -59,7 +59,7 @@ public class ChannelSenderFileTest {
          sender.init();
          Assert.assertEquals(sender.getTarget(), file.getAbsolutePath());
 
-         sender.preSend(message, null);
+         sender.preSend(message, null, null);
 
          final Serializable response = sender.doSend(message, null, null);
          Assert.assertEquals(response, "lion");

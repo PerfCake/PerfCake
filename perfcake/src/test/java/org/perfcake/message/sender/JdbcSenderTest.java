@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -147,7 +147,7 @@ public class JdbcSenderTest {
 
       final org.perfcake.message.Message message = new org.perfcake.message.Message();
       message.setPayload(sql);
-      sender.preSend(message, null);
+      sender.preSend(message, null, null);
       final Serializable response = sender.send(message, null);
       sender.postSend(message);
       sender.close();
@@ -202,7 +202,7 @@ public class JdbcSenderTest {
 
       final org.perfcake.message.Message message = new org.perfcake.message.Message();
       message.setPayload(sql);
-      sender.preSend(message, null);
+      sender.preSend(message, null, null);
       final Serializable response = sender.send(message, null);
       sender.postSend(message);
       sender.close();
@@ -264,7 +264,7 @@ public class JdbcSenderTest {
 
       sender.close();
 
-      Assert.assertEquals(a.lastMessage, errorMessage);
+      Assert.assertEquals(a.lastMessage, "Unable to close JDBC connection: " + errorMessage);
 
       verify(c).close();
       verifyNoMoreInteractions(c);

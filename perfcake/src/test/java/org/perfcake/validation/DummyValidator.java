@@ -21,6 +21,8 @@ package org.perfcake.validation;
 
 import org.perfcake.message.Message;
 
+import java.util.Properties;
+
 /**
  * Test validator that remembers some information when it is called.
  *
@@ -32,25 +34,34 @@ public class DummyValidator implements MessageValidator {
     * Last original message passed through the validator.
     */
    private Message lastOriginalMessage;
+
    /**
     * Last response message passed through the validator.
     */
    private Message lastResponse;
+
    /**
     * When was the validator called for the last time before the last time.
     */
    private long preLastCalledTimestamp = Long.MIN_VALUE;
+
+   /**
+    * Last observed message attributes.
+    */
+   private Properties lastMessageAttributes;
+
    /**
     * When was the validator called for the last time.
     */
    private long lastCalledTimestamp = 0;
+
    /**
     * Return value for the validation method.
     */
    private boolean returnValue = true;
 
    @Override
-   public boolean isValid(final Message originalMessage, final Message response) {
+   public boolean isValid(final Message originalMessage, final Message response, final Properties messageAttributes) {
       lastOriginalMessage = originalMessage;
       lastResponse = response;
       preLastCalledTimestamp = lastCalledTimestamp;
@@ -113,5 +124,13 @@ public class DummyValidator implements MessageValidator {
     */
    public boolean getReturnValue() {
       return returnValue;
+   }
+
+   /**
+    * Gets the last message attributes observed.
+    * @return The last message attributes observed.
+    */
+   public Properties getLastMessageAttributes() {
+      return lastMessageAttributes;
    }
 }

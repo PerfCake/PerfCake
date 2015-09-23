@@ -20,12 +20,14 @@
 package org.perfcake.validation;
 
 import org.perfcake.message.Message;
+import org.perfcake.util.StringTemplate;
 import org.perfcake.util.StringUtil;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Element;
 
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +49,7 @@ public class RegExpValidator implements MessageValidator {
 
    private static final Logger log = LogManager.getLogger(RegExpValidator.class);
 
-   private String pattern = "";
+   private StringTemplate pattern;
 
    // java.util.regex.Pattern flags
    private boolean caseInsensitive = false;
@@ -60,13 +62,13 @@ public class RegExpValidator implements MessageValidator {
    private boolean comments = false;
 
    @Override
-   public boolean isValid(final Message originalMessage, final Message response) {
-      final String trimmedLinesOfPayload = StringUtil.trimLines(response == null ? "" : response.getPayload().toString());
+   public boolean isValid(final Message originalMessage, final Message response, final Properties messageAttributes) {
+      final String trimmedLinesOfPayload = StringUtil.trimLines((response == null || response.getPayload() == null) ? "" : response.getPayload().toString());
       final String resultPayload = StringUtil.trim(trimmedLinesOfPayload);
 
-      if (!matches(resultPayload, pattern)) {
+      if (!matches(resultPayload, pattern.toString(messageAttributes))) {
          if (log.isInfoEnabled()) {
-            log.info(String.format("Message payload '%s' does not match the pattern '%s'.", response.getPayload().toString(), pattern));
+            log.info(String.format("Message payload '%s' does not match the pattern '%s'.", (response != null) ? response.getPayload().toString() : "", pattern.toString(messageAttributes)));
          }
          return false;
       }
@@ -111,7 +113,7 @@ public class RegExpValidator implements MessageValidator {
     * @return The regular expression pattern.
     */
    public String getPattern() {
-      return pattern;
+      return pattern.toString();
    }
 
    /**
@@ -122,7 +124,7 @@ public class RegExpValidator implements MessageValidator {
     * @return Instance of this to support fluent API.
     */
    public RegExpValidator setPattern(final String pattern) {
-      this.pattern = pattern;
+      this.pattern = new StringTemplate(pattern);
       return this;
    }
 
@@ -133,7 +135,7 @@ public class RegExpValidator implements MessageValidator {
     *       The DOM element from whose content the regular expression pattern is taken.
     */
    public void setPatternAsElement(final Element pattern) {
-      this.pattern = pattern.getTextContent();
+      this.pattern = new StringTemplate(pattern.getTextContent());
    }
 
    /**

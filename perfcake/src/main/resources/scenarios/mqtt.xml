@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:5.0">
+   <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:1}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:1}"/>
+   <sender class="MqttSender">
+      <target>tcp://${server.host}:${server.port}/cpt-mqtt-topic</target>
+      <property name="responseTarget" value="cpt-mqtt-response-topic"/>
+   </sender>
+   <reporting>
+      <reporter class="ThroughputStatsReporter">
+         <destination class="ConsoleDestination">
+            <!-- - ->
+            <period type="iteration" value="1"/>
+            <!-->
+            <period type="time" value="1000"/>
+            <!-- -->
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message content="hello"/>
+   </messages>
+</scenario>

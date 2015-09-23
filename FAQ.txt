@@ -1,0 +1,7 @@
+Q: I am getting java.lang.NoClassDefFoundError: org/apache/commons/beanutils/BeanIntrospector when loading scenario.
+A: This is because some of the other dependencies in your Maven project use an older version of Apache Commons Beanutils. Add the following snippet to the dependencyManagement section in your Maven pom.xml:
+   <dependency>
+      <groupId>commons-beanutils</groupId>
+      <artifactId>commons-beanutils</artifactId>
+      <version>1.9.2</version>
+   </dependency>

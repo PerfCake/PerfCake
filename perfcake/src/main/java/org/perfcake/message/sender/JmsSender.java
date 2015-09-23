@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,7 @@ import org.perfcake.reporting.MeasurementUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -54,7 +55,7 @@ public class JmsSender extends AbstractSender {
    /**
     * JMS message type.
     */
-   public static enum MessageType {
+   public enum MessageType {
       /**
        * Object message.
        *
@@ -78,7 +79,7 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * The logger's logger.
+    * The sender's logger.
     */
    private static final Logger log = LogManager.getLogger(JmsSender.class);
 
@@ -151,16 +152,19 @@ public class JmsSender extends AbstractSender {
    /**
     * JMS connection factory property.
     */
+   @MandatoryProperty
    protected String connectionFactory = "ConnectionFactory";
 
    /**
     * JNDI context factory property.
     */
+   @MandatoryProperty
    protected String jndiContextFactory = null;
 
    /**
     * JNDI URL property.
     */
+   @MandatoryProperty
    protected String jndiUrl = null;
 
    /**
@@ -186,10 +190,7 @@ public class JmsSender extends AbstractSender {
    }
 
    @Override
-   public void init() throws Exception {
-      if (log.isDebugEnabled()) {
-         log.debug("Initializing...");
-      }
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
       try {
          final Properties ctxProps = new Properties();
          if (jndiUrl != null) {
@@ -217,7 +218,7 @@ public class JmsSender extends AbstractSender {
          } else {
             connection = qcf.createConnection();
          }
-         destination = (Destination) ctx.lookup(target);
+         destination = (Destination) ctx.lookup(safeGetTarget(messageAttributes));
          if (replyTo != null && !"".equals(replyTo)) {
             replyToDestination = (Destination) ctx.lookup(replyTo);
          }
@@ -231,10 +232,7 @@ public class JmsSender extends AbstractSender {
    }
 
    @Override
-   public void close() throws PerfCakeException {
-      if (log.isDebugEnabled()) {
-         log.debug("Closing...");
-      }
+   public void doClose() throws PerfCakeException {
       try {
          try {
             if (sender != null) {
@@ -271,8 +269,8 @@ public class JmsSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
       switch (messageType) {
          case STRING:
             mess = session.createTextMessage((String) message.getPayload());
@@ -318,6 +316,8 @@ public class JmsSender extends AbstractSender {
    /**
     * Checks if both of the provided credentials are set.
     *
+    * @param username The user name credential.
+    * @param password The password credential.
     * @return <code>true</code> if both of the credentials
     * are set and <code>false</code> if neither of them is set.
     * @throws PerfCakeException
@@ -397,7 +397,7 @@ public class JmsSender extends AbstractSender {
    }
 
    /**
-    * Is JMS message persisted.
+    * Is JMS message persisted?
     *
     * @return <code>true</code> if JMS message is persisted.
     */

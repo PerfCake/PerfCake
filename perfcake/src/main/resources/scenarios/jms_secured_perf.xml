@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:4.0">
-   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}">
-      <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:300000}"/>
-   </generator>
+<scenario xmlns="urn:perfcake:scenario:5.0">
+   <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:300000}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}"/>
    <sender class="RequestResponseJmsSender">
-      <property name="target" value="queue/jms_secured_perf_request_gw"/>
+      <target>queue/jms_secured_perf_request_gw</target>
       <property name="messageType" value="OBJECT"/>
       <property name="responseTarget" value="queue/jms_secured_perf_response"/>
       <property name="receivingTimeout" value="10000"/>

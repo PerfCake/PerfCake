@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:4.0">
+<scenario xmlns="urn:perfcake:scenario:5.0">
    <!--properties/-->
+   <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:300000}"/>
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}">
-      <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:300000}"/>
       <property name="senderTaskQueueSize" value="500000"/>
    </generator>
    <sender class="DummySender">
-      <property name="target" value="Out there!"/>
+      <target>Out there!</target>
    </sender>
    <reporting>
       <reporter class="WarmUpReporter"/>

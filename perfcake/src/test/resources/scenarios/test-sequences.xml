@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:5.0">
+   <properties>
+      <property name="testProp" value="testQS"/>
+   </properties>
+   <run type="iteration" value="5"/>
+   <generator class="DefaultMessageGenerator" threads="1"/>
+   <sequences>
+      <sequence name="counter" class="NumberSequence"/>
+      <sequence name="doubleCounter" class="NumberSequence">
+         <property name="step" value="2"/>
+      </sequence>
+      <sequence name="counterPlus" class="NumberSequence">
+         <property name="start" value="10"/>
+      </sequence>
+   </sequences>
+   <sender class="TestSender">
+      <target>test-${counter}-@{counter}</target>
+      <property name="recording" value="true"/>
+      <property name="keepConnection" value="false"/>
+   </sender>
+   <messages>
+      <message content="counter:${counter}-counter:@{counter},double:${doubleCounter}-double:@{doubleCounter}-${testProp},@{props.testProp}"/>
+      <message uri="sequences.txt"/>
+   </messages>
+</scenario>

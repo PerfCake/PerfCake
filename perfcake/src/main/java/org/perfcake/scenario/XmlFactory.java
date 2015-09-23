@@ -28,6 +28,8 @@ import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequence.Sequence;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.model.Header;
 import org.perfcake.model.Property;
 import org.perfcake.model.Scenario.Generator;
@@ -100,7 +102,9 @@ public class XmlFactory implements ScenarioFactory {
     */
    private Scenario scenario = null;
 
-   // the factory is not part of public API
+   /**
+    * The factory is not part of public API.
+    */
    protected XmlFactory() {
 
    }
@@ -108,7 +112,7 @@ public class XmlFactory implements ScenarioFactory {
    @Override
    public void init(final URL scenarioURL) throws PerfCakeException {
       try {
-         this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
+         prepareModelTwoPass(scenarioURL);
 
          if (log.isDebugEnabled()) {
             log.debug(String.format("Loaded scenario definition from '%s'.", scenarioURL.toString()));
@@ -116,8 +120,34 @@ public class XmlFactory implements ScenarioFactory {
       } catch (final IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
       }
+   }
 
+   /**
+    * Parses the scenario twice, first to read the properties defined in it, second using the new properties directly
+    * in the scenario.
+    *
+    * @param scenarioURL
+    *       Scenario location URL.
+    * @throws PerfCakeException
+    *       When it was not possible to parse the scenario.
+    * @throws IOException
+    *       When it was not possible to read the scenario definition.
+    */
+   private void prepareModelTwoPass(final URL scenarioURL) throws PerfCakeException, IOException {
+      // two-pass parsing to first read the properties specified in the scenario and then use them
+      this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
       this.scenarioModel = parse();
+      putScenarioPropertiesToSystem(parseScenarioProperties());
+
+      this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
+      this.scenarioModel = parse();
+      final Properties scenarioProperties = parseScenarioProperties();
+      putScenarioPropertiesToSystem(scenarioProperties);
+
+      if (log.isDebugEnabled()) {
+         log.debug("--- Scenario Properties ---");
+         scenarioProperties.forEach((key, value) -> log.debug("'- {}:{}", key, value));
+      }
    }
 
    @Override
@@ -138,6 +168,7 @@ public class XmlFactory implements ScenarioFactory {
          final List<MessageTemplate> messageTemplates = parseMessages(validationManager);
          scenario.setMessageStore(messageTemplates);
          scenario.setValidationManager(validationManager);
+         scenario.setSequenceManager(parseSequences());
       }
 
       return scenario;
@@ -179,6 +210,12 @@ public class XmlFactory implements ScenarioFactory {
       }
    }
 
+   private void putScenarioPropertiesToSystem(final Properties properties) {
+      if (properties != null) {
+         properties.forEach(System.getProperties()::put);
+      }
+   }
+
    private static Properties getPropertiesFromList(final List<Property> properties) throws PerfCakeException {
       final Properties props = new Properties();
 
@@ -206,8 +243,7 @@ public class XmlFactory implements ScenarioFactory {
     *       When there is a parse exception.
     */
    protected RunInfo parseRunInfo() throws PerfCakeException {
-      final Generator gen = scenarioModel.getGenerator();
-      final Generator.Run run = gen.getRun();
+      final org.perfcake.model.Scenario.Run run = scenarioModel.getRun();
       final RunInfo runInfo = new RunInfo(new Period(PeriodType.valueOf(run.getType().toUpperCase()), Long.parseLong(run.getValue())));
 
       if (log.isDebugEnabled()) {
@@ -255,6 +291,46 @@ public class XmlFactory implements ScenarioFactory {
    }
 
    /**
+    * Parses the <code>sequences</code> element into a {@link SequenceManager} instance.
+    *
+    * @return {@link SequenceManager} containing the parsed {@link Sequence Sequences}.
+    * @throws org.perfcake.PerfCakeException
+    *       When there is a parse exception.
+    */
+   protected SequenceManager parseSequences() throws PerfCakeException {
+      final SequenceManager sequenceManager = new SequenceManager();
+
+      try {
+         final org.perfcake.model.Scenario.Sequences sequences = scenarioModel.getSequences();
+
+         if (sequences != null) {
+            for (org.perfcake.model.Scenario.Sequences.Sequence seq : sequences.getSequence()) {
+               final String sequenceName = seq.getName();
+               String sequenceClass = seq.getClazz();
+               final Properties sequenceProperties = getPropertiesFromList(seq.getProperty());
+
+               if (!sequenceClass.contains(".")) {
+                  sequenceClass = DEFAULT_SEQUENCE_PACKAGE + "." + sequenceClass;
+               }
+
+               if (log.isDebugEnabled()) {
+                  log.debug("--- Sequence (" + sequenceName + ":" + sequenceClass + ") ---");
+               }
+
+               Utils.logProperties(log, Level.DEBUG, sequenceProperties, "   ");
+
+               final Sequence sequence = (Sequence) ObjectFactory.summonInstance(sequenceClass, sequenceProperties);
+               sequenceManager.addSequence(sequenceName, sequence);
+            }
+         }
+      } catch (ReflectiveOperationException e) {
+         throw new PerfCakeException("Cannot parse sequences: ", e);
+      }
+
+      return sequenceManager;
+   }
+
+   /**
     * Parses the <code>sender</code> element into a {@link org.perfcake.message.sender.MessageSenderManager} instance.
     *
     * @param senderPoolSize
@@ -282,6 +358,9 @@ public class XmlFactory implements ScenarioFactory {
       msm = new MessageSenderManager();
       msm.setSenderClass(senderClass);
       msm.setSenderPoolSize(senderPoolSize);
+      if (sen.getTarget() != null) {
+         msm.setMessageSenderProperty("target", sen.getTarget());
+      }
       for (final Entry<Object, Object> sProperty : senderProperties.entrySet()) {
          msm.setMessageSenderProperty(sProperty.getKey(), sProperty.getValue());
       }
@@ -464,7 +543,7 @@ public class XmlFactory implements ScenarioFactory {
                }
 
                if (log.isDebugEnabled()) {
-                  log.debug(" '- Validation (" + validatorClass + ")");
+                  log.debug(" '- Validation (" + v.getId() + ":" + validatorClass + ")");
                }
                final Properties currentValidationProperties = getPropertiesFromList(v.getProperty());
                Utils.logProperties(log, Level.DEBUG, currentValidationProperties, "  '- ");
@@ -492,9 +571,12 @@ public class XmlFactory implements ScenarioFactory {
     *       When there is a parse exception.
     */
    protected Properties parseScenarioProperties() throws PerfCakeException {
-      if (log.isDebugEnabled()) {
-         log.debug("--- Scenario properties ---");
+      if (scenarioModel.getProperties() != null) {
+         if (scenarioModel.getProperties().getProperty() != null) {
+            return getPropertiesFromList(scenarioModel.getProperties().getProperty());
+         }
       }
-      return getPropertiesFromList(scenarioModel.getProperties().getProperty());
+
+      return null;
    }
 }

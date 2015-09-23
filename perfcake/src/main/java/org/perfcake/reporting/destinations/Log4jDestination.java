@@ -108,7 +108,7 @@ public class Log4jDestination implements Destination {
    /**
     * Log4j level.
     */
-   public static enum Level { // Log4j level is not an enum, so this would be hard to handle
+   public enum Level { // Log4j level is not an enum, so this would be hard to handle
       TRACE, DEBUG, INFO, WARN, ERROR, FATAL
    }
 

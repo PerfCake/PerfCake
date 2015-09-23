@@ -22,12 +22,14 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.StringTemplate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * The common ancestor for all senders. Facilitates logging and target specification.
@@ -44,13 +46,32 @@ abstract public class AbstractSender implements MessageSender {
    /**
     * The target where to send the messages.
     */
-   protected String target = "";
+   private StringTemplate target = new StringTemplate("");
+
+   /**
+    * Keeps the same connection to the target between individual invocations.
+    * This can achieve higher throughput, however, target cannot be changed for individual
+    * invocations and it does not make sense to use placeholders in target.
+    */
+   protected boolean keepConnection = true;
 
    @Override
-   abstract public void init() throws Exception;
+   public final void init() throws PerfCakeException {
+      if (keepConnection) { // otherwise this is done in preSend()
+         doInit(null);
+      }
+   }
+
+   abstract public void doInit(final Properties messageAttributes) throws PerfCakeException;
 
    @Override
-   abstract public void close() throws PerfCakeException;
+   public final void close() throws PerfCakeException {
+      if (keepConnection) { // otherwise this is done in postSend()
+         doClose();
+      }
+   }
+
+   abstract public void doClose() throws PerfCakeException;
 
    @Override
    public final Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
@@ -58,12 +79,13 @@ abstract public class AbstractSender implements MessageSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      if (log.isDebugEnabled()) {
-         log.debug("Initializing sending of a message.");
-         if (log.isTraceEnabled()) {
-            log.trace(String.format("Message content: %s", message.toString()));
-         }
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      if (log.isTraceEnabled()) {
+         log.trace(String.format("Message content: %s", message.toString()));
+      }
+
+      if (!keepConnection) {
+         doInit(messageAttributes);
       }
    }
 
@@ -80,7 +102,7 @@ abstract public class AbstractSender implements MessageSender {
     *       When the sending operation failed.
     * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message, org.perfcake.reporting.MeasurementUnit)
     */
-   final public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
+   public final Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
       return this.doSend(message, null, measurementUnit);
    }
 
@@ -102,8 +124,8 @@ abstract public class AbstractSender implements MessageSender {
 
    @Override
    public void postSend(final Message message) throws Exception {
-      if (log.isDebugEnabled()) {
-         log.debug("Cleaning up after the message has been sent.");
+      if (!keepConnection) {
+         doClose();
       }
    }
 
@@ -112,24 +134,49 @@ abstract public class AbstractSender implements MessageSender {
       return send(message, null, measurementUnit);
    }
 
-   /**
-    * Gets the target where to send the messages.
-    *
-    * @return The current target.
-    */
-   public String getTarget() {
-      return target;
+   @Override
+   public final String getTarget() {
+      return target.toString();
+   }
+
+   public final String getTarget(final Properties properties) {
+      return target.toString(properties);
+   }
+
+   public final String safeGetTarget(final Properties properties) {
+      if (properties == null) {
+         return getTarget();
+      } else {
+         return getTarget(properties);
+      }
+   }
+
+   @Override
+   public final AbstractSender setTarget(final String target) {
+      this.target = new StringTemplate(target);
+      return this;
    }
 
    /**
-    * Sets the target where to send the messages.
+    * Should we try to preserve connection between sending of individual messages?
+    * Placeholders in the target address cannot be replaced with properties nor sequences when set to true.
+    * Defaults to true.
     *
-    * @param target
-    *       The target to be set.
-    * @return Instance of this for fluent API.
+    * @return True iff the connection is kept open.
     */
-   public AbstractSender setTarget(final String target) {
-      this.target = target;
-      return this;
+   public boolean isKeepConnection() {
+      return keepConnection;
+   }
+
+   /**
+    * Should we try to preserve connection between sending of individual messages?
+    * Placeholders in the target address cannot be replaced with properties nor sequences when set to true.
+    * Defaults to true.
+    *
+    * @param keepConnection
+    *       True when the connection should be kept open.
+    */
+   public void setKeepConnection(final boolean keepConnection) {
+      this.keepConnection = keepConnection;
    }
 }

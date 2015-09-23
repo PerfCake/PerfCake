@@ -21,9 +21,6 @@ package org.perfcake.message;
 
 import org.perfcake.util.StringTemplate;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
@@ -38,8 +35,6 @@ import java.util.Properties;
  */
 public class MessageTemplate implements Serializable {
    private static final long serialVersionUID = 6172258079690233417L;
-
-   private transient Logger log = LogManager.getLogger(MessageTemplate.class);
 
    /**
     * Original message sample.
@@ -67,6 +62,16 @@ public class MessageTemplate implements Serializable {
    private transient StringTemplate template;
 
    /**
+    * Message headers templates.
+    */
+   private Properties headerTemplates;
+
+   /**
+    * Message properties templates.
+    */
+   private Properties propertyTemplates;
+
+   /**
     * Creates a new template based on the message sample. Multiplicity and validator references can be provided as well.
     *
     * @param message
@@ -84,6 +89,53 @@ public class MessageTemplate implements Serializable {
       }
       this.multiplicity = multiplicity;
       this.validatorIds = validatorIds;
+      this.headerTemplates = templatize(message.getHeaders());
+      this.propertyTemplates = templatize(message.getProperties());
+   }
+
+   /**
+    * Converts string properties to templates when there are placeholders in them.
+    *
+    * @param input
+    *       Properties to be processed.
+    * @return New properties with string containing properties converted to templates.
+    */
+   private Properties templatize(final Properties input) {
+      final Properties result = new Properties();
+
+      input.forEach((key, value) -> {
+         final StringTemplate template = new StringTemplate(value.toString());
+         if (template.hasPlaceholders()) {
+            result.put(key, template);
+         } else {
+            result.put(key, value);
+         }
+      });
+
+      return result;
+   }
+
+   /**
+    * Converts template properties back to string while rendering the placeholders with specific values.
+    *
+    * @param input
+    *       Properties to be processed.
+    * @param placeholders
+    *       Placeholder values to be placed in the resulting property values.
+    * @return New properties with rendered string values.
+    */
+   private Properties untemplatize(final Properties input, final Properties placeholders) {
+      final Properties result = new Properties();
+
+      input.forEach((key, value) -> {
+         if (value instanceof StringTemplate) {
+            result.put(key, ((StringTemplate) value).toString(placeholders));
+         } else {
+            result.put(key, value);
+         }
+      });
+
+      return result;
    }
 
    /**
@@ -116,8 +168,8 @@ public class MessageTemplate implements Serializable {
          final Message m = newMessage();
 
          m.setPayload(template.toString(properties));
-         m.setHeaders(message.getHeaders());
-         m.setProperties(message.getProperties());
+         m.setHeaders(untemplatize(headerTemplates, properties));
+         m.setProperties(untemplatize(propertyTemplates, properties));
 
          return m;
       } else {
@@ -130,9 +182,6 @@ public class MessageTemplate implements Serializable {
       final StringTemplate tmpTemplate = new StringTemplate((String) message.getPayload());
 
       if (tmpTemplate.hasPlaceholders()) {
-         if (log.isDebugEnabled()) {
-            log.debug("Created matching pattern for the message payload with properties.");
-         }
          this.template = tmpTemplate;
       } else {
          // return the rendered template back, it might not have any placeholders now, but there could have been some math replacements etc.

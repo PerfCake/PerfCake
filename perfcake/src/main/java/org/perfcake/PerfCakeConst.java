@@ -29,12 +29,17 @@ public final class PerfCakeConst {
    /**
     * PerfCake version.
     */
-   public static final String VERSION = "4.1";
+   public static final String VERSION = "5.0";
 
    /**
     * PerfCake scenario XML Schema version that is part of namespace <code>urn:perfcake:scenario:&lt;version&gt;</code>.
     */
-   public static final String XSD_SCHEMA_VERSION = "4.0";
+   public static final String XSD_SCHEMA_VERSION = "5.0";
+
+   /**
+    * Help on PerfCake command line usage.
+    */
+   public static final String USAGE_HELP = "ScenarioExecution -s <SCENARIO> [-sd <SCENARIOS_DIR>] [-md <MESSAGES_DIR>] [-D<property=value>]*";
 
    /**
     * Name of the message header that stores message number.
@@ -42,9 +47,19 @@ public final class PerfCakeConst {
    public static final String MESSAGE_NUMBER_HEADER = "PerfCake_Performance_Message_Number";
 
    /**
-    * Name of the system property that stores message number. It can be used in messages as a placeholder.
+    * Name of the sequence and property placeholder that stores message number. It can be used in message templates.
     */
    public static final String MESSAGE_NUMBER_PROPERTY = "MessageNumber";
+
+   /**
+    * Name of the sequence and property placeholder that stores current timestamp. It can be used in message templates.
+    */
+   public static final String CURRENT_TIMESTAMP_PROPERTY = "CurrentTimestamp";
+
+   /**
+    * Name of the sequence and property placeholder that stores thread ID. It can be used in message templates.
+    */
+   public static final String THREAD_ID_PROPERTY = "ThreadId";
 
    /**
     * Name of the system property that stores name of scenario that is executed.
@@ -92,6 +107,11 @@ public final class PerfCakeConst {
    public static final String LOGGING_LEVEL_PROPERTY = "perfcake.logging.level";
 
    /**
+    * Name of the system property to cause immediate scenario termination when there is an exception thrown by a sender.
+    */
+   public static final String FAIL_FAST_PROPERTY = "perfcake.fail.fast";
+
+   /**
     * Name of the CLI argument to specify scenario name.
     */
    public static final String SCENARIO_OPT = "scenario";
@@ -127,7 +147,47 @@ public final class PerfCakeConst {
    public static final String SKIP_TIMER_BENCHMARK_OPT = "skip-timer-benchmark";
 
    /**
-    * Result name indicating whether the scenario
+    * Result name indicating whether the scenario.
     */
    public static final String WARM_UP_TAG = "warmUp";
+
+   /**
+    * Result name the number of threads.
+    */
+   public static final String THREADS_TAG = "Threads";
+
+   /**
+    * Property that can disable templating engine (HTTL) in {@link org.perfcake.util.StringTemplate}.
+    */
+   public static final String DISABLE_TEMPLATES_PROPERTY = "perfcake.templates.disabled";
+
+   /**
+    * Exit code when there is no scenario specified.
+    */
+   public static final int ERR_NO_SCENARIO = 1;
+
+   /**
+    * Exit code when there are wrong parameters on the command line.
+    */
+   public static final int ERR_PARAMETERS = 2;
+
+   /**
+    * Exit code when it was not possible to parse scenario properly.
+    */
+   public static final int ERR_SCENARIO_LOADING = 3;
+
+   /**
+    * Exit code when there was an error during scenario execution.
+    */
+   public static final int ERR_SCENARIO_EXECUTION = 4;
+
+   /**
+    * Exit code when there were validation errors;
+    */
+   public static final int ERR_VALIDATION = 5;
+
+   /**
+    * Exit code when there are blocked threads after the scenario was executed.
+    */
+   public static final int ERR_BLOCKED_THREADS = 6;
 }

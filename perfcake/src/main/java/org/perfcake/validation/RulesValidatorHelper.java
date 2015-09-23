@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,6 +36,7 @@ import org.kie.api.runtime.KieSession;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Helps to build KieContainer based on the Drools rules provided. Used by {@link org.perfcake.validation.RulesValidator}.
@@ -88,12 +89,13 @@ class RulesValidatorHelper {
     *       The response message.
     * @return Map with unused/invalid assertions.
     */
-   public Map<Integer, String> validate(final Message originalMessage, final Message response) {
+   public Map<Integer, String> validate(final Message originalMessage, final Message response, final Properties messageAttributes) {
       final KieSession kieSession = kieContainer.newKieSession();
       final Map<Integer, String> unusedAssertions = new HashMap<>();
       unusedAssertions.putAll(assertions);
 
       kieSession.setGlobal("rulesUsed", unusedAssertions);
+      kieSession.setGlobal("messageAttributes", messageAttributes);
       if (originalMessage != null) {
          originalMessage.setProperty(RulesValidator.RULES_ORIGINAL_MESSAGE, "true");
          kieSession.insert(originalMessage);
@@ -124,7 +126,9 @@ class RulesValidatorHelper {
       final StringBuilder sBuilder = new StringBuilder();
       sBuilder.append("package org.perfcake.validation\n\n");
       sBuilder.append("global java.util.Map rulesUsed\n");
+      sBuilder.append("global java.util.Properties messageAttributes\n");
       sBuilder.append("import java.util.Map\n");
+      sBuilder.append("import java.util.Properties\n");
       sBuilder.append("import org.perfcake.message.Message\n");
       sBuilder.append("import org.perfcake.validation.RulesValidator\n");
       sBuilder.append("import org.perfcake.validation.ValidatorUtil\n");
@@ -147,8 +151,8 @@ class RulesValidatorHelper {
          }
       }
 
-      if (log.isDebugEnabled()) {
-         log.debug("Built rules:\n" + sBuilder.toString());
+      if (log.isTraceEnabled()) {
+         log.trace("Built rules:\n" + sBuilder.toString());
       }
 
       final KieRepository krp = kieServices.getRepository();

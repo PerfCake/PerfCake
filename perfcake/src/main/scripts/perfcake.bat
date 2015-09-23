@@ -127,6 +127,26 @@ goto Win9xApp
 :endInit
 SET PERFCAKE_JAVA_EXE="%JAVA_HOME%\bin\java.exe"
 
+@REM Check Java version
+for /f tokens^=2-4^ delims^=.-_^" %%j in ('"%PERFCAKE_JAVA_EXE%" -version 2^>^&1') do (
+  set jver=%%j%%k
+  goto breakVer
+)
+:breakVer
+
+echo x%jver%x | findstr /r /c:"x[1-9][0-9]x">nul
+if %errorlevel% equ 0 (
+  goto versionValid
+) else (
+  echo WARNING: Unable to detect Java version.
+  goto runPERFCAKE
+)
+
+:versionValid
+if not %jver% LSS 18 goto runPERFCAKE
+echo Unsupported Java version. PerfCake requires Java 8 and higher.
+goto error
+
 @REM Start PerfCake
 :runPERFCAKE
 for /f "delims=" %%i in ('dir /s /b "%PERFCAKE_HOME%"\lib\perfcake*.jar') do set PERFCAKE_JAR=%%i && goto pcJarFound

@@ -22,6 +22,7 @@ package org.perfcake.scenario;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
 
@@ -83,6 +84,15 @@ public class ScenarioRetractor {
     */
    public ValidationManager getValidationManager() {
       return scenario.getValidationManager();
+   }
+
+   /**
+    * Gets the {@link SequenceManager}.
+    *
+    * @return The {@link SequenceManager}.
+    */
+   public SequenceManager getSequenceManager() {
+      return scenario.getSequenceManager();
    }
 
    /**

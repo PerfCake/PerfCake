@@ -22,13 +22,11 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Common ancestor to all sender's sending messages through NIO channels.
@@ -37,10 +35,6 @@ import java.util.Map;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 abstract public class ChannelSender extends AbstractSender {
-   /**
-    * The sender's logger.
-    */
-   protected static final Logger log = LogManager.getLogger(ChannelSender.class);
 
    /**
     * Buffer for writing to and reading from NIO channel.
@@ -63,16 +57,13 @@ abstract public class ChannelSender extends AbstractSender {
    protected ByteBuffer responseBuffer;
 
    @Override
-   abstract public void init() throws PerfCakeException;
-
-   @Override
-   public void close() throws PerfCakeException {
+   public void doClose() throws PerfCakeException {
       // no-op
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
 
       // Encode message payload into buffer
       if (message != null && message.getPayload() != null) {

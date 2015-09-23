@@ -25,6 +25,7 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.ReceivedMessage;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
@@ -68,11 +69,6 @@ class SenderTask implements Runnable {
    private List<MessageTemplate> messageStore;
 
    /**
-    * Indicates whether the message numbering is enabled or disabled.
-    */
-   private boolean messageNumberingEnabled;
-
-   /**
     * Reference to a report manager.
     */
    private ReportManager reportManager;
@@ -83,31 +79,37 @@ class SenderTask implements Runnable {
    private ValidationManager validationManager;
 
    /**
+    * A reference to the current sequence manager. This is used for determining message specific sequence values.
+    */
+   private SequenceManager sequenceManager;
+
+   /**
     * Controls the amount of prepared tasks in a buffer.
     */
-   private final Semaphore semaphore;
+   private final CanalStreet canalStreet;
 
    /**
     * Creates a new task to send a message.
-    * The semaphore is released when the task is finished. This is used to control the maximum number sender tasks created and waiting for execution.
+    * There is a communication channel established that allows and requires the sender task to report the task completion and any possible error.
     * The visibility of this constructor is limited as it is not intended for normal use.
     * To obtain a new instance of a sender task properly initialized call
     * {@link org.perfcake.message.generator.AbstractMessageGenerator#newSenderTask(java.util.concurrent.Semaphore)}.
-    *
-    * @param semaphore
-    *       A semaphore to be released once the task is finished.
+
+    * @param canalStreet
+    *       The communication channel between this sender task instance and a generator.
     */
-   protected SenderTask(final Semaphore semaphore) {
-      this.semaphore = semaphore;
+   protected SenderTask(final CanalStreet canalStreet) {
+      this.canalStreet = canalStreet;
    }
 
-   private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final MeasurementUnit mu) {
+   private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final Properties messageAttributes, final MeasurementUnit mu) {
       try {
-         sender.preSend(message, messageHeaders);
+         sender.preSend(message, messageHeaders, messageAttributes);
       } catch (final Exception e) {
          if (log.isErrorEnabled()) {
-            log.error("Exception occurred!", e);
+            log.error("Unable to initialize sending of a message: ", e);
          }
+         canalStreet.senderError(e);
       }
 
       mu.startMeasure();
@@ -117,8 +119,9 @@ class SenderTask implements Runnable {
          result = sender.send(message, messageHeaders, mu);
       } catch (final Exception e) {
          if (log.isErrorEnabled()) {
-            log.error("Exception occurred!", e);
+            log.error("Unable to send a message: ", e);
          }
+         canalStreet.senderError(e);
       }
       mu.stopMeasure();
 
@@ -126,8 +129,9 @@ class SenderTask implements Runnable {
          sender.postSend(message);
       } catch (final Exception e) {
          if (log.isErrorEnabled()) {
-            log.error("Exception occurred!", e);
+            log.error("Unable to finish sending of a message: ", e);
          }
+         canalStreet.senderError(e);
       }
 
       return result;
@@ -140,19 +144,19 @@ class SenderTask implements Runnable {
    public void run() {
       assert messageStore != null && reportManager != null && validationManager != null && senderManager != null : "SenderTask was not properly initialized.";
 
-      final Properties messageAttributes = new Properties();
+      final Properties messageAttributes = sequenceManager != null ? sequenceManager.getSnapshot() : new Properties();
+
       final HashMap<String, String> messageHeaders = new HashMap<>();
       MessageSender sender = null;
-      ReceivedMessage receivedMessage = null;
+      ReceivedMessage receivedMessage;
       try {
          final MeasurementUnit mu = reportManager.newMeasurementUnit();
 
          if (mu != null) {
             // only set numbering to headers if it is enabled, later there is no change to
             // filter out the headers before sending
-            if (messageNumberingEnabled) {
-               messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_HEADER, String.valueOf(mu.getIteration()));
-               messageAttributes.setProperty(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration()));
+            if (messageAttributes != null) {
+               messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_HEADER, messageAttributes.getProperty(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration())));
             }
 
             sender = senderManager.acquireSender();
@@ -166,7 +170,7 @@ class SenderTask implements Runnable {
                   final long multiplicity = messageToSend.getMultiplicity();
 
                   for (int i = 0; i < multiplicity; i++) {
-                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, mu), messageToSend, currentMessage);
+                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
                      if (validationManager.isEnabled()) {
                         validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                      }
@@ -174,7 +178,7 @@ class SenderTask implements Runnable {
 
                }
             } else {
-               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, mu), null, null);
+               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, messageAttributes, mu), null, null, messageAttributes);
                if (validationManager.isEnabled()) {
                   validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                }
@@ -188,9 +192,7 @@ class SenderTask implements Runnable {
       } catch (final Exception e) {
          e.printStackTrace();
       } finally {
-         if (semaphore != null) {
-            semaphore.release();
-         }
+         canalStreet.acknowledgeSend();
 
          if (sender != null) {
             senderManager.releaseSender(sender);
@@ -219,16 +221,6 @@ class SenderTask implements Runnable {
    }
 
    /**
-    * Enables or disables marking the messages with a unique number. Disable this for maximal performance.
-    *
-    * @param messageNumberingEnabled
-    *       True to enable message numbering, false otherwise.
-    */
-   protected void setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
-      this.messageNumberingEnabled = messageNumberingEnabled;
-   }
-
-   /**
     * Configures a {@link org.perfcake.reporting.ReportManager} for the sender task.
     *
     * @param reportManager
@@ -246,5 +238,15 @@ class SenderTask implements Runnable {
     */
    protected void setValidationManager(final ValidationManager validationManager) {
       this.validationManager = validationManager;
+   }
+
+   /**
+    * Configures a {@link SequenceManager} for the sender task.
+    *
+    * @param sequenceManager
+    *       {@link SequenceManager} to be used by the sender task.
+    */
+   public void setSequenceManager(final SequenceManager sequenceManager) {
+      this.sequenceManager = sequenceManager;
    }
 }

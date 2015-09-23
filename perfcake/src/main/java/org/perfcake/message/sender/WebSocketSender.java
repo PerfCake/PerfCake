@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.Properties;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
@@ -124,13 +125,18 @@ public class WebSocketSender extends AbstractSender {
    }
 
    @Override
-   public void init() throws Exception {
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
       container = ContainerProvider.getWebSocketContainer();
       try {
-         logger.info("Connecting to URI " + target);
-         container.connectToServer(new PerfCakeClientEndpoint(), new URI(target));
-      } catch (DeploymentException | URISyntaxException e) {
-         throw new RuntimeException(e);
+         final String safeTarget = safeGetTarget(messageAttributes);
+
+         if (logger.isTraceEnabled()) {
+            logger.trace("Connecting to URI " + safeTarget);
+         }
+
+         container.connectToServer(new PerfCakeClientEndpoint(), new URI(safeTarget));
+      } catch (IOException | DeploymentException | URISyntaxException e) {
+         throw new PerfCakeException("Cannot open web socket: ", e);
       }
       if (session == null) {
          throw new PerfCakeException("Web socket session cannot be null before the scenario run.");
@@ -138,7 +144,7 @@ public class WebSocketSender extends AbstractSender {
    }
 
    @Override
-   public void close() throws PerfCakeException {
+   public void doClose() throws PerfCakeException {
       try {
          session.close();
       } catch (final IOException e) {
@@ -200,7 +206,9 @@ public class WebSocketSender extends AbstractSender {
        */
       @OnOpen
       public void onOpen(final Session session) {
-         logger.info("Connected ... " + session.getId());
+         if (logger.isTraceEnabled()) {
+            logger.trace("Connected with session id: " + session.getId());
+         }
          WebSocketSender.this.session = session;
       }
 
@@ -214,8 +222,8 @@ public class WebSocketSender extends AbstractSender {
        */
       @OnMessage
       public void onMessage(final String message, final Session session) {
-         if (logger.isDebugEnabled()) {
-            logger.debug("Received ... " + message);
+         if (logger.isTraceEnabled()) {
+            logger.trace("Received message: " + message);
          }
       }
 
@@ -229,7 +237,9 @@ public class WebSocketSender extends AbstractSender {
        */
       @OnClose
       public void onClose(final Session session, final CloseReason closeReason) {
-         logger.info(String.format("Session %s close because of %s", session.getId(), closeReason));
+         if (logger.isTraceEnabled()) {
+            logger.trace(String.format("Session %s closed because of %s", session.getId(), closeReason));
+         }
       }
    }
 }

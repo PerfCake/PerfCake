@@ -102,6 +102,10 @@ public class ObjectFactory {
       propertyUtilsBean.addBeanIntrospector(new FluentPropertyBeanIntrospector());
       final BeanUtilsBean beanUtilsBean = new BeanUtilsBean(new EnumConvertUtilsBean(), propertyUtilsBean);
 
+      if (log.isTraceEnabled()) {
+         log.trace(String.format("Setting properties on an instance of %s.", object.getClass().getName()));
+      }
+
       for (final Map.Entry<Object, Object> entry : properties.entrySet()) {
          if (log.isTraceEnabled()) {
             log.trace("Setting property: '" + entry.getKey().toString() + "'='" + entry.getValue().toString() + "'");
@@ -137,6 +141,10 @@ public class ObjectFactory {
     *       When it was not possible to call any of the properties setters.
     */
    public static Object summonInstance(final String className, final Properties properties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+      if (log.isTraceEnabled()) {
+         log.trace(String.format("Summoning a new instance of class '%s'.", className));
+      }
+
       final Object object = Class.forName(className, false, getPluginClassLoader()).newInstance();
       setPropertiesOnObject(object, properties);
 

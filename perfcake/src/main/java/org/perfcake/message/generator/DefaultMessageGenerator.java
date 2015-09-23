@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -58,7 +58,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    /**
     * Gets the shutdown period.
     * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
-    * It the same amount of threads keeps running for this period, they are forcefully stopped.
+    * If the same amount of threads keeps running for this period, they are forcefully stopped.
     *
     * @return Current shutdown period in ms.
     */
@@ -69,7 +69,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    /**
     * Sets the shutdown period which tells how frequently we should check for threads finishing their work.
     * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
-    * It the same amount of threads keeps running for this period, they are forcefully stopped.
+    * If the same amount of threads keeps running for this period, they are forcefully stopped.
     *
     * @param shutdownPeriod
     *       The new shutdown period.
@@ -80,7 +80,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
     * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
-    * It the same amount of threads keeps running for this period, they are forcefully stopped.
+    * If the same amount of threads keeps running for this period, they are forcefully stopped.
     * The unit of this value is milliseconds. The default value is 1000ms.
     */
    protected long shutdownPeriod = 1000;
@@ -129,13 +129,9 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     *
     * @return True if and only if the task has been successfully submitted.
     * @throws java.lang.InterruptedException
-    *       When it was not possible to place another task because the queue was empty
+    *       When it was not possible to place another task because the queue was empty.
     */
    protected boolean prepareTask() throws InterruptedException {
-      if (log.isTraceEnabled()) {
-         log.trace("Preparing a sender task");
-      }
-
       if (semaphore.tryAcquire(monitoringPeriod, TimeUnit.MILLISECONDS)) {
          executorService.submit(newSenderTask(semaphore));
          return true;

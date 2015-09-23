@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,9 @@ package org.perfcake.reporting.destinations;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -38,9 +41,14 @@ public class DummyDestination implements Destination {
     * Interface for inserting a test assert into the report method of this destination.
     * This is used for test purposes.
     */
-   public static interface ReportAssert {
-      public void report(Measurement m);
+   public interface ReportAssert {
+      void report(Measurement m);
    }
+
+   /**
+    * The sender's logger.
+    */
+   private static final Logger log = LogManager.getLogger(DummyDestination.class);
 
    private String property = null;
    private String property2 = null;
@@ -67,7 +75,9 @@ public class DummyDestination implements Destination {
       if (reportAssert != null) {
          reportAssert.report(measurement);
       }
-      System.out.println(measurement.toString());
+
+      log.info(measurement.toString());
+
       try {
          throw new Throwable("BAFF");
       } catch (final Throwable t) {

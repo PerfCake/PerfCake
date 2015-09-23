@@ -23,6 +23,7 @@ import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.util.TimerBenchmark;
 import org.perfcake.util.Utils;
+import org.perfcake.validation.ValidationException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -39,14 +40,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
  * Parses command line parameters, loads the scenario from XML or DSL file and executes it.
@@ -96,10 +95,8 @@ public class ScenarioExecution {
 
       log.info(String.format("=== Welcome to PerfCake %s ===", PerfCakeConst.VERSION));
 
-      if (log.isTraceEnabled()) {
-         // Print system properties
-         se.printTraceInformation();
-      }
+      // Print system properties
+      se.printTraceInformation();
 
       se.executeScenario();
 
@@ -173,16 +170,17 @@ public class ScenarioExecution {
       try {
          commandLine = commandLineParser.parse(options, args);
       } catch (final ParseException pe) {
-         pe.printStackTrace();
-         System.exit(2);
+         log.fatal("Cannot parse application parameters: ", pe);
+         formatter.printHelp(PerfCakeConst.USAGE_HELP, options);
+         System.exit(PerfCakeConst.ERR_PARAMETERS);
          return;
       }
 
       if (commandLine.hasOption(PerfCakeConst.SCENARIO_OPT)) {
          System.setProperty(PerfCakeConst.SCENARIO_PROPERTY, commandLine.getOptionValue(PerfCakeConst.SCENARIO_OPT));
       } else {
-         formatter.printHelp("ScenarioExecution -s <SCENARIO> [-sd <SCENARIOS_DIR>] [-md <MESSAGES_DIR>] [-D<property=value>]*", options);
-         System.exit(1);
+         formatter.printHelp(PerfCakeConst.USAGE_HELP, options);
+         System.exit(PerfCakeConst.ERR_NO_SCENARIO);
          return;
       }
 
@@ -200,34 +198,30 @@ public class ScenarioExecution {
       }
 
       parseUserProperties();
-
-      System.setProperty(PerfCakeConst.TIMESTAMP_PROPERTY, String.valueOf(Calendar.getInstance().getTimeInMillis()));
-      System.setProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY, (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date()));
    }
 
    /**
     * Prints trace information for test debugging purposes.
     */
    private void printTraceInformation() {
-      log.trace("System properties:");
-      final List<String> p = new LinkedList<>();
-      for (final Entry<Object, Object> entry : System.getProperties().entrySet()) {
-         p.add("\t" + entry.getKey() + "=" + entry.getValue());
-      }
+      if (log.isTraceEnabled()) {
+         log.trace("System properties:");
+         final List<String> p = System.getProperties().entrySet().stream().map(entry -> "\t" + entry.getKey() + "=" + entry.getValue()).collect(Collectors.toCollection(() -> new LinkedList<>()));
 
-      Collections.sort(p);
+         Collections.sort(p);
 
-      for (final String s : p) {
-         log.trace(s);
-      }
+         for (final String s : p) {
+            log.trace(s);
+         }
 
-      // Print classpath
-      log.trace("Classpath:");
-      final ClassLoader currentCL = ScenarioExecution.class.getClassLoader();
-      final URL[] curls = ((URLClassLoader) currentCL).getURLs();
+         // Print classpath
+         log.trace("Classpath:");
+         final ClassLoader currentCL = ScenarioExecution.class.getClassLoader();
+         final URL[] curls = ((URLClassLoader) currentCL).getURLs();
 
-      for (final URL curl : curls) {
-         log.trace("\t" + curl);
+         for (final URL curl : curls) {
+            log.trace("\t" + curl);
+         }
       }
    }
 
@@ -241,7 +235,7 @@ public class ScenarioExecution {
          scenario = ScenarioLoader.load(scenarioFile);
       } catch (final Exception e) {
          log.fatal(String.format("Cannot load scenario '%s': ", scenarioFile), e);
-         System.exit(3);
+         System.exit(PerfCakeConst.ERR_SCENARIO_LOADING);
       }
    }
 
@@ -253,17 +247,34 @@ public class ScenarioExecution {
          TimerBenchmark.measureTimerResolution();
       }
 
+      boolean err = false;
+
       try {
          scenario.init();
          scenario.run();
       } catch (final PerfCakeException e) {
          log.fatal("Error running scenario: ", e);
+         err = true;
       } finally {
          try {
             scenario.close();
+         } catch (final ValidationException ve) {
+            log.warn(ve.getMessage());
+            System.exit(PerfCakeConst.ERR_VALIDATION);
          } catch (final PerfCakeException e) {
             log.fatal("Scenario did not finish properly: ", e);
+            err = true;
          }
+      }
+
+      if (err) {
+         System.exit(PerfCakeConst.ERR_SCENARIO_EXECUTION);
+      }
+
+      if (!scenario.areAllThreadsTerminated()) {
+         log.warn("There are some blocked threads that were not possible to terminate. The test results might be flawed."
+               + " This is usually caused by deadlocks or raise conditions in the application under test.");
+         System.exit(PerfCakeConst.ERR_BLOCKED_THREADS);
       }
    }
 }

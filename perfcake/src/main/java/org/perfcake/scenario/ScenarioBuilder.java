@@ -25,6 +25,8 @@ import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequence.Sequence;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.util.ObjectFactory;
@@ -122,6 +124,8 @@ public class ScenarioBuilder {
 
       scenario.setMessageStore(new ArrayList<MessageTemplate>());
       scenario.setValidationManager(new ValidationManager());
+
+      scenario.setSequenceManager(new SequenceManager());
    }
 
    /**
@@ -129,7 +133,7 @@ public class ScenarioBuilder {
     *
     * @param r
     *       implementation
-    * @return this
+    * @return Instance of this for fluent API.
     */
    public ScenarioBuilder addReporter(final Reporter r) {
       scenario.getReportManager().registerReporter(r);
@@ -141,7 +145,7 @@ public class ScenarioBuilder {
     *
     * @param messageTemplate
     *       A message template to be added to the list of messages to be send during in one sender cycle.
-    * @return this
+    * @return Instance of this for fluent API.
     */
    public ScenarioBuilder addMessage(final MessageTemplate messageTemplate) {
       scenario.getMessageStore().add(messageTemplate);
@@ -155,11 +159,26 @@ public class ScenarioBuilder {
     *       Id of the new validator.
     * @param messageValidator
     *       The message validator to be registered.
-    * @return this
+    * @return Instance of this for fluent API.
     */
    public ScenarioBuilder putMessageValidator(final String validatorId, final MessageValidator messageValidator) {
       scenario.getValidationManager().addValidator(validatorId, messageValidator);
       scenario.getValidationManager().setEnabled(true);
+      return this;
+   }
+
+   /**
+    * Registers a new sequence under the given property name.
+    *
+    * @param sequenceName
+    *       The name of the sequence (the name of the placeholder).
+    * @param sequence
+    *       The new sequence to be registered.
+    * @return Instance of this for fluent API.
+    * @throws PerfCakeException When it was not possible to properly initialize the newly added sequence.
+    */
+   public ScenarioBuilder putSequence(final String sequenceName, final Sequence sequence) throws PerfCakeException {
+      scenario.getSequenceManager().addSequence(sequenceName, sequence);
       return this;
    }
 

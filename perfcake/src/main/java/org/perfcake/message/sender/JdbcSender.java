@@ -19,11 +19,13 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -33,6 +35,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Sends SQL queries via JDBC.
@@ -56,6 +59,7 @@ public class JdbcSender extends AbstractSender {
    /**
     * JDBC driver class.
     */
+   @MandatoryProperty
    private String driverClass = "";
 
    /**
@@ -79,24 +83,28 @@ public class JdbcSender extends AbstractSender {
    private Statement statement;
 
    @Override
-   public void init() throws Exception {
-      this.jdbcUrl = target;
-      Class.forName(driverClass);
-      connection = DriverManager.getConnection(jdbcUrl, username, password);
-   }
-
-   @Override
-   public void close() {
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
+      this.jdbcUrl = safeGetTarget(messageAttributes);
       try {
-         connection.close();
-      } catch (final SQLException ex) {
-         log.error(ex.getMessage());
+         Class.forName(driverClass);
+         connection = DriverManager.getConnection(jdbcUrl, username, password);
+      } catch (Exception e) {
+         throw new PerfCakeException("Cannot load JDBC driver or open the JDBC connection: ", e);
       }
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void doClose() {
+      try {
+         connection.close();
+      } catch (final SQLException ex) {
+         log.error("Unable to close JDBC connection: " + ex.getMessage(), ex);
+      }
+   }
+
+   @Override
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
       statement = connection.createStatement();
    }
 

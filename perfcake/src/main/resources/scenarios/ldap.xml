@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:4.0">
-   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:10}">
-      <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:30000}"/>
-   </generator>
+<scenario xmlns="urn:perfcake:scenario:5.0">
+   <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:30000}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:10}"/>
    <sender class="LdapSender">
-      <property name="target" value="ldap://${server.host:localhost}:${server.port:389}"/>
+      <target>ldap://${server.host:localhost}:${server.port:389}</target>
       <property name="searchBase" value="dc=example,dc=org"/>
       <property name="filter" value="(uid=*)"/>
    </sender>

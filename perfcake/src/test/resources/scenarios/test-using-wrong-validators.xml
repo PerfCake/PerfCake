@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:4.0">
-   <generator class="DefaultMessageGenerator" threads="1">
-      <run type="iteration" value="1"/>
-   </generator>
-   <sender class="DummySender">
-      <property name="target" value=""/>
-   </sender>
+<scenario xmlns="urn:perfcake:scenario:5.0">
+   <run type="iteration" value="1"/>
+   <generator class="DefaultMessageGenerator" threads="1"/>
+   <sender class="TestSender"/>
    <messages>
       <message uri="message1.xml" multiplicity="5">
          <validatorRef id="fishValidator"/>

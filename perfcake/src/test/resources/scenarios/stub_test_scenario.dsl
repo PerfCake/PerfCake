@@ -2,7 +2,7 @@ scenario "můj super scénář"
   qsName "test" propA "hello"
   run 10.s with 4.threads
   generator "DefaultMessageGenerator" senderTaskQueueSize 3000
-  sender "DummySender" target "httpbin.org" delay 12.s
+  sender "TestSender" target "httpbin.org" delay 12.s
   reporter "WarmUpReporter"
   reporter "ThroughputStatsReporter" minimumEnabled false
     destination "CsvDestination" every 3.s path '${perfcake.scenario}-stats.csv' enabled

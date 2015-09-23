@@ -22,6 +22,7 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.StringTemplate;
 import org.perfcake.util.Utils;
 
 import org.apache.logging.log4j.LogManager;
@@ -32,12 +33,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 
 /**
  * Sends messages via HTTP protocol.
@@ -48,17 +51,12 @@ import java.util.Map.Entry;
 public class HttpSender extends AbstractSender {
 
    /**
-    * Default expected response code.
-    */
-   protected static final int DEFAULT_EXPECTED_CODE = 200;
-
-   /**
     * The sender's logger.
     */
    private static final Logger log = LogManager.getLogger(HttpSender.class);
 
    /**
-    * The URL where the HTTP request is send.
+    * The URL where the HTTP request is sent.
     */
    private URL url;
 
@@ -66,6 +64,17 @@ public class HttpSender extends AbstractSender {
     * The HTTP method that will be used.
     */
    private Method method = Method.POST;
+
+   /**
+    * A string template determining the HTTP method to be used dynamically for each request.
+    * If not configured (set to null), static configuration in {@link #method} is used instead.
+    */
+   private StringTemplate dynamicMethod = null;
+
+   /**
+    * HTTP method that should be used for the current send operation, pre-calculated in {@link #preSend(Message, Map, Properties)}.
+    */
+   private Method currentMethod;
 
    /**
     * Enumeration on available HTTP methods.
@@ -97,17 +106,22 @@ public class HttpSender extends AbstractSender {
    private String payload;
 
    /**
-    * The request payload lenght.
+    * The request payload length.
     */
-   private int payloadLenght;
+   private int payloadLength;
 
    @Override
-   public void init() throws Exception {
-      url = new URL(target);
+   public void doInit(final Properties messageAttributes) throws PerfCakeException {
+      final String targetUrl = safeGetTarget(messageAttributes);
+      try {
+         url = new URL(targetUrl);
+      } catch (MalformedURLException e) {
+         throw new PerfCakeException(String.format("Cannot initialize HTTP connection, invalid URL %s: ", targetUrl), e);
+      }
    }
 
    @Override
-   public void close() {
+   public void doClose() {
       // nop
    }
 
@@ -179,30 +193,32 @@ public class HttpSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties) throws Exception {
-      super.preSend(message, properties);
+   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
+      super.preSend(message, properties, messageAttributes);
 
-      payloadLenght = 0;
+      currentMethod = getDynamicMethod(messageAttributes);
+
+      payloadLength = 0;
       if (message == null) {
          payload = null;
       } else if (message.getPayload() != null) {
          payload = message.getPayload().toString();
-         payloadLenght = payload.length();
+         payloadLength = payload.length();
       }
 
       requestConnection = (HttpURLConnection) url.openConnection();
-      requestConnection.setRequestMethod(method.name());
+      requestConnection.setRequestMethod(currentMethod.name());
       requestConnection.setDoInput(true);
-      if (method == Method.POST || method == Method.PUT) {
+      if (currentMethod == Method.POST || currentMethod == Method.PUT) {
          requestConnection.setDoOutput(true);
       }
       requestConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
-      if (payloadLenght > 0) {
-         requestConnection.setRequestProperty("Content-Length", Integer.toString(payloadLenght));
+      if (payloadLength > 0) {
+         requestConnection.setRequestProperty("Content-Length", Integer.toString(payloadLength));
       }
 
       if (log.isDebugEnabled()) {
-         log.debug("Setting HTTP headers");
+         log.debug("Setting HTTP headers: ");
       }
 
       // set message properties as HTTP headers
@@ -242,15 +258,19 @@ public class HttpSender extends AbstractSender {
             }
          }
       }
+
+      if (log.isDebugEnabled()) {
+         log.debug("End of HTTP headers.");
+      }
    }
 
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
       int respCode = -1;
       requestConnection.connect();
-      if (payload != null && (method == Method.POST || method == Method.PUT)) {
+      if (payload != null && (currentMethod == Method.POST || currentMethod == Method.PUT)) {
          final OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream(), Utils.getDefaultEncoding());
-         out.write(payload, 0, payloadLenght);
+         out.write(payload, 0, payloadLength);
          out.flush();
          out.close();
          requestConnection.getOutputStream().close();
@@ -258,7 +278,7 @@ public class HttpSender extends AbstractSender {
 
       respCode = requestConnection.getResponseCode();
       if (!checkResponseCode(respCode)) {
-         final StringBuffer errorMess = new StringBuffer();
+         final StringBuilder errorMess = new StringBuilder();
          errorMess.append("The server returned an unexpected HTTP response code: ").append(respCode).append(" ").append("\"").append(requestConnection.getResponseMessage()).append("\". Expected HTTP codes are ");
          for (final int code : expectedResponseCodeList) {
             errorMess.append(Integer.toString(code)).append(", ");
@@ -316,6 +336,37 @@ public class HttpSender extends AbstractSender {
    public HttpSender setMethod(final Method method) {
       this.method = method;
       return this;
+   }
+
+   /**
+    * Sets the template used to determine HTTP method dynamically.
+    *
+    * @param dynamicMethod
+    *       The string template to dynamically determine HTTP method.
+    * @return Instance of this to support fluent API.
+    */
+   public HttpSender setDynamicMethod(final String dynamicMethod) {
+      if (dynamicMethod == null || dynamicMethod.isEmpty()) {
+         this.dynamicMethod = null;
+      } else {
+         this.dynamicMethod = new StringTemplate(dynamicMethod);
+      }
+      return this;
+   }
+
+   /**
+    * Gets the template used to determine HTTP method dynamically.
+    *
+    * @param placeholders
+    *       The properties to render the string template.
+    * @return The HTTP method.
+    */
+   public Method getDynamicMethod(final Properties placeholders) {
+      if (dynamicMethod == null) {
+         return this.method;
+      } else {
+         return Method.valueOf(dynamicMethod.toString(placeholders));
+      }
    }
 
 }

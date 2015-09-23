@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:4.0">
+<scenario xmlns="urn:perfcake:scenario:5.0">
    <properties>
       <property name="quickstartName" value="testQS"/>
       <property name="filteredProperty" value="${test.filtered.property:default1}"/>
       <property name="defaultProperty" value="${test.missing.property:default-property-value}"/>
    </properties>
+   <run type="time" value="30"/>
    <generator class="DefaultMessageGenerator" threads="10">
-      <run type="time" value="30"/>
       <property name="senderTaskQueueSize" value="5000"/>
    </generator>
    <sender class="HttpSender">
-      <property name="target" value="http://${server.host}:${server.port}/HTTPGateway/http/PerformanceTest/HTTPGateway"/>
+      <target>http://${server.host}:${server.port}/HTTPGateway/http/PerformanceTest/HTTPGateway</target>
    </sender>
    <reporting>
       <property name="tags" value=""/>

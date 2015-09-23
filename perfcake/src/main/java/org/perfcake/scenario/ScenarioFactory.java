@@ -33,11 +33,12 @@ public interface ScenarioFactory {
    /*
     * Default packages for classes implementing particular components.
     */
-   static final String DEFAULT_GENERATOR_PACKAGE = "org.perfcake.message.generator";
-   static final String DEFAULT_SENDER_PACKAGE = "org.perfcake.message.sender";
-   static final String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
-   static final String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
-   static final String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
+   String DEFAULT_GENERATOR_PACKAGE = "org.perfcake.message.generator";
+   String DEFAULT_SEQUENCE_PACKAGE = "org.perfcake.message.sequence";
+   String DEFAULT_SENDER_PACKAGE = "org.perfcake.message.sender";
+   String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
+   String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
+   String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
 
    /**
     * Initializes all resources needed to prepare the scenario object. All I/O operations should happen here.
@@ -47,7 +48,7 @@ public interface ScenarioFactory {
     * @throws PerfCakeException
     *       When it was not possible to parse the scenario.
     */
-   public void init(final URL scenarioURL) throws PerfCakeException;
+   void init(final URL scenarioURL) throws PerfCakeException;
 
    /**
     * Constructs the scenario based on previously loaded data.
@@ -56,5 +57,5 @@ public interface ScenarioFactory {
     * @throws PerfCakeException
     *       When it was not possible to properly parese the loaded data.
     */
-   public Scenario getScenario() throws PerfCakeException;
+   Scenario getScenario() throws PerfCakeException;
 }

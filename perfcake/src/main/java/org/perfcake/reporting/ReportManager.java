@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -119,7 +119,9 @@ public class ReportManager {
             }
          }
       } else {
-         log.debug("Skipping the measurement unit (" + measurementUnit + ") because the ReportManager is not started.");
+         if (log.isDebugEnabled()) {
+            log.debug("Skipping the measurement unit (" + measurementUnit + ") because the ReportManager is not started.");
+         }
       }
 
       if (e != null) {
@@ -132,14 +134,12 @@ public class ReportManager {
     */
    public void reset() {
       if (log.isDebugEnabled()) {
-         log.debug("Reseting reporting.");
+         log.debug("Resetting reporting.");
       }
 
       runInfo.reset();
       resetLastTimes = true;
-      for (final Reporter r : reporters) {
-         r.reset();
-      }
+      reporters.forEach(org.perfcake.reporting.reporters.Reporter::reset);
    }
 
    /**
@@ -193,9 +193,7 @@ public class ReportManager {
 
       runInfo.start(); // runInfo must be started first, otherwise the time monitoring thread in AbstractReporter dies immediately
 
-      for (final Reporter r : reporters) {
-         r.start();
-      }
+      reporters.forEach(org.perfcake.reporting.reporters.Reporter::start);
 
       periodicThread = new Thread(new Runnable() {
          public void run() {
@@ -290,9 +288,7 @@ public class ReportManager {
 
       reportFinalTimeResults();
 
-      for (final Reporter r : reporters) {
-         r.stop();
-      }
+      reporters.forEach(org.perfcake.reporting.reporters.Reporter::stop);
 
       if (periodicThread != null) {
          periodicThread.interrupt();

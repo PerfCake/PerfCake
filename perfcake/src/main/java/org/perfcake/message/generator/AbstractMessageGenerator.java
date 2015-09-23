@@ -24,8 +24,12 @@ import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
+import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.validation.ValidationManager;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -34,13 +38,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 /**
  * A common ancestor for most generators. It can generate messages in parallel using {@link MessageSender Message Senders} running
  * concurrently in {@link #threads} number of threads.
- * The generator should also have the ability to tag messages by the sequence number that indicated the order of messages
- * (see {@link #setMessageNumberingEnabled(boolean)}).
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public abstract class AbstractMessageGenerator implements MessageGenerator {
+
+   private final static Logger log = LogManager.getLogger(AbstractMessageGenerator.class);
 
    /**
     * Message sender manager.
@@ -61,18 +65,22 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     * Message store where the messages for senders to be send are taken from.
     */
    protected List<MessageTemplate> messageStore;
+
    /**
     * The executor service used to run the threads.
     */
    protected ThreadPoolExecutor executorService;
+
    /**
-    * The property of the generator indicating whether the message numbering feature is enabled or disabled.
+    * Manager of sequences that can be used to replace placeholders in a message template and sender's target.
     */
-   protected boolean messageNumberingEnabled = false;
+   protected SequenceManager sequenceManager;
+
    /**
     * Represents the information about current run.
     */
    protected RunInfo runInfo;
+
    /**
     * Number of concurrent threads the generator will use to send the messages.
     */
@@ -85,14 +93,22 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     *       Message sender manager.
     * @param messageStore
     *       Message store where the messages are taken from.
-    * @throws Exception
+    * @throws PerfCakeException
     *       When it was not possible to initialize the generator.
     */
    @Override
-   public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws Exception {
+   public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws PerfCakeException {
       this.messageStore = messageStore;
       this.messageSenderManager = messageSenderManager;
       this.messageSenderManager.init();
+   }
+
+   @Override
+   public void interrupt(final Exception exception) {
+      log.error("Execution interrupted prematurely by an error in message sender: ", exception);
+
+      // we cloned the behavior of Scenario.stop() here as we do not have direct access to the Scenario object
+      reportManager.stop();
    }
 
    /**
@@ -100,17 +116,17 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     * The provided semaphore can be used to control parallel execution of sender tasks in multiple threads.
     *
     * @param semaphore
-    *       Semaphore that will be release upon completion of the sender task.
+    *       Semaphore that will be released upon completion of the sender task. Can be null.
     * @return A sender task ready to work on another iteration.
     */
    protected SenderTask newSenderTask(final Semaphore semaphore) {
-      final SenderTask task = new SenderTask(semaphore);
+      final SenderTask task = new SenderTask(new CanalStreet(this, semaphore));
 
       task.setMessageStore(messageStore);
       task.setReportManager(reportManager);
       task.setSenderManager(messageSenderManager);
       task.setValidationManager(validationManager);
-      task.setMessageNumberingEnabled(isMessageNumberingEnabled());
+      task.setSequenceManager(sequenceManager);
 
       return task;
    }
@@ -209,35 +225,34 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
    }
 
    /**
-    * Is the message numbering enabled? When enabled, each message gets a unique number assigned. This should be disabled
-    * for maximal performance.
-    *
-    * @return True if and only if the numbering is enabled.
-    */
-   public boolean isMessageNumberingEnabled() {
-      return messageNumberingEnabled;
-   }
-
-   /**
-    * Enables or disables marking the messages with a unique number. Disable this for maximal performance.
-    *
-    * @param messageNumberingEnabled
-    *       True to enable message numbering, false otherwise.
-    * @return Instance of this to support fluent API.
-    */
-   public MessageGenerator setMessageNumberingEnabled(final boolean messageNumberingEnabled) {
-      this.messageNumberingEnabled = messageNumberingEnabled;
-      return this;
-   }
-
-   /**
     * Configures the {@link org.perfcake.validation.ValidationManager} to be used for the performance test execution.
     *
     * @param validationManager
-    *       {@link org.perfcake.validation.ValidationManager} to be used.s
+    *       {@link org.perfcake.validation.ValidationManager} to be used.
     */
    @Override
    public void setValidationManager(final ValidationManager validationManager) {
       this.validationManager = validationManager;
+   }
+
+   /**
+    * Configures the {@link org.perfcake.message.sequence.SequenceManager} to be used for the performance test execution.
+    *
+    * @param sequenceManager
+    *       {@link org.perfcake.message.sequence.SequenceManager} to be used.
+    */
+   @Override
+   public void setSequenceManager(final SequenceManager sequenceManager) {
+      this.sequenceManager = sequenceManager;
+   }
+
+   /**
+    * Gets the number of active threads in the internal executor service.
+    *
+    * @return The number of active threads.
+    */
+   @Override
+   public int getActiveThreadsCount() {
+      return executorService.getActiveCount();
    }
 }

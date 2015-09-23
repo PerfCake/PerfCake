@@ -6,7 +6,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake-parent</artifactId>
-   <version>4.1</version>
+   <version>5.0</version>
    <packaging>pom</packaging>
    <name>PerfCake parent</name>
    <organization>
@@ -20,7 +20,7 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-      <tag>v4.1</tag>
+      <tag>v5.0</tag>
    </scm>
    <developers>
       <developer>
@@ -44,10 +44,6 @@
       <contributor>
          <name>Lenka Vašková</name>
          <email>vaskova.lenka@gmail.com</email>
-      </contributor>
-      <contributor>
-         <name>Jiří Sedláček</name>
-         <email>jiri@sedlackovi.cz</email>
       </contributor>
       <contributor>
          <name>Dominik Hanák</name>
@@ -107,11 +103,26 @@
       <maven.xml.plugin.version>1.0</maven.xml.plugin.version>
       <maven.surefire.plugin.version>2.18.1</maven.surefire.plugin.version>
       <maven.dependency.plugin.version>2.8</maven.dependency.plugin.version>
+      <maven.pit.version>0.33</maven.pit.version>
    </properties>
    <modules>
       <module>perfcake-agent</module>
       <module>perfcake</module>
    </modules>
+<<<<<<< HEAD
+=======
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>org.perfcake</groupId>
+            <artifactId>perfcake-bom</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
+>>>>>>> tags/v5.0
    <build>
       <pluginManagement>
          <plugins>
@@ -133,11 +144,28 @@
                <artifactId>maven-javadoc-plugin</artifactId>
                <version>${maven.javadoc.plugin.version}</version>
                <configuration>
+<<<<<<< HEAD
                   <windowtitle>PerfCake API Documentation (version ${project.version})</windowtitle>
                   <doctitle>PerfCake API Documentation (version ${project.version})</doctitle>
+=======
+                  <windowtitle>${project.name} API Documentation (version ${project.version})</windowtitle>
+                  <doctitle>${project.name} API Documentation (version ${project.version})</doctitle>
+>>>>>>> tags/v5.0
                   <show>public</show>
                   <excludePackageNames>org.perfcake.model,org.perfcake.scenario.dsl</excludePackageNames>
                   <stylesheetfile>${basedir}/perfcake/src/main/javadoc/javadoc.css</stylesheetfile>
+               </configuration>
+            </plugin>
+<<<<<<< HEAD
+=======
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-release-plugin</artifactId>
+               <version>${maven.release.plugin.version}</version>
+               <configuration>
+                  <tagNameFormat>v@{project.version}</tagNameFormat>
+                  <pushChanges>false</pushChanges>
+                  <localCheckout>true</localCheckout>
                </configuration>
             </plugin>
          </plugins>
@@ -145,20 +173,24 @@
    </build>
    <profiles>
       <profile>
-         <id>production</id>
+         <id>sign</id>
          <build>
-            <pluginManagement>
-               <plugins>
-                  <plugin>
-                     <artifactId>maven-compiler-plugin</artifactId>
-                     <version>${maven.compiler.plugin.version}</version>
-                     <configuration>
-                        <debug>true</debug>
-                        <debuglevel>none</debuglevel>
-                     </configuration>
-                  </plugin>
-               </plugins>
-            </pluginManagement>
+            <plugins>
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-gpg-plugin</artifactId>
+                  <version>${maven.gpg.plugin.version}</version>
+                  <executions>
+                     <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                           <goal>sign</goal>
+                        </goals>
+                     </execution>
+                  </executions>
+               </plugin>
+            </plugins>
          </build>
       </profile>
    </profiles>

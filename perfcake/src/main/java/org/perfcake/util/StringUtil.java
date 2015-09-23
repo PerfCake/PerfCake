@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,13 +19,8 @@
  */
 package org.perfcake.util;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Utility class to work with strings.
@@ -34,8 +29,6 @@ import java.util.regex.Pattern;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class StringUtil {
-
-   private static Logger log = LogManager.getLogger(StringUtil.class);
 
    /**
     * Does a string start with a second string ignoring case?
@@ -109,7 +102,7 @@ public class StringUtil {
    }
 
    /**
-    * Removes white spaces from beginning and end of each line. Lines are terminated by CR, LF, or CR LF. Also removes empty lines.
+    * Removes white spaces from beginning and end of each line. Lines are terminated by LF, or CR LF. Also removes empty lines.
     * Last line will be terminated with LF.
     *
     * @param multiline
@@ -117,19 +110,6 @@ public class StringUtil {
     * @return A new string with trimmed lines.
     */
    public static String trimLines(final String multiline) {
-      final StringBuilder sb = new StringBuilder();
-      final BufferedReader br = new BufferedReader(new StringReader(multiline));
-      String line;
-      try {
-         while ((line = br.readLine()) != null) {
-            sb.append(line.trim());
-            if (!line.isEmpty()) {
-               sb.append("\n");
-            }
-         }
-      } catch (final IOException ex) {
-         log.fatal("Cannot trim lines: ", ex);
-      }
-      return sb.toString();
+      return Pattern.compile("\\r?\\n").splitAsStream(multiline).map(String::trim).filter(l -> !l.isEmpty()).collect(Collectors.joining("\n")) + "\n";
    }
 }

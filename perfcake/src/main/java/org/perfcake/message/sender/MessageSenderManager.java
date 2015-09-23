@@ -1,22 +1,22 @@
 /*
- * -----------------------------------------------------------------------\
- * PerfCake
- *  
- * Copyright (C) 2010 - 2013 the original author or authors.
- *  
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * -----------------------------------------------------------------------/
- */
+* -----------------------------------------------------------------------\
+* PerfCake
+*  
+* Copyright (C) 2010 - 2013 the original author or authors.
+*  
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+* -----------------------------------------------------------------------/
+*/
 package org.perfcake.message.sender;
 
 import org.perfcake.PerfCakeException;
@@ -100,14 +100,19 @@ public class MessageSenderManager {
    /**
     * Initializes the message sender by creating all the message sender instances.
     *
-    * @throws Exception
+    * @throws PerfCakeException
     *       When it was not possible to create the instances.
     */
-   public void init() throws Exception {
+   public void init() throws PerfCakeException {
       availableSenders.clear();
       for (int i = 0; i < senderPoolSize; i++) {
-         final MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
-         addSenderInstance(sender);
+
+         try {
+            final MessageSender sender = (MessageSender) ObjectFactory.summonInstance(senderClass, messageSenderProperties);
+            addSenderInstance(sender);
+         } catch (Exception e) {
+            throw new PerfCakeException("Unable to instantiate sender class: ", e);
+         }
       }
    }
 
@@ -116,10 +121,10 @@ public class MessageSenderManager {
     *
     * @param sender
     *       Sender to be registered with this manager.
-    * @throws Exception
+    * @throws PerfCakeException
     *       When the initialization of the sender fails.
     */
-   public void addSenderInstance(final MessageSender sender) throws Exception {
+   public void addSenderInstance(final MessageSender sender) throws PerfCakeException {
       sender.init();
       availableSenders.add(sender);
       allSenders.add(sender);
