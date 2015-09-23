@@ -6,10 +6,10 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake-parent</artifactId>
-   <version>5.0-SNAPSHOT</version>
+   <version>5.0</version>
    <packaging>pom</packaging>
    <name>PerfCake parent</name>
-     <organization>
+   <organization>
       <name>PerfCake Community</name>
       <url>https://www.perfcake.org</url>
    </organization>
@@ -85,7 +85,7 @@
          <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
       </repository>
    </distributionManagement>
-  <properties>
+   <properties>
       <maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
       <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
       <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
@@ -160,4 +160,27 @@
          </plugins>
       </pluginManagement>
    </build>
+   <profiles>
+      <profile>
+         <id>sign</id>
+         <build>
+            <plugins>
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-gpg-plugin</artifactId>
+                  <version>${maven.gpg.plugin.version}</version>
+                  <executions>
+                     <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                           <goal>sign</goal>
+                        </goals>
+                     </execution>
+                  </executions>
+               </plugin>
+            </plugins>
+         </build>
+      </profile>
+   </profiles>
 </project>
