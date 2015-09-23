@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 VERSION=$(cat perfcake/src/main/java/org/perfcake/PerfCakeConst.java | grep ' VERSION =' | sed 's/^.* = "//' | sed 's/\..*$//')
 NEXT=$(( $VERSION + 1 ))
 
