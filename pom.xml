@@ -109,8 +109,6 @@
       <module>perfcake-agent</module>
       <module>perfcake</module>
    </modules>
-<<<<<<< HEAD
-=======
    <dependencyManagement>
       <dependencies>
          <dependency>
@@ -122,7 +120,6 @@
          </dependency>
       </dependencies>
    </dependencyManagement>
->>>>>>> tags/v5.0
    <build>
       <pluginManagement>
          <plugins>
@@ -144,20 +141,13 @@
                <artifactId>maven-javadoc-plugin</artifactId>
                <version>${maven.javadoc.plugin.version}</version>
                <configuration>
-<<<<<<< HEAD
-                  <windowtitle>PerfCake API Documentation (version ${project.version})</windowtitle>
-                  <doctitle>PerfCake API Documentation (version ${project.version})</doctitle>
-=======
                   <windowtitle>${project.name} API Documentation (version ${project.version})</windowtitle>
                   <doctitle>${project.name} API Documentation (version ${project.version})</doctitle>
->>>>>>> tags/v5.0
                   <show>public</show>
                   <excludePackageNames>org.perfcake.model,org.perfcake.scenario.dsl</excludePackageNames>
                   <stylesheetfile>${basedir}/perfcake/src/main/javadoc/javadoc.css</stylesheetfile>
                </configuration>
             </plugin>
-<<<<<<< HEAD
-=======
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-release-plugin</artifactId>
