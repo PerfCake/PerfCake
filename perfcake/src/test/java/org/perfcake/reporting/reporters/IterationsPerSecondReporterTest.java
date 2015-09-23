@@ -42,6 +42,6 @@ public class IterationsPerSecondReporterTest extends TestSetup {
       scenario.init();
       scenario.run();
       final double result = (Double) ((Quantity<Number>) destination.getLastMeasurement().get()).getNumber();
-      Assert.assertTrue(result > 99.0 && result < 100, "The final result ( " + result + " ) should be > 99 and < 100.");
+      Assert.assertTrue(result > 80.0 && result < 100.0, "The final result ( " + result + " ) should be > 99 and < 100.");
    }
 }
