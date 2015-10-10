@@ -10,31 +10,27 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by pmacik on 8.10.15.
  */
-public class HistogramAccumulator implements Accumulator<Object> {
+public class Histogram {
 
-   private Map<Range<? extends Comparable>, Long> histogram = new LinkedHashMap<>();
-   private List<Range<? extends Comparable>> ranges = new LinkedList<>();
-   private Comparable minValue;
-   private Comparable maxValue;
+   private Map<Range, Long> histogram = new LinkedHashMap<>();
+   private List<Range> ranges = new LinkedList<>();
    private AtomicLong count = new AtomicLong(0);
 
-   public HistogramAccumulator(final List<? extends Comparable> rangeDividers, final Comparable minValue, final Comparable maxValue) {
-      this.minValue = minValue;
-      this.maxValue = maxValue;
+   public Histogram(final List<Double> rangeDividers) {
       // TODO: Verify, that all the dividers are > minValue and < maxValue
       Collections.sort(rangeDividers);
       final int count = rangeDividers.size();
-      Comparable min, max;
+      double min, max;
       for (int i = 0; i < count; i++) {
          if (i == 0) {
-            histogram.put(new Range(minValue, rangeDividers.get(i)), 0L);
+            histogram.put(new Range(Double.NEGATIVE_INFINITY, rangeDividers.get(i)), 0L);
          }
          min = rangeDividers.get(i);
 
          if (i < count - 1) {
             max = rangeDividers.get(i + 1);
          } else {
-            max = maxValue;
+            max = Double.POSITIVE_INFINITY;
          }
          histogram.put(new Range(min, max), 0L);
       }
@@ -43,10 +39,9 @@ public class HistogramAccumulator implements Accumulator<Object> {
       Collections.sort(ranges);
    }
 
-   @Override
-   public void add(final Object value) {
+   public void add(final double value) {
       for (Range range : ranges) {
-         if (range.contains((Comparable) value)) {
+         if (range.contains(value)) {
             histogram.put(range, histogram.get(range) + 1);
             count.incrementAndGet();
             break;
@@ -54,20 +49,15 @@ public class HistogramAccumulator implements Accumulator<Object> {
       }
    }
 
-   @Override
-   public Object getResult() {
-      return null;
+   public void add(final int value) {
+      this.add((double) value);
    }
 
-   public Map<Range<? extends Comparable>, Long> getHistogram() {
+   public Map<Range, Long> getHistogram() {
       return histogram;
    }
 
    public Long getCount() {
       return count.longValue();
-   }
-
-   @Override
-   public void reset() {
    }
 }

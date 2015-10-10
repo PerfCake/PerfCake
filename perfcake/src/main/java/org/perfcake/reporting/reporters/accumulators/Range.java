@@ -3,13 +3,12 @@ package org.perfcake.reporting.reporters.accumulators;
 /**
  * Created by pmacik on 8.10.15.
  */
-public class Range<T extends Comparable> implements Comparable {
-   private T min;
-   private T max;
+public class Range implements Comparable<Range> {
+   private double min;
+   private double max;
 
-   public Range(final T min, final T max) {
-      // TODO: verify min < max;
-      if (min.compareTo(max) < 0) {
+   public Range(final double min, final double max) {
+      if (min < max) {
          this.min = min;
          this.max = max;
       } else {
@@ -17,28 +16,20 @@ public class Range<T extends Comparable> implements Comparable {
       }
    }
 
-   public T getMin() {
+   public Range(final int min, final int max) {
+      this((double) min, (double) max);
+   }
+
+   public double getMin() {
       return min;
    }
 
-   public T getMax() {
+   public double getMax() {
       return max;
    }
 
-   public boolean contains(final Comparable value) {
-      return (value.compareTo(min) >= 0 && value.compareTo(max) <= 0);
-   }
-
-   @Override
-   public int compareTo(final Object o) {
-      Range i = (Range) o;
-      if (this.equals(i)) {
-         return 0;
-      } else if (max.compareTo(i.min) <= 0) {
-         return -1;
-      } else {
-         return 1;
-      }
+   public boolean contains(final double value) {
+      return (value >= min && value <= max);
    }
 
    @Override
@@ -50,20 +41,35 @@ public class Range<T extends Comparable> implements Comparable {
          return false;
       }
 
-      final Range<?> interval = (Range<?>) o;
+      final Range range = (Range) o;
 
-      if (getMin() != null ? !getMin().equals(interval.getMin()) : interval.getMin() != null) {
+      if (Double.compare(range.getMin(), getMin()) != 0) {
          return false;
       }
-      return !(getMax() != null ? !getMax().equals(interval.getMax()) : interval.getMax() != null);
+      return Double.compare(range.getMax(), getMax()) == 0;
 
    }
 
    @Override
    public int hashCode() {
-      int result = getMin() != null ? getMin().hashCode() : 0;
-      result = 31 * result + (getMax() != null ? getMax().hashCode() : 0);
+      int result;
+      long temp;
+      temp = Double.doubleToLongBits(getMin());
+      result = (int) (temp ^ (temp >>> 32));
+      temp = Double.doubleToLongBits(getMax());
+      result = 31 * result + (int) (temp ^ (temp >>> 32));
       return result;
+   }
+
+   @Override
+   public int compareTo(final Range o) {
+      if (this.equals(o)) {
+         return 0;
+      } else if (this.max <= o.min) {
+         return -1;
+      } else {
+         return 1;
+      }
    }
 
    @Override
