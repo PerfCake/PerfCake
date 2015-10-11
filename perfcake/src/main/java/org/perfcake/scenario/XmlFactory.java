@@ -144,7 +144,7 @@ public class XmlFactory implements ScenarioFactory {
       final Properties scenarioProperties = parseScenarioProperties();
       putScenarioPropertiesToSystem(scenarioProperties);
 
-      if (log.isDebugEnabled()) {
+      if (log.isDebugEnabled() && scenarioProperties != null) {
          log.debug("--- Scenario Properties ---");
          scenarioProperties.forEach((key, value) -> log.debug("'- {}:{}", key, value));
       }
