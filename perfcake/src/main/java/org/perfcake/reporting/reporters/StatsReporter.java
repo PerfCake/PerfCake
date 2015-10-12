@@ -66,6 +66,11 @@ public abstract class StatsReporter extends AbstractReporter {
    private int windowSize = Integer.MAX_VALUE;
 
    /**
+    * A comma separated list of values where the histogram is split to individual ranges.
+    */
+   private String histogramDivisions = "";
+
+   /**
     * A String representation of a metric of a maximal value.
     */
    public static final String MAXIMUM = "Maximum";

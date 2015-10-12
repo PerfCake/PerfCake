@@ -1,6 +1,26 @@
+/*
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2013 the original author or authors.
+ *  
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -----------------------------------------------------------------------/
+ */
 package org.perfcake.reporting.reporters.accumulators;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,11 +28,14 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Created by pmacik on 8.10.15.
+ * Histogram to count number of representatives for individual ranges.
+ *
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class Histogram {
 
-   private Map<Range, Long> histogram = new LinkedHashMap<>();
+   private Map<Range, AtomicLong> histogram = new LinkedHashMap<>();
    private List<Range> ranges = new LinkedList<>();
    private AtomicLong count = new AtomicLong(0);
 
@@ -23,7 +46,7 @@ public class Histogram {
       double min, max;
       for (int i = 0; i < count; i++) {
          if (i == 0) {
-            histogram.put(new Range(Double.NEGATIVE_INFINITY, rangeDividers.get(i)), 0L);
+            histogram.put(new Range(Double.NEGATIVE_INFINITY, rangeDividers.get(i)), new AtomicLong(0L));
          }
          min = rangeDividers.get(i);
 
@@ -32,7 +55,7 @@ public class Histogram {
          } else {
             max = Double.POSITIVE_INFINITY;
          }
-         histogram.put(new Range(min, max), 0L);
+         histogram.put(new Range(min, max), new AtomicLong(0L));
       }
 
       ranges = new LinkedList<>(histogram.keySet());
@@ -42,7 +65,7 @@ public class Histogram {
    public void add(final double value) {
       for (Range range : ranges) {
          if (range.contains(value)) {
-            histogram.put(range, histogram.get(range) + 1);
+            histogram.get(range).incrementAndGet();
             count.incrementAndGet();
             break;
          }
@@ -54,7 +77,12 @@ public class Histogram {
    }
 
    public Map<Range, Long> getHistogram() {
-      return histogram;
+      Map<Range, Long> result = new HashMap<>();
+      Map<Range, AtomicLong> snapshot = new HashMap<>(histogram);
+
+      snapshot.forEach((range, value) -> result.put(range, value.get()));
+
+      return result;
    }
 
    public Long getCount() {
