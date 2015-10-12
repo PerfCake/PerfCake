@@ -55,6 +55,7 @@ import org.xml.sax.SAXException;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -188,8 +189,14 @@ public class XmlFactory implements ScenarioFactory {
          final URL backupUrl = new URL("http://schema.perfcake.org/" + schemaFileName);
 
          URL scenarioXsdUrl = Utils.getResourceAsUrl("/schemas/" + schemaFileName);
-         if (!(new File(scenarioXsdUrl.getFile())).exists()) { // backup taken from web
-            scenarioXsdUrl = backupUrl;
+
+         try {
+            InputStream test = scenarioXsdUrl.openStream();
+            //noinspection ResultOfMethodCallIgnored
+            test.read(); // there always is a byte
+            test.close(); // we do not need finally for this as we could not have failed
+         } catch (IOException e) {
+            scenarioXsdUrl = backupUrl; // backup taken from the web
          }
 
          final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -200,7 +207,7 @@ public class XmlFactory implements ScenarioFactory {
          unmarshaller.setSchema(schema);
          return (org.perfcake.model.Scenario) unmarshaller.unmarshal(scenarioXML);
       } catch (final SAXException e) {
-         throw new PerfCakeException("Cannot validate scenario configuration: ", e);
+         throw new PerfCakeException("Cannot validate scenario configuration. PerfCake installation seems broken. ", e);
       } catch (final JAXBException e) {
          throw new PerfCakeException("Cannot parse scenario configuration: ", e);
       } catch (final MalformedURLException e) {
