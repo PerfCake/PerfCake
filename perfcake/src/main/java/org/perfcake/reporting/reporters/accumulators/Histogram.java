@@ -19,13 +19,11 @@
  */
 package org.perfcake.reporting.reporters.accumulators;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import org.perfcake.util.StringUtil;
+
+import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * Histogram to count number of representatives for individual ranges.
@@ -35,33 +33,64 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class Histogram {
 
+   /**
+    * Actual counts of occurrences for given ranges,
+    */
    private Map<Range, AtomicLong> histogram = new LinkedHashMap<>();
+
+   /**
+    * Ranges of the histogram.
+    */
    private List<Range> ranges = new LinkedList<>();
+
+   /**
+    * Total count of records.
+    */
    private AtomicLong count = new AtomicLong(0);
 
+   /**
+    * Creates the histogram based on the comma separated string of range split points.
+    * @param rangeDividers The comma separated string of range split points.
+    */
+   public Histogram(String rangeDividers) {
+      this(Arrays.asList(rangeDividers.split(",")).stream().map(StringUtil::trim).map(Double::valueOf).sorted().collect(Collectors.toList()));
+   }
+
+   /**
+    * Creates a new histogram that is composed of the ranges divided at the given points.
+    *
+    * @param rangeDividers Points specifying where the histogram should be split to multiple ranges.
+    */
    public Histogram(final List<Double> rangeDividers) {
-      // TODO: Verify, that all the dividers are > minValue and < maxValue
       Collections.sort(rangeDividers);
       final int count = rangeDividers.size();
       double min, max;
       for (int i = 0; i < count; i++) {
-         if (i == 0) {
-            histogram.put(new Range(Double.NEGATIVE_INFINITY, rangeDividers.get(i)), new AtomicLong(0L));
-         }
          min = rangeDividers.get(i);
+
+         if (i == 0) {
+            histogram.put(new Range(Double.NEGATIVE_INFINITY, min), new AtomicLong(0L));
+         }
 
          if (i < count - 1) {
             max = rangeDividers.get(i + 1);
          } else {
             max = Double.POSITIVE_INFINITY;
          }
-         histogram.put(new Range(min, max), new AtomicLong(0L));
+
+         if (min < max) {
+            histogram.put(new Range(min, max), new AtomicLong(0L));
+         }
       }
 
       ranges = new LinkedList<>(histogram.keySet());
       Collections.sort(ranges);
    }
 
+   /**
+    * Adds a new value to be counted in the histogram.
+    * @param value The new value to be added and counted.
+    */
    public void add(final double value) {
       for (Range range : ranges) {
          if (range.contains(value)) {
@@ -72,20 +101,50 @@ public class Histogram {
       }
    }
 
+   /**
+    * Adds a new value to be counted in the histogram.
+    * @param value The new value to be added and counted.
+    */
    public void add(final int value) {
       this.add((double) value);
    }
 
+   /**
+    * Gets the actual counts for individual ranges of the histogram.
+    * @return The actual counts for individual ranges of the histogram.
+    */
    public Map<Range, Long> getHistogram() {
-      Map<Range, Long> result = new HashMap<>();
-      Map<Range, AtomicLong> snapshot = new HashMap<>(histogram);
+      Map<Range, Long> result = new LinkedHashMap<>();
+      Map<Range, AtomicLong> snapshot = new LinkedHashMap<>(histogram);
 
       snapshot.forEach((range, value) -> result.put(range, value.get()));
 
       return result;
    }
 
+   /**
+    * Gets the actual counts for individual ranges of the histogram.
+    * @return The actual counts for individual ranges of the histogram.
+    */
+   public Map<Range, Double> getHistogramInPercent() {
+      Map<Range, Double> result = new LinkedHashMap<>();
+      Map<Range, AtomicLong> snapshot = new LinkedHashMap<>(histogram);
+      long count = this.count.get();
+
+      if (count == 0) {
+         snapshot.forEach((range, value) -> result.put(range, 0d));
+      } else {
+         snapshot.forEach((range, value) -> result.put(range, ((double) value.get()) / count * 100.0d));
+      }
+
+      return result;
+   }
+
+   /**
+    * Gets the total number of values counted in the histogram.
+    * @return The total number of values counted in the histogram.
+    */
    public Long getCount() {
-      return count.longValue();
+      return count.get();
    }
 }

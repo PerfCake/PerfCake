@@ -20,16 +20,28 @@
 package org.perfcake.reporting.reporters.accumulators;
 
 /**
- * Represents a mathematical range <a, b).
+ * Represents a mathematical range &lt;a, b).
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class Range implements Comparable<Range> {
 
+   /**
+    * Left border of the range.
+    */
    private double min;
+
+   /**
+    * Right border of the interval.
+    */
    private double max;
 
+   /**
+    * Creates a new range based on the specified borders as &lt;a, b).
+    * @param min Left border of the range.
+    * @param max Right border of the range.
+    */
    public Range(final double min, final double max) {
       if (min < max) {
          this.min = min;
@@ -39,20 +51,38 @@ public class Range implements Comparable<Range> {
       }
    }
 
+   /**
+    * Creates a new range based on the specified borders as &lt;a, b).
+    * @param min Left border of the range.
+    * @param max Right border of the range.
+    */
    public Range(final int min, final int max) {
       this((double) min, (double) max);
    }
 
+   /**
+    * Gets the left border of the range.
+    * @return The left border of the range.
+    */
    public double getMin() {
       return min;
    }
 
+   /**
+    * Gets the right border of the range.
+    * @return The right border of the range.
+    */
    public double getMax() {
       return max;
    }
 
+   /**
+    * Finds out whether the value lies in the range.
+    * @param value The value to be checked.
+    * @return True iff the value is in the range.
+    */
    public boolean contains(final double value) {
-      return (value >= min && value <= max);
+      return (value >= min && value < max);
    }
 
    @Override

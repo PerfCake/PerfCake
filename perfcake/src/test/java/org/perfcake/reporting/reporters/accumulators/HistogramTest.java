@@ -38,8 +38,12 @@ public class HistogramTest {
       Assert.assertTrue(range.contains(-1000));
       Assert.assertTrue(range.contains(-999));
       Assert.assertTrue(range.contains(999));
-      Assert.assertTrue(range.contains(1000));
+      Assert.assertFalse(range.contains(1000));
       Assert.assertFalse(range.contains(1001));
+      Assert.assertFalse(range.contains(Double.NEGATIVE_INFINITY));
+      Assert.assertFalse(range.contains(Double.POSITIVE_INFINITY));
+      Assert.assertFalse(range.contains(Double.NaN));
+      Assert.assertTrue(range.contains(Double.MIN_VALUE));
    }
 
    @Test
@@ -59,21 +63,24 @@ public class HistogramTest {
    }
 
    @Test
-   public void testHistogramAccumulator() {
+   public void testHistogram() {
 
       // Create 4 ranges: -INF....-250....0....+250....+INF
       List<Double> dividers = new LinkedList<>();
       dividers.add(-250.0);
       dividers.add(0.0);
       dividers.add(250.0);
-      Histogram acc = new Histogram(dividers);
+      Histogram histogram = new Histogram(dividers);
 
-      for (long i = 500; i > -500; i--) {
-         acc.add(i);
+      // add values 500..-251, -250..-1, 0..249, 250..500
+      for (long i = 499; i >= -500; i--) {
+         histogram.add(i);
       }
-      final Map<Range, Long> histogram = acc.getHistogram();
-      Assert.assertEquals(histogram.keySet().size(), 4);
-      Assert.assertEquals((long) acc.getCount(), 1000L);
-      histogram.forEach((Range k, Long v) -> Assert.assertEquals((long) v, 250L));
+      final Map<Range, Long> histogramMap = histogram.getHistogram();
+      Assert.assertEquals(histogramMap.keySet().size(), 4);
+      Assert.assertEquals((long) histogram.getCount(), 1000L);
+      histogramMap.forEach((Range k, Long v) -> Assert.assertEquals((long) v, 250L, "Not working for range " + k.toString()));
+
+      System.out.println(histogram.getHistogramInPercent());
    }
 }
