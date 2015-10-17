@@ -82,7 +82,15 @@ public abstract class AbstractReporter implements Reporter {
     */
    private long lastPercentage = -1L;
 
+   /**
+    * Lock used to synchronize access to the {@link #lastPercentage} variable.
+    */
    private final Object percentageLock = new Object();
+
+   /**
+    * Lock to synchronize creation of new accumulators in the result map.
+    */
+   private final Object accumulatorCreationLock = new Object();
 
    /**
     * Accumulators to accumulate results from multiple {@link org.perfcake.reporting.MeasurementUnit Measurement Units}.
@@ -190,10 +198,18 @@ public abstract class AbstractReporter implements Reporter {
          Accumulator accumulator = accumulatedResults.get(key); //IfAbsentPutWith(key, getAccumulatorFunction, entry);
 
          if (accumulator == null) {
-            accumulator = getAccumulator(key, value.getClass());
-            if (accumulator != null) {
-               accumulator.add(value);
-               accumulatedResults.put(key, accumulator);
+            synchronized (accumulatorCreationLock) {
+               // redo the check as we did not wanted to get into the synchronized block too soon
+               accumulator = accumulatedResults.get(key);
+               if (accumulator == null) {
+                  accumulator = getAccumulator(key, value.getClass());
+                  if (accumulator != null) {
+                     accumulator.add(value);
+                     accumulatedResults.put(key, accumulator);
+                  }
+               } else {
+                  accumulator.add(value);
+               }
             }
          } else {
             accumulator.add(value);
@@ -227,8 +243,10 @@ public abstract class AbstractReporter implements Reporter {
     */
    private void reportIterations(final long iteration) throws ReportingException {
       for (final BoundPeriod<Destination> boundPeriod : periods) {
-         if (boundPeriod.getPeriodType() == PeriodType.ITERATION && (iteration == 0 || (iteration + 1) % boundPeriod.getPeriod() == 0) || isLastIteration(iteration)) {
-            publishResult(PeriodType.ITERATION, boundPeriod.getBinding());
+         if (boundPeriod.getPeriodType() == PeriodType.ITERATION) {
+            if ((iteration == 0 || (iteration + 1) % boundPeriod.getPeriod() == 0) || isLastIteration(iteration)) {
+               publishResult(PeriodType.ITERATION, boundPeriod.getBinding());
+            }
          }
       }
    }
