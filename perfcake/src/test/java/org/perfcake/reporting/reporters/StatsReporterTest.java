@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
+import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.util.ObjectFactory;
 
@@ -152,5 +153,43 @@ public class StatsReporterTest {
             Assert.assertNull(m.get(StatsReporter.MAXIMUM), reporterName + ": Null maximum result");
          }
       }
+   }
+
+   @Test
+   public void testHistogramReporting() throws ReportingException, InterruptedException {
+      final ReportManager man = new ReportManager();
+      man.setRunInfo(new RunInfo(new Period(PeriodType.ITERATION, 10)));
+
+      final StatsReporter rep = new ResponseTimeStatsReporter();
+      rep.setHistogram("0, 5, 20");
+      rep.setHistogramPrefix("hist");
+      man.registerReporter(rep);
+
+      final DummyDestination dest = new DummyDestination();
+      rep.registerDestination(dest, new Period(PeriodType.ITERATION, 1));
+
+      man.start();
+
+      for (int i = 0; i < 10; i++) {
+         MeasurementUnit mu = man.newMeasurementUnit();
+         mu.startMeasure();
+         Thread.sleep(i);
+         mu.stopMeasure();
+         man.report(mu);
+      }
+
+      man.stop();
+
+      Double firstInterval = (Double) dest.getLastMeasurement().get("hist<0.0; 5.0)");
+      Double secondInterval = (Double) dest.getLastMeasurement().get("hist<5.0; 20.0)");
+
+      Assert.assertTrue(firstInterval > 10.0);
+      Assert.assertTrue(firstInterval < 90.0);
+
+      Assert.assertTrue(secondInterval > 10.0);
+      Assert.assertTrue(secondInterval < 90.0);
+
+      Assert.assertTrue(firstInterval + secondInterval == 100.0);
+
    }
 }
