@@ -80,7 +80,9 @@ public abstract class AbstractReporter implements Reporter {
    /**
     * Remembers the last observed percentage state of the measurement run. This is used to report change to this value only once.
     */
-   private long lastPercentage = -1;
+   private long lastPercentage = -1L;
+
+   private final Object percentageLock = new Object();
 
    /**
     * Accumulators to accumulate results from multiple {@link org.perfcake.reporting.MeasurementUnit Measurement Units}.
@@ -105,15 +107,20 @@ public abstract class AbstractReporter implements Reporter {
 
       reportIterations(measurementUnit.getIteration());
 
-      // report each percentage value just once
-      final long percentage = (long) Math.floor(runInfo.getPercentage());
-      if (percentage != lastPercentage) {
-         while (percentage > lastPercentage + 1) { // we do not want to skip any percentage between prev. reporting and now
-            lastPercentage = lastPercentage + 1;
-            reportPercentage(lastPercentage);
+      reportAllPercentage((long) Math.floor(runInfo.getPercentage()));
+   }
+
+   private void reportAllPercentage(final long percentage) throws ReportingException {
+      synchronized (percentageLock) {
+         // report each percentage value just once
+         if (percentage != lastPercentage) {
+            while (percentage > lastPercentage + 1) { // we do not want to skip any percentage between prev. reporting and now
+               lastPercentage = lastPercentage + 1;
+               reportPercentage(lastPercentage);
+            }
+            lastPercentage = percentage; // simply cover the last case (percentage = lastPercentage + 1), and or the case when percentage got lower after a reset
+            reportPercentage(percentage);
          }
-         lastPercentage = percentage; // simply cover the last case (percentage = lastPercentage + 1), and or the case when percentage got lower after a reset
-         reportPercentage(percentage);
       }
    }
 
