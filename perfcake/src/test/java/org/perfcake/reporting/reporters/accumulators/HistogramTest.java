@@ -99,6 +99,6 @@ public class HistogramTest {
          total = total + d;
       }
 
-      Assert.assertEquals(total, 100.0);
+      Assert.assertTrue(total > 99.9 && total < 100.1);
    }
 }

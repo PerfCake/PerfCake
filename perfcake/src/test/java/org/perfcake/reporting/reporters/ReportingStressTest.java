@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -111,16 +111,24 @@ public class ReportingStressTest {
          t.join();
       }
 
-      Assert.assertEquals(d11.getLastType(), PeriodType.ITERATION);
-      Assert.assertEquals(d12.getLastType(), PeriodType.TIME);
-      Assert.assertEquals(d13.getLastType(), PeriodType.PERCENTAGE);
-      Assert.assertEquals(d21.getLastType(), PeriodType.ITERATION);
-      Assert.assertEquals(d22.getLastType(), PeriodType.TIME);
-      Assert.assertEquals(d23.getLastType(), PeriodType.PERCENTAGE);
-      Assert.assertEquals(d31.getLastType(), PeriodType.ITERATION);
-      Assert.assertEquals(d32.getLastType(), PeriodType.TIME);
-      Assert.assertEquals(d33.getLastType(), PeriodType.PERCENTAGE);
+      Assert.assertEquals(safeLastType(d11), PeriodType.ITERATION);
+      Assert.assertEquals(safeLastType(d12), PeriodType.TIME);
+      Assert.assertEquals(safeLastType(d13), PeriodType.PERCENTAGE);
+      Assert.assertEquals(safeLastType(d21), PeriodType.ITERATION);
+      Assert.assertEquals(safeLastType(d22), PeriodType.TIME);
+      Assert.assertEquals(safeLastType(d23), PeriodType.PERCENTAGE);
+      Assert.assertEquals(safeLastType(d31), PeriodType.ITERATION);
+      Assert.assertEquals(safeLastType(d32), PeriodType.TIME);
+      Assert.assertEquals(safeLastType(d33), PeriodType.PERCENTAGE);
 
       rm.stop();
+   }
+
+   private PeriodType safeLastType(final DummyDestination dd) throws InterruptedException {
+      int tries = 0;
+      while (dd.getLastType() == null && tries++ < 10) {
+         Thread.sleep(100);
+      }
+      return dd.getLastType();
    }
 }
