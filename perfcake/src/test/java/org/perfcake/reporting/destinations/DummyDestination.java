@@ -95,7 +95,7 @@ public class DummyDestination implements Destination {
             lastType = PeriodType.ITERATION;
          } else if (sw.toString().contains("reportPercentage")) {
             lastType = PeriodType.PERCENTAGE;
-         } else if (sw.toString().contains("ReportManager.lambda$start$1")) {
+         } else if (sw.toString().contains("ReportManager.lambda$start$")) {
             lastType = PeriodType.TIME;
          } else {
             lastType = null;
