@@ -83,16 +83,6 @@ public abstract class AbstractReporter implements Reporter {
    private long lastPercentage = -1L;
 
    /**
-    * Lock used to synchronize access to the {@link #lastPercentage} variable.
-    */
-   private final Object percentageLock = new Object();
-
-   /**
-    * Lock to synchronize creation of new accumulators in the result map.
-    */
-   private final Object accumulatorCreationLock = new Object();
-
-   /**
     * Accumulators to accumulate results from multiple {@link org.perfcake.reporting.MeasurementUnit Measurement Units}.
     */
    @SuppressWarnings("rawtypes")
@@ -115,20 +105,18 @@ public abstract class AbstractReporter implements Reporter {
 
       reportIterations(measurementUnit.getIteration());
 
-      reportAllPercentage((long) Math.floor(runInfo.getPercentage()));
+      reportAllPercentage((long) Math.floor(runInfo.getPercentage(measurementUnit.getIteration())));
    }
 
    private void reportAllPercentage(final long percentage) throws ReportingException {
-      synchronized (percentageLock) {
-         // report each percentage value just once
-         if (percentage != lastPercentage) {
-            while (percentage > lastPercentage + 1) { // we do not want to skip any percentage between prev. reporting and now
-               lastPercentage = lastPercentage + 1;
-               reportPercentage(lastPercentage);
-            }
-            lastPercentage = percentage; // simply cover the last case (percentage = lastPercentage + 1), and or the case when percentage got lower after a reset
-            reportPercentage(percentage);
+      // report each percentage value just once
+      if (percentage > lastPercentage) {
+         while (percentage > lastPercentage + 1) { // we do not want to skip any percentage between prev. reporting and now
+            lastPercentage = lastPercentage + 1;
+            reportPercentage(lastPercentage);
          }
+         lastPercentage = percentage; // simply cover the last case (percentage = lastPercentage + 1), and or the case when percentage got lower after a reset
+         reportPercentage(percentage);
       }
    }
 
@@ -198,18 +186,10 @@ public abstract class AbstractReporter implements Reporter {
          Accumulator accumulator = accumulatedResults.get(key); //IfAbsentPutWith(key, getAccumulatorFunction, entry);
 
          if (accumulator == null) {
-            synchronized (accumulatorCreationLock) {
-               // redo the check as we did not wanted to get into the synchronized block too soon
-               accumulator = accumulatedResults.get(key);
-               if (accumulator == null) {
-                  accumulator = getAccumulator(key, value.getClass());
-                  if (accumulator != null) {
-                     accumulator.add(value);
-                     accumulatedResults.put(key, accumulator);
-                  }
-               } else {
-                  accumulator.add(value);
-               }
+            accumulator = getAccumulator(key, value.getClass());
+            if (accumulator != null) {
+               accumulator.add(value);
+               accumulatedResults.put(key, accumulator);
             }
          } else {
             accumulator.add(value);
@@ -265,8 +245,11 @@ public abstract class AbstractReporter implements Reporter {
     */
    private void reportPercentage(final long percentage) throws ReportingException {
       for (final BoundPeriod<Destination> boundPeriod : periods) {
-         if (boundPeriod.getPeriodType() == PeriodType.PERCENTAGE && (percentage % boundPeriod.getPeriod() == 0 || percentage == 100)) {
-            publishResult(PeriodType.PERCENTAGE, boundPeriod.getBinding());
+         if (boundPeriod.getPeriodType() == PeriodType.PERCENTAGE) {
+            long period = boundPeriod.getPeriod();
+            if (((percentage != 0 || period <= 50) && (percentage % period == 0)) || percentage == 100) {
+               publishResult(PeriodType.PERCENTAGE, boundPeriod.getBinding());
+            }
          }
       }
    }
