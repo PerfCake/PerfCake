@@ -22,10 +22,10 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.perfcake.util.properties.MandatoryProperty;
 
 import java.io.Serializable;
 import java.sql.Connection;

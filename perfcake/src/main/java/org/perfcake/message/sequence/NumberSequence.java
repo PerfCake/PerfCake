@@ -106,6 +106,7 @@ public class NumberSequence implements Sequence {
 
    /**
     * Gets the beginning of the sequence.
+    *
     * @return The beginning of the sequence.
     */
    public long getStart() {
@@ -114,7 +115,9 @@ public class NumberSequence implements Sequence {
 
    /**
     * Sets the beginning of the sequence.
-    * @param start The beginning of the sequence.
+    *
+    * @param start
+    *       The beginning of the sequence.
     */
    public void setStart(final long start) {
       this.start = start;
@@ -122,6 +125,7 @@ public class NumberSequence implements Sequence {
 
    /**
     * Gets the last value in the sequence.
+    *
     * @return The last value in the sequence.
     */
    public long getEnd() {
@@ -131,7 +135,9 @@ public class NumberSequence implements Sequence {
    /**
     * Sets the last value in the sequence.
     * Set to {@link Long#MIN_VALUE} in case of positive steps (or to {@link Long#MAX_VALUE} in case of negative steps) to disable check of the last value in the interval.
-    * @param end The last value in the sequence.
+    *
+    * @param end
+    *       The last value in the sequence.
     */
    public void setEnd(final long end) {
       this.end = end;
@@ -139,6 +145,7 @@ public class NumberSequence implements Sequence {
 
    /**
     * Gets the step size.
+    *
     * @return The step size.
     */
    public long getStep() {
@@ -147,7 +154,9 @@ public class NumberSequence implements Sequence {
 
    /**
     * Sets the step size. If the check for the last value of the interval is disabled, this configuration is preserved even for step with negative numbers.
-    * @param step The step size.
+    *
+    * @param step
+    *       The step size.
     */
    public void setStep(final long step) {
       if (step < 0 && end == Long.MIN_VALUE) {
@@ -161,6 +170,7 @@ public class NumberSequence implements Sequence {
 
    /**
     * Determines whether the sequence cycles around (starts from the beginning after reaching the last value).
+    *
     * @return True if and only if the sequence cycles around.
     */
    public boolean isCycle() {
@@ -169,7 +179,9 @@ public class NumberSequence implements Sequence {
 
    /**
     * Specifies whether the sequence cycles around (starts from the beginning after reaching the last value).
-    * @param cycle True to allow the sequence to cycle around.
+    *
+    * @param cycle
+    *       True to allow the sequence to cycle around.
     */
    public void setCycle(final boolean cycle) {
       this.cycle = cycle;

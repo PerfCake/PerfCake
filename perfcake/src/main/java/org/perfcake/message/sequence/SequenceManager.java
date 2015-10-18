@@ -58,9 +58,13 @@ public class SequenceManager {
 
    /**
     * Registers a new sequence in the registry.
-    * @param name Sequence name.
-    * @param sequence Sequence instance.
-    * @throws PerfCakeException When it was not possible to properly initialize the newly added sequence.
+    *
+    * @param name
+    *       Sequence name.
+    * @param sequence
+    *       Sequence instance.
+    * @throws PerfCakeException
+    *       When it was not possible to properly initialize the newly added sequence.
     */
    public void addSequence(final String name, final Sequence sequence) throws PerfCakeException {
       sequences.put(name, sequence);
@@ -69,6 +73,7 @@ public class SequenceManager {
 
    /**
     * Gets a snapshot of current next values of all sequences in the registry using {@link Sequence#getNext()}.
+    *
     * @return Snapshot of the values as properties in the form sequence name -&gt; sequence next value.
     */
    public synchronized Properties getSnapshot() {

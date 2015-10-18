@@ -84,7 +84,7 @@ public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
 
    /**
     * Gets the desired constant speed in messages per second.
-    * 
+    *
     * @return The speed.
     */
    public int getSpeed() {
@@ -93,7 +93,7 @@ public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
 
    /**
     * Sets the desired constant speed in messages per second.
-    * 
+    *
     * @param speed
     *       The speed in messages per second.
     */

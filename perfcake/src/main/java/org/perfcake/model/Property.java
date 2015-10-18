@@ -24,8 +24,9 @@
 // Generated on: 2015.09.23 at 04:56:06 PM CEST 
 //
 
-
 package org.perfcake.model;
+
+import org.w3c.dom.Element;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,14 +34,12 @@ import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.w3c.dom.Element;
-
 
 /**
  * <p>Java class for anonymous complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType>
  *   &lt;complexContent>
@@ -54,93 +53,82 @@ import org.w3c.dom.Element;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "any"
+      "any"
 })
 @XmlRootElement(name = "property")
 public class Property {
 
-    @XmlAnyElement
-    protected Element any;
-    @XmlAttribute(name = "name")
-    protected String name;
-    @XmlAttribute(name = "value")
-    protected String value;
+   @XmlAnyElement
+   protected Element any;
+   @XmlAttribute(name = "name")
+   protected String name;
+   @XmlAttribute(name = "value")
+   protected String value;
 
-    /**
-     * Gets the value of the any property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Element }
-     *     
-     */
-    public Element getAny() {
-        return any;
-    }
+   /**
+    * Gets the value of the any property.
+    *
+    * @return possible object is
+    * {@link Element }
+    */
+   public Element getAny() {
+      return any;
+   }
 
-    /**
-     * Sets the value of the any property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Element }
-     *     
-     */
-    public void setAny(Element value) {
-        this.any = value;
-    }
+   /**
+    * Sets the value of the any property.
+    *
+    * @param value
+    *       allowed object is
+    *       {@link Element }
+    */
+   public void setAny(Element value) {
+      this.any = value;
+   }
 
-    /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getName() {
-        return name;
-    }
+   /**
+    * Gets the value of the name property.
+    *
+    * @return possible object is
+    * {@link String }
+    */
+   public String getName() {
+      return name;
+   }
 
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setName(String value) {
-        this.name = value;
-    }
+   /**
+    * Sets the value of the name property.
+    *
+    * @param value
+    *       allowed object is
+    *       {@link String }
+    */
+   public void setName(String value) {
+      this.name = value;
+   }
 
-    /**
-     * Gets the value of the value property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getValue() {
-        return value;
-    }
+   /**
+    * Gets the value of the value property.
+    *
+    * @return possible object is
+    * {@link String }
+    */
+   public String getValue() {
+      return value;
+   }
 
-    /**
-     * Sets the value of the value property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
+   /**
+    * Sets the value of the value property.
+    *
+    * @param value
+    *       allowed object is
+    *       {@link String }
+    */
+   public void setValue(String value) {
+      this.value = value;
+   }
 
 }

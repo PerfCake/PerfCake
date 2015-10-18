@@ -21,6 +21,7 @@ package org.perfcake.reporting.reporters;
 
 import org.perfcake.RunInfo;
 import org.perfcake.TestSetup;
+import org.perfcake.agent.AgentThread;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
@@ -29,7 +30,6 @@ import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.util.ObjectFactory;
-import org.perfcake.agent.AgentThread;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;

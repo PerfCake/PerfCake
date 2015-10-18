@@ -30,7 +30,6 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>

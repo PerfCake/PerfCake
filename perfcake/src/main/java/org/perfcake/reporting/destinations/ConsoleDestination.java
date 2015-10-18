@@ -19,7 +19,6 @@
  */
 package org.perfcake.reporting.destinations;
 
-import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 

@@ -21,7 +21,12 @@ package org.perfcake.reporting.reporters.accumulators;
 
 import org.perfcake.util.StringUtil;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -50,7 +55,9 @@ public class Histogram {
 
    /**
     * Creates the histogram based on the comma separated string of range split points.
-    * @param rangeDividers The comma separated string of range split points.
+    *
+    * @param rangeDividers
+    *       The comma separated string of range split points.
     */
    public Histogram(String rangeDividers) {
       this(Arrays.asList(rangeDividers.split(",")).stream().map(StringUtil::trim).map(Double::valueOf).sorted().collect(Collectors.toList()));
@@ -59,7 +66,8 @@ public class Histogram {
    /**
     * Creates a new histogram that is composed of the ranges divided at the given points.
     *
-    * @param rangeDividers Points specifying where the histogram should be split to multiple ranges.
+    * @param rangeDividers
+    *       Points specifying where the histogram should be split to multiple ranges.
     */
    public Histogram(final List<Double> rangeDividers) {
       Collections.sort(rangeDividers);
@@ -89,7 +97,9 @@ public class Histogram {
 
    /**
     * Adds a new value to be counted in the histogram.
-    * @param value The new value to be added and counted.
+    *
+    * @param value
+    *       The new value to be added and counted.
     */
    public void add(final double value) {
       for (Range range : ranges) {
@@ -103,7 +113,9 @@ public class Histogram {
 
    /**
     * Adds a new value to be counted in the histogram.
-    * @param value The new value to be added and counted.
+    *
+    * @param value
+    *       The new value to be added and counted.
     */
    public void add(final int value) {
       this.add((double) value);
@@ -111,6 +123,7 @@ public class Histogram {
 
    /**
     * Gets the actual counts for individual ranges of the histogram.
+    *
     * @return The actual counts for individual ranges of the histogram.
     */
    public Map<Range, Long> getHistogram() {
@@ -124,6 +137,7 @@ public class Histogram {
 
    /**
     * Gets the actual counts for individual ranges of the histogram.
+    *
     * @return The actual counts for individual ranges of the histogram.
     */
    public Map<Range, Double> getHistogramInPercent() {
@@ -142,6 +156,7 @@ public class Histogram {
 
    /**
     * Gets the total number of values counted in the histogram.
+    *
     * @return The total number of values counted in the histogram.
     */
    public Long getCount() {

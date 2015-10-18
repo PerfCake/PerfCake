@@ -19,7 +19,6 @@
  */
 package org.perfcake.scenario;
 
-import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.MessageGenerator;
@@ -33,9 +32,6 @@ import org.perfcake.validation.ValidationManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**

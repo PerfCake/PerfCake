@@ -1,6 +1,5 @@
 package org.perfcake.message.sequence;
 
-import org.perfcake.PerfCakeConst;
 import org.perfcake.TestSetup;
 import org.perfcake.util.Utils;
 

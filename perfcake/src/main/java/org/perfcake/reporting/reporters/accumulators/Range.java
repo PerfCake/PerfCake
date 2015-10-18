@@ -39,8 +39,11 @@ public class Range implements Comparable<Range> {
 
    /**
     * Creates a new range based on the specified borders as &lt;a, b).
-    * @param min Left border of the range.
-    * @param max Right border of the range.
+    *
+    * @param min
+    *       Left border of the range.
+    * @param max
+    *       Right border of the range.
     */
    public Range(final double min, final double max) {
       if (min < max) {
@@ -53,8 +56,11 @@ public class Range implements Comparable<Range> {
 
    /**
     * Creates a new range based on the specified borders as &lt;a, b).
-    * @param min Left border of the range.
-    * @param max Right border of the range.
+    *
+    * @param min
+    *       Left border of the range.
+    * @param max
+    *       Right border of the range.
     */
    public Range(final int min, final int max) {
       this((double) min, (double) max);
@@ -62,6 +68,7 @@ public class Range implements Comparable<Range> {
 
    /**
     * Gets the left border of the range.
+    *
     * @return The left border of the range.
     */
    public double getMin() {
@@ -70,6 +77,7 @@ public class Range implements Comparable<Range> {
 
    /**
     * Gets the right border of the range.
+    *
     * @return The right border of the range.
     */
    public double getMax() {
@@ -78,7 +86,9 @@ public class Range implements Comparable<Range> {
 
    /**
     * Finds out whether the value lies in the range.
-    * @param value The value to be checked.
+    *
+    * @param value
+    *       The value to be checked.
     * @return True iff the value is in the range.
     */
    public boolean contains(final double value) {

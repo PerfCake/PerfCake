@@ -25,7 +25,15 @@ import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.accumulators.*;
+import org.perfcake.reporting.reporters.accumulators.Accumulator;
+import org.perfcake.reporting.reporters.accumulators.AvgAccumulator;
+import org.perfcake.reporting.reporters.accumulators.Histogram;
+import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
+import org.perfcake.reporting.reporters.accumulators.MaxAccumulator;
+import org.perfcake.reporting.reporters.accumulators.MinAccumulator;
+import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator;
+import org.perfcake.reporting.reporters.accumulators.SlidingWindowMaxAccumulator;
+import org.perfcake.reporting.reporters.accumulators.SlidingWindowMinAccumulator;
 
 /**
  * Reports the minimal, maximal and average value from the beginning
@@ -149,7 +157,9 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Computes the actual result value about what the reporter will collect the statistics.
-    * @param measurementUnit Provided {@link MeasurementUnit} with all the measured values.
+    *
+    * @param measurementUnit
+    *       Provided {@link MeasurementUnit} with all the measured values.
     * @return The processed result based on the input {@link MeasurementUnit}.
     */
    protected abstract Double computeResult(final MeasurementUnit measurementUnit);
@@ -313,6 +323,7 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Gets the string specifying where the histogram should be split.
+    *
     * @return The string specifying where the histogram should be split.
     */
    public String getHistogram() {
@@ -321,7 +332,9 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Sets the string specifying where the histogram should be split.
-    * @param histogram The string specifying where the histogram should be split.
+    *
+    * @param histogram
+    *       The string specifying where the histogram should be split.
     */
    public void setHistogram(String histogram) {
       this.histogram = histogram;
@@ -329,6 +342,7 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Gets the string prefix used in the result map for histogram entries.
+    *
     * @return The string prefix used in the result map for histogram entries.
     */
    public String getHistogramPrefix() {
@@ -337,7 +351,9 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Sets the string prefix used in the result map for histogram entries.
-    * @param histogramPrefix The string prefix used in the result map for histogram entries.
+    *
+    * @param histogramPrefix
+    *       The string prefix used in the result map for histogram entries.
     */
    public void setHistogramPrefix(String histogramPrefix) {
       this.histogramPrefix = histogramPrefix;
