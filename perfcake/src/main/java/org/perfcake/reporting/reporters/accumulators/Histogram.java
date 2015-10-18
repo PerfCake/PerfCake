@@ -49,11 +49,6 @@ public class Histogram {
    private List<Range> ranges = new LinkedList<>();
 
    /**
-    * Total count of records.
-    */
-   private AtomicLong count = new AtomicLong(0);
-
-   /**
     * Creates the histogram based on the comma separated string of range split points.
     *
     * @param rangeDividers
@@ -105,7 +100,6 @@ public class Histogram {
       for (Range range : ranges) {
          if (range.contains(value)) {
             histogram.get(range).incrementAndGet();
-            count.incrementAndGet();
             break;
          }
       }
@@ -143,7 +137,7 @@ public class Histogram {
    public Map<Range, Double> getHistogramInPercent() {
       Map<Range, Double> result = new LinkedHashMap<>();
       Map<Range, AtomicLong> snapshot = new LinkedHashMap<>(histogram);
-      long count = this.count.get();
+      final long count = getCount(snapshot);
 
       if (count == 0) {
          snapshot.forEach((range, value) -> result.put(range, 0d));
@@ -160,6 +154,20 @@ public class Histogram {
     * @return The total number of values counted in the histogram.
     */
    public Long getCount() {
-      return count.get();
+      return getCount(new LinkedHashMap<>(histogram));
+   }
+
+   /** Gets the sum of all map entries for the given map snapshot.
+    *
+    * @param snapshot The map snapshot to be counted.
+    * @return The sum of all map entries.
+    */
+   private static long getCount(Map<Range, AtomicLong> snapshot) {
+      long count = 0;
+      for (AtomicLong l : snapshot.values()) {
+         count = count + l.get();
+      }
+
+      return count;
    }
 }

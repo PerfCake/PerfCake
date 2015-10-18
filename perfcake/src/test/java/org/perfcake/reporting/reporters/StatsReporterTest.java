@@ -112,6 +112,7 @@ public class StatsReporterTest {
       final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, ITERATION_COUNT));
       rm.setRunInfo(ri);
       rm.start();
+      Measurement lastMeasurement = null;
 
       try {
          for (int i = 0; i < ITERATION_COUNT; i++) {
@@ -120,10 +121,13 @@ public class StatsReporterTest {
             Thread.sleep(1);
             mu.stopMeasure();
             rm.report(mu);
-            if (!measurementList.contains(dest.getLastMeasurement())) {
-               measurementList.add(dest.getLastMeasurement());
+            while (dest.getLastMeasurement() == lastMeasurement) {
+               Thread.sleep(1);
             }
-            dest.getLastMeasurement().toString();
+            lastMeasurement = dest.getLastMeasurement();
+            if (!measurementList.contains(lastMeasurement)) {
+               measurementList.add(lastMeasurement);
+            }
          }
       } catch (InterruptedException | ReportingException e) {
          e.printStackTrace();
@@ -179,8 +183,8 @@ public class StatsReporterTest {
 
       man.stop();
 
-      Double firstInterval = (Double) dest.getLastMeasurement().get("hist<0.0; 5.0)");
-      Double secondInterval = (Double) dest.getLastMeasurement().get("hist<5.0; 20.0)");
+      Double firstInterval = (Double) dest.getLastMeasurement().get("hist<0.0:5.0)");
+      Double secondInterval = (Double) dest.getLastMeasurement().get("hist<5.0:20.0)");
 
       Assert.assertTrue(firstInterval > 10.0);
       Assert.assertTrue(firstInterval < 90.0);

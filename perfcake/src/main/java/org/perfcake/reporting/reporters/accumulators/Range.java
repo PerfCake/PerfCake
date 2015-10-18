@@ -137,7 +137,7 @@ public class Range implements Comparable<Range> {
 
    @Override
    public String toString() {
-      return "<" + min + "; " + max + ')';
+      return "<" + min + ":" + max + ')';
    }
 }
 
