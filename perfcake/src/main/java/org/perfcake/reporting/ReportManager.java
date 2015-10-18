@@ -112,25 +112,27 @@ public class ReportManager {
     *       If reporting could not be done properly.
     */
    public void report(final MeasurementUnit measurementUnit) throws ReportingException {
-      reportingTasks.submit(() -> {
-         if (log.isTraceEnabled()) {
-            log.trace("Reporting a new measurement unit " + measurementUnit);
-         }
+      if (reportingTasks != null) {
+         reportingTasks.submit(() -> {
+            if (log.isTraceEnabled()) {
+               log.trace("Reporting a new measurement unit " + measurementUnit);
+            }
 
-         if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
-            for (final Reporter r : getReporters()) {
-               try {
-                  r.report(measurementUnit);
-               } catch (final ReportingException re) {
-                  log.error("Error reporting a measurement unit " + measurementUnit, re);
+            if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
+               for (final Reporter r : getReporters()) {
+                  try {
+                     r.report(measurementUnit);
+                  } catch (final ReportingException re) {
+                     log.error("Error reporting a measurement unit " + measurementUnit, re);
+                  }
+               }
+            } else {
+               if (log.isDebugEnabled()) {
+                  log.debug("Skipping the measurement unit (" + measurementUnit + ") because the ReportManager is not started.");
                }
             }
-         } else {
-            if (log.isDebugEnabled()) {
-               log.debug("Skipping the measurement unit (" + measurementUnit + ") because the ReportManager is not started.");
-            }
-         }
-      });
+         });
+      }
    }
 
    /**
@@ -341,6 +343,8 @@ public class ReportManager {
 
             tasks = reportingTasks.getQueue().size();
          }
+
+         reportingTasks = null;
       } else {
          while (reportingTasks.getQueue().size() > 0) {
             try {
@@ -350,6 +354,8 @@ public class ReportManager {
             }
          }
          reportingTasks.shutdown();
+
+         reportingTasks = null;
       }
    }
 }

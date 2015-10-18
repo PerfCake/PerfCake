@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
@@ -82,5 +83,22 @@ public class HistogramTest {
       histogramMap.forEach((Range k, Long v) -> Assert.assertEquals((long) v, 250L, "Not working for range " + k.toString()));
 
       System.out.println(histogram.getHistogramInPercent());
+   }
+
+   @Test
+   public void testHistogramScramble() {
+      Histogram histogram = new Histogram("0,1,2,3,4,5,6,7,8,9,10");
+
+      Random rnd = new Random();
+      for (int i = 0; i < 1_000_000; i++) {
+         histogram.add(rnd.nextDouble() * 10.0);
+      }
+
+      double total = 0;
+      for (double d : histogram.getHistogramInPercent().values()) {
+         total = total + d;
+      }
+
+      Assert.assertEquals(total, 100.0);
    }
 }

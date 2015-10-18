@@ -28,6 +28,8 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A destination for testing purposes.
@@ -58,6 +60,9 @@ public class DummyDestination implements Destination {
    private PeriodType lastType = null;
    private ReportAssert reportAssert = null;
 
+   private List<Measurement> observedMeasurements = new LinkedList<>();
+   private boolean observing = false;
+
    @Override
    public void open() {
       lastMethod = "open";
@@ -72,6 +77,9 @@ public class DummyDestination implements Destination {
    public void report(final Measurement measurement) throws ReportingException {
       lastMethod = "report";
       lastMeasurement = measurement;
+      if (observing) {
+         observedMeasurements.add(measurement);
+      }
       if (reportAssert != null) {
          reportAssert.report(measurement);
       }
@@ -87,7 +95,7 @@ public class DummyDestination implements Destination {
             lastType = PeriodType.ITERATION;
          } else if (sw.toString().contains("reportPercentage")) {
             lastType = PeriodType.PERCENTAGE;
-         } else if (sw.toString().contains("ReportManager$1.run")) {
+         } else if (sw.toString().contains("ReportManager.lambda$start$1")) {
             lastType = PeriodType.TIME;
          } else {
             lastType = null;
@@ -161,6 +169,13 @@ public class DummyDestination implements Destination {
    }
 
    /**
+    * Resets last memorized measurement to null.
+    */
+   public void resetLastMeasurement() {
+      lastMeasurement = null;
+   }
+
+   /**
     * Gets the report assert registered.
     *
     * @return The report assert set to this destionation.
@@ -179,4 +194,34 @@ public class DummyDestination implements Destination {
       this.reportAssert = reportAssert;
    }
 
+   /**
+    * Checks whether destination stores all observed measurements in a list for later analysis.
+    * @return True iff destination stores all observed measurements in a list for later analysis.
+    */
+   public boolean isObserving() {
+      return observing;
+   }
+
+   /**
+    * Sets whether destination should store all observed measurements in a list for later analysis.
+    * @param observing True iff destination should store all observed measurements in a list for later analysis.
+    */
+   public void setObserving(boolean observing) {
+      this.observing = observing;
+   }
+
+   /**
+    * Gets the list of observed measurements.
+    * @return The list of observed measurements.
+    */
+   public List<Measurement> getObservedMeasurements() {
+      return observedMeasurements;
+   }
+
+   /**
+    * Clears the list of observed measurements.
+    */
+   public void resetObservedMeasurements() {
+      observedMeasurements.clear();
+   }
 }

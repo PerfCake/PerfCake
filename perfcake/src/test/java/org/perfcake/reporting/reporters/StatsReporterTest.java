@@ -94,7 +94,7 @@ public class StatsReporterTest {
    }
 
    @Test(dataProvider = "reporterProperties")
-   public void testReporters(final StatsReporter reporter, final boolean averageEnabled, final boolean minimumEnabled, final boolean maximumEnabled) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+   public void testReporters(final StatsReporter reporter, final boolean averageEnabled, final boolean minimumEnabled, final boolean maximumEnabled) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException {
       final String reporterName = reporter.getClass().getName();
 
       final Properties reporterProperties = new Properties();
@@ -104,7 +104,6 @@ public class StatsReporterTest {
 
       final ThroughputStatsReporter tsr = (ThroughputStatsReporter) ObjectFactory.summonInstance(ThroughputStatsReporter.class.getName(), reporterProperties);
 
-      final List<Measurement> measurementList = new LinkedList<>();
       final ReportManager rm = new ReportManager();
       final DummyDestination dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), new Properties());
       tsr.registerDestination(dest, new Period(PeriodType.ITERATION, 1));
@@ -113,6 +112,8 @@ public class StatsReporterTest {
       rm.setRunInfo(ri);
       rm.start();
       Measurement lastMeasurement = null;
+      dest.resetObservedMeasurements();
+      dest.setObserving(true);
 
       try {
          for (int i = 0; i < ITERATION_COUNT; i++) {
@@ -121,19 +122,21 @@ public class StatsReporterTest {
             Thread.sleep(1);
             mu.stopMeasure();
             rm.report(mu);
-            while (dest.getLastMeasurement() == lastMeasurement) {
-               Thread.sleep(1);
-            }
-            lastMeasurement = dest.getLastMeasurement();
-            if (!measurementList.contains(lastMeasurement)) {
-               measurementList.add(lastMeasurement);
-            }
          }
       } catch (InterruptedException | ReportingException e) {
          e.printStackTrace();
          Assert.fail(reporterName + ": Exception should not be thrown.", e);
       }
       rm.stop();
+
+      List<Measurement> measurementList = dest.getObservedMeasurements();
+      int tries = 0;
+      while (measurementList.size() < ITERATION_COUNT && tries++ < 10) {
+         Thread.sleep(10);
+         dest.getObservedMeasurements().forEach(item -> { if (!measurementList.contains(item)) measurementList.add(item); });
+      }
+      dest.setObserving(false);
+
       final int mls = measurementList.size();
       Assert.assertEquals(mls, ITERATION_COUNT, reporterName + ": Number of Measurement sent to destination");
 
