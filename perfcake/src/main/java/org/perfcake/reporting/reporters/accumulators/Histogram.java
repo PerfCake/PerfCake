@@ -120,6 +120,7 @@ public class Histogram {
     *
     * @return The actual counts for individual ranges of the histogram.
     */
+   @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "UC_USELESS_OBJECT", justification = "We copied the histogram hash map to get a frozen state.")
    public Map<Range, Long> getHistogram() {
       Map<Range, Long> result = new LinkedHashMap<>();
       Map<Range, AtomicLong> snapshot = new LinkedHashMap<>(histogram);
@@ -134,6 +135,7 @@ public class Histogram {
     *
     * @return The actual counts for individual ranges of the histogram.
     */
+   @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "UC_USELESS_OBJECT", justification = "We copied the histogram hash map to get a frozen state.")
    public Map<Range, Double> getHistogramInPercent() {
       Map<Range, Double> result = new LinkedHashMap<>();
       Map<Range, AtomicLong> snapshot = new LinkedHashMap<>(histogram);
