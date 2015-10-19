@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -113,25 +114,32 @@ public class ReportManager {
     */
    public void report(final MeasurementUnit measurementUnit) throws ReportingException {
       if (reportingTasks != null) {
-         reportingTasks.submit(() -> {
-            if (log.isTraceEnabled()) {
-               log.trace("Reporting a new measurement unit " + measurementUnit);
-            }
+         try {
+            reportingTasks.submit(() -> {
+               if (log.isTraceEnabled()) {
+                  log.trace("Reporting a new measurement unit " + measurementUnit);
+               }
 
-            if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
-               for (final Reporter r : getReporters()) {
-                  try {
-                     r.report(measurementUnit);
-                  } catch (final ReportingException re) {
-                     log.error("Error reporting a measurement unit " + measurementUnit, re);
+               if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
+                  for (final Reporter r : getReporters()) {
+                     try {
+                        r.report(measurementUnit);
+                     } catch (final ReportingException re) {
+                        log.error("Error reporting a measurement unit " + measurementUnit, re);
+                     }
+                  }
+               } else {
+                  if (log.isDebugEnabled()) {
+                     log.debug("Skipping the measurement unit (" + measurementUnit + ") because the ReportManager is not started.");
                   }
                }
-            } else {
-               if (log.isDebugEnabled()) {
-                  log.debug("Skipping the measurement unit (" + measurementUnit + ") because the ReportManager is not started.");
-               }
-            }
-         });
+            });
+         } catch (RejectedExecutionException ree) {
+            // Nps, we are likely to be rejecting tasks because we ended with time bounded execution.
+            // We could check for the state in the if condition above but this would require all incoming threads
+            // to synchronize on an AtomicInteger inside of executor service. This is more disruptive way from the
+            // performance test point of view.
+         }
       }
    }
 
@@ -308,9 +316,9 @@ public class ReportManager {
          log.debug("Stopping reporting and all reporters.");
       }
 
-      waitForReportingTasks();
-
       runInfo.stop();
+
+      waitForReportingTasks();
 
       reportFinalTimeResults();
 
