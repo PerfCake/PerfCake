@@ -312,8 +312,8 @@ public class ReportManager {
    }
 
    /**
-    * Stops the reporting facility. It must not be called sooner than all {@link org.perfcake.message.generator.SenderTask SenderTasks}
-    * have been completed.
+    * Stops the reporting facility.
+    * It must not be called sooner than all SenderTasks have been completed.
     */
    public void stop() {
       if (log.isDebugEnabled()) {
