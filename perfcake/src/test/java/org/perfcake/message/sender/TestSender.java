@@ -91,7 +91,9 @@ public class TestSender extends AbstractSender {
     * Sets a listener where current computed target address from calls to {@link #doInit(Properties)} are reported.
     * This method is not thread-safe, you can use it only before the scenario is started, or after it is finished.
     * Do not forget to cleanup your listener by passing null argument.
-    * @param listener The listener where to report the target.
+    *
+    * @param listener
+    *       The listener where to report the target.
     */
    public static void setOnInitListener(final Consumer<String> listener) {
       onInitListener = listener;
@@ -167,6 +169,7 @@ public class TestSender extends AbstractSender {
 
    /**
     * Obtains the current state of the recording.
+    *
     * @return True iff recording of message payloads passed through this sender is switched on.
     */
    public boolean isRecording() {
@@ -175,7 +178,9 @@ public class TestSender extends AbstractSender {
 
    /**
     * Switches on recording of message payloads passed through this sender.
-    * @param recording True iff the recording should be turned on.
+    *
+    * @param recording
+    *       True iff the recording should be turned on.
     */
    public void setRecording(final boolean recording) {
       this.recording = recording;
@@ -183,6 +188,7 @@ public class TestSender extends AbstractSender {
 
    /**
     * Gets the list of recorded message payloads passed through this message sender while recording was switched on.
+    *
     * @return The list of recorded message payloads passed through this message sender while recording was switched on.
     */
    public static List<String> getRecordedMessages() {

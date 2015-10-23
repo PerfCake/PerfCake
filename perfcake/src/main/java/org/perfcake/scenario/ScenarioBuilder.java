@@ -175,7 +175,8 @@ public class ScenarioBuilder {
     * @param sequence
     *       The new sequence to be registered.
     * @return Instance of this for fluent API.
-    * @throws PerfCakeException When it was not possible to properly initialize the newly added sequence.
+    * @throws PerfCakeException
+    *       When it was not possible to properly initialize the newly added sequence.
     */
    public ScenarioBuilder putSequence(final String sequenceName, final Sequence sequence) throws PerfCakeException {
       scenario.getSequenceManager().addSequence(sequenceName, sequence);

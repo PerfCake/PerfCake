@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package org.perfcake.reporting.reporters;
 
 import org.perfcake.RunInfo;
 import org.perfcake.TestSetup;
+import org.perfcake.agent.AgentThread;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
@@ -29,7 +30,6 @@ import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.util.ObjectFactory;
-import org.perfcake.agent.AgentThread;
 
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
@@ -40,7 +40,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -81,7 +80,7 @@ public class MemoryUsageReporterTest {
    }
 
    @Test
-   public void testMemoryUsageReporterWithMemoryLeakDetection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+   public void testMemoryUsageReporterWithMemoryLeakDetection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
@@ -108,7 +107,7 @@ public class MemoryUsageReporterTest {
    }
 
    @Test
-   public void testMemoryUsageReporterWithoutMemoryLeakDetection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+   public void testMemoryUsageReporterWithoutMemoryLeakDetection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
@@ -132,11 +131,11 @@ public class MemoryUsageReporterTest {
    }
 
    @Test
-   public void testMemoryUsageReporterWithoutMemoryLeakDetectionWithGC() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+   public void testMemoryUsageReporterWithoutMemoryLeakDetectionWithGC() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
-      reporterProperties.put("performGCOnMemoryUsage", "true");
+      reporterProperties.put("performGcOnMemoryUsage", "true");
 
       final List<Measurement> measurementList = testMemoryUsageReporter(reporterProperties);
 
@@ -157,7 +156,7 @@ public class MemoryUsageReporterTest {
    }
 
    @Test
-   public void testMemoryUsageReporterWithMemoryLeakDetectionWithHeapDump() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
+   public void testMemoryUsageReporterWithMemoryLeakDetectionWithHeapDump() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, InterruptedException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
@@ -190,7 +189,7 @@ public class MemoryUsageReporterTest {
    }
 
    @Test
-   public void testMemoryUsageReporterWithMemoryLeakDetectionWithHeapDumpExistingFile() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException {
+   public void testMemoryUsageReporterWithMemoryLeakDetectionWithHeapDumpExistingFile() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
@@ -210,14 +209,12 @@ public class MemoryUsageReporterTest {
       Assert.assertTrue(dumpFile0.exists(), "Dump file " + dumpFile0.getAbsolutePath() + " should exist.");
    }
 
-   private List<Measurement> testMemoryUsageReporter(final Properties reporterProperties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+   private List<Measurement> testMemoryUsageReporter(final Properties reporterProperties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException {
       final MemoryUsageReporter mur = (MemoryUsageReporter) ObjectFactory.summonInstance(MemoryUsageReporter.class.getName(), reporterProperties);
 
       Assert.assertNotNull(mur, "Reporter's instance");
       Assert.assertEquals(mur.getAgentHostname(), AGENT_HOSTNAME, "Agent hostname");
       Assert.assertEquals(mur.getAgentPort(), AGENT_PORT, "Agent port");
-
-      final List<Measurement> measurementList = new LinkedList<>();
 
       final Properties destinationProperties = new Properties();
       final DummyDestination dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), destinationProperties);
@@ -233,6 +230,8 @@ public class MemoryUsageReporterTest {
       rm.start();
 
       MeasurementUnit mu = null;
+      dest.resetObservedMeasurements();
+      dest.setObserving(true);
       try {
          for (int i = 0; i < ITERATION_COUNT; i++) {
             mu = rm.newMeasurementUnit();
@@ -240,16 +239,24 @@ public class MemoryUsageReporterTest {
             Thread.sleep(2);
             mu.stopMeasure();
             rm.report(mu);
-            if (!measurementList.contains(dest.getLastMeasurement())) {
-               measurementList.add(dest.getLastMeasurement());
-            }
-            dest.getLastMeasurement().toString();
          }
       } catch (InterruptedException | ReportingException e) {
          e.printStackTrace();
          Assert.fail("Exception should not be thrown.", e);
       }
+
+      Thread.sleep(500); // make sure all reported values made it in the queue
+
       rm.stop();
+
+      List<Measurement> measurementList = dest.getObservedMeasurements();
+      int tries = 0;
+      while (measurementList.size() < ITERATION_COUNT && tries++ < 10) {
+         Thread.sleep(10);
+         dest.getObservedMeasurements().forEach(item -> { if (!measurementList.contains(item)) measurementList.add(item); });
+      }
+      dest.setObserving(false);
+
       return measurementList;
    }
 }

@@ -18,8 +18,12 @@
  * -----------------------------------------------------------------------/
  */
 package org.perfcake.scenario.dsl
-import static org.codehaus.groovy.syntax.Types.*
 
+import groovy.transform.TupleConstructor
+import org.apache.logging.log4j.LogManager
+import org.codehaus.groovy.control.CompilerConfiguration
+import org.codehaus.groovy.control.customizers.ImportCustomizer
+import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 import org.perfcake.PerfCakeConst
 import org.perfcake.PerfCakeException
 import org.perfcake.common.Period
@@ -32,14 +36,11 @@ import org.perfcake.scenario.ScenarioFactory
 import org.perfcake.util.ObjectFactory
 import org.perfcake.util.Utils
 
-import org.apache.logging.log4j.LogManager
-import org.codehaus.groovy.control.CompilerConfiguration
-import org.codehaus.groovy.control.customizers.ImportCustomizer
-import org.codehaus.groovy.control.customizers.SecureASTCustomizer
-
-import groovy.transform.TupleConstructor
 import java.nio.file.Files
 import java.nio.file.Paths
+
+import static org.codehaus.groovy.syntax.Types.*
+
 /**
  * Implementation of DSL scenario specification support for PerfCake.
  * The scenario in the DSL format is a Groovy script. A set of ugly classes in this file
@@ -190,7 +191,8 @@ class DslScenario extends PropertiesBacked {
          } else {
             throw new PerfCakeException("Message content not defined.")
          }
-      } else if (location instanceof String) { // in case of a simple string (i.e. "location"), approach it as a file location
+      } else if (location instanceof String) {
+         // in case of a simple string (i.e. "location"), approach it as a file location
          String s = (String) location
          if (s.indexOf('://') >= 0 || Files.exists(Paths.get(s)) || Files.exists(Paths.get(Utils.DEFAULT_RESOURCES_DIR.getAbsolutePath(), 'scenarios', s))) {
             m.uri = s
@@ -436,7 +438,8 @@ class Reporter extends ObjectWithClassName {
 
       if (destinations) {
          destinations.each {
-            if (it.getEnabledValue()) { // skip disabled destinations completely
+            if (it.getEnabledValue()) {
+               // skip disabled destinations completely
                def p = null
                if (it.period instanceof Time) {
                   p = new Period(PeriodType.TIME, it.period.ms)

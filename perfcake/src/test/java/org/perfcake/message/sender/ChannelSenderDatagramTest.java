@@ -37,7 +37,6 @@ import org.vertx.java.core.datagram.InternetProtocolFamily;
 import org.vertx.java.platform.Verticle;
 
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.util.Properties;
 
 /**
@@ -51,14 +50,13 @@ public class ChannelSenderDatagramTest {
 
    private static final String PAYLOAD = "fish";
    private static final int PORT = 4444;
-   private static String host;
+   private static final String HOST = "127.0.0.1";
    private String target;
    private final DatagramSocketVerticle vert = new DatagramSocketVerticle();
 
    @BeforeClass
    public void setUp() throws Exception {
-      host = InetAddress.getLocalHost().getHostAddress();
-      target = host + ":" + PORT;
+      target = HOST + ":" + PORT;
 
       final Vertx vertx = VertxFactory.newVertx();
       vert.setVertx(vertx);
@@ -122,8 +120,7 @@ public class ChannelSenderDatagramTest {
       @Override
       public void start() {
          final DatagramSocket socket = vertx.createDatagramSocket(InternetProtocolFamily.IPv4);
-         final DatagramSocket responseSocket = vertx.createDatagramSocket(InternetProtocolFamily.IPv4);
-         socket.listen(host, PORT, new AsyncResultHandler<DatagramSocket>() {
+         socket.listen(HOST, PORT, new AsyncResultHandler<DatagramSocket>() {
             public void handle(final AsyncResult<DatagramSocket> asyncResult) {
                if (asyncResult.succeeded()) {
                   socket.dataHandler(new Handler<DatagramPacket>() {
@@ -138,7 +135,7 @@ public class ChannelSenderDatagramTest {
                      }
                   });
                } else {
-                  throw new IllegalStateException("Listen failed: ", asyncResult.cause());
+                  throw new IllegalStateException("Listen failed: " + HOST + ":" + PORT, asyncResult.cause());
                }
             }
          });

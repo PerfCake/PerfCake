@@ -19,22 +19,19 @@
  */
 package org.perfcake.scenario;
 
-import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
+import org.perfcake.util.Utils;
 import org.perfcake.validation.ValidationException;
 import org.perfcake.validation.ValidationManager;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -81,14 +78,6 @@ public class Scenario {
    private SequenceManager sequenceManager;
 
    /**
-    * Refreshes or sets the system properties carrying scenario start timestamp and human-readable timestamp.
-    */
-   private void initTimeStamps() {
-      System.setProperty(PerfCakeConst.TIMESTAMP_PROPERTY, String.valueOf(Calendar.getInstance().getTimeInMillis()));
-      System.setProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY, (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date()));
-   }
-
-   /**
     * Initializes the scenario execution.
     *
     * @throws org.perfcake.PerfCakeException
@@ -99,7 +88,7 @@ public class Scenario {
          log.trace("Scenario initialization...");
       }
 
-      initTimeStamps();
+      Utils.initTimeStamps();
 
       generator.setReportManager(reportManager);
       generator.setValidationManager(validationManager);

@@ -160,6 +160,10 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
          }
       }
 
+      // some threads might have been finished by interrupted exception, let's give them the chance to live with that
+      executorService.awaitTermination(shutdownPeriod, TimeUnit.MILLISECONDS);
+      active = executorService.getActiveCount();
+
       if (active > 0) {
          log.warn("Cannot terminate all sender tasks. Remaining tasks active: " + active);
       }

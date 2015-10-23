@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,6 +27,7 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.AvgAccumulator;
+import org.perfcake.reporting.reporters.accumulators.Histogram;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MinAccumulator;
@@ -64,6 +65,21 @@ public abstract class StatsReporter extends AbstractReporter {
     * A property that specifies a window size with the default value of {@link Integer#MAX_VALUE}.
     */
    private int windowSize = Integer.MAX_VALUE;
+
+   /**
+    * A comma separated list of values where the histogram is split to individual ranges.
+    */
+   private String histogram = "";
+
+   /**
+    * String prefix used in the result map for histogram entries. This prefix is followed by the mathematical representation of the particular range.
+    */
+   private String histogramPrefix = "in";
+
+   /**
+    * The actual histogram representation.
+    */
+   private Histogram histogramCounter = null;
 
    /**
     * A String representation of a metric of a maximal value.
@@ -141,7 +157,9 @@ public abstract class StatsReporter extends AbstractReporter {
 
    /**
     * Computes the actual result value about what the reporter will collect the statistics.
-    * @param measurementUnit Provided {@link MeasurementUnit} with all the measured values.
+    *
+    * @param measurementUnit
+    *       Provided {@link MeasurementUnit} with all the measured values.
     * @return The processed result based on the input {@link MeasurementUnit}.
     */
    protected abstract Double computeResult(final MeasurementUnit measurementUnit);
@@ -163,6 +181,10 @@ public abstract class StatsReporter extends AbstractReporter {
       if (maximumEnabled) {
          measurementUnit.appendResult(MAXIMUM, result);
       }
+
+      if (histogramCounter != null) {
+         histogramCounter.add(result);
+      }
    }
 
    @Override
@@ -176,6 +198,11 @@ public abstract class StatsReporter extends AbstractReporter {
          wrapResultByQuantity(m, MINIMUM, unit);
          wrapResultByQuantity(m, MAXIMUM, unit);
       }
+
+      if (histogramCounter != null) {
+         histogramCounter.getHistogramInPercent().forEach((range, value) -> m.set(histogramPrefix + range.toString(), value));
+      }
+
       destination.report(m);
    }
 
@@ -188,7 +215,9 @@ public abstract class StatsReporter extends AbstractReporter {
 
    @Override
    protected void doReset() {
-      // nothing needed, the parent does the job
+      if (histogram != null && !histogram.isEmpty()) {
+         histogramCounter = new Histogram(histogram);
+      }
    }
 
    /**
@@ -290,5 +319,43 @@ public abstract class StatsReporter extends AbstractReporter {
     */
    protected String getResultUnit() {
       return null;
+   }
+
+   /**
+    * Gets the string specifying where the histogram should be split.
+    *
+    * @return The string specifying where the histogram should be split.
+    */
+   public String getHistogram() {
+      return histogram;
+   }
+
+   /**
+    * Sets the string specifying where the histogram should be split.
+    *
+    * @param histogram
+    *       The string specifying where the histogram should be split.
+    */
+   public void setHistogram(String histogram) {
+      this.histogram = histogram;
+   }
+
+   /**
+    * Gets the string prefix used in the result map for histogram entries.
+    *
+    * @return The string prefix used in the result map for histogram entries.
+    */
+   public String getHistogramPrefix() {
+      return histogramPrefix;
+   }
+
+   /**
+    * Sets the string prefix used in the result map for histogram entries.
+    *
+    * @param histogramPrefix
+    *       The string prefix used in the result map for histogram entries.
+    */
+   public void setHistogramPrefix(String histogramPrefix) {
+      this.histogramPrefix = histogramPrefix;
    }
 }

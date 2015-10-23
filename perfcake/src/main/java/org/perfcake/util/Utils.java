@@ -44,8 +44,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
@@ -550,4 +553,18 @@ public class Utils {
       context.getConfiguration().getLoggers().get("org.perfcake").setLevel(level);
       context.updateLoggers();
    }
+
+   /**
+    * Initializes system properties that carry time stamps.
+    */
+   public static void initTimeStamps() {
+      if (System.getProperty(PerfCakeConst.TIMESTAMP_PROPERTY) == null) {
+         System.setProperty(PerfCakeConst.TIMESTAMP_PROPERTY, String.valueOf(Calendar.getInstance().getTimeInMillis()));
+      }
+
+      if (System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) == null) {
+         System.setProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY, (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date()));
+      }
+   }
+
 }

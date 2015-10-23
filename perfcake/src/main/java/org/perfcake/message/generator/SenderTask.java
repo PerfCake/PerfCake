@@ -39,7 +39,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.Semaphore;
 
 /**
  * Executes a single task of sending messages from the message store
@@ -94,7 +93,7 @@ class SenderTask implements Runnable {
     * The visibility of this constructor is limited as it is not intended for normal use.
     * To obtain a new instance of a sender task properly initialized call
     * {@link org.perfcake.message.generator.AbstractMessageGenerator#newSenderTask(java.util.concurrent.Semaphore)}.
-
+    *
     * @param canalStreet
     *       The communication channel between this sender task instance and a generator.
     */

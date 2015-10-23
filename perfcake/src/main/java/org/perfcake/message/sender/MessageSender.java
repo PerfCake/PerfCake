@@ -128,7 +128,8 @@ public interface MessageSender {
     * Gets the target where to send the messages providing additional properties to replace placeholders in the
     * tearget template.
     *
-    * @param properties Additional properties to replace placeholders in the target template.
+    * @param properties
+    *       Additional properties to replace placeholders in the target template.
     * @return The current target.
     */
    String getTarget(final Properties properties);

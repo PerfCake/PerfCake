@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ----------------------------------------------------------------------------
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -168,7 +168,7 @@ fi
 
 sedExecutable=`which sed`
 if [ -n "$sedExecutable" ]; then
-  javaVersion=`java -version 2>&1 | sed 's/.*version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q'`
+  javaVersion=`$JAVACMD -version 2>&1 | sed 's/.*version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q'`
   if [[ $javaVersion =~ ^[1-9][0-9]$ ]]; then
      if [ "$javaVersion" -lt 18 ]; then
         echo "Unsupported Java version. PerfCake requires Java 8 and higher."
@@ -182,7 +182,7 @@ fi
 # Set the PerfCake working directory
 cd "$PERFCAKE_HOME"
 
-PERFCAKE_JAR="$(find $PERFCAKE_HOME/lib -type f -regex '.*lib/perfcake-[0-9]+\.[0-9]+.*\.jar')"
+PERFCAKE_JAR="$(find $PERFCAKE_HOME/lib -type f -regex '.*lib/perfcake-[0-9][0-9]*\.[0-9][0-9]*.*\.jar')"
 
 # Run PerfCake
 exec "$JAVACMD" \

@@ -347,9 +347,12 @@ public class ChartDestinationHelper {
    private void deletePreviousCombinedCharts(final File descriptionsDirectory) throws IOException {
       final StringBuilder issues = new StringBuilder();
 
-      for (final File f : descriptionsDirectory.listFiles(new CombinedJsFileFilter())) {
-         if (!f.delete()) {
-            issues.append(String.format("Cannot delete file %s. %n", f.getAbsolutePath()));
+      final File[] files = descriptionsDirectory.listFiles(new CombinedJsFileFilter());
+      if (files != null) {
+         for (final File f : files) {
+            if (!f.delete()) {
+               issues.append(String.format("Cannot delete file %s. %n", f.getAbsolutePath()));
+            }
          }
       }
 
@@ -372,12 +375,15 @@ public class ChartDestinationHelper {
       try {
          deletePreviousCombinedCharts(outputDir);
 
-         final List<File> descriptionFiles = Arrays.asList(outputDir.listFiles(new DescriptionFileFilter()));
+         final File[] files = outputDir.listFiles(new DescriptionFileFilter());
+         if (files != null) {
+            final List<File> descriptionFiles = Arrays.asList(files);
 
-         for (final File f : descriptionFiles) {
-            final Chart c = Chart.fromDescriptionFile(f);
-            if (!c.getBaseName().equals(mainChart.getBaseName())) {
-               charts.add(c);
+            for (final File f : descriptionFiles) {
+               final Chart c = Chart.fromDescriptionFile(f);
+               if (!c.getBaseName().equals(mainChart.getBaseName())) {
+                  charts.add(c);
+               }
             }
          }
 

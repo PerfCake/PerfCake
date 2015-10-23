@@ -21,10 +21,10 @@ package org.perfcake.message.sender;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.perfcake.util.properties.MandatoryProperty;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -316,8 +316,10 @@ public class JmsSender extends AbstractSender {
    /**
     * Checks if both of the provided credentials are set.
     *
-    * @param username The user name credential.
-    * @param password The password credential.
+    * @param username
+    *       The user name credential.
+    * @param password
+    *       The password credential.
     * @return <code>true</code> if both of the credentials
     * are set and <code>false</code> if neither of them is set.
     * @throws PerfCakeException

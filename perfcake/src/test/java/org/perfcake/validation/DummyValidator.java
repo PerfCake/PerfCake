@@ -128,6 +128,7 @@ public class DummyValidator implements MessageValidator {
 
    /**
     * Gets the last message attributes observed.
+    *
     * @return The last message attributes observed.
     */
    public Properties getLastMessageAttributes() {

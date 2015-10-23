@@ -80,7 +80,7 @@ public abstract class AbstractReporter implements Reporter {
    /**
     * Remembers the last observed percentage state of the measurement run. This is used to report change to this value only once.
     */
-   private long lastPercentage = -1;
+   private long lastPercentage = -1L;
 
    /**
     * Accumulators to accumulate results from multiple {@link org.perfcake.reporting.MeasurementUnit Measurement Units}.
@@ -105,9 +105,12 @@ public abstract class AbstractReporter implements Reporter {
 
       reportIterations(measurementUnit.getIteration());
 
+      reportAllPercentage((long) Math.floor(runInfo.getPercentage(measurementUnit.getIteration())));
+   }
+
+   private void reportAllPercentage(final long percentage) throws ReportingException {
       // report each percentage value just once
-      final long percentage = (long) Math.floor(runInfo.getPercentage());
-      if (percentage != lastPercentage) {
+      if (percentage > lastPercentage) {
          while (percentage > lastPercentage + 1) { // we do not want to skip any percentage between prev. reporting and now
             lastPercentage = lastPercentage + 1;
             reportPercentage(lastPercentage);
@@ -220,8 +223,10 @@ public abstract class AbstractReporter implements Reporter {
     */
    private void reportIterations(final long iteration) throws ReportingException {
       for (final BoundPeriod<Destination> boundPeriod : periods) {
-         if (boundPeriod.getPeriodType() == PeriodType.ITERATION && (iteration == 0 || (iteration + 1) % boundPeriod.getPeriod() == 0) || isLastIteration(iteration)) {
-            publishResult(PeriodType.ITERATION, boundPeriod.getBinding());
+         if (boundPeriod.getPeriodType() == PeriodType.ITERATION) {
+            if ((iteration == 0 || (iteration + 1) % boundPeriod.getPeriod() == 0) || isLastIteration(iteration)) {
+               publishResult(PeriodType.ITERATION, boundPeriod.getBinding());
+            }
          }
       }
    }
@@ -240,8 +245,11 @@ public abstract class AbstractReporter implements Reporter {
     */
    private void reportPercentage(final long percentage) throws ReportingException {
       for (final BoundPeriod<Destination> boundPeriod : periods) {
-         if (boundPeriod.getPeriodType() == PeriodType.PERCENTAGE && (percentage % boundPeriod.getPeriod() == 0 || percentage == 100)) {
-            publishResult(PeriodType.PERCENTAGE, boundPeriod.getBinding());
+         if (boundPeriod.getPeriodType() == PeriodType.PERCENTAGE) {
+            long period = boundPeriod.getPeriod();
+            if (((percentage != 0 || period <= 50) && (percentage % period == 0)) || percentage == 100) {
+               publishResult(PeriodType.PERCENTAGE, boundPeriod.getBinding());
+            }
          }
       }
    }

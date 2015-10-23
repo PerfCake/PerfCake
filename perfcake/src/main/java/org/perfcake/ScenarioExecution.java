@@ -80,6 +80,7 @@ public class ScenarioExecution {
     *       command line arguments.
     */
    private ScenarioExecution(final String[] args) {
+      Utils.initTimeStamps();
       parseCommandLine(args);
       loadScenario();
    }

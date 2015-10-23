@@ -31,6 +31,7 @@ public interface Sequence {
 
    /**
     * Gets the next value in this sequence. Must be thread safe. It is called once per message.
+    *
     * @return The next value in this sequence.
     */
    String getNext();
@@ -38,7 +39,10 @@ public interface Sequence {
    /**
     * Resets the sequence.
     * This method is called at the very beginning, so it can be used to perform any initialization steps as well.
-    * @throws PerfCakeException When it was not possible to initialize the sequence to its original state.
+    *
+    * @throws PerfCakeException
+    *       When it was not possible to initialize the sequence to its original state.
     */
-   default void reset() throws PerfCakeException {};
+   default void reset() throws PerfCakeException {
+   }
 }

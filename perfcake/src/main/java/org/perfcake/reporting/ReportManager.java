@@ -33,6 +33,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Controls the reporting facilities.
@@ -59,6 +63,12 @@ public class ReportManager {
     * Thread to assure time based periodical reporting.
     */
    private Thread periodicThread;
+
+   /**
+    * Executor to synchronize reporting, for reporting not to need to be thread safe. All reporting is executed out of
+    * sender threads, in a separate thread.
+    */
+   private ThreadPoolExecutor reportingTasks;
 
    /**
     * Creates a new {@link org.perfcake.reporting.MeasurementUnit measurement unit} with a unique iteration number.
@@ -103,29 +113,36 @@ public class ReportManager {
     *       If reporting could not be done properly.
     */
    public void report(final MeasurementUnit measurementUnit) throws ReportingException {
-      if (log.isTraceEnabled()) {
-         log.trace("Reporting a new measurement unit " + measurementUnit);
-      }
+      if (reportingTasks != null) {
+         try {
+            reportingTasks.submit(() -> {
+               if (log.isTraceEnabled()) {
+                  log.trace("Reporting a new measurement unit " + measurementUnit);
+               }
 
-      ReportingException e = null;
-
-      if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
-         for (final Reporter r : getReporters()) {
-            try {
-               r.report(measurementUnit);
-            } catch (final ReportingException re) {
-               log.warn("Error reporting a measurement unit " + measurementUnit, re);
-               e = re; // store the latest exception and give chance to other reporters as well
+               if (runInfo.isStarted()) { // cannot use isRunning while we still want the last iteration to be reported
+                  for (final Reporter r : getReporters()) {
+                     try {
+                        r.report(measurementUnit);
+                     } catch (final ReportingException re) {
+                        log.error("Error reporting a measurement unit " + measurementUnit, re);
+                     }
+                  }
+               } else {
+                  if (log.isDebugEnabled()) {
+                     log.debug("Skipping the measurement unit (" + measurementUnit + ") because the ReportManager is not started.");
+                  }
+               }
+            });
+         } catch (RejectedExecutionException ree) {
+            // Nps, we are likely to be rejecting tasks because we ended with time bounded execution.
+            // We could check for the state in the if condition above but this would require all incoming threads
+            // to synchronize on an AtomicInteger inside of executor service. This is more disruptive way from the
+            // performance test point of view.
+            if (runInfo.getDuration().getPeriodType() != PeriodType.TIME) {
+               throw ree;
             }
          }
-      } else {
-         if (log.isDebugEnabled()) {
-            log.debug("Skipping the measurement unit (" + measurementUnit + ") because the ReportManager is not started.");
-         }
-      }
-
-      if (e != null) {
-         throw e;
       }
    }
 
@@ -137,9 +154,27 @@ public class ReportManager {
          log.debug("Resetting reporting.");
       }
 
+      resetReportingTasks();
+
       runInfo.reset();
       resetLastTimes = true;
       reporters.forEach(org.perfcake.reporting.reporters.Reporter::reset);
+   }
+
+   /**
+    * Resets the executor of reporting tasks.
+    */
+   private void resetReportingTasks() {
+      if (reportingTasks != null) {
+         reportingTasks.shutdownNow();
+         try {
+            reportingTasks.awaitTermination(1, TimeUnit.SECONDS);
+         } catch (InterruptedException ie) {
+            log.info("Could not terminate reporting tasks.");
+         }
+      }
+
+      reportingTasks = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
    }
 
    /**
@@ -191,64 +226,64 @@ public class ReportManager {
          log.debug("Starting reporting and all reporters.");
       }
 
+      resetReportingTasks();
+
       runInfo.start(); // runInfo must be started first, otherwise the time monitoring thread in AbstractReporter dies immediately
 
       reporters.forEach(org.perfcake.reporting.reporters.Reporter::start);
 
-      periodicThread = new Thread(new Runnable() {
-         public void run() {
-            long now;
-            Long lastTime;
-            Destination d;
-            Map<Reporter, Map<Destination, Long>> reportLastTimes = new HashMap<>();
-            Map<Destination, Long> lastTimes;
+      periodicThread = new Thread(() -> {
+         long now;
+         Long lastTime;
+         Destination d;
+         Map<Reporter, Map<Destination, Long>> reportLastTimes = new HashMap<>();
+         Map<Destination, Long> lastTimes;
 
-            try {
-               while ((runInfo.isRunning() && !periodicThread.isInterrupted())) {
+         try {
+            while ((runInfo.isRunning() && !periodicThread.isInterrupted())) {
 
-                  if (resetLastTimes) {
-                     reportLastTimes = new HashMap<>();
-                     resetLastTimes = false;
-                  }
-
-                  now = System.currentTimeMillis();
-
-                  for (final Reporter r : reporters) {
-                     lastTimes = reportLastTimes.get(r);
-
-                     if (lastTimes == null) {
-                        lastTimes = new HashMap<>();
-                        reportLastTimes.put(r, lastTimes);
-                     }
-
-                     for (final BoundPeriod<Destination> p : r.getReportingPeriods()) {
-                        d = p.getBinding();
-                        lastTime = lastTimes.get(d);
-
-                        if (lastTime == null) {
-                           lastTime = now;
-                           lastTimes.put(d, lastTime);
-                        }
-
-                        if (p.getPeriodType() == PeriodType.TIME && lastTime + p.getPeriod() < now && runInfo.getIteration() >= 0) {
-                           lastTimes.put(d, now);
-                           try {
-                              r.publishResult(PeriodType.TIME, d);
-                           } catch (final ReportingException e) {
-                              log.warn("Unable to publish result: ", e);
-                           }
-                        }
-                     }
-                  }
-
-                  Thread.sleep(500);
+               if (resetLastTimes) {
+                  reportLastTimes = new HashMap<>();
+                  resetLastTimes = false;
                }
-            } catch (final InterruptedException e) {
-               // this means our job is done
+
+               now = System.currentTimeMillis();
+
+               for (final Reporter r : reporters) {
+                  lastTimes = reportLastTimes.get(r);
+
+                  if (lastTimes == null) {
+                     lastTimes = new HashMap<>();
+                     reportLastTimes.put(r, lastTimes);
+                  }
+
+                  for (final BoundPeriod<Destination> p : r.getReportingPeriods()) {
+                     d = p.getBinding();
+                     lastTime = lastTimes.get(d);
+
+                     if (lastTime == null) {
+                        lastTime = now;
+                        lastTimes.put(d, lastTime);
+                     }
+
+                     if (p.getPeriodType() == PeriodType.TIME && lastTime + p.getPeriod() < now && runInfo.getIteration() >= 0) {
+                        lastTimes.put(d, now);
+                        try {
+                           r.publishResult(PeriodType.TIME, d);
+                        } catch (final ReportingException e) {
+                           log.warn("Unable to publish result: ", e);
+                        }
+                     }
+                  }
+               }
+
+               Thread.sleep(500);
             }
-            if (log.isDebugEnabled()) {
-               log.debug("Gratefully terminating the periodic reporting thread.");
-            }
+         } catch (final InterruptedException e) {
+            // this means our job is done
+         }
+         if (log.isDebugEnabled()) {
+            log.debug("Gratefully terminating the periodic reporting thread.");
          }
       });
       periodicThread.setDaemon(true); // allow the thread to die with JVM termination and do not block it
@@ -259,7 +294,7 @@ public class ReportManager {
     * Makes sure 100% is reported for time based destinations after the end of the test.
     */
    private void reportFinalTimeResults() {
-      log.info("Reporting final results:");
+      log.info("Checking whether there are more results to be reported...");
       for (final Reporter r : reporters) {
          for (final BoundPeriod<Destination> bp : r.getReportingPeriods()) {
             try {
@@ -272,19 +307,27 @@ public class ReportManager {
          }
       }
       if (log.isDebugEnabled()) {
-         log.debug("End of final results.");
+         log.debug("All results reported.");
       }
    }
 
    /**
     * Stops the reporting facility.
+    * It must not be called sooner than all SenderTasks have been completed.
     */
    public void stop() {
       if (log.isDebugEnabled()) {
          log.debug("Stopping reporting and all reporters.");
       }
 
-      runInfo.stop();
+      // in case of time bound run, we want to terminate measurement immediately
+      if (runInfo.getDuration().getPeriodType() == PeriodType.TIME) {
+         runInfo.stop();
+         waitForReportingTasks();
+      } else { // in case of iteration bound run, we want to wait for senders to complete their execution
+         waitForReportingTasks();
+         runInfo.stop();
+      }
 
       reportFinalTimeResults();
 
@@ -294,5 +337,42 @@ public class ReportManager {
          periodicThread.interrupt();
       }
       periodicThread = null;
+   }
+
+   /**
+    * Shutdowns reporting task thread and waits for the reporting tasks to be finished.
+    */
+   private void waitForReportingTasks() {
+      // in case of time bound execution, we do not want to see any more results
+      if (runInfo.getDuration().getPeriodType() == PeriodType.TIME) {
+         int lastTasks = 0, tasks = reportingTasks.getQueue().size();
+
+         reportingTasks.shutdown();
+
+         while (tasks > 0 && tasks != lastTasks) {
+            lastTasks = tasks;
+
+            try {
+               reportingTasks.awaitTermination(1, TimeUnit.SECONDS);
+            } catch (InterruptedException ie) {
+               // no problem
+            }
+
+            tasks = reportingTasks.getQueue().size();
+         }
+
+         reportingTasks = null;
+      } else {
+         while (reportingTasks.getQueue().size() > 0) {
+            try {
+               Thread.sleep(1000);
+            } catch (InterruptedException ie) {
+               // no problem
+            }
+         }
+         reportingTasks.shutdown();
+
+         reportingTasks = null;
+      }
    }
 }
