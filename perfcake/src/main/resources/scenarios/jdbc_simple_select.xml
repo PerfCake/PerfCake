@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:6.0">
+<scenario xmlns="urn:perfcake:scenario:5.0">
    <run type="${perfcake.run.type:iteration}" value="${perfcake.run.duration:500000}"/>
    <generator class="ImmediateMessageGenerator" threads="${perfcake.thread.count:500}"/>
    <sender class="JdbcSender">
