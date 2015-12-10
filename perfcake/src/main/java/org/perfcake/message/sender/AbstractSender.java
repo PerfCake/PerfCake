@@ -81,7 +81,7 @@ abstract public class AbstractSender implements MessageSender {
    @Override
    public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
       if (log.isTraceEnabled()) {
-         log.trace(String.format("Message content: %s", message.toString()));
+         log.trace(String.format("Message content: %s", (message == null) ? null : message.toString()));
       }
 
       if (!keepConnection) {
