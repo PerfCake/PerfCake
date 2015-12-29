@@ -22,16 +22,14 @@ package org.perfcake.message.sender;
 import org.perfcake.message.Message;
 import org.perfcake.util.ObjectFactory;
 
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.net.NetSocket;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.Vertx;
-import org.vertx.java.core.VertxFactory;
-import org.vertx.java.core.buffer.Buffer;
-import org.vertx.java.core.net.NetSocket;
-import org.vertx.java.platform.Verticle;
 
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -50,21 +48,20 @@ public class ChannelSenderSocketTest {
    private static final int PORT = 4444;
    private static String host;
    private String target;
-   private final EchoSocketVerticle vert = new EchoSocketVerticle();
+   final private EchoSocketVerticle vert = new EchoSocketVerticle();
+   final private Vertx vertx = Vertx.vertx();
 
    @BeforeClass
    public void setUp() throws Exception {
       host = InetAddress.getLocalHost().getHostAddress();
       target = host + ":" + PORT;
 
-      final Vertx vertx = VertxFactory.newVertx();
-      vert.setVertx(vertx);
-      vert.start();
+      vertx.deployVerticle(vert);
    }
 
    @AfterClass
    public void tearDown() {
-      vert.stop();
+      vertx.close();
    }
 
    @Test
@@ -112,16 +109,13 @@ public class ChannelSenderSocketTest {
       }
    }
 
-   static class EchoSocketVerticle extends Verticle {
+   static class EchoSocketVerticle extends AbstractVerticle {
+
       @Override
       public void start() {
          vertx.createNetServer().connectHandler(new Handler<NetSocket>() {
             public void handle(final NetSocket sock) {
-               sock.dataHandler(new Handler<Buffer>() {
-                  public void handle(final Buffer buffer) {
-                     sock.write(buffer);
-                  }
-               });
+               sock.handler(sock::write);
             }
          }).listen(PORT, host);
       }

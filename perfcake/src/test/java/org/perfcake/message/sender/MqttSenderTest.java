@@ -22,7 +22,8 @@ package org.perfcake.message.sender;
 import org.perfcake.message.Message;
 import org.perfcake.util.ObjectFactory;
 
-import org.apache.camel.spring.SpringCamelContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
@@ -42,12 +43,12 @@ public class MqttSenderTest {
    private static final String MESSAGE = "Test message";
    private static final String RESPONSE1 = "1:" + MESSAGE;
    private static final String RESPONSE2 = "2:" + MESSAGE;
-   private SpringCamelContext camelCtx;
+   private ConfigurableApplicationContext camelCtx;
 
    @BeforeTest
    public void prepareCamel() {
       try {
-         camelCtx = SpringCamelContext.springCamelContext("mqtt-sender-camel-context.xml");
+         ConfigurableApplicationContext camelCtx = new ClassPathXmlApplicationContext("mqtt-sender-camel-context.xml");
       } catch (Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
@@ -58,7 +59,7 @@ public class MqttSenderTest {
    public void stopCamel() {
       if (camelCtx != null) {
          try {
-            camelCtx.destroy();
+            camelCtx.close();
          } catch (Exception e) {
             e.printStackTrace();
             Assert.fail(e.getMessage());

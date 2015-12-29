@@ -25,13 +25,7 @@ import org.perfcake.util.TimerBenchmark;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.ValidationException;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -158,14 +152,14 @@ public class ScenarioExecution {
       final HelpFormatter formatter = new HelpFormatter();
       final Options options = new Options();
 
-      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.SCENARIO_OPT).withDescription("scenario to be executed").hasArg().withArgName("SCENARIO").create("s"));
-      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.SCENARIOS_DIR_OPT).withDescription("directory for scenarios").hasArg().withArgName("SCENARIOS_DIR").create("sd"));
-      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.MESSAGES_DIR_OPT).withDescription("directory for messages").hasArg().withArgName("MESSAGES_DIR").create("md"));
-      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.PLUGINS_DIR_OPT).withDescription("directory for plugins").hasArg().withArgName("PLUGINS_DIR").create("pd"));
-      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.PROPERTIES_FILE_OPT).withDescription("custom system properties file").hasArg().withArgName("PROPERTIES_FILE").create("pf"));
-      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.LOGGING_LEVEL_OPT).withDescription("logging level").hasArg().withArgName("LOG_LEVEL").create("log"));
-      options.addOption(OptionBuilder.withLongOpt(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT).withDescription("skip system timer benchmark").create("skip"));
-      options.addOption(OptionBuilder.withArgName("property=value").hasArgs(2).withValueSeparator().withDescription("system properties").create("D"));
+      options.addOption(Option.builder("s").longOpt(PerfCakeConst.SCENARIO_OPT).desc("scenario to be executed").hasArg().argName("SCENARIO").build());
+      options.addOption(Option.builder("sd").longOpt(PerfCakeConst.SCENARIOS_DIR_OPT).desc("directory for scenarios").hasArg().argName("SCENARIOS_DIR").build());
+      options.addOption(Option.builder("md").longOpt(PerfCakeConst.MESSAGES_DIR_OPT).desc("directory for messages").hasArg().argName("MESSAGES_DIR").build());
+      options.addOption(Option.builder("pd").longOpt(PerfCakeConst.PLUGINS_DIR_OPT).desc("directory for plugins").hasArg().argName("PLUGINS_DIR").build());
+      options.addOption(Option.builder("pf").longOpt(PerfCakeConst.PROPERTIES_FILE_OPT).desc("custom system properties file").hasArg().argName("PROPERTIES_FILE").build());
+      options.addOption(Option.builder("log").longOpt(PerfCakeConst.LOGGING_LEVEL_OPT).desc("logging level").hasArg().argName("LOG_LEVEL").build());
+      options.addOption(Option.builder("skip").longOpt(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT).desc("skip system timer benchmark").build());
+      options.addOption(Option.builder("D").argName("property=value").numberOfArgs(2).valueSeparator().desc("system properties").build());
 
       final CommandLineParser commandLineParser = new GnuParser();
       try {

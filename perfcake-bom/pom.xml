@@ -347,12 +347,6 @@
             <scope>test</scope>
          </dependency>
          <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-platform</artifactId>
-            <version>${version.vertx}</version>
-            <scope>test</scope>
-         </dependency>
-         <dependency>
             <groupId>io.netty</groupId>
             <artifactId>netty-all</artifactId>
             <version>${version.netty}</version>
