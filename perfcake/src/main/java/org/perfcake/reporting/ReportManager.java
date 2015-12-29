@@ -139,6 +139,9 @@ public class ReportManager {
             // We could check for the state in the if condition above but this would require all incoming threads
             // to synchronize on an AtomicInteger inside of executor service. This is more disruptive way from the
             // performance test point of view.
+            if (runInfo.getDuration().getPeriodType() != PeriodType.TIME) {
+               throw ree;
+            }
          }
       }
    }
@@ -310,15 +313,21 @@ public class ReportManager {
 
    /**
     * Stops the reporting facility.
+    * It must not be called sooner than all SenderTasks have been completed.
     */
    public void stop() {
       if (log.isDebugEnabled()) {
          log.debug("Stopping reporting and all reporters.");
       }
 
-      runInfo.stop();
-
-      waitForReportingTasks();
+      // in case of time bound run, we want to terminate measurement immediately
+      if (runInfo.getDuration().getPeriodType() == PeriodType.TIME) {
+         runInfo.stop();
+         waitForReportingTasks();
+      } else { // in case of iteration bound run, we want to wait for senders to complete their execution
+         waitForReportingTasks();
+         runInfo.stop();
+      }
 
       reportFinalTimeResults();
 

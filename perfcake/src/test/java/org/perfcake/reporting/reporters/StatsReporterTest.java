@@ -132,7 +132,7 @@ public class StatsReporterTest {
       List<Measurement> measurementList = dest.getObservedMeasurements();
       int tries = 0;
       while (measurementList.size() < ITERATION_COUNT && tries++ < 10) {
-         Thread.sleep(10);
+         Thread.sleep(100);
          dest.getObservedMeasurements().forEach(item -> { if (!measurementList.contains(item)) measurementList.add(item); });
       }
       dest.setObserving(false);
