@@ -142,4 +142,10 @@ public interface MessageGenerator {
     * @return Number of active threads in use.
     */
    int getActiveThreadsCount();
+
+   /**
+    * Gets the number of sender tasks in the queue awaiting to be processed.
+    * @return The number of sender tasks in the queue awaiting to be processed.
+    */
+   long getTasksInQueue();
 }

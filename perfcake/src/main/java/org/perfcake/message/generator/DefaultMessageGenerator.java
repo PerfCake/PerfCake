@@ -148,12 +148,12 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     */
    private void adaptiveTermination() throws InterruptedException {
       executorService.shutdown();
-      int active = executorService.getActiveCount(), lastActive = 0;
+      long active = getTasksInQueue(), lastActive = 0;
 
       while (active > 0 && lastActive != active) { // make sure the threads are finishing
          lastActive = active;
          executorService.awaitTermination(shutdownPeriod, TimeUnit.MILLISECONDS);
-         active = executorService.getActiveCount();
+         active = getTasksInQueue();
 
          if (log.isDebugEnabled()) {
             log.debug(String.format("Adaptive test execution termination in progress. Tasks finished in last round: %d", lastActive - active));
@@ -163,9 +163,10 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       // some threads might have been finished by interrupted exception, let's give them the chance to live with that
       executorService.awaitTermination(shutdownPeriod, TimeUnit.MILLISECONDS);
       active = executorService.getActiveCount();
+      final long uncomplete = executorService.getTaskCount() - executorService.getCompletedTaskCount();
 
       if (active > 0) {
-         log.warn("Cannot terminate all sender tasks. Remaining tasks active: " + active);
+         log.warn("Cannot terminate all sender tasks. Set higher shutdownPeriod for the generator in your scenario. Remaining tasks/threads active: {}/{}", uncomplete, active);
       }
    }
 

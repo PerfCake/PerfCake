@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:6.0">
+   <run type="iteration" value="30"/>
+   <generator class="DefaultMessageGenerator" threads="3">
+      <property name="shutdownPeriod" value="50"/>
+   </generator>
+   <sender class="DummySender">
+      <target>České Budějovice</target>
+      <property name="delay" value="100"/>
+   </sender>
+   <reporting>
+      <reporter class="ResponseTimeStatsReporter">
+         <destination class="DummyDestination">
+            <period type="iteration" value="1"/>
+         </destination>
+         <destination class="ConsoleDestination">
+            <period type="iteration" value="1"/>
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message uri="message2.txt">
+      </message>
+   </messages>
+</scenario>

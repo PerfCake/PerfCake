@@ -135,12 +135,10 @@ public class ReportManager {
                }
             });
          } catch (RejectedExecutionException ree) {
-            // Nps, we are likely to be rejecting tasks because we ended with time bounded execution.
-            // We could check for the state in the if condition above but this would require all incoming threads
-            // to synchronize on an AtomicInteger inside of executor service. This is more disruptive way from the
-            // performance test point of view.
-            if (runInfo.getDuration().getPeriodType() != PeriodType.TIME) {
-               throw ree;
+            // Nps, we are likely to be rejecting tasks because we ended the execution either in case of time bounded scenario or because we run out of the shutdown period.
+            // We could synchronize all incoming threads on an AtomicInteger inside of executor service. However, this would be a more disruptive way from the performance test point of view.
+            if (log.isDebugEnabled()) {
+               log.debug("Rejected measurement unit reporting because of the test shutdown in progress.");
             }
          }
       }

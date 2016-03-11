@@ -63,8 +63,8 @@ public class DummyReporter extends AbstractReporter {
       }
       lastMethod = "doPublishResult";
 
-      final Double failures = (Double) getAccumulatedResult(PerfCakeConst.FAILURES_TAG);
-      lastFailures = (failures == null ? 0 : failures.longValue());
+      final Long failures = (Long) getAccumulatedResult(PerfCakeConst.FAILURES_TAG);
+      lastFailures = (failures == null ? 0 : failures);
    }
 
    @Override

@@ -33,6 +33,7 @@ import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SumAccumulator;
+import org.perfcake.reporting.reporters.accumulators.SumLongAccumulator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -212,7 +213,7 @@ public abstract class AbstractReporter implements Reporter {
    @SuppressWarnings("rawtypes")
    protected Accumulator getAccumulator(final String key, final Class clazz) {
       if (PerfCakeConst.FAILURES_TAG.equals(key)) {
-         return new SumAccumulator();
+         return new SumLongAccumulator();
       }
 
       return new LastValueAccumulator();

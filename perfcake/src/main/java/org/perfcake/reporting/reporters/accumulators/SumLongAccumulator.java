@@ -24,27 +24,27 @@ package org.perfcake.reporting.reporters.accumulators;
  * Atomic types are not used because both values must be set at the same time.
  * Hence the methods are synchronized.
  *
- * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class SumLongAccumulator implements Accumulator<Double> {
+public class SumLongAccumulator implements Accumulator<Long> {
 
    /**
     * Sum of the reported values.
     */
-   private double sum = 0d;
+   private long sum = 0L;
 
    @Override
-   public synchronized void add(final Double number) {
+   public synchronized void add(final Long number) {
       sum = sum + number;
    }
 
    @Override
-   public synchronized Double getResult() {
+   public synchronized Long getResult() {
       return sum;
    }
 
    @Override
    public synchronized void reset() {
-      sum = 0d;
+      sum = 0L;
    }
 }

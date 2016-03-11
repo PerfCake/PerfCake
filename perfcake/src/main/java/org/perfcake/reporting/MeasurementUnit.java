@@ -87,7 +87,7 @@ public class MeasurementUnit implements Serializable {
     */
    protected MeasurementUnit(final long iteration) {
       this.iteration = iteration;
-      measurementResults.put(PerfCakeConst.FAILURES_TAG, 0d);
+      measurementResults.put(PerfCakeConst.FAILURES_TAG, 0L);
    }
 
    /**
@@ -200,9 +200,9 @@ public class MeasurementUnit implements Serializable {
     */
    public void setFailure(final Exception failure) {
       if (failure != null) {
-         measurementResults.put(PerfCakeConst.FAILURES_TAG, 1d);
+         measurementResults.put(PerfCakeConst.FAILURES_TAG, 1L);
       } else {
-         measurementResults.put(PerfCakeConst.FAILURES_TAG, 0d);
+         measurementResults.put(PerfCakeConst.FAILURES_TAG, 0L);
       }
       this.failure = failure;
    }
