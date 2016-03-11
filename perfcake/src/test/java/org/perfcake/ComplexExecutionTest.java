@@ -20,8 +20,10 @@
 package org.perfcake;
 
 import org.perfcake.message.sender.TestSender;
+import org.perfcake.reporting.reporters.DummyReporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
+import org.perfcake.scenario.ScenarioRetractor;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -46,6 +48,26 @@ public class ComplexExecutionTest extends TestSetup {
       scenario.close();
 
       Assert.assertEquals(TestSender.getCounter(), 1);
+   }
+
+   @Test
+   public void failuresTest() throws Exception {
+      final Scenario scenario;
+
+      TestSender.resetCounter();
+
+      scenario = ScenarioLoader.load("test-failures-scenario");
+      scenario.init();
+      scenario.run();
+      Thread.sleep(500);
+      scenario.close();
+
+      ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+      retractor.getReportManager().getReporters().forEach(r ->
+            Assert.assertEquals(((DummyReporter) r).getLastFailures(), 10L)
+      );
+
+      Assert.assertEquals(TestSender.getCounter(), 20);
    }
 
 }
