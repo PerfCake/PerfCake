@@ -160,12 +160,6 @@ public class MemoryUsageReporter extends AbstractReporter {
     */
    private MemoryDataGatheringTask memoryDataGatheringTask = null;
 
-   @SuppressWarnings("rawtypes")
-   @Override
-   protected Accumulator getAccumulator(final String key, final Class clazz) {
-      return new LastValueAccumulator();
-   }
-
    @Override
    protected void doReset() {
       if (usedMemoryTimeWindow != null) {

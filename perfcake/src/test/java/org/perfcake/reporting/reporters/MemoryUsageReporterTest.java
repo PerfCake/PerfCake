@@ -50,7 +50,7 @@ import java.util.Properties;
  */
 @Test(groups = { "unit" })
 public class MemoryUsageReporterTest {
-   private static final long ITERATION_COUNT = 1000l;
+   private static final long ITERATION_COUNT = 1000L;
    private static final String AGENT_HOSTNAME = "localhost";
    private static final String AGENT_PORT = "19266";
    private static final File TEST_OUTPUT_DIR = new File(TestSetup.createTempDir("perfcake-memory-usage"));

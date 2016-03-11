@@ -19,6 +19,8 @@
  */
 package org.perfcake.reporting;
 
+import org.perfcake.PerfCakeConst;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -73,6 +75,11 @@ public class MeasurementUnit implements Serializable {
    private long timeStarted = -1;
 
    /**
+    * Failure that happened during processing of this task.
+    */
+   private Exception failure = null;
+
+   /**
     * Constructor is protected. Use {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()} to obtain a new instance.
     *
     * @param iteration
@@ -80,6 +87,7 @@ public class MeasurementUnit implements Serializable {
     */
    protected MeasurementUnit(final long iteration) {
       this.iteration = iteration;
+      measurementResults.put(PerfCakeConst.FAILURES_TAG, 0d);
    }
 
    /**
@@ -176,6 +184,27 @@ public class MeasurementUnit implements Serializable {
     */
    public long getIteration() {
       return iteration;
+   }
+
+   /**
+    * Gets the failure that happened during processing of this task.
+    * @return The exception that occurred or null if there was no exception.
+    */
+   public Exception getFailure() {
+      return failure;
+   }
+
+   /**
+    * Sets the exception that happened during processing of this task to be remembered and reported.
+    * @param failure The exception that happened or null to clear the failure flag.
+    */
+   public void setFailure(final Exception failure) {
+      if (failure != null) {
+         measurementResults.put(PerfCakeConst.FAILURES_TAG, 1d);
+      } else {
+         measurementResults.put(PerfCakeConst.FAILURES_TAG, 0d);
+      }
+      this.failure = failure;
    }
 
    @Override

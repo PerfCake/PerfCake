@@ -152,6 +152,11 @@ public final class PerfCakeConst {
    public static final String WARM_UP_TAG = "warmUp";
 
    /**
+    * Result name counting the number of failed sender tasks.
+    */
+   public static final String FAILURES_TAG = "failures";
+
+   /**
     * Result name the number of threads.
     */
    public static final String THREADS_TAG = "Threads";
