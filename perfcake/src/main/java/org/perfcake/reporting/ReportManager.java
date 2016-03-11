@@ -30,9 +30,10 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -52,7 +53,7 @@ public class ReportManager {
    /**
     * Set of reporters registered for reporting.
     */
-   private final Set<Reporter> reporters = new CopyOnWriteArraySet<>();
+   private final List<Reporter> reporters = new CopyOnWriteArrayList<>();
 
    /**
     * Current run info to control the measurement.
@@ -208,12 +209,12 @@ public class ReportManager {
    }
 
    /**
-    * Gets an immutable set of current reporters.
+    * Gets an immutable list of current reporters.
     *
-    * @return An immutable set of currently registered reporters.
+    * @return An immutable list of currently registered reporters.
     */
-   public Set<Reporter> getReporters() {
-      return Collections.unmodifiableSet(reporters);
+   public List<Reporter> getReporters() {
+      return Collections.unmodifiableList(reporters);
    }
 
    /**

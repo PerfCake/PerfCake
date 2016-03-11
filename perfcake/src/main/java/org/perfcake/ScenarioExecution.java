@@ -25,7 +25,13 @@ import org.perfcake.util.TimerBenchmark;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.ValidationException;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -161,7 +167,7 @@ public class ScenarioExecution {
       options.addOption(Option.builder("skip").longOpt(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT).desc("skip system timer benchmark").build());
       options.addOption(Option.builder("D").argName("property=value").numberOfArgs(2).valueSeparator().desc("system properties").build());
 
-      final CommandLineParser commandLineParser = new GnuParser();
+      final CommandLineParser commandLineParser = new DefaultParser();
       try {
          commandLine = commandLineParser.parse(options, args);
       } catch (final ParseException pe) {

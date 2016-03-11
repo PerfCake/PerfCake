@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,6 +28,7 @@ import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -59,7 +60,7 @@ public interface Reporter {
     * @throws org.perfcake.reporting.ReportingException
     *       When it was not possible to report the {@link org.perfcake.reporting.MeasurementUnit}.
     */
-   public void report(MeasurementUnit measurementUnit) throws ReportingException;
+   void report(final MeasurementUnit measurementUnit) throws ReportingException;
 
    /**
     * Registers a destination to receive resulting {@link org.perfcake.reporting.Measurement Measurements} in
@@ -70,7 +71,7 @@ public interface Reporter {
     * @param period
     *       The period interval in which the destination should publish results
     */
-   public void registerDestination(Destination destination, Period period);
+   void registerDestination(final Destination destination, final Period period);
 
    /**
     * Publishes results to the destination. This method is called only when the results should be published.
@@ -82,7 +83,7 @@ public interface Reporter {
     * @throws ReportingException
     *       When it was not possible to publish results to the given destination.
     */
-   public void publishResult(PeriodType periodType, Destination destination) throws ReportingException;
+   void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException;
 
    /**
     * Registers a destination to receive resulting {@link org.perfcake.reporting.Measurement Measurements} in
@@ -98,7 +99,7 @@ public interface Reporter {
     * @param periods
     *       The set of period intervals in which the destination should publish results.
     */
-   public void registerDestination(Destination destination, Set<Period> periods);
+   void registerDestination(final Destination destination, final Set<Period> periods);
 
    /**
     * Removes a previously registered Destination. The method removes all occurrences of the destination
@@ -107,31 +108,31 @@ public interface Reporter {
     * @param destination
     *       The Destination to be unregistered (and stopped)
     */
-   public void unregisterDestination(Destination destination);
+   void unregisterDestination(final Destination destination);
 
    /**
     * Gets an unmodifiable list of all registered destinations.
     *
     * @return An unmodifiable list of all currently registered destinations.
     */
-   public Set<Destination> getDestinations();
+   List<Destination> getDestinations();
 
    /**
     * Starts the reporter. After a call to this method, reporter will report measurement results to the
     * registered destinations. All destinations are started as well.
     */
-   public void start();
+   void start();
 
    /**
     * Stops the reporter. After a call to this method, no more results will be reported to the destinatons.
     * All destinations are stopped as well.
     */
-   public void stop();
+   void stop();
 
    /**
     * Resets the reporter statistics to the initial state. This is mainly used for clean up after a warm-up period.
     */
-   public void reset();
+   void reset();
 
    /**
     * Sets {@link org.perfcake.RunInfo Run Info} for the current measurement run. This must be set
@@ -140,7 +141,7 @@ public interface Reporter {
     * @param runInfo
     *       RunInfo for the current measurement run.
     */
-   public void setRunInfo(RunInfo runInfo);
+   void setRunInfo(final RunInfo runInfo);
 
    /**
     * Sets {@link org.perfcake.reporting.ReportManager Report Manager} for the report to be able to control and
@@ -149,13 +150,13 @@ public interface Reporter {
     * @param reportManager
     *       ReportManager that owns this Reporter.
     */
-   public void setReportManager(ReportManager reportManager);
+   void setReportManager(final ReportManager reportManager);
 
    /**
     * Gets an unmodifiable set of registered reporting periods.
     *
     * @return The unmodifiable set of registered reporting periods.
     */
-   public Set<BoundPeriod<Destination>> getReportingPeriods();
+   Set<BoundPeriod<Destination>> getReportingPeriods();
 
 }

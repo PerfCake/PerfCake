@@ -32,7 +32,6 @@ import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
-import org.perfcake.reporting.reporters.accumulators.SumAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SumLongAccumulator;
 
 import org.apache.logging.log4j.LogManager;
@@ -40,6 +39,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -314,13 +314,13 @@ public abstract class AbstractReporter implements Reporter {
     * @throws ReportingException
     *       When it was not possible to process given {@link org.perfcake.reporting.MeasurementUnit}.
     */
-   abstract protected void doReport(MeasurementUnit measurementUnit) throws ReportingException;
+   abstract protected void doReport(final MeasurementUnit measurementUnit) throws ReportingException;
 
    @Override
-   public final Set<Destination> getDestinations() {
-      final Set<Destination> result = periods.stream().map(BoundPeriod::getBinding).collect(Collectors.toSet());
+   public final List<Destination> getDestinations() {
+      final List<Destination> result = periods.stream().map(BoundPeriod::getBinding).collect(Collectors.toList());
 
-      return Collections.unmodifiableSet(result);
+      return Collections.unmodifiableList(result);
    }
 
    @Override
