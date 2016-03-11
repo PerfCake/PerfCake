@@ -165,7 +165,7 @@ public class MemoryUsageReporterTest {
       reporterProperties.put("memoryLeakDetectionEnabled", "true");
       reporterProperties.put("memoryDumpOnLeak", "true");
 
-      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdump-" + System.currentTimeMillis() + ".bin");
+      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdumpB-" + System.currentTimeMillis() + ".bin");
       reporterProperties.put("memoryDumpFile", dumpFile.getAbsoluteFile());
 
       final List<Measurement> measurementList = testMemoryUsageReporter(reporterProperties);
@@ -198,7 +198,7 @@ public class MemoryUsageReporterTest {
       reporterProperties.put("memoryLeakDetectionEnabled", "true");
       reporterProperties.put("memoryDumpOnLeak", "true");
 
-      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdump-" + System.currentTimeMillis() + ".bin");
+      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdumpA-" + System.currentTimeMillis() + ".bin");
       Assert.assertTrue(dumpFile.createNewFile());
       reporterProperties.put("memoryDumpFile", dumpFile.getAbsoluteFile());
 
