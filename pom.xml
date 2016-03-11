@@ -107,6 +107,7 @@
       <maven.pit.version>0.33</maven.pit.version>
    </properties>
    <modules>
+      <module>perfcake-bom</module>
       <module>perfcake-agent</module>
       <module>perfcake</module>
    </modules>
