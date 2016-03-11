@@ -52,6 +52,7 @@
       <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
       <maven.release.plugin.version>2.4.1</maven.release.plugin.version>
       <maven.gpg.plugin.version>1.5</maven.gpg.plugin.version>
+      <maven.project.info.reports.plugin>2.9</maven.project.info.reports.plugin>
 
       <version.camel>2.16.1</version.camel>
       <version.drools>6.3.0.Final</version.drools>
