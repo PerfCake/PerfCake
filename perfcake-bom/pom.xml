@@ -80,8 +80,8 @@
       <version.jacoco>0.7.5.201505241946</version.jacoco>
 
       <!-- Test dependencies  -->
-      <version.arquillian>1.1.10.Final</version.arquillian>
-      <version.wildfly>8.2.0.Final</version.wildfly>
+      <version.arquillian>1.1.11.Final</version.arquillian>
+      <version.wildfly>8.2.1.Final</version.wildfly>
       <version.javassist>3.20.0-GA</version.javassist>
       <version.amq>5.13.0</version.amq>
       <version.arquillian-jacoco>1.0.0.Alpha8</version.arquillian-jacoco>
