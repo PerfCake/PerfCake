@@ -53,6 +53,7 @@
       <maven.release.plugin.version>2.4.1</maven.release.plugin.version>
       <maven.gpg.plugin.version>1.5</maven.gpg.plugin.version>
       <maven.project.info.reports.plugin>2.9</maven.project.info.reports.plugin>
+      <maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
 
       <version.camel>2.16.1</version.camel>
       <version.drools>6.3.0.Final</version.drools>
@@ -379,6 +380,14 @@
                <tagNameFormat>v@{project.version}</tagNameFormat>
                <pushChanges>false</pushChanges>
                <localCheckout>true</localCheckout>
+            </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>${maven.assembly.plugin.version}</version>
+            <configuration>
+               <skipAssembly>true</skipAssembly>
             </configuration>
          </plugin>
       </plugins>
