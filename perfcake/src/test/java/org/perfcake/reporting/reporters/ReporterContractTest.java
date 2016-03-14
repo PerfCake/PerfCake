@@ -74,7 +74,6 @@ public class ReporterContractTest {
       Assert.assertEquals(r2.runInfo, ri); // make sure the change was propagated
 
       rm.unregisterReporter(r2);
-      rm.registerReporter(r1); // this should be ignored
       Assert.assertEquals(rm.getReporters().size(), 1);
       Assert.assertFalse(rm.getReporters().contains(r2));
 
