@@ -317,10 +317,10 @@ public abstract class AbstractReporter implements Reporter {
    abstract protected void doReport(final MeasurementUnit measurementUnit) throws ReportingException;
 
    @Override
-   public final List<Destination> getDestinations() {
-      final List<Destination> result = periods.stream().map(BoundPeriod::getBinding).collect(Collectors.toList());
+   public final Set<Destination> getDestinations() {
+      final Set<Destination> result = periods.stream().map(BoundPeriod::getBinding).collect(Collectors.toSet());
 
-      return Collections.unmodifiableList(result);
+      return Collections.unmodifiableSet(result);
    }
 
    @Override

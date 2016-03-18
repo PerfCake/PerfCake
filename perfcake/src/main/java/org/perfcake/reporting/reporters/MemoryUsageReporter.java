@@ -28,8 +28,6 @@ import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.accumulators.Accumulator;
-import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
 import org.perfcake.util.Utils;
 
 import org.apache.logging.log4j.LogManager;

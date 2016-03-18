@@ -38,13 +38,13 @@ public interface Destination extends Closeable {
    /**
     * Opens the destination for reporting.
     */
-   public void open();
+   void open();
 
    /**
     * Closes the destination. No other value should be reported after that.
     */
    @Override
-   public void close();
+   void close();
 
    /**
     * Reports a new {@link org.perfcake.reporting.Measurement} to the destination.
@@ -54,5 +54,5 @@ public interface Destination extends Closeable {
     * @throws ReportingException
     *       When an error occurred during reporting the measurement like no space left on device. The root cause should be encapsulated.
     */
-   public void report(Measurement measurement) throws ReportingException;
+   void report(Measurement measurement) throws ReportingException;
 }

@@ -25,18 +25,14 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.FakeMeasurementUnit;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.util.ObjectFactory;
 
-import org.HdrHistogram.ConcurrentDoubleHistogram;
-import org.HdrHistogram.DoubleHistogram;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -44,9 +40,10 @@ import java.util.Properties;
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class CoordinatedOmissionTest {
+@Test(groups = {"unit"})
+public class ResponseTimeHistogramTest {
 
-   private static final Logger log = LogManager.getLogger(CoordinatedOmissionTest.class);
+   private static final Logger log = LogManager.getLogger(ResponseTimeHistogramTest.class);
 
    @Test
    public void offModeTest() throws Exception {
@@ -122,7 +119,7 @@ public class CoordinatedOmissionTest {
       final ReportManager rm = new ReportManager();
       final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, 1000));
 
-      final Reporter r = (Reporter) ObjectFactory.summonInstance("org.perfcake.reporting.reporters.CoordinatedOmissionReporter", props);
+      final Reporter r = (Reporter) ObjectFactory.summonInstance("org.perfcake.reporting.reporters.ResponseTimeHistogramReporter", props);
       final DummyDestination d = new DummyDestination();
 
       rm.setRunInfo(ri);
