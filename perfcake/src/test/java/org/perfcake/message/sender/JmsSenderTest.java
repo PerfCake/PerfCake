@@ -50,7 +50,7 @@ import javax.jms.TextMessage;
  *
  * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
  */
-@Test(groups = { "unit" })
+@Test(groups = { "ueber" })
 public class JmsSenderTest extends Arquillian {
 
    @Resource(mappedName = "queue/test")
