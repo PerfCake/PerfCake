@@ -111,11 +111,11 @@ public interface Reporter {
    void unregisterDestination(final Destination destination);
 
    /**
-    * Gets an unmodifiable list of all registered destinations.
+    * Gets an unmodifiable set of all registered destinations.
     *
-    * @return An unmodifiable list of all currently registered destinations.
+    * @return An unmodifiable set of all currently registered destinations.
     */
-   List<Destination> getDestinations();
+   Set<Destination> getDestinations();
 
    /**
     * Starts the reporter. After a call to this method, reporter will report measurement results to the

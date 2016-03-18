@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -53,7 +53,7 @@ public class ReportManager {
    /**
     * Set of reporters registered for reporting.
     */
-   private final List<Reporter> reporters = new CopyOnWriteArrayList<>();
+   private final Set<Reporter> reporters = new CopyOnWriteArraySet<>();
 
    /**
     * Current run info to control the measurement.
@@ -213,8 +213,8 @@ public class ReportManager {
     *
     * @return An immutable list of currently registered reporters.
     */
-   public List<Reporter> getReporters() {
-      return Collections.unmodifiableList(reporters);
+   public Set<Reporter> getReporters() {
+      return Collections.unmodifiableSet(reporters);
    }
 
    /**

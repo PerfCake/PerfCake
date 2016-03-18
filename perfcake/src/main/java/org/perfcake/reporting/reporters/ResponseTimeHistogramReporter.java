@@ -38,7 +38,7 @@ import java.util.Locale;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class CoordinatedOmissionReporter extends AbstractReporter {
+public class ResponseTimeHistogramReporter extends AbstractReporter {
 
    /**
     * Correction mode can be switched off (no correction), automatic or user specified.

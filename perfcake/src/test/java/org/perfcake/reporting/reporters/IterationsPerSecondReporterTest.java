@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Tests {@link org.perfcake.reporting.reporters.IterationsPerSecondReporter} implemetation.
@@ -28,7 +29,7 @@ public class IterationsPerSecondReporterTest extends TestSetup {
       ScenarioRetractor retractor = new ScenarioRetractor(scenario);
       List<Reporter> reporterList = new ArrayList<>(retractor.getReportManager().getReporters());
       Assert.assertEquals(reporterList.size(), 1, "Reporter number.");
-      List<Destination> destinationSet = reporterList.get(0).getDestinations();
+      Set<Destination> destinationSet = reporterList.get(0).getDestinations();
       Assert.assertEquals(destinationSet.size(), 1, "Destination number");
       DummyDestination destination = null;
       for (Destination dest : destinationSet) {
