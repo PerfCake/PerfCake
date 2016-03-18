@@ -55,14 +55,14 @@ public class CoordinatedOmissionReporter extends AbstractReporter {
 
    /**
     * The correction of coordinated omission in the resulting histogram.
-    * {@link CoordinatedOmissionReporter.Correction.AUTO} is the default value and this means that the histogram is corrected
+    * {@link Correction#AUTO} is the default value and this means that the histogram is corrected
     * by the average measured value.
     */
    private Correction correctionMode = Correction.AUTO;
 
    /**
     * The value of normal/typical/expected response time to correct the histogram
-    * while the {@link CoordinatedOmissionReporter.Correction.USER} correction mode is turned on.
+    * while the {@link Correction#USER} correction mode is turned on.
     */
    private double correction = 1d;
 
@@ -155,10 +155,10 @@ public class CoordinatedOmissionReporter extends AbstractReporter {
 
    /**
     * Gets the correction of coordinated omission in the resulting histogram.
-    * {@link CoordinatedOmissionReporter.Correction.AUTO} is the default value and this means that the histogram is corrected
-    * by the average measured value. In case of the {@link CoordinatedOmissionReporter.Correction.USER} mode, the user specifies
+    * {@link Correction#AUTO} is the default value and this means that the histogram is corrected
+    * by the average measured value. In case of the {@link Correction#USER} mode, the user specifies
     * the expected response time manually for correct computation of the histogram. When the
-    * {@link CoordinatedOmissionReporter.Correction.OFF} mode is used, no correction is done.
+    * {@link Correction#OFF} mode is used, no correction is done.
     *
     * @return The correction mode.
     */
@@ -168,10 +168,10 @@ public class CoordinatedOmissionReporter extends AbstractReporter {
 
    /**
     * Sets the correction of coordinated omission in the resulting histogram.
-    * {@link CoordinatedOmissionReporter.Correction.AUTO} is the default value and this means that the histogram is corrected
-    * by the average measured value. In case of the {@link CoordinatedOmissionReporter.Correction.USER} mode, the user specifies
+    * {@link Correction#AUTO} is the default value and this means that the histogram is corrected
+    * by the average measured value. In case of the {@link Correction#USER} mode, the user specifies
     * the expected response time manually for correct computation of the histogram. When the
-    * {@link CoordinatedOmissionReporter.Correction.OFF} mode is used, no correction is done.
+    * {@link Correction#OFF} mode is used, no correction is done.
     *
     * @param correctionMode The correction mode to be used.
     */
@@ -180,7 +180,7 @@ public class CoordinatedOmissionReporter extends AbstractReporter {
    }
 
    /**
-    * Gets the correction value for the coordinated omission when the {@link CoordinatedOmissionReporter.Correction.USER} mode is set.
+    * Gets the correction value for the coordinated omission when the {@link Correction#USER} mode is set.
     *
     * @return The correction value.
     */
@@ -189,7 +189,7 @@ public class CoordinatedOmissionReporter extends AbstractReporter {
    }
 
    /**
-    * Sets the correction value for the coordinated omission when the {@link CoordinatedOmissionReporter.Correction.USER} mode is set.
+    * Sets the correction value for the coordinated omission when the {@link Correction#USER} mode is set.
     *
     * @param correction The correction value.
     */
