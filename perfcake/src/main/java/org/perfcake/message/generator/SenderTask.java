@@ -117,6 +117,7 @@ class SenderTask implements Runnable {
       try {
          result = sender.send(message, messageHeaders, mu);
       } catch (final Exception e) {
+         mu.setFailure(e);
          if (log.isErrorEnabled()) {
             log.error("Unable to send a message: ", e);
          }

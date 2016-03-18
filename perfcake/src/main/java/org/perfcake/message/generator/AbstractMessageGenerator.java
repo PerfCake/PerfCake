@@ -255,4 +255,10 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
    public int getActiveThreadsCount() {
       return executorService.getActiveCount();
    }
+
+   @Override
+   public long getTasksInQueue() {
+      return executorService.getTaskCount() - executorService.getCompletedTaskCount();
+   }
+
 }

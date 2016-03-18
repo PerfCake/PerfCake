@@ -200,7 +200,7 @@ public abstract class StatsReporter extends AbstractReporter {
       }
 
       if (histogramCounter != null) {
-         histogramCounter.getHistogramInPercent().forEach((range, value) -> m.set(histogramPrefix + range.toString(), value));
+         histogramCounter.getHistogramInPercent().forEach((range, value) -> m.set(histogramPrefix + range.toString(), new Quantity<>(value, "%")));
       }
 
       destination.report(m);

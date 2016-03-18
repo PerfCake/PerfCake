@@ -8,7 +8,7 @@
    <parent>
       <groupId>org.perfcake</groupId>
       <artifactId>perfcake-parent</artifactId>
-      <version>5.1</version>
+      <version>6.0</version>
    </parent>
    <artifactId>perfcake</artifactId>
    <packaging>jar</packaging>
@@ -50,7 +50,7 @@
       <version.gmaven>1.5</version.gmaven>
       <version.groovy>2.4.4</version.groovy>
       <version.jacoco>0.7.5.201505241946</version.jacoco>
-      <version.arquillian>1.1.9.Final</version.arquillian>
+      <version.arquillian>1.1.10.Final</version.arquillian>
       <version.wildfly>8.2.0.Final</version.wildfly>
       <version.velocity>1.7</version.velocity>
 
@@ -190,6 +190,11 @@
          <artifactId>commons-cli</artifactId>
       </dependency>
 
+      <dependency>
+         <groupId>org.hdrhistogram</groupId>
+         <artifactId>HdrHistogram</artifactId>
+      </dependency>
+
       <!-- Camel tests -->
       <dependency>
          <groupId>org.apache.camel</groupId>
@@ -293,11 +298,6 @@
       <dependency>
          <groupId>io.vertx</groupId>
          <artifactId>vertx-core</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>io.vertx</groupId>
-         <artifactId>vertx-platform</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>

@@ -50,7 +50,7 @@ import java.util.Properties;
  */
 @Test(groups = { "unit" })
 public class MemoryUsageReporterTest {
-   private static final long ITERATION_COUNT = 1000l;
+   private static final long ITERATION_COUNT = 1000L;
    private static final String AGENT_HOSTNAME = "localhost";
    private static final String AGENT_PORT = "19266";
    private static final File TEST_OUTPUT_DIR = new File(TestSetup.createTempDir("perfcake-memory-usage"));
@@ -165,7 +165,7 @@ public class MemoryUsageReporterTest {
       reporterProperties.put("memoryLeakDetectionEnabled", "true");
       reporterProperties.put("memoryDumpOnLeak", "true");
 
-      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdump-" + System.currentTimeMillis() + ".bin");
+      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdumpB-" + System.currentTimeMillis() + ".bin");
       reporterProperties.put("memoryDumpFile", dumpFile.getAbsoluteFile());
 
       final List<Measurement> measurementList = testMemoryUsageReporter(reporterProperties);
@@ -198,7 +198,7 @@ public class MemoryUsageReporterTest {
       reporterProperties.put("memoryLeakDetectionEnabled", "true");
       reporterProperties.put("memoryDumpOnLeak", "true");
 
-      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdump-" + System.currentTimeMillis() + ".bin");
+      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdumpA-" + System.currentTimeMillis() + ".bin");
       Assert.assertTrue(dumpFile.createNewFile());
       reporterProperties.put("memoryDumpFile", dumpFile.getAbsoluteFile());
 

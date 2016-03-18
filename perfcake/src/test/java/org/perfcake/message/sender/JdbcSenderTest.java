@@ -24,10 +24,7 @@ import static org.mockito.Mockito.*;
 import org.perfcake.util.ObjectFactory;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.ErrorHandler;
-import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.*;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -81,6 +78,14 @@ public class JdbcSenderTest {
 
       @Override
       public void setHandler(final ErrorHandler errorHandler) {
+
+      }
+
+      @Override public State getState() {
+         return State.STARTED;
+      }
+
+      @Override public void initialize() {
 
       }
 

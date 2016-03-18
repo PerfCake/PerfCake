@@ -6,7 +6,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake-parent</artifactId>
-   <version>5.1</version>
+   <version>6.0</version>
    <packaging>pom</packaging>
    <name>PerfCake parent</name>
    <organization>
@@ -107,6 +107,7 @@
       <maven.pit.version>0.33</maven.pit.version>
    </properties>
    <modules>
+      <module>perfcake-bom</module>
       <module>perfcake-agent</module>
       <module>perfcake</module>
    </modules>

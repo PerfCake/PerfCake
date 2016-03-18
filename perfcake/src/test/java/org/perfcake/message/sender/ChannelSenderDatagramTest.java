@@ -22,19 +22,15 @@ package org.perfcake.message.sender;
 import org.perfcake.message.Message;
 import org.perfcake.util.ObjectFactory;
 
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.AsyncResultHandler;
+import io.vertx.core.Vertx;
+import io.vertx.core.datagram.DatagramSocket;
+import io.vertx.core.datagram.DatagramSocketOptions;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import org.vertx.java.core.AsyncResult;
-import org.vertx.java.core.AsyncResultHandler;
-import org.vertx.java.core.Handler;
-import org.vertx.java.core.Vertx;
-import org.vertx.java.core.VertxFactory;
-import org.vertx.java.core.datagram.DatagramPacket;
-import org.vertx.java.core.datagram.DatagramSocket;
-import org.vertx.java.core.datagram.InternetProtocolFamily;
-import org.vertx.java.platform.Verticle;
 
 import java.io.Serializable;
 import java.util.Properties;
@@ -52,20 +48,19 @@ public class ChannelSenderDatagramTest {
    private static final int PORT = 4444;
    private static final String HOST = "127.0.0.1";
    private String target;
-   private final DatagramSocketVerticle vert = new DatagramSocketVerticle();
+   final private DatagramSocketVerticle vert = new DatagramSocketVerticle();
+   final private Vertx vertx = Vertx.vertx();
 
    @BeforeClass
    public void setUp() throws Exception {
       target = HOST + ":" + PORT;
 
-      final Vertx vertx = VertxFactory.newVertx();
-      vert.setVertx(vertx);
-      vert.start();
+      vertx.deployVerticle(vert);
    }
 
    @AfterClass
    public void tearDown() {
-      vert.stop();
+      vertx.close();
    }
 
    @Test(enabled = true)
@@ -116,27 +111,20 @@ public class ChannelSenderDatagramTest {
       }
    }
 
-   static class DatagramSocketVerticle extends Verticle {
+   static class DatagramSocketVerticle extends AbstractVerticle {
+
       @Override
       public void start() {
-         final DatagramSocket socket = vertx.createDatagramSocket(InternetProtocolFamily.IPv4);
-         socket.listen(HOST, PORT, new AsyncResultHandler<DatagramSocket>() {
-            public void handle(final AsyncResult<DatagramSocket> asyncResult) {
-               if (asyncResult.succeeded()) {
-                  socket.dataHandler(new Handler<DatagramPacket>() {
-                     public void handle(final DatagramPacket packet) {
-                        socket.send(packet.data().appendString("2"), packet.sender().getHostName(), packet.sender().getPort(), new AsyncResultHandler<DatagramSocket>() {
-                           public void handle(final AsyncResult<DatagramSocket> asyncResult) {
-                              if (!asyncResult.succeeded()) {
-                                 throw new IllegalStateException("Cannot send test response: ", asyncResult.cause());
-                              }
-                           }
-                        });
-                     }
-                  });
-               } else {
-                  throw new IllegalStateException("Listen failed: " + HOST + ":" + PORT, asyncResult.cause());
-               }
+         final DatagramSocket socket = vertx.createDatagramSocket(new DatagramSocketOptions().setIpV6(false));
+         socket.listen(PORT, HOST, asyncResult -> {
+            if (asyncResult.succeeded()) {
+               socket.handler(packet -> socket.send(packet.data().appendString("2"), packet.sender().port(), packet.sender().host(), (AsyncResultHandler<DatagramSocket>) asyncResult1 -> {
+                  if (!asyncResult1.succeeded()) {
+                     throw new IllegalStateException("Cannot send test response: ", asyncResult1.cause());
+                  }
+               }));
+            } else {
+               throw new IllegalStateException("Listen failed: " + HOST + ":" + PORT, asyncResult.cause());
             }
          });
       }

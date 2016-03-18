@@ -24,6 +24,7 @@ import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.DummyDestination;
@@ -186,16 +187,19 @@ public class StatsReporterTest {
 
       man.stop();
 
-      Double firstInterval = (Double) dest.getLastMeasurement().get("hist<0.0:5.0)");
-      Double secondInterval = (Double) dest.getLastMeasurement().get("hist<5.0:20.0)");
+      Quantity<Double> firstInterval = (Quantity<Double>) dest.getLastMeasurement().get("hist<0.0:5.0)");
+      Quantity<Double> secondInterval = (Quantity<Double>) dest.getLastMeasurement().get("hist<5.0:20.0)");
 
-      Assert.assertTrue(firstInterval > 10.0);
-      Assert.assertTrue(firstInterval < 90.0);
+      Assert.assertEquals(firstInterval.getUnit(), "%");
+      Assert.assertEquals(secondInterval.getUnit(), "%");
 
-      Assert.assertTrue(secondInterval > 10.0);
-      Assert.assertTrue(secondInterval < 90.0);
+      Assert.assertTrue(firstInterval.getNumber() > 10.0);
+      Assert.assertTrue(firstInterval.getNumber() < 90.0);
 
-      Assert.assertTrue(firstInterval + secondInterval == 100.0);
+      Assert.assertTrue(secondInterval.getNumber() > 10.0);
+      Assert.assertTrue(secondInterval.getNumber() < 90.0);
+
+      Assert.assertTrue(firstInterval.getNumber() + secondInterval.getNumber() == 100.0);
 
    }
 }

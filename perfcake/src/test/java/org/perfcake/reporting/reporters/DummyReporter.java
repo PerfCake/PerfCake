@@ -19,12 +19,14 @@
  */
 package org.perfcake.reporting.reporters;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
+import org.perfcake.reporting.reporters.accumulators.SumAccumulator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +40,7 @@ public class DummyReporter extends AbstractReporter {
 
    private String lastMethod = null;
    private long lastPercentage = -1;
+   private long lastFailures = -1;
 
    /**
     * The reporter's loger.
@@ -59,12 +62,9 @@ public class DummyReporter extends AbstractReporter {
          log.debug("Publishing results...");
       }
       lastMethod = "doPublishResult";
-   }
 
-   @SuppressWarnings("rawtypes")
-   @Override
-   protected Accumulator getAccumulator(final String key, final Class clazz) {
-      return new LastValueAccumulator();
+      final Long failures = (Long) getAccumulatedResult(PerfCakeConst.FAILURES_TAG);
+      lastFailures = (failures == null ? 0 : failures);
    }
 
    @Override
@@ -79,5 +79,9 @@ public class DummyReporter extends AbstractReporter {
 
    public long getLastPercentage() {
       return lastPercentage;
+   }
+
+   public long getLastFailures() {
+      return lastFailures;
    }
 }

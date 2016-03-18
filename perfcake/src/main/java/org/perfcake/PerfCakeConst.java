@@ -29,12 +29,12 @@ public final class PerfCakeConst {
    /**
     * PerfCake version.
     */
-   public static final String VERSION = "5.1";
+   public static final String VERSION = "6.0";
 
    /**
     * PerfCake scenario XML Schema version that is part of namespace <code>urn:perfcake:scenario:&lt;version&gt;</code>.
     */
-   public static final String XSD_SCHEMA_VERSION = "5.0";
+   public static final String XSD_SCHEMA_VERSION = "6.0";
 
    /**
     * Help on PerfCake command line usage.
@@ -150,6 +150,11 @@ public final class PerfCakeConst {
     * Result name indicating whether the scenario.
     */
    public static final String WARM_UP_TAG = "warmUp";
+
+   /**
+    * Result name counting the number of failed sender tasks.
+    */
+   public static final String FAILURES_TAG = "failures";
 
    /**
     * Result name the number of threads.

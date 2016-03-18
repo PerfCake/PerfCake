@@ -20,8 +20,12 @@
 package org.perfcake;
 
 import org.perfcake.message.sender.TestSender;
+import org.perfcake.reporting.destinations.Destination;
+import org.perfcake.reporting.destinations.DummyDestination;
+import org.perfcake.reporting.reporters.DummyReporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
+import org.perfcake.scenario.ScenarioRetractor;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -46,6 +50,82 @@ public class ComplexExecutionTest extends TestSetup {
       scenario.close();
 
       Assert.assertEquals(TestSender.getCounter(), 1);
+   }
+
+   @Test
+   public void failuresTest() throws Exception {
+      final Scenario scenario;
+
+      TestSender.resetCounter();
+
+      scenario = ScenarioLoader.load("test-failures-scenario");
+      scenario.init();
+      scenario.run();
+      Thread.sleep(500);
+      scenario.close();
+
+      ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+      retractor.getReportManager().getReporters().forEach(r ->
+            Assert.assertEquals(((DummyReporter) r).getLastFailures(), 10L)
+      );
+
+      Assert.assertEquals(TestSender.getCounter(), 20);
+   }
+
+   @Test
+   public void slowServiceTest() throws Exception {
+      final Scenario scenario;
+      DummyDestination dd = null;
+
+      TestSender.resetCounter();
+
+      scenario = ScenarioLoader.load("test-long-processing");
+      scenario.init();
+
+      ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+      for (Destination d : retractor.getReportManager().getReporters().iterator().next().getDestinations()) {
+         if (d instanceof DummyDestination) {
+            dd = (DummyDestination) d;
+            break;
+         }
+      }
+      Assert.assertNotNull(dd);
+      dd.setObserving(true);
+
+      scenario.run();
+      Thread.sleep(500);
+      scenario.close();
+
+      dd.setObserving(false);
+      Assert.assertEquals(dd.getObservedMeasurements().size(), 10);
+   }
+
+   @Test
+   public void tooSlowServiceTest() throws Exception {
+      final Scenario scenario;
+      DummyDestination dd = null;
+
+      TestSender.resetCounter();
+
+      scenario = ScenarioLoader.load("test-very-long-processing");
+      scenario.init();
+
+      ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+      for (Destination d : retractor.getReportManager().getReporters().iterator().next().getDestinations()) {
+         if (d instanceof DummyDestination) {
+            dd = (DummyDestination) d;
+            break;
+         }
+      }
+      Assert.assertNotNull(dd);
+      dd.setObserving(true);
+
+      scenario.run();
+      Thread.sleep(500);
+      scenario.close();
+
+      dd.setObserving(false);
+      Assert.assertTrue(dd.getObservedMeasurements().size() < 5);
    }
 
 }
