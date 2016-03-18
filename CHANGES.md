@@ -1,6 +1,32 @@
 PerfCake Change Log
 ===================
 
+Release 6.0
+===========
+
+Features
+--------
+* We solved coordinated omission in PerfCake in the following issues and by introducing a new reporter (**ResponseTimeHistogramReporter**):
+  * https://github.com/PerfCake/PerfCake/issues/258 - Coordinated omission problem
+  * https://github.com/PerfCake/PerfCake/issues/267 - Switch to HdrHistogram
+* https://github.com/PerfCake/PerfCake/issues/264 - Failed messages should be left out of statistics
+
+Bug Fixes
+---------
+* https://github.com/PerfCake/PerfCake/issues/261 - Annotation MandatoryProperty is not accessible at runtime
+* https://github.com/PerfCake/PerfCake/issues/262 - NPE is thrown in AbstractSender's preSend it logging is on TRACE level
+* https://github.com/PerfCake/PerfCake/issues/265 - Make sure slow services are handled properly
+
+Release 5.1
+===========
+
+TBD
+
+Release 5.0
+===========
+
+TBD
+
 Release 4.0
 ===========
 
