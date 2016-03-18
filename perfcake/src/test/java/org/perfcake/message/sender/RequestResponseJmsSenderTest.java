@@ -49,7 +49,7 @@ import javax.jms.TextMessage;
  *
  * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
  */
-@Test(groups = { "unit" })
+@Test(groups = { "ueber" })
 public class RequestResponseJmsSenderTest extends Arquillian {
 
    private static final Logger log = LogManager.getLogger(RequestResponseJmsSenderTest.class);
