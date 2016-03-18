@@ -80,7 +80,7 @@ public class ValidationManager {
     * Unless specified in the scenario, the validation thread has some sleep for it not to influence measurement.
     * At the end, when there is nothing else to do, we can go through the remaining responses faster.
     */
-   private boolean fastForward = false;
+   private volatile boolean fastForward = false;
 
    /**
     * When true, the validation thread just waits for the input queue to become empty and ends.
