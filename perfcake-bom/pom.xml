@@ -293,6 +293,12 @@
             <artifactId>wildfly-arquillian-container-managed</artifactId>
             <version>${version.wildfly}</version>
             <scope>test</scope>
+            <exclusions>
+               <exclusion>
+                  <groupId>org.jboss.osgi.metadata</groupId>
+                  <artifactId>jbosgi-metadata</artifactId>
+               </exclusion>
+            </exclusions>
          </dependency>
          <dependency>
             <groupId>org.wildfly</groupId>
