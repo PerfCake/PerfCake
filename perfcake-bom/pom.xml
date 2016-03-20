@@ -338,6 +338,12 @@
             <artifactId>wildfly-naming</artifactId>
             <version>${version.wildfly}</version>
             <scope>test</scope>
+            <exclusions>
+               <exclusion>
+                  <groupId>sun.jdk</groupId>
+                  <artifactId>jconsole</artifactId>
+               </exclusion>
+            </exclusions>
          </dependency>
 
          <!-- Mockito -->
@@ -426,7 +432,6 @@
             </plugins>
          </build>
       </profile>
-
    </profiles>
 </project>
 
