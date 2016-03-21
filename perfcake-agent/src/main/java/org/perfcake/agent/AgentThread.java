@@ -59,7 +59,7 @@ public class AgentThread implements Runnable {
    public void run() {
       InetAddress host;
       int port = PerfCakeAgent.DEFAULT_PORT;
-      ServerSocket serverSocket;
+      ServerSocket serverSocket = null;
       Socket socket;
       InputStream is = null;
 
@@ -153,6 +153,14 @@ public class AgentThread implements Runnable {
             try {
                is.close();
             } catch (final IOException e) {
+               e.printStackTrace();
+            }
+         }
+         
+         if (serverSocket != null) {
+            try {
+               serverSocket.close();
+            } catch (IOException e) {
                e.printStackTrace();
             }
          }
