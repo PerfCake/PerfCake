@@ -43,6 +43,9 @@ import javax.naming.NamingException;
  */
 public class JmsHelper {
 
+   private JmsHelper() {
+   }
+
    public static class Wiretap implements Runnable {
 
       private static final Logger log = LogManager.getLogger(Wiretap.class);

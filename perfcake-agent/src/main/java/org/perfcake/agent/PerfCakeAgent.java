@@ -99,6 +99,9 @@ public class PerfCakeAgent {
     */
    public static final int DEFAULT_PORT = 8850;
 
+   private PerfCakeAgent() {
+   }
+
    /**
     * {@link PerfCakeAgent}'s pre-main method.
     *

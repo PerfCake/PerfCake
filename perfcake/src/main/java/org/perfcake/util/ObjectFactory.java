@@ -59,6 +59,9 @@ public class ObjectFactory {
     */
    private static ClassLoader pluginClassLoader = null;
 
+   private ObjectFactory() {
+   }
+
    /**
     * Looks up for a set method on a bean that is able to accept Element
     *
