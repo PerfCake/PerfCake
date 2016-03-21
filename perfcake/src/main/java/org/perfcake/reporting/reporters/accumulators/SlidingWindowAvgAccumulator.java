@@ -40,7 +40,7 @@ public class SlidingWindowAvgAccumulator extends AbstractSlidingWindowAccumulato
    @Override
    public Double getResult() {
       double accum = 0;
-      double size = 0;
+      double size;
 
       synchronized (fifo) {
          for (final Object o : fifo) {

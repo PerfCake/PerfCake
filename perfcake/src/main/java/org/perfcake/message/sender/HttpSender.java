@@ -266,7 +266,7 @@ public class HttpSender extends AbstractSender {
 
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
-      int respCode = -1;
+      int respCode;
       requestConnection.connect();
       if (payload != null && (currentMethod == Method.POST || currentMethod == Method.PUT)) {
          final OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream(), Utils.getDefaultEncoding());
@@ -285,7 +285,7 @@ public class HttpSender extends AbstractSender {
          }
          throw new PerfCakeException(errorMess.substring(0, errorMess.length() - 2) + ".");
       }
-      InputStream rcis = null;
+      InputStream rcis;
       if (respCode < 400) {
          rcis = requestConnection.getInputStream();
       } else {

@@ -116,7 +116,7 @@ public class CsvDestination implements Destination {
             switch (appendStrategy) {
                case RENAME:
                   final String name = csvFile.getAbsolutePath();
-                  File f = null;
+                  File f;
                   int ind = 1;
                   do {
                      //
