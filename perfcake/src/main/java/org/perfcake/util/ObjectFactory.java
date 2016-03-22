@@ -60,6 +60,12 @@ public class ObjectFactory {
    private static ClassLoader pluginClassLoader = null;
 
    /**
+    * There should be no instance of a utility class.
+    */
+   private ObjectFactory() {
+   }
+
+   /**
     * Looks up for a set method on a bean that is able to accept Element
     *
     * @param object

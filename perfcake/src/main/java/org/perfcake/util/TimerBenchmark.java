@@ -43,6 +43,12 @@ public class TimerBenchmark {
    private static final int CYCLES = 10 * 1024;
 
    /**
+    * There should be no instance of a utility class.
+    */
+   private TimerBenchmark() {
+   }
+
+   /**
     * Measures system timer resolution.
     **/
    public static void measureTimerResolution() {

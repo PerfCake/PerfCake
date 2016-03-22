@@ -31,6 +31,12 @@ import java.util.stream.Collectors;
 public class StringUtil {
 
    /**
+    * There should be no instance of a utility class.
+    */
+   private StringUtil() {
+   }
+
+   /**
     * Does a string start with a second string ignoring case?
     *
     * @param haystack

@@ -100,6 +100,12 @@ public class PerfCakeAgent {
    public static final int DEFAULT_PORT = 8850;
 
    /**
+    * There should be no instance of a utility class.
+    */
+   private PerfCakeAgent() {
+   }
+
+   /**
     * {@link PerfCakeAgent}'s pre-main method.
     *
     * @param agentArgs
