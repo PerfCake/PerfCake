@@ -196,6 +196,9 @@ public final class PerfCakeConst {
     */
    public static final int ERR_BLOCKED_THREADS = 6;
 
+   /**
+    * There should be no instance of a utility class.
+    */
    private PerfCakeConst() {
    }
 }

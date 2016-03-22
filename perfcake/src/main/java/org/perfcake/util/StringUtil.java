@@ -30,6 +30,9 @@ import java.util.stream.Collectors;
  */
 public class StringUtil {
 
+   /**
+    * There should be no instance of a utility class.
+    */
    private StringUtil() {
    }
 

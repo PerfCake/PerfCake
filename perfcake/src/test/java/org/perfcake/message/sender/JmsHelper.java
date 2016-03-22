@@ -43,6 +43,9 @@ import javax.naming.NamingException;
  */
 public class JmsHelper {
 
+   /**
+    * There should be no instance of a utility class.
+    */
    private JmsHelper() {
    }
 

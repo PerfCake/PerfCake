@@ -77,6 +77,9 @@ public class Utils {
     */
    public static final File DEFAULT_PLUGINS_DIR = new File("lib/plugins");
 
+   /**
+    * There should be no instance of a utility class.
+    */
    private Utils() {
    }
 

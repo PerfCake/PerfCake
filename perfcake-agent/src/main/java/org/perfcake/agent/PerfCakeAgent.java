@@ -99,6 +99,9 @@ public class PerfCakeAgent {
     */
    public static final int DEFAULT_PORT = 8850;
 
+   /**
+    * There should be no instance of a utility class.
+    */
    private PerfCakeAgent() {
    }
 

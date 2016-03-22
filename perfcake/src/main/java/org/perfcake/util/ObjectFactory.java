@@ -59,6 +59,9 @@ public class ObjectFactory {
     */
    private static ClassLoader pluginClassLoader = null;
 
+   /**
+    * There should be no instance of a utility class.
+    */
    private ObjectFactory() {
    }
 
