@@ -77,6 +77,9 @@ public class Utils {
     */
    public static final File DEFAULT_PLUGINS_DIR = new File("lib/plugins");
 
+   private Utils() {
+   }
+
    /**
     * Replaces all ${&lt;property.name&gt;} placeholders in a string
     * by respective value of the property named &lt;property.name&gt; using {@link SystemPropertyGetter}.

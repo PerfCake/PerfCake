@@ -30,6 +30,9 @@ import java.util.stream.Collectors;
  */
 public class StringUtil {
 
+   private StringUtil() {
+   }
+
    /**
     * Does a string start with a second string ignoring case?
     *
