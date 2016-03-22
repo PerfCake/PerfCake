@@ -121,7 +121,7 @@ public class JdbcSender extends AbstractSender {
 
             log.debug("Column count: " + columnCount);
 
-            final StringBuffer sb = new StringBuffer();
+            final StringBuilder sb = new StringBuilder();
             for (int i = 1; i <= columnCount; i++) {
                sb.append(" ");
                sb.append(rsmd.getColumnName(i));

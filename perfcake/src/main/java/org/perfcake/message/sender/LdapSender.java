@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import javax.naming.Context;
@@ -146,7 +146,7 @@ public class LdapSender extends AbstractSender {
 
    @Override
    public void doInit(final Properties messageAttributes) throws PerfCakeException {
-      final Hashtable<String, Object> env = new Hashtable<String, Object>();
+      final HashMap<String, Object> env = new HashMap<String, Object>();
       env.put(Context.SECURITY_AUTHENTICATION, "simple");
       if (ldapUsername != null) {
          env.put(Context.SECURITY_PRINCIPAL, ldapUsername);
