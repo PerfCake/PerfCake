@@ -104,12 +104,6 @@ public class WarmUpReporter extends AbstractReporter {
       throw new ReportingException("No destination is allowed on " + getClass().getSimpleName());
    }
 
-   @SuppressWarnings("rawtypes")
-   @Override
-   protected Accumulator getAccumulator(final String key, final Class clazz) {
-      return new SlidingWindowAvgAccumulator(16);
-   }
-
    @Override
    protected void doReset() {
       // nothing to do
