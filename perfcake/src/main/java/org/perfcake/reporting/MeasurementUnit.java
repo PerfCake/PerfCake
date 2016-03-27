@@ -156,7 +156,7 @@ public class MeasurementUnit implements Serializable {
    /**
     * Gets time of the last measurement (time period between calls to {@link #startMeasure()} and {@link #stopMeasure()} in milliseconds.
     *
-    * @return Time of the last measurement in milliseconds.
+    * @return Time of the last measurement in milliseconds, -1 when there was no measurement recorded yet.
     */
    public double getLastTime() {
       if (startTime == -1 || stopTime == -1) {
@@ -168,7 +168,20 @@ public class MeasurementUnit implements Serializable {
                "Please refer to the Troubleshooting section in the User Guide.\nCurrent measurement unit: " + this.toString());
       }
 
-      return (stopTime - startTime) / 1_000_000.0;
+      return (stopTime - startTime) / 1_000_000d;
+   }
+
+   /**
+    * Gets the total service time between enqueuing the sender task and its completion.
+    *
+    * @return The total service time between enqueuing the sender task and its completion, -1 when there was no measurement recorded yet.
+    */
+   public double getServiceTime() {
+      if (startTime == -1 || stopTime == -1) {
+         return -1;
+      }
+
+      return (stopTime - enqueueTime) / 1_000_000d;
    }
 
    /**
@@ -193,6 +206,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Gets the failure that happened during processing of this task.
+    *
     * @return The exception that occurred or null if there was no exception.
     */
    public Exception getFailure() {
@@ -201,6 +215,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Sets the exception that happened during processing of this task to be remembered and reported.
+    *
     * @param failure The exception that happened or null to clear the failure flag.
     */
    public void setFailure(final Exception failure) {
@@ -214,6 +229,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Gets the time when the current sender request was enqueued.
+    *
     * @return The time when the current sender request was enqueued.
     */
    public long getEnqueueTime() {
@@ -222,6 +238,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Sets the time when the current sender request was enqueued.
+    * 
     * @param enqueueTime The time when the current sender request was enqueued.
     */
    public void setEnqueueTime(final long enqueueTime) {
