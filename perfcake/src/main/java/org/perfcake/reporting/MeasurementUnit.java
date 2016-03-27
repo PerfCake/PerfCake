@@ -80,6 +80,11 @@ public class MeasurementUnit implements Serializable {
    private Exception failure = null;
 
    /**
+    * Time when the sender request was enqueued. By default we assume this is the creation time.
+    */
+   private long enqueueTime = System.nanoTime();
+
+   /**
     * Constructor is protected. Use {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()} to obtain a new instance.
     *
     * @param iteration
@@ -207,6 +212,22 @@ public class MeasurementUnit implements Serializable {
       this.failure = failure;
    }
 
+   /**
+    * Gets the time when the current sender request was enqueued.
+    * @return The time when the current sender request was enqueued.
+    */
+   public long getEnqueueTime() {
+      return enqueueTime;
+   }
+
+   /**
+    * Sets the time when the current sender request was enqueued.
+    * @param enqueueTime The time when the current sender request was enqueued.
+    */
+   public void setEnqueueTime(final long enqueueTime) {
+      this.enqueueTime = enqueueTime;
+   }
+
    @Override
    public int hashCode() {
       int result;
@@ -218,6 +239,7 @@ public class MeasurementUnit implements Serializable {
       result = 31 * result + (int) (temp ^ (temp >>> 32));
       result = 31 * result + measurementResults.hashCode();
       result = 31 * result + (int) (timeStarted ^ (timeStarted >>> 32));
+      result = 31 * result + (int) (enqueueTime ^ (enqueueTime >>> 32));
       return result;
    }
 
@@ -244,6 +266,9 @@ public class MeasurementUnit implements Serializable {
       if (timeStarted != that.timeStarted) {
          return false;
       }
+      if (enqueueTime != that.enqueueTime) {
+         return false;
+      }
       if (Double.compare(that.totalTime, totalTime) != 0) {
          return false;
       }
@@ -258,6 +283,7 @@ public class MeasurementUnit implements Serializable {
    public String toString() {
       return "MeasurementUnit [" +
             "iteration=" + iteration +
+            ", enqueueTime=" + enqueueTime +
             ", startTime=" + startTime +
             ", stopTime=" + stopTime +
             ", totalTime=" + totalTime +

@@ -88,6 +88,11 @@ class SenderTask implements Runnable {
    private final CanalStreet canalStreet;
 
    /**
+    * The time when the task was enqueued.
+    */
+   private long enqueueTime = System.nanoTime();
+
+   /**
     * Creates a new task to send a message.
     * There is a communication channel established that allows and requires the sender task to report the task completion and any possible error.
     * The visibility of this constructor is limited as it is not intended for normal use.
@@ -151,6 +156,7 @@ class SenderTask implements Runnable {
       ReceivedMessage receivedMessage;
       try {
          final MeasurementUnit mu = reportManager.newMeasurementUnit();
+         mu.setEnqueueTime(enqueueTime);
 
          if (mu != null) {
             // only set numbering to headers if it is enabled, later there is no change to

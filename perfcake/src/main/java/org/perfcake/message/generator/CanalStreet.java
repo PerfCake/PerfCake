@@ -42,6 +42,11 @@ public class CanalStreet {
    private Semaphore semaphore;
 
    /**
+    * Should we interrupt the generator if there is an error?
+    */
+   private boolean failFast = Boolean.parseBoolean(Utils.getProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false"));
+
+   /**
     * Establishes a new communication channel that can be passed to a {@link SenderTask}.
     *
     * @param generator
@@ -72,8 +77,6 @@ public class CanalStreet {
     *       The root cause of the interruption.
     */
    protected void senderError(final Exception e) {
-      boolean failFast = Boolean.parseBoolean(Utils.getProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false"));
-
       if (failFast) {
          generator.interrupt(e);
       }
