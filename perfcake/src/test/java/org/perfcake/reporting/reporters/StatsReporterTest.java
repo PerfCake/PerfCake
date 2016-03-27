@@ -35,7 +35,6 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -163,6 +162,7 @@ public class StatsReporterTest {
    }
 
    @Test
+   @SuppressWarnings("unchecked")
    public void testHistogramReporting() throws ReportingException, InterruptedException {
       final ReportManager man = new ReportManager();
       man.setRunInfo(new RunInfo(new Period(PeriodType.ITERATION, 10)));
@@ -200,6 +200,53 @@ public class StatsReporterTest {
       Assert.assertTrue(secondInterval.getNumber() < 90.0);
 
       Assert.assertTrue(firstInterval.getNumber() + secondInterval.getNumber() == 100.0);
+   }
 
+   @Test
+   @SuppressWarnings("unchecked")
+   public void testServiceTimeReporter() throws Exception {
+      final Properties reporterProperties = new Properties();
+      reporterProperties.put("averageEnabled", "true");
+      reporterProperties.put("minimumEnabled", "true");
+      reporterProperties.put("maximumEnabled", "true");
+
+      final ServiceTimeStatsReporter stsr = (ServiceTimeStatsReporter) ObjectFactory.summonInstance(ServiceTimeStatsReporter.class.getName(), reporterProperties);
+
+      final ReportManager rm = new ReportManager();
+      final DummyDestination dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), new Properties());
+      stsr.registerDestination(dest, new Period(PeriodType.ITERATION, 1));
+      rm.registerReporter(stsr);
+      final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, 10));
+      rm.setRunInfo(ri);
+      rm.start();
+
+      final MeasurementUnit mus[] = new MeasurementUnit[10];
+
+      for (int i = 0; i < 10; i++) {
+         mus[i] = rm.newMeasurementUnit();
+         Thread.sleep(1);
+      }
+
+      for (int i = 0; i < 10; i++) {
+         mus[i].startMeasure();
+         Thread.sleep(1);
+         mus[i].stopMeasure();
+         long tm = System.nanoTime();
+      }
+
+      for (int i = 0; i < 10; i++) {
+         rm.report(mus[i]);
+      }
+
+      rm.stop();
+
+      // it took us 10ms to enqueue all the tasks and another 10ms to run them
+      // so we cannot get shorter than 10ms delay for minimum and maximum (we preserved the order of tasks)
+      // E = enqueue, X = execute, . = 1ms delay
+      // E0.E1.E2.E3.E4.E5.E6.E7.E8.E9.X0.X1.X2.X3.X4.X5.X6.X7.X8.X9
+      Assert.assertTrue(((Quantity<Double>) dest.getLastMeasurement().get(StatsReporter.MINIMUM)).getNumber() > 10d);
+      Assert.assertTrue(((Quantity<Double>) dest.getLastMeasurement().get(StatsReporter.MAXIMUM)).getNumber() > 10d);
+
+      System.out.println(dest.getLastMeasurement());
    }
 }
