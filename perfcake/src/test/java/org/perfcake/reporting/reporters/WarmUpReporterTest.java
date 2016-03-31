@@ -47,7 +47,7 @@ public class WarmUpReporterTest {
          Thread.sleep(100);
          mu.stopMeasure();
          rm.report(mu);
-         Thread.sleep(10);
+         Thread.sleep(100);
          m = dd.getLastMeasurement();
          Assert.assertNotNull(m);
          if (!warmUpDetected && !((Boolean) m.get(PerfCakeConst.WARM_UP_TAG))) {
