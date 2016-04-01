@@ -76,15 +76,15 @@ public class ReportManager {
     * @return A {@link org.perfcake.reporting.MeasurementUnit measurement unit} unit with a unique iteration number, or null if a measurement is not running or is already finished.
     */
    public MeasurementUnit newMeasurementUnit() {
-      if (!runInfo.isRunning()) {
-         return null;
-      }
+      if (runInfo.isRunning()) {
+         if (log.isTraceEnabled()) {
+            log.trace("Creating a new measurement unit.");
+         }
 
-      if (log.isTraceEnabled()) {
-         log.trace("Creating a new measurement unit.");
+         return new MeasurementUnit(runInfo.getNextIteration());
       }
-
-      return new MeasurementUnit(runInfo.getNextIteration());
+      
+      return null;
    }
 
    /**

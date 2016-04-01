@@ -156,9 +156,9 @@ class SenderTask implements Runnable {
       ReceivedMessage receivedMessage;
       try {
          final MeasurementUnit mu = reportManager.newMeasurementUnit();
-         mu.setEnqueueTime(enqueueTime);
 
          if (mu != null) {
+            mu.setEnqueueTime(enqueueTime);
             // only set numbering to headers if it is enabled, later there is no change to
             // filter out the headers before sending
             if (messageAttributes != null) {
