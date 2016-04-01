@@ -39,7 +39,7 @@ import javax.naming.NamingException;
 /**
  * Test JMS client, both in-jvm and separate one. Also provides a wiretap that can read messages from a queue and pass them to another immediately.
  *
- * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
+ * @author <a href="mailto:lenka@vecerovi.com">Lenka Večeřa</a>
  */
 public class JmsHelper {
 

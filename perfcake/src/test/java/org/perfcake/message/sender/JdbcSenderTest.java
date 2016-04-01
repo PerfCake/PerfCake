@@ -43,7 +43,7 @@ import java.util.Properties;
 /**
  * Tests {@link org.perfcake.message.sender.JdbcSender}.
  *
- * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
+ * @author <a href="mailto:lenka@vecerovi.com">Lenka Večeřa</a>
  */
 @Test(groups = { "unit" })
 public class JdbcSenderTest {

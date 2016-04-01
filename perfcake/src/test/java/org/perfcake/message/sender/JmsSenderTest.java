@@ -48,7 +48,7 @@ import javax.jms.TextMessage;
 /**
  * Tests {@link org.perfcake.message.sender.JmsSender}.
  *
- * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
+ * @author <a href="mailto:lenka@vecerovi.com">Lenka Večeřa</a>
  */
 @Test(groups = { "ueber" })
 public class JmsSenderTest extends Arquillian {
