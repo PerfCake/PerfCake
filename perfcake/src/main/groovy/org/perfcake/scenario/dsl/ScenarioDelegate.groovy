@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,8 @@
  */
 package org.perfcake.scenario.dsl
 
-import groovy.transform.TupleConstructor
-import org.apache.logging.log4j.LogManager
-import org.codehaus.groovy.control.CompilerConfiguration
-import org.codehaus.groovy.control.customizers.ImportCustomizer
-import org.codehaus.groovy.control.customizers.SecureASTCustomizer
+import static org.codehaus.groovy.syntax.Types.*
+
 import org.perfcake.PerfCakeConst
 import org.perfcake.PerfCakeException
 import org.perfcake.common.Period
@@ -36,10 +33,14 @@ import org.perfcake.scenario.ScenarioFactory
 import org.perfcake.util.ObjectFactory
 import org.perfcake.util.Utils
 
+import org.apache.logging.log4j.LogManager
+import org.codehaus.groovy.control.CompilerConfiguration
+import org.codehaus.groovy.control.customizers.ImportCustomizer
+import org.codehaus.groovy.control.customizers.SecureASTCustomizer
+
+import groovy.transform.TupleConstructor
 import java.nio.file.Files
 import java.nio.file.Paths
-
-import static org.codehaus.groovy.syntax.Types.*
 
 /**
  * Implementation of DSL scenario specification support for PerfCake.

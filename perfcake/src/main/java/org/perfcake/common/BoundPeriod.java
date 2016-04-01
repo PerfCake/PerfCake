@@ -83,7 +83,7 @@ public class BoundPeriod<T> extends Period {
    @SuppressWarnings("rawtypes")
    @Override
    public boolean equals(final Object obj) {
-      if(obj == null) {
+      if (obj == null) {
          return false;
       }
       if (this == obj) {

@@ -216,7 +216,8 @@ public class MeasurementUnit implements Serializable {
    /**
     * Sets the exception that happened during processing of this task to be remembered and reported.
     *
-    * @param failure The exception that happened or null to clear the failure flag.
+    * @param failure
+    *       The exception that happened or null to clear the failure flag.
     */
    public void setFailure(final Exception failure) {
       if (failure != null) {
@@ -239,7 +240,8 @@ public class MeasurementUnit implements Serializable {
    /**
     * Sets the time when the current sender request was enqueued.
     *
-    * @param enqueueTime The time when the current sender request was enqueued.
+    * @param enqueueTime
+    *       The time when the current sender request was enqueued.
     */
    public void setEnqueueTime(final long enqueueTime) {
       this.enqueueTime = enqueueTime;

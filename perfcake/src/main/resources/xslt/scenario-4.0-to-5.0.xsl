@@ -9,8 +9,8 @@
          <xsl:choose>
             <xsl:when test="@value">
                <xsl:attribute name="value">
-               <xsl:value-of select="@value"/>
-            </xsl:attribute>
+                  <xsl:value-of select="@value"/>
+               </xsl:attribute>
             </xsl:when>
             <xsl:otherwise>
                <xsl:copy-of select="node()"/>
@@ -70,7 +70,9 @@
             <xsl:attribute name="class">
                <xsl:value-of select="pc4:scenario/pc4:sender/@class"/>
             </xsl:attribute>
-            <target><xsl:value-of select="pc4:scenario/pc4:sender/pc4:property[@name='target']/@value"/></target>
+            <target>
+               <xsl:value-of select="pc4:scenario/pc4:sender/pc4:property[@name='target']/@value"/>
+            </target>
             <xsl:for-each select="pc4:scenario/pc4:sender/pc4:property">
                <xsl:if test="not(@name = 'target')">
                   <xsl:call-template name="property"/>
@@ -82,7 +84,7 @@
                <xsl:for-each select="pc4:scenario/pc4:reporting/pc4:reporter">
                   <reporter>
                      <xsl:attribute name="class">
-                         <xsl:value-of select="@class"/>
+                        <xsl:value-of select="@class"/>
                      </xsl:attribute>
                      <xsl:if test="@enabled">
                         <xsl:attribute name="enabled">

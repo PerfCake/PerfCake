@@ -28,7 +28,6 @@ import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 
-import java.util.List;
 import java.util.Set;
 
 /**

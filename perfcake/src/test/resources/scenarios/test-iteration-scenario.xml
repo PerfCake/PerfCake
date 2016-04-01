@@ -2,11 +2,11 @@
 <scenario xmlns="urn:perfcake:scenario:7.0">
    <run type="iteration" value="1"/>
    <generator class="DefaultMessageGenerator" threads="10">
-      <property name="shutdownPeriod" value="5500" />
+      <property name="shutdownPeriod" value="5500"/>
    </generator>
    <sender class="TestSender">
       <target>Out there!</target>
-      <property name="delay" value="5000" />
+      <property name="delay" value="5000"/>
    </sender>
    <!--reporting>
       <reporter class="DummyReporter">

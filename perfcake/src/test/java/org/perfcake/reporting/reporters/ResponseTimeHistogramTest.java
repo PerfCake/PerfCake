@@ -40,7 +40,7 @@ import java.util.Properties;
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-@Test(groups = {"unit"})
+@Test(groups = { "unit" })
 public class ResponseTimeHistogramTest {
 
    private static final Logger log = LogManager.getLogger(ResponseTimeHistogramTest.class);

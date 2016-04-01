@@ -145,6 +145,7 @@ public interface MessageGenerator {
 
    /**
     * Gets the number of sender tasks in the queue awaiting to be processed.
+    *
     * @return The number of sender tasks in the queue awaiting to be processed.
     */
    long getTasksInQueue();

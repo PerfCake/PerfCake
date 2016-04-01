@@ -159,9 +159,11 @@ public class Histogram {
       return getCount(new LinkedHashMap<>(histogram));
    }
 
-   /** Gets the sum of all map entries for the given map snapshot.
+   /**
+    * Gets the sum of all map entries for the given map snapshot.
     *
-    * @param snapshot The map snapshot to be counted.
+    * @param snapshot
+    *       The map snapshot to be counted.
     * @return The sum of all map entries.
     */
    private static long getCount(Map<Range, AtomicLong> snapshot) {

@@ -7,14 +7,14 @@
       <RollingFile name="ROLLING" fileName="./perfcake.log" filePattern="./perfcake.log.%d{yyyy-MM-dd}">
          <PatternLayout pattern="%d %-5p [%t] {%c} %m%n"/>
          <Policies>
-            <TimeBasedTriggeringPolicy />
+            <TimeBasedTriggeringPolicy/>
          </Policies>
          <DefaultRolloverStrategy max="10"/>
       </RollingFile>
       <RollingFile name="VALIDATION" fileName="./perfcake-validation.log" filePattern="./perfcake-validation.log.%d{yyyy-MM-dd}">
          <PatternLayout pattern="%d %-5p [%t] {%c} %m%n"/>
          <Policies>
-            <TimeBasedTriggeringPolicy />
+            <TimeBasedTriggeringPolicy/>
          </Policies>
          <DefaultRolloverStrategy max="10"/>
       </RollingFile>
