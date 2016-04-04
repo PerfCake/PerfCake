@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,12 @@ public class ObjectFactory {
     * Cached plugin class loader.
     */
    private static ClassLoader pluginClassLoader = null;
+
+   /**
+    * There should be no instance of a utility class.
+    */
+   private ObjectFactory() {
+   }
 
    /**
     * Looks up for a set method on a bean that is able to accept Element

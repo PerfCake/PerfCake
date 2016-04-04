@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,6 @@ package org.perfcake.message.sender;
 import org.perfcake.message.Message;
 import org.perfcake.util.ObjectFactory;
 
-import io.vertx.core.AbstractVerticle;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.net.NetSocket;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -34,6 +30,11 @@ import org.testng.annotations.Test;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Properties;
+
+import io.vertx.core.AbstractVerticle;
+import io.vertx.core.Handler;
+import io.vertx.core.Vertx;
+import io.vertx.core.net.NetSocket;
 
 /**
  * Tests {@link org.perfcake.message.sender.ChannelSenderSocket}.

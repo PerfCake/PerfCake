@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,10 @@ import static org.mockito.Mockito.*;
 import org.perfcake.util.ObjectFactory;
 
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.*;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.ErrorHandler;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LogEvent;
 import org.mockito.InOrder;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -43,7 +46,7 @@ import java.util.Properties;
 /**
  * Tests {@link org.perfcake.message.sender.JdbcSender}.
  *
- * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
+ * @author <a href="mailto:lenka@vecerovi.com">Lenka Večeřa</a>
  */
 @Test(groups = { "unit" })
 public class JdbcSenderTest {
@@ -81,11 +84,13 @@ public class JdbcSenderTest {
 
       }
 
-      @Override public State getState() {
+      @Override
+      public State getState() {
          return State.STARTED;
       }
 
-      @Override public void initialize() {
+      @Override
+      public void initialize() {
 
       }
 

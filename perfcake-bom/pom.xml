@@ -2,7 +2,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake-bom</artifactId>
-   <version>6.0</version>
+   <version>6.1</version>
    <packaging>pom</packaging>
    <name>PerfCake Bill of Materials</name>
    <organization>
@@ -16,7 +16,7 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-      <tag>v5.1</tag>
+      <tag>v6.1</tag>
    </scm>
    <licenses>
       <license>
@@ -57,7 +57,7 @@
 
       <version.camel>2.16.1</version.camel>
       <version.drools>6.3.0.Final</version.drools>
-      <version.groovy>2.4.5</version.groovy>
+      <version.groovy>2.4.6</version.groovy>
       <version.httl>1.0.12</version.httl>
       <version.slf4j>1.7.13</version.slf4j>
       <version.log4j>2.5</version.log4j>

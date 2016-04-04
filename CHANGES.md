@@ -1,11 +1,24 @@
 PerfCake Change Log
 ===================
 
+Release 6.1
+===========
+
+Features
+--------
+ * https://github.com/PerfCake/PerfCake/issues/issues/277 - Service time measurement
+
+Bug Fixes
+---------
+ * https://github.com/PerfCake/PerfCake/issues/issues/276 - WarmUpReporter causes the iteration count to freeze at the first one.
+ * https://github.com/PerfCake/PerfCake/issues/issues/278 - Illegal nesting in index.html sources prevents web sites to be generated properly
+
 Release 6.0
 ===========
 
 Features
 --------
+* Scenario schema namespace changed to "**urn:perfcake:scenario:6.0**".
 * We solved coordinated omission in PerfCake in the following issues and by introducing a new reporter (**ResponseTimeHistogramReporter**):
   * https://github.com/PerfCake/PerfCake/issues/258 - Coordinated omission problem
   * https://github.com/PerfCake/PerfCake/issues/267 - Switch to HdrHistogram
@@ -20,12 +33,67 @@ Bug Fixes
 Release 5.1
 ===========
 
-TBD
+Features
+--------
+ * https://api.github.com/repos/PerfCake/PerfCake/issues/248 - Add result histogram feature to StatsReporters
+
+Bug Fixes
+---------
+ * https://github.com/PerfCake/PerfCake/issues/issues/249 - NPE when there are no scenario properties and logging is debug
+ * https://github.com/PerfCake/PerfCake/issues/issues/250 - Timestamp property not initialized before loading scenario
+ * https://github.com/PerfCake/PerfCake/issues/issues/251 - Scenario xsd is always loaded from web
+ * https://github.com/PerfCake/PerfCake/issues/issues/252 - Can't seem to use '+' in find's regular expressions on OS X (perfcake.sh)
+ * https://github.com/PerfCake/PerfCake/issues/issues/253 - Report publishing is not thread-safe.
 
 Release 5.0
 ===========
 
-TBD
+Features
+--------
+ * Scenario schema namespace changed to "**urn:perfcake:scenario:5.0**".
+ * https://github.com/PerfCake/PerfCake/issues/issues/23 - Add check for code-style, code coverage and license
+ * https://github.com/PerfCake/PerfCake/issues/issues/53 - Implement missing senders
+ * https://github.com/PerfCake/PerfCake/issues/issues/73 - Implement Eclipse plugin to operate PerfCake
+ * https://github.com/PerfCake/PerfCake/issues/issues/80 - Implement IntelliJ IDEA plugin to operate PerfCake
+ * https://github.com/PerfCake/PerfCake/issues/issues/138 - Add support for classpath definition to the Groovy sender
+ * https://github.com/PerfCake/PerfCake/issues/issues/144 - Implement NetBeans plugin to operate PerfCake
+ * https://github.com/PerfCake/PerfCake/issues/issues/149 - Review logging
+ * https://github.com/PerfCake/PerfCake/issues/issues/151 - Review exception handling
+ * https://github.com/PerfCake/PerfCake/issues/issues/182 - Create a script to automatically incerase PerfCake version
+ * https://github.com/PerfCake/PerfCake/issues/issues/190 - Implement SoapSender
+ * https://github.com/PerfCake/PerfCake/issues/issues/194 - Remove generated classes from JaCoCo.
+ * https://github.com/PerfCake/PerfCake/issues/issues/195 - Develop CommandSender test
+ * https://github.com/PerfCake/PerfCake/issues/issues/197 - Add support for sequences
+ * https://github.com/PerfCake/PerfCake/issues/issues/203 - Make sure PerfCake parent is properly prepared for release
+ * https://github.com/PerfCake/PerfCake/issues/issues/205 - Reorganize pom files
+ * https://github.com/PerfCake/PerfCake/issues/issues/206 - Strip debug info from binary releases
+ * https://github.com/PerfCake/PerfCake/issues/issues/207 - Generate aggregated javadoc
+ * https://github.com/PerfCake/PerfCake/issues/issues/209 - Implement constant speed message generator
+ * https://github.com/PerfCake/PerfCake/issues/issues/210 - Implement MQTT sender
+ * https://github.com/PerfCake/PerfCake/issues/issues/214 - Review XML scenario format
+ * https://github.com/PerfCake/PerfCake/issues/issues/215 - Migrate testing features out of DummySender
+ * https://github.com/PerfCake/PerfCake/issues/issues/216 - Implement Iteration per seconds reporter
+ * https://github.com/PerfCake/PerfCake/issues/issues/218 - Http Sender must be able to switch Http methods
+ * https://github.com/PerfCake/PerfCake/issues/issues/219 - Create thread ID sequencer and make it a default one
+ * https://github.com/PerfCake/PerfCake/issues/issues/220 - Create current timestamp sequencer and make it a default one
+ * https://github.com/PerfCake/PerfCake/issues/issues/221 - Verify Java version in startup scripts
+ * https://github.com/PerfCake/PerfCake/issues/issues/222 - Find out whether JRE is sufficient for running PerfCake
+ * https://github.com/PerfCake/PerfCake/issues/issues/223 - Make sure sequences can be used in message headers
+ * https://github.com/PerfCake/PerfCake/issues/issues/226 - Switch httl to Javassist
+ * https://github.com/PerfCake/PerfCake/issues/issues/231 - Mark components' mandatory properties as such.
+
+Bug Fixes
+---------
+ * https://github.com/PerfCake/PerfCake/issues/issues/204 - Fix path handling in binary distribution
+ * https://github.com/PerfCake/PerfCake/issues/issues/212 - messageNumberingEnabled property of DefaultMessageGenerator is missing from User Guide
+ * https://github.com/PerfCake/PerfCake/issues/issues/213 - javadoc.perfcake.org is empty
+ * https://github.com/PerfCake/PerfCake/issues/issues/227 - Sequence manager raise condition
+ * https://github.com/PerfCake/PerfCake/issues/issues/228 - Timestamp configuration skipped when using API to run scenario
+ * https://github.com/PerfCake/PerfCake/issues/issues/229 - RegExp validator does not consider empty payload
+ * https://github.com/PerfCake/PerfCake/issues/issues/230 - Review documentation of warmup configuration
+ * https://github.com/PerfCake/PerfCake/issues/issues/233 - README.md and CHANGES.md files are missing from the root of the repository
+ * https://github.com/PerfCake/PerfCake/issues/issues/236 - Scenario loading fails if there is a directory with the same name as scenario present in PerfCake home
+ * https://github.com/PerfCake/PerfCake/issues/issues/243 - Broken build - com.sun.xml.bind
 
 Release 4.0
 ===========

@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,11 @@ public class CanalStreet {
    private Semaphore semaphore;
 
    /**
+    * Should we interrupt the generator if there is an error?
+    */
+   private boolean failFast = Boolean.parseBoolean(Utils.getProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false"));
+
+   /**
     * Establishes a new communication channel that can be passed to a {@link SenderTask}.
     *
     * @param generator
@@ -72,8 +77,6 @@ public class CanalStreet {
     *       The root cause of the interruption.
     */
    protected void senderError(final Exception e) {
-      boolean failFast = Boolean.parseBoolean(Utils.getProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false"));
-
       if (failFast) {
          generator.interrupt(e);
       }

@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -145,6 +145,7 @@ public interface MessageGenerator {
 
    /**
     * Gets the number of sender tasks in the queue awaiting to be processed.
+    *
     * @return The number of sender tasks in the queue awaiting to be processed.
     */
    long getTasksInQueue();

@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import javax.jms.TextMessage;
 /**
  * Tests {@link org.perfcake.message.sender.JmsSender}.
  *
- * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
+ * @author <a href="mailto:lenka@vecerovi.com">Lenka Večeřa</a>
  */
 @Test(groups = { "ueber" })
 public class JmsSenderTest extends Arquillian {

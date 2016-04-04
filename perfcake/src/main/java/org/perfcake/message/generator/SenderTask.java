@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,6 +88,11 @@ class SenderTask implements Runnable {
    private final CanalStreet canalStreet;
 
    /**
+    * The time when the task was enqueued.
+    */
+   private long enqueueTime = System.nanoTime();
+
+   /**
     * Creates a new task to send a message.
     * There is a communication channel established that allows and requires the sender task to report the task completion and any possible error.
     * The visibility of this constructor is limited as it is not intended for normal use.
@@ -153,6 +158,7 @@ class SenderTask implements Runnable {
          final MeasurementUnit mu = reportManager.newMeasurementUnit();
 
          if (mu != null) {
+            mu.setEnqueueTime(enqueueTime);
             // only set numbering to headers if it is enabled, later there is no change to
             // filter out the headers before sending
             if (messageAttributes != null) {

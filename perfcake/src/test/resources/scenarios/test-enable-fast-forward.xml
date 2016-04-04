@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:6.0">
    <run type="time" value="5000"/>
-    <generator class="DefaultMessageGenerator" threads="1"/>
+   <generator class="DefaultMessageGenerator" threads="1"/>
    <sender class="TestSender">
       <target>Out there!</target>
    </sender>
    <reporting>
-        <reporter class="DummyReporter">
-            <destination class="DummyDestination">
-                <period type="time" value="1000"/>
-            </destination>
-        </reporter>
-    </reporting>
-    <messages>
-        <message uri="message3.txt">
-            <validatorRef id="v1"/>
-        </message>
-    </messages>
-    <validation fastForward="true" enabled="true">
-        <validator id="v1" class="DummyValidator"/>
-    </validation>
+      <reporter class="DummyReporter">
+         <destination class="DummyDestination">
+            <period type="time" value="1000"/>
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message uri="message3.txt">
+         <validatorRef id="v1"/>
+      </message>
+   </messages>
+   <validation fastForward="true" enabled="true">
+      <validator id="v1" class="DummyValidator"/>
+   </validation>
 </scenario>

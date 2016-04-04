@@ -10,7 +10,7 @@
          </destination>
          <destination class="ChartDestination">
             <period type="time" value="500"/>
-            <property name="outputDir" value="target/test-chart" />
+            <property name="outputDir" value="target/test-chart"/>
             <property name="yAxis" value="Throughput [iteration/s]"/>
             <property name="group" value="${perfcake.scenario}_throughput"/>
             <property name="name" value="Troughput (${threads:25} threads)"/>

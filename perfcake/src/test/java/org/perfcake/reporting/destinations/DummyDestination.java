@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -196,6 +196,7 @@ public class DummyDestination implements Destination {
 
    /**
     * Checks whether destination stores all observed measurements in a list for later analysis.
+    *
     * @return True iff destination stores all observed measurements in a list for later analysis.
     */
    public boolean isObserving() {
@@ -204,7 +205,9 @@ public class DummyDestination implements Destination {
 
    /**
     * Sets whether destination should store all observed measurements in a list for later analysis.
-    * @param observing True iff destination should store all observed measurements in a list for later analysis.
+    *
+    * @param observing
+    *       True iff destination should store all observed measurements in a list for later analysis.
     */
    public void setObserving(boolean observing) {
       this.observing = observing;
@@ -212,6 +215,7 @@ public class DummyDestination implements Destination {
 
    /**
     * Gets the list of observed measurements.
+    *
     * @return The list of observed measurements.
     */
    public List<Measurement> getObservedMeasurements() {

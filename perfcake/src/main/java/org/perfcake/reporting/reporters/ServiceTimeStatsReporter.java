@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,31 +17,25 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake.reporting.destinations;
+package org.perfcake.reporting.reporters;
 
-import org.perfcake.reporting.Measurement;
-import org.perfcake.reporting.ReportingException;
+import org.perfcake.reporting.MeasurementUnit;
 
 /**
- * Appends a {@link org.perfcake.reporting.Measurement} to standard output.
+ * Reports statistics of service time. This is the time between enqueuing the sender task and its completion.
  *
- * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @see StatsReporter
  */
-public class ConsoleDestination implements Destination {
+public class ServiceTimeStatsReporter extends StatsReporter {
 
    @Override
-   public void open() {
-      // nop
+   protected Double computeResult(final MeasurementUnit measurementUnit) {
+      return measurementUnit.getServiceTime();
    }
 
    @Override
-   public void close() {
-      // nop
-   }
-
-   @Override
-   public void report(final Measurement measurement) throws ReportingException {
-      System.out.println(measurement.toString());
+   protected String getResultUnit() {
+      return "ms";
    }
 }

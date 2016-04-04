@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,12 @@ public class TimerBenchmark {
     * Benchmark cycles.
     */
    private static final int CYCLES = 10 * 1024;
+
+   /**
+    * There should be no instance of a utility class.
+    */
+   private TimerBenchmark() {
+   }
 
    /**
     * Measures system timer resolution.

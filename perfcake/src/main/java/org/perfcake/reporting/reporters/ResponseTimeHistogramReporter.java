@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,6 +139,7 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
 
    /**
     * Gets the precision as the number of significant digits that are distinguished by this reporter.
+    *
     * @return The number of significant digits that are distinguished by this reporter.
     */
    public int getPrecision() {
@@ -147,7 +148,9 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
 
    /**
     * Sets the precision as the number of significant digits that are distinguished by this reporter.
-    * @param precision The number of significant digits that are distinguished by this reporter.
+    *
+    * @param precision
+    *       The number of significant digits that are distinguished by this reporter.
     */
    public void setPrecision(final int precision) {
       this.precision = precision;
@@ -173,7 +176,8 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
     * the expected response time manually for correct computation of the histogram. When the
     * {@link Correction#OFF} mode is used, no correction is done.
     *
-    * @param correctionMode The correction mode to be used.
+    * @param correctionMode
+    *       The correction mode to be used.
     */
    public void setCorrectionMode(final Correction correctionMode) {
       this.correctionMode = correctionMode;
@@ -191,7 +195,8 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
    /**
     * Sets the correction value for the coordinated omission when the {@link Correction#USER} mode is set.
     *
-    * @param correction The correction value.
+    * @param correction
+    *       The correction value.
     */
    public void setCorrection(final double correction) {
       this.correction = correction;
@@ -209,7 +214,8 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
    /**
     * Sets the prefix of percentile values in the result map.
     *
-    * @param prefix The percentile value prefix.
+    * @param prefix
+    *       The percentile value prefix.
     */
    public void setPrefix(final String prefix) {
       this.prefix = prefix;
@@ -227,7 +233,8 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
    /**
     * Sets the detail level of the result. I.e. the scaling factor by which to divide histogram recorded values units in output.
     *
-    * @param detail The detail level.
+    * @param detail
+    *       The detail level.
     */
    public void setDetail(final int detail) {
       this.detail = detail;

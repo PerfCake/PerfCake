@@ -19,8 +19,8 @@
    </reporting>
    <messages>
       <message uri="unfiltered-message.txt">
-         <header name="testHeader" value="@{ThreadId}" />
-         <property name="testProperty" value="@{MessageNumber}" />
+         <header name="testHeader" value="@{ThreadId}"/>
+         <property name="testProperty" value="@{MessageNumber}"/>
       </message>
       <message content="@{number + 1}@{missing1}"/>
       <message content="@{missing2}"/>

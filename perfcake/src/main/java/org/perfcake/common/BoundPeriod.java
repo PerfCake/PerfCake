@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,6 +83,9 @@ public class BoundPeriod<T> extends Period {
    @SuppressWarnings("rawtypes")
    @Override
    public boolean equals(final Object obj) {
+      if (obj == null) {
+         return false;
+      }
       if (this == obj) {
          return true;
       }

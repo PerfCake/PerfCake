@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +80,11 @@ public class MeasurementUnit implements Serializable {
    private Exception failure = null;
 
    /**
+    * Time when the sender request was enqueued. By default we assume this is the creation time.
+    */
+   private long enqueueTime = System.nanoTime();
+
+   /**
     * Constructor is protected. Use {@link org.perfcake.reporting.ReportManager#newMeasurementUnit()} to obtain a new instance.
     *
     * @param iteration
@@ -151,7 +156,7 @@ public class MeasurementUnit implements Serializable {
    /**
     * Gets time of the last measurement (time period between calls to {@link #startMeasure()} and {@link #stopMeasure()} in milliseconds.
     *
-    * @return Time of the last measurement in milliseconds.
+    * @return Time of the last measurement in milliseconds, -1 when there was no measurement recorded yet.
     */
    public double getLastTime() {
       if (startTime == -1 || stopTime == -1) {
@@ -163,7 +168,20 @@ public class MeasurementUnit implements Serializable {
                "Please refer to the Troubleshooting section in the User Guide.\nCurrent measurement unit: " + this.toString());
       }
 
-      return (stopTime - startTime) / 1_000_000.0;
+      return (stopTime - startTime) / 1_000_000d;
+   }
+
+   /**
+    * Gets the total service time between enqueuing the sender task and its completion.
+    *
+    * @return The total service time between enqueuing the sender task and its completion, -1 when there was no measurement recorded yet.
+    */
+   public double getServiceTime() {
+      if (startTime == -1 || stopTime == -1) {
+         return -1;
+      }
+
+      return (stopTime - enqueueTime) / 1_000_000d;
    }
 
    /**
@@ -188,6 +206,7 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Gets the failure that happened during processing of this task.
+    *
     * @return The exception that occurred or null if there was no exception.
     */
    public Exception getFailure() {
@@ -196,7 +215,9 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Sets the exception that happened during processing of this task to be remembered and reported.
-    * @param failure The exception that happened or null to clear the failure flag.
+    *
+    * @param failure
+    *       The exception that happened or null to clear the failure flag.
     */
    public void setFailure(final Exception failure) {
       if (failure != null) {
@@ -205,6 +226,25 @@ public class MeasurementUnit implements Serializable {
          measurementResults.put(PerfCakeConst.FAILURES_TAG, 0L);
       }
       this.failure = failure;
+   }
+
+   /**
+    * Gets the time when the current sender request was enqueued.
+    *
+    * @return The time when the current sender request was enqueued.
+    */
+   public long getEnqueueTime() {
+      return enqueueTime;
+   }
+
+   /**
+    * Sets the time when the current sender request was enqueued.
+    *
+    * @param enqueueTime
+    *       The time when the current sender request was enqueued.
+    */
+   public void setEnqueueTime(final long enqueueTime) {
+      this.enqueueTime = enqueueTime;
    }
 
    @Override
@@ -218,6 +258,7 @@ public class MeasurementUnit implements Serializable {
       result = 31 * result + (int) (temp ^ (temp >>> 32));
       result = 31 * result + measurementResults.hashCode();
       result = 31 * result + (int) (timeStarted ^ (timeStarted >>> 32));
+      result = 31 * result + (int) (enqueueTime ^ (enqueueTime >>> 32));
       return result;
    }
 
@@ -244,6 +285,9 @@ public class MeasurementUnit implements Serializable {
       if (timeStarted != that.timeStarted) {
          return false;
       }
+      if (enqueueTime != that.enqueueTime) {
+         return false;
+      }
       if (Double.compare(that.totalTime, totalTime) != 0) {
          return false;
       }
@@ -258,6 +302,7 @@ public class MeasurementUnit implements Serializable {
    public String toString() {
       return "MeasurementUnit [" +
             "iteration=" + iteration +
+            ", enqueueTime=" + enqueueTime +
             ", startTime=" + startTime +
             ", stopTime=" + stopTime +
             ", totalTime=" + totalTime +

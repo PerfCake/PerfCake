@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,7 +146,7 @@ public class LdapSender extends AbstractSender {
 
    @Override
    public void doInit(final Properties messageAttributes) throws PerfCakeException {
-      final Hashtable<String, Object> env = new Hashtable<String, Object>();
+      final Hashtable<String, Object> env = new Hashtable<>();
       env.put(Context.SECURITY_AUTHENTICATION, "simple");
       if (ldapUsername != null) {
          env.put(Context.SECURITY_PRINCIPAL, ldapUsername);

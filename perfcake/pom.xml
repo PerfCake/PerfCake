@@ -8,7 +8,7 @@
    <parent>
       <groupId>org.perfcake</groupId>
       <artifactId>perfcake-parent</artifactId>
-      <version>6.0</version>
+      <version>6.1</version>
    </parent>
    <artifactId>perfcake</artifactId>
    <packaging>jar</packaging>
@@ -24,7 +24,7 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-      <tag>v5.1</tag>
+      <tag>v6.1</tag>
    </scm>
    <licenses>
       <license>
@@ -48,7 +48,7 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
       <version.gmaven>1.5</version.gmaven>
-      <version.groovy>2.4.4</version.groovy>
+      <version.groovy>2.4.6</version.groovy>
       <version.jacoco>0.7.5.201505241946</version.jacoco>
       <version.arquillian>1.1.10.Final</version.arquillian>
       <version.wildfly>8.2.0.Final</version.wildfly>

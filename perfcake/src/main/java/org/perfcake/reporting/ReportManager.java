@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -77,15 +76,15 @@ public class ReportManager {
     * @return A {@link org.perfcake.reporting.MeasurementUnit measurement unit} unit with a unique iteration number, or null if a measurement is not running or is already finished.
     */
    public MeasurementUnit newMeasurementUnit() {
-      if (!runInfo.isRunning()) {
-         return null;
-      }
+      if (runInfo.isRunning()) {
+         if (log.isTraceEnabled()) {
+            log.trace("Creating a new measurement unit.");
+         }
 
-      if (log.isTraceEnabled()) {
-         log.trace("Creating a new measurement unit.");
+         return new MeasurementUnit(runInfo.getNextIteration());
       }
-
-      return new MeasurementUnit(runInfo.getNextIteration());
+      
+      return null;
    }
 
    /**

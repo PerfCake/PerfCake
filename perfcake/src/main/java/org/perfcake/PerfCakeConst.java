@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public final class PerfCakeConst {
    /**
     * PerfCake version.
     */
-   public static final String VERSION = "6.0";
+   public static final String VERSION = "6.1";
 
    /**
     * PerfCake scenario XML Schema version that is part of namespace <code>urn:perfcake:scenario:&lt;version&gt;</code>.
@@ -195,4 +195,10 @@ public final class PerfCakeConst {
     * Exit code when there are blocked threads after the scenario was executed.
     */
    public static final int ERR_BLOCKED_THREADS = 6;
+
+   /**
+    * There should be no instance of a utility class.
+    */
+   private PerfCakeConst() {
+   }
 }

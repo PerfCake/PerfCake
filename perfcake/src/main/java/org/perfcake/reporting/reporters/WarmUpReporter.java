@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,7 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
-import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -102,12 +100,6 @@ public class WarmUpReporter extends AbstractReporter {
    @Override
    public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
       throw new ReportingException("No destination is allowed on " + getClass().getSimpleName());
-   }
-
-   @SuppressWarnings("rawtypes")
-   @Override
-   protected Accumulator getAccumulator(final String key, final Class clazz) {
-      return new SlidingWindowAvgAccumulator(16);
    }
 
    @Override

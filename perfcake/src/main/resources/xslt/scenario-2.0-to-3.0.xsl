@@ -9,8 +9,8 @@
          <xsl:choose>
             <xsl:when test="@value">
                <xsl:attribute name="value">
-               <xsl:value-of select="@value"/>
-            </xsl:attribute>
+                  <xsl:value-of select="@value"/>
+               </xsl:attribute>
             </xsl:when>
             <xsl:otherwise>
                <xsl:copy-of select="node()"/>
@@ -88,15 +88,15 @@
                <xsl:if test="pc2:scenario/pc2:sender/pc2:property[@name='username']">
                   <property name="responseUsername">
                      <xsl:attribute name="value">
-                     <xsl:value-of select="pc2:scenario/pc2:sender/pc2:property[@name='username']/@value"/>
-                  </xsl:attribute>
+                        <xsl:value-of select="pc2:scenario/pc2:sender/pc2:property[@name='username']/@value"/>
+                     </xsl:attribute>
                   </property>
                </xsl:if>
                <xsl:if test="pc2:scenario/pc2:sender/pc2:property[@name='password']">
                   <property name="responsePassword">
                      <xsl:attribute name="value">
-                     <xsl:value-of select="pc2:scenario/pc2:sender/pc2:property[@name='password']/@value"/>
-                  </xsl:attribute>
+                        <xsl:value-of select="pc2:scenario/pc2:sender/pc2:property[@name='password']/@value"/>
+                     </xsl:attribute>
                   </property>
                </xsl:if>
                <property name="responseJndiSecurityPrincipal">

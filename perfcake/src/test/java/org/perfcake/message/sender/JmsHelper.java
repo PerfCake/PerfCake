@@ -2,7 +2,7 @@
  * -----------------------------------------------------------------------\
  * PerfCake
  *  
- * Copyright (C) 2010 - 2013 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,15 @@ import javax.naming.NamingException;
 /**
  * Test JMS client, both in-jvm and separate one. Also provides a wiretap that can read messages from a queue and pass them to another immediately.
  *
- * @author <a href="mailto:vaskova.lenka@gmail.com">Lenka Vašková</a>
+ * @author <a href="mailto:lenka@vecerovi.com">Lenka Večeřa</a>
  */
 public class JmsHelper {
+
+   /**
+    * There should be no instance of a utility class.
+    */
+   private JmsHelper() {
+   }
 
    public static class Wiretap implements Runnable {
 
