@@ -242,7 +242,7 @@ public class Chart {
       final String yAxis = axises.substring(axises.indexOf("', '") + 4);
 
       final File jsFile = new File(descriptionFile.getAbsolutePath().substring(0, descriptionFile.getAbsolutePath().length() - 4) + ".js");
-      String firstDataLine = "";
+      String firstDataLine;
       try (BufferedReader br = Files.newBufferedReader(jsFile.toPath(), Charset.forName(Utils.getDefaultEncoding()));) {
          firstDataLine = br.readLine();
       }

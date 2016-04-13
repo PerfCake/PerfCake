@@ -112,7 +112,7 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
    public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
       final Measurement m = newMeasurement();
 
-      DoublePercentileIterator pi = null;
+      DoublePercentileIterator pi;
 
       switch (correctionMode) {
          case AUTO:

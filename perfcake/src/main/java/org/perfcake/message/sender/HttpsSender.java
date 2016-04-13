@@ -79,8 +79,8 @@ public class HttpsSender extends HttpSender {
    }
 
    private SSLSocketFactory initKeyStores() throws Exception {
-      KeyStore keyStore_ = null;
-      KeyStore trustStore_ = null;
+      KeyStore keyStore_;
+      KeyStore trustStore_;
       KeyManagerFactory keyManager = null;
       TrustManagerFactory trustManager = null;
 
