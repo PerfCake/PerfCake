@@ -52,9 +52,13 @@ public class MqttSender extends AbstractSender {
 
    // Properties
    private String qos = QoS.EXACTLY_ONCE.name();
+   private String userName = null;
+   private String password = null;
 
    private String responseTarget = null;
    private String responseQos = qos;
+   private String responseUserName = null;
+   private String responsePassword = null;
 
    @Override
    public void doInit(Properties messageAttributes) throws PerfCakeException {
@@ -69,6 +73,13 @@ public class MqttSender extends AbstractSender {
             mqttClient.setHost(protocol + "://" + host + ":" + port);
             mqttClient.setConnectAttemptsMax(0);
             mqttClient.setReconnectAttemptsMax(0);
+            if (userName != null) {
+               mqttClient.setUserName(userName);
+            }
+
+            if (password != null) {
+               mqttClient.setPassword(password);
+            }
             mqttConnection = mqttClient.blockingConnection();
             mqttConnection.connect();
 
@@ -88,6 +99,13 @@ public class MqttSender extends AbstractSender {
                   mqttResponseClient.setHost(responseProtocol + "://" + responseHost + ":" + responsePort);
                   mqttResponseClient.setConnectAttemptsMax(0);
                   mqttResponseClient.setReconnectAttemptsMax(0);
+                  if (responseUserName != null) {
+                     mqttResponseClient.setUserName(responseUserName);
+                  }
+
+                  if (responsePassword != null) {
+                     mqttResponseClient.setPassword(responsePassword);
+                  }
                   mqttResponseConnection = mqttResponseClient.blockingConnection();
                   mqttResponseConnection.connect();
                } else {
