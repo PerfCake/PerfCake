@@ -114,7 +114,7 @@ public class Utils {
 
       matcher.reset();
       while (matcher.find()) {
-         String pValue = null;
+         String pValue;
          final String pName = matcher.group(2);
          String defaultValue = null;
          if (matcher.groupCount() == 3 && matcher.group(3) != null) {
