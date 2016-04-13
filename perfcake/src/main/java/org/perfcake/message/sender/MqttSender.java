@@ -188,4 +188,36 @@ public class MqttSender extends AbstractSender {
    public void setQos(final String qos) {
       this.qos = qos;
    }
+
+   public String getUserName() {
+      return userName;
+   }
+
+   public void setUserName(final String userName) {
+      this.userName = userName;
+   }
+
+   public String getPassword() {
+      return password;
+   }
+
+   public void setPassword(final String password) {
+      this.password = password;
+   }
+
+   public String getResponseUserName() {
+      return responseUserName;
+   }
+
+   public void setResponseUserName(final String responseUserName) {
+      this.responseUserName = responseUserName;
+   }
+
+   public String getResponsePassword() {
+      return responsePassword;
+   }
+
+   public void setResponsePassword(final String responsePassword) {
+      this.responsePassword = responsePassword;
+   }
 }
