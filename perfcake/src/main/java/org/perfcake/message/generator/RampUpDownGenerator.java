@@ -27,6 +27,7 @@ import org.perfcake.message.sender.MessageSenderManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
@@ -129,6 +130,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
 
    @Override
    public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws PerfCakeException {
+      messageSenderManager.setSenderPoolSize(Arrays.asList(preThreadCount, mainThreadCount, postThreadCount, super.getThreads()).stream().reduce(Integer::max).get());
       super.init(messageSenderManager, messageStore);
       if (preThreadCount <= 0) {
          preThreadCount = super.getThreads();
