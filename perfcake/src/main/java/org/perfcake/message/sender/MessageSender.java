@@ -41,7 +41,7 @@ import java.util.Properties;
  * {@link #preSend} and {@link #postSend} methods are still not part of the performance measurement and can prepare the message for
  * actual sending or handle any cleanup.
  *
- * {@link #send} methods must handle just the message exchange. No logging or complex error handling code should be placed here. Therefore
+ * {@link #send} method must handle just the message exchange. No logging or complex error handling code should be placed here. Therefore
  * we allow any generic exception to be thrown.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
