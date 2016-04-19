@@ -44,11 +44,12 @@ public class SequenceManager {
    private Map<String, Sequence> sequences = new HashMap<>();
 
    /**
-    * Gets a default {@link SequenceManager} instance with a default number sequence prepared for message numbering (store under key {@link PerfCakeConst#MESSAGE_NUMBER_PROPERTY}).
+    * Gets a default {@link SequenceManager} instance with a default number sequence prepared for message numbering (stored under the key {@link PerfCakeConst#MESSAGE_NUMBER_PROPERTY}),
+    * a timestamp sequence (stored under the key {@link PerfCakeConst#CURRENT_TIMESTAMP_PROPERTY}) and a thread ID sequence (stored under the key {@link PerfCakeConst#THREAD_ID_PROPERTY}).
     */
    public SequenceManager() {
       try {
-         addSequence(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, new NumberSequence());
+         addSequence(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, new PrimitiveNumberSequence());
          addSequence(PerfCakeConst.CURRENT_TIMESTAMP_PROPERTY, new TimeStampSequence());
          addSequence(PerfCakeConst.THREAD_ID_PROPERTY, new ThreadIdSequence());
       } catch (PerfCakeException e) {

@@ -19,26 +19,21 @@
  */
 package org.perfcake.message.sequence;
 
-import org.perfcake.PerfCakeException;
-
-import java.util.concurrent.atomic.AtomicLong;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
- * Just an ever increasing number sequence. No tweaking available. Non-blocking.
- *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class PrimitiveNumberSequence implements Sequence {
+public class PrimitiveNumberSequenceTest {
 
-   private AtomicLong number = new AtomicLong(0);
+   @Test
+   public void testPrimitiveNumberSequence() {
+      final Sequence s = new PrimitiveNumberSequence();
 
-   @Override
-   public String getNext() {
-      return String.valueOf(number.getAndIncrement());
+      Assert.assertEquals("0", s.getNext());
+      Assert.assertEquals("1", s.getNext());
+      Assert.assertEquals("2", s.getNext());
    }
 
-   @Override
-   public void reset() throws PerfCakeException {
-      number.set(0);
-   }
 }
