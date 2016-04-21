@@ -55,7 +55,7 @@ class SenderTask implements Runnable {
    /**
     * Sender task's logger.
     */
-   private final Logger log = LogManager.getLogger(SenderTask.class);
+   private static final Logger log = LogManager.getLogger(SenderTask.class);
 
    /**
     * Reference to a message sender manager that is providing the message senders.
