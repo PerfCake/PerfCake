@@ -45,7 +45,7 @@ public class ResponseTimeHistogramTest {
 
    private static final Logger log = LogManager.getLogger(ResponseTimeHistogramTest.class);
 
-   @Test
+   @Test(enabled = false)
    public void offModeTest() throws Exception {
       final Properties props = new Properties();
       props.setProperty("correctionMode", "off");
