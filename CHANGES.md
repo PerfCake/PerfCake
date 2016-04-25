@@ -1,6 +1,20 @@
 PerfCake Change Log
 ===================
 
+Release 6.2
+===========
+
+Features
+--------
+ * https://github.com/PerfCake/PerfCake/issues/issues/286 - Implement primitive number sequence
+ * https://github.com/PerfCake/PerfCake/issues/issues/11 - Create developers' guide
+
+Bug Fixes
+---------
+ * https://github.com/PerfCake/PerfCake/issues/issues/285 - RampUpDownGenerator does not properly initializes the size of senders pool
+ * https://github.com/PerfCake/PerfCake/issues/issues/283 - MqttSender does not support authentication (user/password)
+ * https://github.com/PerfCake/PerfCake/issues/issues/279 - SenderTask Logger is missing static keyword
+ 
 Release 6.1
 ===========
 

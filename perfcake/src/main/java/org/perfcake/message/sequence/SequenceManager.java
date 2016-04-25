@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -44,11 +44,12 @@ public class SequenceManager {
    private Map<String, Sequence> sequences = new HashMap<>();
 
    /**
-    * Gets a default {@link SequenceManager} instance with a default number sequence prepared for message numbering (store under key {@link PerfCakeConst#MESSAGE_NUMBER_PROPERTY}).
+    * Gets a default {@link SequenceManager} instance with a default number sequence prepared for message numbering (stored under the key {@link PerfCakeConst#MESSAGE_NUMBER_PROPERTY}),
+    * a timestamp sequence (stored under the key {@link PerfCakeConst#CURRENT_TIMESTAMP_PROPERTY}) and a thread ID sequence (stored under the key {@link PerfCakeConst#THREAD_ID_PROPERTY}).
     */
    public SequenceManager() {
       try {
-         addSequence(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, new NumberSequence());
+         addSequence(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, new PrimitiveNumberSequence());
          addSequence(PerfCakeConst.CURRENT_TIMESTAMP_PROPERTY, new TimeStampSequence());
          addSequence(PerfCakeConst.THREAD_ID_PROPERTY, new ThreadIdSequence());
       } catch (PerfCakeException e) {

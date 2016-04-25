@@ -33,17 +33,17 @@ public interface Accumulator<T> {
     * @param value
     *       The value to be accumulated.
     */
-   public void add(T value);
+   void add(T value);
 
    /**
     * Gets the accumulated result of currently added values.
     *
     * @return The result of the accumulation.
     */
-   public T getResult();
+   T getResult();
 
    /**
     * Resets the accumulator to the default state.
     */
-   public void reset();
+    void reset();
 }

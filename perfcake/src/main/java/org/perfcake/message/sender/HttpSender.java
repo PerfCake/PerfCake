@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -266,7 +266,7 @@ public class HttpSender extends AbstractSender {
 
    @Override
    public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
-      int respCode = -1;
+      int respCode;
       requestConnection.connect();
       if (payload != null && (currentMethod == Method.POST || currentMethod == Method.PUT)) {
          final OutputStreamWriter out = new OutputStreamWriter(requestConnection.getOutputStream(), Utils.getDefaultEncoding());
@@ -285,7 +285,7 @@ public class HttpSender extends AbstractSender {
          }
          throw new PerfCakeException(errorMess.substring(0, errorMess.length() - 2) + ".");
       }
-      InputStream rcis = null;
+      InputStream rcis;
       if (respCode < 400) {
          rcis = requestConnection.getInputStream();
       } else {

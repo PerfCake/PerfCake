@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,8 +43,9 @@ import java.util.List;
  * control, a generator must wait for all the messages to be processed. In the case of a time based control, the test stops immediately after the time
  * has elapsed.
  *
- * Each {@link SenderTask} takes a {@link java.util.concurrent.Semaphore} that is released once all its work is finished. This can be used by a generator
- * to control the number of actually active {@link SenderTask}s.
+ * Each {@link SenderTask} takes a {@link CanalStreet} instance as a communication pipe that is used to notify the parent generator of task completion and or any errors that might
+ * have occurred. The {@link CanalStreet} relies on an internal {@link java.util.concurrent.Semaphore} instance that can control the number of {@link SenderTask}s prepared in
+ * a queue for execution.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */

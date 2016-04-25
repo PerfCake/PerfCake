@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ import java.util.Properties;
  * {@link #preSend} and {@link #postSend} methods are still not part of the performance measurement and can prepare the message for
  * actual sending or handle any cleanup.
  *
- * {@link #send} methods must handle just the message exchange. No logging or complex error handling code should be placed here. Therefore
+ * {@link #send} method must handle just the message exchange. No logging or complex error handling code should be placed here. Therefore
  * we allow any generic exception to be thrown.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>

@@ -1,3 +1,22 @@
+/*
+ * -----------------------------------------------------------------------\
+ * PerfCake
+ *  
+ * Copyright (C) 2010 - 2016 the original author or authors.
+ *  
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * -----------------------------------------------------------------------/
+ */
 package org.perfcake.message.sender;
 
 import org.perfcake.PerfCakeException;
@@ -33,9 +52,13 @@ public class MqttSender extends AbstractSender {
 
    // Properties
    private String qos = QoS.EXACTLY_ONCE.name();
+   private String userName = null;
+   private String password = null;
 
    private String responseTarget = null;
    private String responseQos = qos;
+   private String responseUserName = null;
+   private String responsePassword = null;
 
    @Override
    public void doInit(Properties messageAttributes) throws PerfCakeException {
@@ -50,6 +73,13 @@ public class MqttSender extends AbstractSender {
             mqttClient.setHost(protocol + "://" + host + ":" + port);
             mqttClient.setConnectAttemptsMax(0);
             mqttClient.setReconnectAttemptsMax(0);
+            if (userName != null) {
+               mqttClient.setUserName(userName);
+            }
+
+            if (password != null) {
+               mqttClient.setPassword(password);
+            }
             mqttConnection = mqttClient.blockingConnection();
             mqttConnection.connect();
 
@@ -69,6 +99,13 @@ public class MqttSender extends AbstractSender {
                   mqttResponseClient.setHost(responseProtocol + "://" + responseHost + ":" + responsePort);
                   mqttResponseClient.setConnectAttemptsMax(0);
                   mqttResponseClient.setReconnectAttemptsMax(0);
+                  if (responseUserName != null) {
+                     mqttResponseClient.setUserName(responseUserName);
+                  }
+
+                  if (responsePassword != null) {
+                     mqttResponseClient.setPassword(responsePassword);
+                  }
                   mqttResponseConnection = mqttResponseClient.blockingConnection();
                   mqttResponseConnection.connect();
                } else {
@@ -150,5 +187,37 @@ public class MqttSender extends AbstractSender {
 
    public void setQos(final String qos) {
       this.qos = qos;
+   }
+
+   public String getUserName() {
+      return userName;
+   }
+
+   public void setUserName(final String userName) {
+      this.userName = userName;
+   }
+
+   public String getPassword() {
+      return password;
+   }
+
+   public void setPassword(final String password) {
+      this.password = password;
+   }
+
+   public String getResponseUserName() {
+      return responseUserName;
+   }
+
+   public void setResponseUserName(final String responseUserName) {
+      this.responseUserName = responseUserName;
+   }
+
+   public String getResponsePassword() {
+      return responsePassword;
+   }
+
+   public void setResponsePassword(final String responsePassword) {
+      this.responsePassword = responsePassword;
    }
 }
