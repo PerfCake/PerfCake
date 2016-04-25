@@ -24,7 +24,7 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-      <tag>v5.1</tag>
+      <tag>v7.0</tag>
    </scm>
    <licenses>
       <license>
