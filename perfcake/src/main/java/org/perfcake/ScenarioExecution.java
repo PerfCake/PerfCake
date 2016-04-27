@@ -274,7 +274,7 @@ public class ScenarioExecution {
 
       if (!scenario.areAllThreadsTerminated()) {
          log.warn("There are some blocked threads that were not possible to terminate. The test results might be flawed."
-               + " This is usually caused by deadlocks or raise conditions in the application under test.");
+               + " This is usually caused by deadlocks or race conditions in the application under test.");
          System.exit(PerfCakeConst.ERR_BLOCKED_THREADS);
       }
    }
