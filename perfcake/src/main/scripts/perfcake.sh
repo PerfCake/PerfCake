@@ -182,7 +182,7 @@ fi
 # Set the PerfCake working directory
 cd "$PERFCAKE_HOME"
 
-PERFCAKE_JAR="$(find $PERFCAKE_HOME/lib -type f -regex '.*lib/perfcake-[0-9][0-9]*\.[0-9][0-9]*.*\.jar')"
+PERFCAKE_JAR=$(find "$PERFCAKE_HOME/lib" -type f -regex '.*lib/perfcake-[0-9][0-9]*\.[0-9][0-9]*.*\.jar')
 
 # Run PerfCake
 exec "$JAVACMD" \

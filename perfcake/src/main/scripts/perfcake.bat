@@ -27,6 +27,8 @@
 
 @echo off
 
+echo NOTICE: To run this script in Windows PowerShell use: cmd /c perfcake.bat
+
 @REM set %HOME% to equivalent of $HOME
 if "%HOME%" == "" (set "HOME=%HOMEDRIVE%%HOMEPATH%")
 
