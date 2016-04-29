@@ -73,6 +73,7 @@
       <version.commons.logging>1.2</version.commons.logging>
       <version.commons.cli>1.3.1</version.commons.cli>
       <version.hdrhistogram>2.1.8</version.hdrhistogram>
+      <version.vertx>3.2.0</version.vertx>
 
       <!-- Tools -->
       <version.findbugs>1.3.2</version.findbugs>
@@ -87,7 +88,6 @@
       <version.arquillian-jacoco>1.0.0.Alpha8</version.arquillian-jacoco>
       <version.hornetq>2.4.7.Final</version.hornetq>
       <version.mockito>1.10.19</version.mockito>
-      <version.vertx>3.2.0</version.vertx>
       <version.netty>4.0.33.Final</version.netty>
 
       <java.level>1.8</java.level>
@@ -365,7 +365,6 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
             <version>${version.vertx}</version>
-            <scope>test</scope>
          </dependency>
          <dependency>
             <groupId>io.netty</groupId>

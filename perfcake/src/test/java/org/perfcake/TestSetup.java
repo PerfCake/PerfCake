@@ -50,6 +50,7 @@ public class TestSetup {
 
    @BeforeClass(alwaysRun = true)
    public void configureLocations() throws Exception {
+      Utils.initTimeStamps();
       System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.getResource("/scenarios"));
       System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.getResource("/messages"));
    }
