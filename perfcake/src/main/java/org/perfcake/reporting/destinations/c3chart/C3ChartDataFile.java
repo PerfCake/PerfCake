@@ -38,7 +38,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
-import java.util.Properties;
 
 import io.vertx.core.json.Json;
 
@@ -91,7 +90,7 @@ public class C3ChartDataFile {
       createOutputFileStructure();
 
       writeDataHeader();
-      writeQuickView();
+      C3ChartHtmlTemplates.writeQuickView(target, chart);
       writeDescriptor();
    }
 
@@ -108,6 +107,10 @@ public class C3ChartDataFile {
 
    public C3Chart getChart() {
       return chart;
+   }
+
+   public Path getTarget() {
+      return target;
    }
 
    private File getDataFile() {
@@ -247,33 +250,6 @@ public class C3ChartDataFile {
       Utils.writeFileContent(getDataFile(), dataHeader.toString());
    }
 
-   /**
-    * Writes a quick view HTML file that can display the chart during the test run.
-    *
-    * @throws PerfCakeException
-    *       When it was not possible to store the quick view file.
-    */
-   private void writeQuickView() throws PerfCakeException {
-      final Path quickViewFile = Paths.get(target.toString(), "data", chart.getBaseName() + ".html");
-      final Properties quickViewProps = new Properties();
-      quickViewProps.setProperty("baseName", chart.getBaseName());
-      quickViewProps.setProperty("xAxis", chart.getxAxis());
-      quickViewProps.setProperty("yAxis", chart.getyAxis());
-      quickViewProps.setProperty("chartName", chart.getName());
-      switch (chart.getxAxisType()) {
-         case TIME:
-            quickViewProps.setProperty("format", "ms2hms");
-            break;
-         case ITERATION:
-            quickViewProps.setProperty("format", "function(x) { return x; }");
-            break;
-         case PERCENTAGE:
-            quickViewProps.setProperty("format", "function(x) { return '' + x + '%'; }");
-            break;
-      }
-      Utils.copyTemplateFromResource("/c3chart/quick-view.html", quickViewFile, quickViewProps);
-   }
-
    private void writeDescriptor() throws PerfCakeException {
       final Path descriptorFile = Paths.get(target.toString(), "data", chart.getBaseName() + ".json");
       Utils.writeFileContent(descriptorFile, Json.encode(chart));
@@ -307,7 +283,7 @@ public class C3ChartDataFile {
       }
 
       try {
-         for (final String resourceFileName: resourceFiles) {
+         for (final String resourceFileName : resourceFiles) {
             copyResourceFile(resourceFileName);
          }
       } catch (final IOException e) {

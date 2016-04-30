@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Helper class for the C3ChartDestination. Handles all files and data manipulation to keep the destination's code clean.
+ * Helper class for the C3ChartDestination. Works as a proxy to the data files and report creation.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -68,14 +68,14 @@ public class C3ChartHelper {
    private boolean initialized = false;
 
    /**
-    * Creates a new helper for the given ChartDestination.
+    * Creates a new helper for the given C3ChartDestination.
     *
     * @param chartDestination
     *       The ChartDestination this helper is supposed to serve to.
     */
    public C3ChartHelper(final C3ChartDestination chartDestination) {
       try {
-         final List<String> attributes = new ArrayList<>(chartDestination.getAttributesAsList()); // must close to ArrayList, as the current impl. does not support adding at index
+         final List<String> attributes = new ArrayList<>(chartDestination.getAttributesAsList()); // must be enclosed to ArrayList, as the current impl. does not support adding at index
          switch (chartDestination.getxAxisType()) {
             case PERCENTAGE:
                attributes.add(0, COLUMN_PERCENT);
@@ -127,12 +127,22 @@ public class C3ChartHelper {
       return initialized;
    }
 
+   /**
+    * Closes the data files.
+    *
+    * @throws PerfCakeException When it was not possible to smoothly finalize the data files.
+    */
    public void close() throws PerfCakeException {
       chartDataFile.close();
    }
 
-   public void compileResults() {
-
+   /**
+    * Creates the final result report compiling all the previous charts together.
+    *
+    * @throws PerfCakeException When there was an error creating the report. Typically an I/O issue.
+    */
+   public void compileResults() throws PerfCakeException {
+      C3ChartReport.createReport(chartDataFile.getTarget(), chartDataFile.getChart());
    }
 
 }

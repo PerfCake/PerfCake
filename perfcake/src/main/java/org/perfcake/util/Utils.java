@@ -536,9 +536,24 @@ public class Utils {
     *       When it is not possible to render the template or store the target file.
     */
    public static void copyTemplateFromResource(final String resource, final Path target, final Properties properties) throws PerfCakeException {
+      Utils.writeFileContent(target, readTemplateFromResource(resource, properties));
+   }
+
+   /**
+    * Reads the given resource and processes it as a template.
+    *
+    * @param resource
+    *       The resource location of a template.
+    * @param properties
+    *       The properties to fill into the template.
+    * @return The filtered content of the template.
+    * @throws PerfCakeException
+    *       When it was not possible to read the resource.
+    */
+   public static String readTemplateFromResource(final String resource, final Properties properties) throws PerfCakeException {
       try {
          final StringTemplate template = new StringTemplate(IOUtils.toString(Utils.class.getResourceAsStream(resource), Utils.getDefaultEncoding()), properties);
-         Utils.writeFileContent(target, template.toString());
+         return template.toString();
       } catch (final IOException e) {
          final String message = String.format("Could not render template from resource %s:", resource);
          throw new PerfCakeException(message, e);

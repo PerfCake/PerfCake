@@ -48,7 +48,7 @@ public class C3ChartData {
       try {
          List<String> lines = Utils.readLines(Paths.get(target.toString(), "data", baseName + ".js").toUri().toURL());
 
-         for (final String line: lines) {
+         for (final String line : lines) {
             if (line.startsWith(baseName)) {
                String jsonArray = line.substring((baseName + ".push(").length());
                jsonArray = jsonArray.substring(0, jsonArray.length() - 2);

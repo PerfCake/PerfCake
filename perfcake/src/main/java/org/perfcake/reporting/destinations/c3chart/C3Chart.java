@@ -20,30 +20,12 @@
 package org.perfcake.reporting.destinations.c3chart;
 
 import org.perfcake.PerfCakeConst;
-import org.perfcake.PerfCakeException;
 import org.perfcake.common.PeriodType;
-import org.perfcake.reporting.Measurement;
-import org.perfcake.reporting.Quantity;
-import org.perfcake.reporting.ReportingException;
-import org.perfcake.util.StringUtil;
-import org.perfcake.util.Utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Represents a single Google chart data file(s) stored in the file system.
@@ -112,6 +94,16 @@ public class C3Chart {
     * The chart's group name. Charts from multiple measurements that have the same group name are later searched for matching attributes.
     */
    private String group;
+
+   /**
+    * Was this chart created as a combination of another charts?
+    */
+   private boolean combined = false;
+
+   /**
+    * When this chart was created.
+    */
+   private long created = System.currentTimeMillis();
 
    /**
     * Gets the base name of the data files of this chart.
@@ -206,6 +198,22 @@ public class C3Chart {
 
    public void setGroup(final String group) {
       this.group = group;
+   }
+
+   public boolean isCombined() {
+      return combined;
+   }
+
+   public void setCombined(final boolean combined) {
+      this.combined = combined;
+   }
+
+   public long getCreated() {
+      return created;
+   }
+
+   public void setCreated(final long created) {
+      this.created = created;
    }
 
    @Override
