@@ -40,6 +40,7 @@ import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 
 import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -52,11 +53,6 @@ public class C3ChartDataFile {
    private static final Logger log = LogManager.getLogger(C3ChartDataFile.class);
 
    private static String[] resourceFiles = new String[] { "c3.min.css", "c3.min.js", "d3.v3.min.js", "report.css", "report.js", "favicon.svg" };
-
-   /**
-    * File counter for the stored combined chart.
-    */
-   private static int fileCounter = 1;
 
    /**
     * The JavaScript file representing chart data. This is not set for charts created as a combination of existing ones.
@@ -94,6 +90,27 @@ public class C3ChartDataFile {
       writeDescriptor();
    }
 
+   public C3ChartDataFile(final C3Chart chart, final Path target, final C3ChartData newData) throws PerfCakeException {
+      this.chart = chart;
+      this.target = target;
+
+      writeDataHeader();
+
+      try (FileChannel dataOutput = FileChannel.open(getDataFile().toPath(), StandardOpenOption.APPEND);) {
+         for (final JsonArray json : newData.getData()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(chart.getBaseName());
+            sb.append(".push(");
+            sb.append(json.encode());
+            sb.append(");\n");
+
+            dataOutput.write(ByteBuffer.wrap(sb.toString().getBytes(Charset.forName(Utils.getDefaultEncoding()))));
+         }
+      } catch (IOException e) {
+         throw new PerfCakeException("Unable to write new chart data: ", e);
+      }
+   }
+
    public C3ChartDataFile(final File descriptorFile) throws PerfCakeException {
       try {
          final String chartJson = Utils.readFilteredContent(descriptorFile.toURI().toURL());
@@ -103,6 +120,10 @@ public class C3ChartDataFile {
       } catch (IOException e) {
          throw new PerfCakeException("Unable to read chart descriptor: ", e);
       }
+   }
+
+   public C3ChartDataFile(final Path target, final String baseName) throws PerfCakeException {
+      this(Paths.get(target.toString(), "data", baseName + ".json").toFile());
    }
 
    public C3Chart getChart() {

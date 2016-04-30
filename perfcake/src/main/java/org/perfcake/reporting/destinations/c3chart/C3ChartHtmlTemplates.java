@@ -152,8 +152,7 @@ public class C3ChartHtmlTemplates {
             sb.append(getHeading(3, "", "Plain results"));
 
             for (final C3Chart chart : chartsByGroup.get(group)) {
-               final ZonedDateTime ldt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(chart.getCreated()), ZoneId.systemDefault());
-               final String label = chart.getName() + " (created: " + DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).format(ldt) + ")";
+               final String label = chart.getName() + " (created: " + getCreatedAsString(chart) + ")";
                sb.append(getHeading(4, chart.getBaseName(), label));
                sb.append(getChartDiv(chart.getBaseName()));
                toc.put(chart.getBaseName(), label);
@@ -177,6 +176,17 @@ public class C3ChartHtmlTemplates {
 
       return sb.toString();
    }
+
+   /**
+    * Gets the creation date and time as localized string.
+    *
+    * @return The creation date and time as localized string.
+    */
+   public static String getCreatedAsString(final C3Chart chart) {
+      final ZonedDateTime ldt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(chart.getCreated()), ZoneId.systemDefault());
+      return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).format(ldt);
+   }
+
 
    /**
     * Writes a quick view HTML file that can display the chart during the test run.

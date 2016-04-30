@@ -20,7 +20,8 @@
 package org.perfcake.reporting.destinations.c3chart;
 
 import org.perfcake.PerfCakeException;
-import org.perfcake.reporting.destinations.chart.ChartDestinationHelper;
+import org.perfcake.common.PeriodType;
+import org.perfcake.reporting.destinations.chart.Chart;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -29,7 +30,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -41,6 +45,10 @@ public class C3ChartReport {
     */
    private static final String COMBINED_PREFIX = "combined_";
 
+   /**
+    * File counter for the stored combined chart.
+    */
+   private static int fileCounter = 1;
 
    static void createReport(final Path target, final C3Chart mainChart) throws PerfCakeException {
       final File outputDir = Paths.get(target.toString(), "data").toFile();
@@ -50,19 +58,19 @@ public class C3ChartReport {
       try {
          deletePreviousCombinedCharts(outputDir);
 
-      final File[] files = outputDir.listFiles(new DescriptionFileFilter());
-      if (files != null) {
-         final List<File> descriptionFiles = Arrays.asList(files);
+         final File[] files = outputDir.listFiles(new DescriptionFileFilter());
+         if (files != null) {
+            final List<File> descriptionFiles = Arrays.asList(files);
 
-         for (final File f : descriptionFiles) {
-            final C3Chart c = new C3ChartDataFile(f).getChart();
-            if (!c.getBaseName().equals(mainChart.getBaseName())) {
-               charts.add(c);
+            for (final File f : descriptionFiles) {
+               final C3Chart c = new C3ChartDataFile(f).getChart();
+               if (!c.getBaseName().equals(mainChart.getBaseName())) {
+                  charts.add(c);
+               }
             }
          }
-      }
 
-      //charts.addAll(analyzeMatchingCharts(charts));
+         charts.addAll(analyzeMatchingCharts(target, charts));
       } catch (final IOException e) {
          throw new PerfCakeException("Unable to parse stored results: ", e);
       }
@@ -93,6 +101,114 @@ public class C3ChartReport {
       if (issues.length() > 0) {
          throw new IOException(issues.toString());
       }
+   }
+
+   /**
+    * Find all the attributes among the given charts that has a match. I.e. that are present at least in two of the charts.
+    *
+    * @param charts
+    *       The charts for inspection.
+    * @return A list of attributes that are present at least twice among the charts.
+    */
+   private static Map<String, List<String>> findMatchingAttributes(final List<C3Chart> charts) {
+      final Map<String, List<String>> seen = new HashMap<>();
+      final Map<String, List<String>> result = new HashMap<>();
+
+      for (final C3Chart c : charts) {
+         if (!seen.containsKey(c.getGroup())) {
+            seen.put(c.getGroup(), new ArrayList<>());
+         }
+         if (!result.containsKey(c.getGroup())) {
+            result.put(c.getGroup(), new ArrayList<>());
+         }
+
+         for (final String attribute : c.getAttributes()) {
+            if (seen.get(c.getGroup()).contains(attribute) && !result.get(c.getGroup()).contains(attribute)) {
+               result.get(c.getGroup()).add(attribute);
+            } else {
+               seen.get(c.getGroup()).add(attribute);
+            }
+         }
+
+         result.get(c.getGroup()).remove(C3Chart.COLUMN_TIME);
+         result.get(c.getGroup()).remove(C3Chart.COLUMN_ITERATION);
+         result.get(c.getGroup()).remove(C3Chart.COLUMN_PERCENT);
+      }
+
+      return result;
+   }
+
+   /**
+    * Generates new charts based on the matching attributes of existing charts.
+    *
+    * @param charts
+    *       Existing chart for inspection.
+    * @return A list of newly created charts.
+    * @throws PerfCakeException
+    *       When it was not possible to store any of the charts.
+    */
+   static List<C3Chart> analyzeMatchingCharts(final Path target, final List<C3Chart> charts) throws PerfCakeException {
+      final Map<String, List<String>> matches = findMatchingAttributes(charts);
+      final List<C3Chart> newCharts = new ArrayList<>();
+
+      for (final Map.Entry<String, List<String>> entry : matches.entrySet()) {
+         for (final String match : entry.getValue()) {
+            final List<C3Chart> matchingCharts = new ArrayList<>();
+            PeriodType xAxisType = null;
+            boolean compatible = true; // all charts have compatible xAxisType
+
+            for (final C3Chart c : charts) {
+               if (entry.getKey().equals(c.getGroup()) && c.getAttributes().contains(match)) {
+                  if (xAxisType == null) {
+                     xAxisType = c.getxAxisType();
+                     matchingCharts.add(c);
+                  } else if (c.getxAxisType() == xAxisType) {
+                     matchingCharts.add(c);
+                  } else {
+                     compatible = false;
+                  }
+               }
+            }
+
+            if (compatible) { // there are charts with different xAxisType, we won't combine them
+               newCharts.add(combineCharts(target, match, matchingCharts));
+            }
+         }
+      }
+
+      return newCharts;
+   }
+
+   static C3Chart combineCharts(final Path target, final String matchingAttribute, final List<C3Chart> matchingCharts) throws PerfCakeException {
+      final C3Chart newChart = new C3Chart();
+      final String newBaseName = matchingCharts.stream().map(C3Chart::getBaseName).collect(Collectors.joining("_"));
+      final List<String> attributes = new ArrayList<>();
+      attributes.add(matchingCharts.get(0).getAttributes().get(0));
+      attributes.addAll(matchingCharts.stream().map(ch -> String.format("%s (%s)", ch.getName(), C3ChartHtmlTemplates.getCreatedAsString(ch))).collect(Collectors.toList()));
+
+      newChart.setBaseName(COMBINED_PREFIX + fileCounter++);
+      newChart.setxAxisType(matchingCharts.get(0).getxAxisType());
+      newChart.setxAxis(matchingCharts.get(0).getxAxis());
+      newChart.setyAxis(matchingCharts.get(0).getyAxis());
+      newChart.setName("Group: " + matchingCharts.get(0).getGroup() + ", Match of axis: " + matchingAttribute);
+      newChart.setGroup(matchingCharts.get(0).getGroup());
+      newChart.setAttributes(attributes);
+
+      C3ChartData chartData = null;
+      for (final C3Chart chart : matchingCharts) {
+         C3ChartData tmpChartData = new C3ChartData(chart.getBaseName(), target);
+         tmpChartData = tmpChartData.filter(chart.getAttributes().indexOf(matchingAttribute));
+
+         if (chartData == null) {
+            chartData = tmpChartData;
+         } else {
+            chartData = chartData.combineWith(tmpChartData);
+         }
+      }
+
+      new C3ChartDataFile(newChart, target, chartData);
+
+      return newChart;
    }
 
    /**

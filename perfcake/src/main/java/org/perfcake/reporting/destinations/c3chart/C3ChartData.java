@@ -37,13 +37,15 @@ import io.vertx.core.json.JsonArray;
 public class C3ChartData {
 
    private List<JsonArray> data;
+   private Path target;
 
-   private C3ChartData(final List<JsonArray> data) {
+   private C3ChartData(final Path target, final List<JsonArray> data) {
       this.data = data;
+      this.target = target;
    }
 
    public C3ChartData(final String baseName, final Path target) throws PerfCakeException {
-      this(new LinkedList<>());
+      this(target, new LinkedList<>());
 
       try {
          List<String> lines = Utils.readLines(Paths.get(target.toString(), "data", baseName + ".js").toUri().toURL());
@@ -55,8 +57,6 @@ public class C3ChartData {
                data.add(new JsonArray(jsonArray));
             }
          }
-         System.out.println(data);
-         System.out.println(Arrays.asList(null, null, null));
 
       } catch (IOException e) {
          throw new PerfCakeException("Cannot read chart data: ", e);
@@ -71,7 +71,7 @@ public class C3ChartData {
          newData.add(new JsonArray(Arrays.asList(raw.get(0), raw.get(keepColumnIndex))));
       });
 
-      return new C3ChartData(newData);
+      return new C3ChartData(target, newData);
    }
 
    @SuppressWarnings("unchecked")
@@ -119,7 +119,11 @@ public class C3ChartData {
          newData.add(new JsonArray(raw));
       }
 
-      return new C3ChartData(newData);
+      return new C3ChartData(target, newData);
+   }
+
+   public List<JsonArray> getData() {
+      return data;
    }
 
    @Override

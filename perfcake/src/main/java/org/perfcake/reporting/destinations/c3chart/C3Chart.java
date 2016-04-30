@@ -36,11 +36,6 @@ import java.util.List;
 public class C3Chart {
 
    /**
-    * Prefix of the files of the charts created as a combination of measured results.
-    */
-   protected static final String DATA_ARRAY_PREFIX = "data_array_";
-
-   /**
     * Name of the time column.
     */
    protected static final String COLUMN_TIME = "Time";
