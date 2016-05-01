@@ -74,22 +74,56 @@ public class C3ChartData {
       return new C3ChartData(target, newData);
    }
 
+   private int getDataStart() {
+      int idx = 0;
+
+      boolean dataHit;
+      do {
+         dataHit = false;
+         JsonArray a = data.get(idx);
+
+         dataHit = dataHit || !isAllNull(a);
+
+         if (!dataHit) {
+            idx++;
+         }
+      } while (idx < data.size() && !dataHit);
+
+      return idx;
+   }
+
+   private static boolean isAllNull(final JsonArray a) {
+      int i = 1;
+      while (i < a.size()) {
+         if (a.getValue(i) != null) {
+            return false;
+         }
+         i++;
+      }
+
+      return true;
+   }
+
+   @SuppressWarnings("unchecked")
+   private static List getNullList(final int size) {
+      final List nullList = new LinkedList<>();
+      for (int i = 0; i < size; i++) {
+         nullList.add(null);
+      }
+
+      return nullList;
+   }
+
    @SuppressWarnings("unchecked")
    public C3ChartData combineWith(final C3ChartData otherData) {
       final List<JsonArray> newData = new LinkedList<>();
-      int idx1 = 0, idx2 = 0;
+      int idx1 = getDataStart(), idx2 = otherData.getDataStart();
 
       int size1 = data.get(0).size();
-      List nullList1 = new LinkedList<>();
-      for (int i = 0; i < size1 - 1; i++) {
-         nullList1.add(null);
-      }
+      List nullList1 = getNullList(size1 - 1);
 
       int size2 = otherData.data.get(0).size();
-      List nullList2 = new LinkedList<>();
-      for (int i = 0; i < size2 - 1; i++) {
-         nullList2.add(null);
-      }
+      List nullList2 = getNullList(size2 - 1);
 
       while (idx1 < data.size() || idx2 < otherData.data.size()) {
          JsonArray a1 = idx1 < data.size() ? data.get(idx1) : null;
@@ -99,24 +133,32 @@ public class C3ChartData {
          List raw = new LinkedList<>();
 
          if (p1 == p2) {
-            raw.add(p1);
-            raw.addAll(a1.getList().subList(1, size1));
-            raw.addAll(a2.getList().subList(1, size2));
+            if (!isAllNull(a1) || !isAllNull(a2)) {
+               raw.add(p1);
+               raw.addAll(a1.getList().subList(1, size1));
+               raw.addAll(a2.getList().subList(1, size2));
+            }
             idx1++;
             idx2++;
          } else if (p1 < p2) {
-            raw.add(p1);
-            raw.addAll(a1.getList().subList(1, size1));
-            raw.addAll(nullList2);
+            if (!isAllNull(a1)) {
+               raw.add(p1);
+               raw.addAll(a1.getList().subList(1, size1));
+               raw.addAll(nullList2);
+            }
             idx1++;
          } else {
-            raw.add(p2);
-            raw.addAll(nullList1);
-            raw.addAll(a2.getList().subList(1, size2));
+            if (!isAllNull(a2)) {
+               raw.add(p2);
+               raw.addAll(nullList1);
+               raw.addAll(a2.getList().subList(1, size2));
+            }
             idx2++;
          }
 
-         newData.add(new JsonArray(raw));
+         if (raw.size() > 0) {
+            newData.add(new JsonArray(raw));
+         }
       }
 
       return new C3ChartData(target, newData);

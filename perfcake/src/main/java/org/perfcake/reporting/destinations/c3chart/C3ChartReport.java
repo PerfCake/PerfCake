@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +70,8 @@ public class C3ChartReport {
                }
             }
          }
+
+         charts.sort(Comparator.comparingLong(C3Chart::getCreated));
 
          charts.addAll(analyzeMatchingCharts(target, charts));
       } catch (final IOException e) {

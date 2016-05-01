@@ -104,6 +104,7 @@ public class C3ChartHelper {
          chart.setxAxisType(chartDestination.getxAxisType());
          chart.setxAxis(chartDestination.getXAxis());
          chart.setyAxis(chartDestination.getYAxis());
+         chart.setHeight(chartDestination.getChartHeight());
 
          chartDataFile = new C3ChartDataFile(chart, chartDestination.getOutputDirAsPath());
          chartDataFile.open();

@@ -1,5 +1,8 @@
 var chart_${baseName} = c3.generate({
    bindto: '#chart_${baseName}_div',
+   size: {
+      height: ${height}
+   },
    data: {
       x: '${xAxis}',
       rows: ${baseName},

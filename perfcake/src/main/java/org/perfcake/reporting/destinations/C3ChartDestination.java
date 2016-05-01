@@ -89,6 +89,11 @@ public class C3ChartDestination implements Destination {
    private PeriodType xAxisType = PeriodType.TIME;
 
    /**
+    * Height of the resulting chart in pixels.
+    */
+   private int chartHeight = 400;
+
+   /**
     * Helper to control the chart generation.
     */
    private C3ChartHelper helper;
@@ -207,6 +212,14 @@ public class C3ChartDestination implements Destination {
       } else {
          this.group = group;
       }
+   }
+
+   public int getChartHeight() {
+      return chartHeight;
+   }
+
+   public void setChartHeight(final int chartHeight) {
+      this.chartHeight = chartHeight;
    }
 
    /**

@@ -101,6 +101,11 @@ public class C3Chart {
    private long created = System.currentTimeMillis();
 
    /**
+    * Height of the resulting chart in pixels.
+    */
+   private int height = 400;
+
+   /**
     * Gets the base name of the data files of this chart.
     *
     * @return The base name of the data files of this chart.
@@ -209,6 +214,14 @@ public class C3Chart {
 
    public void setCreated(final long created) {
       this.created = created;
+   }
+
+   public int getHeight() {
+      return height;
+   }
+
+   public void setHeight(final int height) {
+      this.height = height;
    }
 
    @Override

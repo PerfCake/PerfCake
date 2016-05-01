@@ -22,8 +22,6 @@ package org.perfcake.reporting.destinations.c3chart;
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.Utils;
 
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -144,7 +142,6 @@ public class C3ChartHtmlTemplates {
          }
       }
 
-
       // list all groups
       for (final String group : groups) {
          sb.append(getHeading(2, "", "Charts for group: " + group));
@@ -189,7 +186,6 @@ public class C3ChartHtmlTemplates {
       return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).format(ldt);
    }
 
-
    /**
     * Writes a quick view HTML file that can display the chart during the test run.
     *
@@ -209,6 +205,8 @@ public class C3ChartHtmlTemplates {
       props.setProperty("xAxis", chart.getxAxis());
       props.setProperty("yAxis", chart.getyAxis());
       props.setProperty("chartName", chart.getName());
+      props.setProperty("height", String.valueOf(chart.getHeight()));
+
       switch (chart.getxAxisType()) {
          case TIME:
             props.setProperty("format", "ms2hms");
