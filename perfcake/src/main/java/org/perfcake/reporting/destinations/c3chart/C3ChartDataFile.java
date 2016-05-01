@@ -19,6 +19,7 @@
  */
 package org.perfcake.reporting.destinations.c3chart;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
@@ -179,26 +180,36 @@ public class C3ChartDataFile {
             break;
       }
 
+      boolean isWarmUp = Boolean.valueOf((String) measurement.get(PerfCakeConst.WARM_UP_TAG));
+
       for (final String attr : chart.getAttributes()) {
          if (chart.getAttributes().indexOf(attr) > 0) {
+            boolean warmUpAttr = attr.endsWith(PerfCakeConst.WARM_UP_TAG);
+            String pureAttr = warmUpAttr ? attr.substring(0, attr.length() - PerfCakeConst.WARM_UP_TAG.length() - 1) : attr;
+
             sb.append(", ");
 
             // we do not have all required attributes, return an empty line
-            if (!measurement.getAll().containsKey(attr)) {
+            if (!attr.endsWith(PerfCakeConst.WARM_UP_TAG) && !measurement.getAll().containsKey(attr)) {
                missingAttributes = true;
                if (firstResultsLine) {
                   log.warn(String.format("Missing attribute %s, skipping the record.", attr));
                }
             } else {
-               final Object data = measurement.get(attr);
-               if (data instanceof String) {
-                  sb.append("'");
-                  sb.append(((String) data).replaceAll("'", "\\'"));
-                  sb.append("'");
-               } else if (data instanceof Quantity) {
-                  sb.append(((Quantity) data).getNumber().toString());
+               final Object data = measurement.get(pureAttr);
+
+               if (isWarmUp ^ warmUpAttr) {
+                  sb.append("null");
                } else {
-                  sb.append(data == null ? "null" : data.toString());
+                  if (data instanceof String) {
+                     sb.append("\"");
+                     sb.append(((String) data).replaceAll("\"", "\\\""));
+                     sb.append("\"");
+                  } else if (data instanceof Quantity) {
+                     sb.append(((Quantity) data).getNumber().toString());
+                  } else {
+                     sb.append(data == null ? "null" : data.toString());
+                  }
                }
             }
          }

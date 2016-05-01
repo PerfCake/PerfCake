@@ -19,8 +19,10 @@
  */
 package org.perfcake.reporting.destinations.c3chart;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
+import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.C3ChartDestination;
 
@@ -29,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Helper class for the C3ChartDestination. Works as a proxy to the data files and report creation.
@@ -76,6 +79,12 @@ public class C3ChartHelper {
    public C3ChartHelper(final C3ChartDestination chartDestination) {
       try {
          final List<String> attributes = new ArrayList<>(chartDestination.getAttributesAsList()); // must be enclosed to ArrayList, as the current impl. does not support adding at index
+
+         if (attributes.contains(PerfCakeConst.WARM_UP_TAG)) {
+            attributes.remove(PerfCakeConst.WARM_UP_TAG);
+            attributes.addAll(attributes.stream().map(a -> a + "-" + PerfCakeConst.WARM_UP_TAG).collect(Collectors.toList()));
+         }
+
          switch (chartDestination.getxAxisType()) {
             case PERCENTAGE:
                attributes.add(0, COLUMN_PERCENT);

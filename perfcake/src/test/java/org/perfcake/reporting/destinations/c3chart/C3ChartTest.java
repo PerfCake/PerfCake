@@ -21,7 +21,7 @@ public class C3ChartTest extends TestSetup {
    public void basicTest() throws Exception {
       Random r = new Random();
       C3ChartDestination dst = new C3ChartDestination();
-      dst.setAttributes("Result, Average");
+      dst.setAttributes("Result, Average, warmUp");
       dst.setXAxis("Time");
       dst.setYAxis("Throughput msgs/sec");
       dst.setGroup("speedGroup");
@@ -34,13 +34,20 @@ public class C3ChartTest extends TestSetup {
 
       Measurement m;
       Double d, avg = 0d;
+      boolean warmUp = true;
 
-      for (int i = 1; i <= 10; i++) {
-         m = new Measurement(i * 10, i * 1000, (i * 100) + r.nextInt(100));
+      for (int i = 1, j = 1; i <= 100; i++, j++) {
+         if (warmUp && r.nextInt(100 - i) < 10) {
+            warmUp = false;
+            j = 1;
+         }
+
+         m = new Measurement(j * 10, j * 1000, (j * 100) + r.nextInt(100));
          d = r.nextDouble() * 100d;
          avg = avg + d;
          m.set(new Quantity<>(d, "msgs/s"));
          m.set("Average", new Quantity<>(avg / i, "msgs/s"));
+         m.set("warmUp", String.valueOf(warmUp));
          dst.report(m);
       }
 

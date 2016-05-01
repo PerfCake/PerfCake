@@ -22,6 +22,8 @@ package org.perfcake.reporting.destinations.c3chart;
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.Utils;
 
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;

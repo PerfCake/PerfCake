@@ -92,10 +92,10 @@ public class C3ChartData {
       }
 
       while (idx1 < data.size() || idx2 < otherData.data.size()) {
-         JsonArray a1 = data.get(idx1);
-         JsonArray a2 = otherData.data.get(idx2);
-         long p1 = a1.getLong(0);
-         long p2 = a2.getLong(0);
+         JsonArray a1 = idx1 < data.size() ? data.get(idx1) : null;
+         JsonArray a2 = idx2 < otherData.data.size() ? otherData.data.get(idx2) : null;
+         long p1 = a1 != null ? a1.getLong(0) : Long.MAX_VALUE;
+         long p2 = a2 != null ? a2.getLong(0) : Long.MAX_VALUE;
          List raw = new LinkedList<>();
 
          if (p1 == p2) {
