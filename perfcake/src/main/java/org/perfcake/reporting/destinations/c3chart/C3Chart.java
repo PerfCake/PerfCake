@@ -100,7 +100,7 @@ public class C3Chart {
    private long created = System.currentTimeMillis();
 
    /**
-    * Height of the resulting chart in pixels.
+    * Height of the resulting chart SVG graphics in pixels.
     */
    private int height = 400;
 
@@ -173,7 +173,9 @@ public class C3Chart {
 
    /**
     * Sets the base of the file name of the chart file. E.g. from '/some/path/data/stats201501272232.js' it is just 'stats201501272232'.
-    * @param baseName The base of the file name of the chart file.
+    *
+    * @param baseName
+    *       The base of the file name of the chart file.
     */
    public void setBaseName(final String baseName) {
       this.baseName = baseName;
@@ -181,7 +183,9 @@ public class C3Chart {
 
    /**
     * Gets the name of the chart.
-    * @param name The name of the chart.
+    *
+    * @param name
+    *       The name of the chart.
     */
    public void setName(final String name) {
       this.name = name;
@@ -189,7 +193,9 @@ public class C3Chart {
 
    /**
     * Sets the legend of the X axis of the chart.
-    * @param xAxis The legend of the X axis of the chart.
+    *
+    * @param xAxis
+    *       The legend of the X axis of the chart.
     */
    public void setxAxis(final String xAxis) {
       this.xAxis = xAxis;
@@ -197,7 +203,9 @@ public class C3Chart {
 
    /**
     * Sets the legend of the Y axis of the chart.
-    * @param yAxis The legend of the Y axis of the chart.
+    *
+    * @param yAxis
+    *       The legend of the Y axis of the chart.
     */
    public void setyAxis(final String yAxis) {
       this.yAxis = yAxis;
@@ -205,7 +213,9 @@ public class C3Chart {
 
    /**
     * Gets the type of the X axis. It can be either Time, Percents, or Iteration number.
-    * @param xAxisType The type of the X axis. It can be either Time, Percents, or Iteration number.
+    *
+    * @param xAxisType
+    *       The type of the X axis. It can be either Time, Percents, or Iteration number.
     */
    public void setxAxisType(final PeriodType xAxisType) {
       this.xAxisType = xAxisType;
@@ -213,36 +223,79 @@ public class C3Chart {
 
    /**
     * Sets the attributes stored in the chart as a List.
-    * @param attributes The attributes stored in the chart as a List.
+    *
+    * @param attributes
+    *       The attributes stored in the chart as a List.
     */
    public void setAttributes(final List<String> attributes) {
       this.attributes = attributes;
    }
 
+   /**
+    * Sets the group of the current chart.
+    *
+    * @param group
+    *       The group name of this chart.
+    */
    public void setGroup(final String group) {
       this.group = group;
    }
 
+   /**
+    * Checks whether this chart was created as a combination of other existing charts. Charts created as a combination of other charts do not have
+    * their object description and quick preview files generated.
+    *
+    * @return True if and only if this chart was created as a combination of other existing charts.
+    */
    public boolean isCombined() {
       return combined;
    }
 
+   /**
+    * Sets whether this chart was created as a combination of other existing charts. Charts created as a combination of other charts do not have
+    * their object description and quick preview files generated.
+    *
+    * @param combined
+    *       True if and only if this chart was created as a combination of other existing charts.
+    */
    public void setCombined(final boolean combined) {
       this.combined = combined;
    }
 
+   /**
+    * Gets the Unix timestamp of when this chart was created. Defaults to the class instantiation time.
+    *
+    * @return The Unix timestamp of when this chart was created.
+    */
    public long getCreated() {
       return created;
    }
 
+   /**
+    * Sets the Unix timestamp of when this chart was created.
+    *
+    * @param created
+    *       The Unix timestamp of when this chart was created.
+    */
    public void setCreated(final long created) {
       this.created = created;
    }
 
+   /**
+    * Gets the height of the resulting chart SVG graphics in pixels.
+    *
+    * @return The height of the resulting chart SVG graphics in pixels.
+    */
    public int getHeight() {
       return height;
    }
 
+   /**
+    * Sets the height of the resulting chart SVG graphics in pixels.
+    *
+    * @param height
+    *       The height of the resulting chart SVG graphics in pixels.
+    */
    public void setHeight(final int height) {
       this.height = height;
    }

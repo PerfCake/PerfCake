@@ -44,6 +44,8 @@ import io.vertx.core.json.Json;
 import io.vertx.core.json.JsonArray;
 
 /**
+ * Representation of all data files needed to write a chart to the disk. Also handles directory creation and copies basic html files and their dependencies.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class C3ChartDataFile {
@@ -53,6 +55,9 @@ public class C3ChartDataFile {
     */
    private static final Logger log = LogManager.getLogger(C3ChartDataFile.class);
 
+   /**
+    * A list of file resources to be copied in the resulting report.
+    */
    private static String[] resourceFiles = new String[] { "c3.min.css", "c3.min.js", "d3.v3.min.js", "report.css", "report.js", "favicon.svg" };
 
    /**
@@ -78,9 +83,22 @@ public class C3ChartDataFile {
     */
    private boolean firstResultsLine = true;
 
+   /**
+    * Chart meta-data.
+    */
    private C3Chart chart;
 
-   public C3ChartDataFile(final C3Chart chart, final Path target) throws PerfCakeException {
+   /**
+    * Creates a new data files structure and write basic structures to the drive.
+    *
+    * @param chart
+    *       Chart meta-data.
+    * @param target
+    *       Root path where all the files and directories will be created. Attempts to create the missing directories.
+    * @throws PerfCakeException
+    *       In case of an I/O error.
+    */
+   C3ChartDataFile(final C3Chart chart, final Path target) throws PerfCakeException {
       this.chart = chart;
       this.target = target;
 
@@ -91,7 +109,19 @@ public class C3ChartDataFile {
       writeDescriptor();
    }
 
-   public C3ChartDataFile(final C3Chart chart, final Path target, final C3ChartData newData) throws PerfCakeException {
+   /**
+    * Replaces the data file of the given chart with new data.
+    *
+    * @param chart
+    *       Chart meta-data.
+    * @param target
+    *       Root path to an existing chart report.
+    * @param newData
+    *       New data to be written.
+    * @throws PerfCakeException
+    *       In case of an I/O error.
+    */
+   C3ChartDataFile(final C3Chart chart, final Path target, final C3ChartData newData) throws PerfCakeException {
       this.chart = chart;
       this.target = target;
 
@@ -112,7 +142,15 @@ public class C3ChartDataFile {
       }
    }
 
-   public C3ChartDataFile(final File descriptorFile) throws PerfCakeException {
+   /**
+    * Reads the chart meta-data from the existing directory structure. All internal structures are initialized.
+    *
+    * @param descriptorFile
+    *       The direct pointer to the ${target}/data/${baseName}.json file.
+    * @throws PerfCakeException
+    *       In case of an I/O error.
+    */
+   C3ChartDataFile(final File descriptorFile) throws PerfCakeException {
       try {
          final String chartJson = Utils.readFilteredContent(descriptorFile.toURI().toURL());
          chart = Json.decodeValue(chartJson, C3Chart.class);
@@ -123,18 +161,43 @@ public class C3ChartDataFile {
       }
    }
 
-   public C3ChartDataFile(final Path target, final String baseName) throws PerfCakeException {
+   /**
+    * Reads the chart meta-data from the existing directory structure. All internal structures are initialized.
+    *
+    * @param target
+    *       Root path to an existing chart report.
+    * @param baseName
+    *       The base name of the chart file data (i. e. ${target}/data/${baseName}.*).
+    * @throws PerfCakeException
+    *       In case of an I/O error.
+    */
+   C3ChartDataFile(final Path target, final String baseName) throws PerfCakeException {
       this(Paths.get(target.toString(), "data", baseName + ".json").toFile());
    }
 
+   /**
+    * Get chart meta-data.
+    *
+    * @return Chart meta-data.
+    */
    public C3Chart getChart() {
       return chart;
    }
 
+   /**
+    * Gets the root path of this chart report.
+    *
+    * @return The root path of this chart report.
+    */
    public Path getTarget() {
       return target;
    }
 
+   /**
+    * Gets the specific file with chart data.
+    *
+    * @return The specific file with chart data.
+    */
    private File getDataFile() {
       if (dataFile == null) {
          final Path dataFilePath = Paths.get(target.toString(), "data", chart.getBaseName() + ".js");
@@ -144,6 +207,12 @@ public class C3ChartDataFile {
       return dataFile;
    }
 
+   /**
+    * Opens the data file for output of additional values.
+    *
+    * @throws PerfCakeException
+    *       In case of an I/O error.
+    */
    public void open() throws PerfCakeException {
       try {
          outputChannel = FileChannel.open(getDataFile().toPath(), StandardOpenOption.APPEND);
@@ -180,7 +249,7 @@ public class C3ChartDataFile {
             break;
       }
 
-      boolean isWarmUp = Boolean.valueOf((String) measurement.get(PerfCakeConst.WARM_UP_TAG));
+      boolean isWarmUp = (Boolean) measurement.get(PerfCakeConst.WARM_UP_TAG);
 
       for (final String attr : chart.getAttributes()) {
          if (chart.getAttributes().indexOf(attr) > 0) {
@@ -234,7 +303,7 @@ public class C3ChartDataFile {
     * @throws ReportingException
     *       When it was not possible to write the data.
     */
-   public void appendResult(final Measurement measurement) throws ReportingException {
+   void appendResult(final Measurement measurement) throws ReportingException {
       final String line = getResultLine(measurement);
 
       if (!"".equals(line)) {
@@ -246,6 +315,12 @@ public class C3ChartDataFile {
       }
    }
 
+   /**
+    * Closes the output channel.
+    *
+    * @throws PerfCakeException
+    *       In case of an I/O error.
+    */
    public void close() throws PerfCakeException {
       try {
          outputChannel.close();
@@ -282,13 +357,19 @@ public class C3ChartDataFile {
       Utils.writeFileContent(getDataFile(), dataHeader.toString());
    }
 
+   /**
+    * Serializes chart meta-data as JSON to the output directory structure.
+    *
+    * @throws PerfCakeException
+    *       In case of an I/O error.
+    */
    private void writeDescriptor() throws PerfCakeException {
       final Path descriptorFile = Paths.get(target.toString(), "data", chart.getBaseName() + ".json");
       Utils.writeFileContent(descriptorFile, Json.encode(chart));
    }
 
    /**
-    * Creates output files structure including all needed CSS and JS files.
+    * Creates output file structure including all needed CSS and JS files.
     *
     * @throws PerfCakeException
     *       When it was not possible to create any of the directories or files.
@@ -323,6 +404,14 @@ public class C3ChartDataFile {
       }
    }
 
+   /**
+    * Copies the given resource file to the target chart report.
+    *
+    * @param resourceFileName
+    *       The name of the resource.
+    * @throws IOException
+    *       When it was not possible to copy the resource.
+    */
    private void copyResourceFile(final String resourceFileName) throws IOException {
       Files.copy(getClass().getResourceAsStream("/c3chart/" + resourceFileName), Paths.get(target.toString(), "src", resourceFileName), StandardCopyOption.REPLACE_EXISTING);
    }

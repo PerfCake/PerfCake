@@ -23,7 +23,7 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
-import org.perfcake.reporting.destinations.chart.ChartDestinationHelper;
+import org.perfcake.reporting.destinations.c3chart.C3ChartHelper;
 import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.commons.lang.StringUtils;
@@ -89,18 +89,23 @@ public class ChartDestination implements Destination {
    private PeriodType xAxisType = PeriodType.TIME;
 
    /**
+    * Height of the resulting chart in pixels.
+    */
+   private int chartHeight = 400;
+
+   /**
     * Helper to control the chart generation.
     */
-   private ChartDestinationHelper helper;
+   private C3ChartHelper helper;
 
    @Override
    public void open() {
-      helper = new ChartDestinationHelper(this);
+      helper = new C3ChartHelper(this);
    }
 
    @Override
    public void close() {
-      if (!helper.isSuccessInit()) {
+      if (!helper.isInitialized()) {
          log.error("Chart destination was not properly initialized, skipping result creation.");
       } else {
          try {
@@ -114,7 +119,7 @@ public class ChartDestination implements Destination {
 
    @Override
    public void report(final Measurement measurement) throws ReportingException {
-      if (!helper.isSuccessInit()) {
+      if (!helper.isInitialized()) {
          throw new ReportingException("Chart destination was not properly initialized.");
       }
 
@@ -207,6 +212,14 @@ public class ChartDestination implements Destination {
       } else {
          this.group = group;
       }
+   }
+
+   public int getChartHeight() {
+      return chartHeight;
+   }
+
+   public void setChartHeight(final int chartHeight) {
+      this.chartHeight = chartHeight;
    }
 
    /**

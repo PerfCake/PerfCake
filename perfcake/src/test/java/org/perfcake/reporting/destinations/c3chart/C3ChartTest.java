@@ -1,11 +1,12 @@
 package org.perfcake.reporting.destinations.c3chart;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.TestSetup;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
-import org.perfcake.reporting.destinations.C3ChartDestination;
+import org.perfcake.reporting.destinations.ChartDestination;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -23,7 +24,7 @@ public class C3ChartTest extends TestSetup {
    @Test
    public void basicTest() throws Exception {
       Random r = new Random();
-      C3ChartDestination dst = new C3ChartDestination();
+      ChartDestination dst = new ChartDestination();
       dst.setAttributes("Result, Average, warmUp");
       dst.setXAxis("Time");
       dst.setYAxis("Throughput msgs/sec");
@@ -31,7 +32,8 @@ public class C3ChartTest extends TestSetup {
       dst.setName("My throughput");
       dst.setxAxisType(PeriodType.TIME);
 
-      dst.setOutputDir("/home/mvecera/work/PerfCake/tmp/c3-test");
+      String tempDir = TestSetup.createTempDir("test-chart");
+      dst.setOutputDir(tempDir);
 
       dst.open();
 
@@ -50,11 +52,28 @@ public class C3ChartTest extends TestSetup {
          avg = avg + d;
          m.set(new Quantity<>(d, "msgs/s"));
          m.set("Average", new Quantity<>(avg / i, "msgs/s"));
-         m.set("warmUp", String.valueOf(warmUp));
+         m.set("warmUp", warmUp);
          dst.report(m);
       }
 
       dst.close();
+
+      final Path dir = Paths.get(tempDir);
+
+      Assert.assertTrue(dir.resolve(Paths.get("data", "speedGroup" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".js")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("data", "speedGroup" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".json")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("data", "speedGroup" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".html")).toFile().exists());
+
+      final C3ChartData data1 = new C3ChartData("speedGroup" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY), dir);
+      Assert.assertEquals(data1.getData().get(0).size(), 5);
+
+      final C3ChartDataFile desc = new C3ChartDataFile(dir, "speedGroup" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY));
+      Assert.assertEquals(desc.getChart().getBaseName(), "speedGroup" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY));
+      Assert.assertEquals(desc.getChart().getName(), dst.getName());
+      Assert.assertEquals(desc.getChart().getGroup(), dst.getGroup());
+      Assert.assertEquals(desc.getChart().getxAxis(), dst.getXAxis());
+      Assert.assertEquals(desc.getChart().getyAxis(), dst.getYAxis());
+      Assert.assertEquals(desc.getChart().getxAxisType(), dst.getxAxisType());
    }
 
    @Test

@@ -21,7 +21,6 @@ package org.perfcake.reporting.destinations.c3chart;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.common.PeriodType;
-import org.perfcake.reporting.destinations.chart.Chart;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -37,6 +36,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
+ * Compiles the resulting chart report combiting all possible charts created now or during previous runs in the same target location.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class C3ChartReport {
@@ -51,6 +52,16 @@ public class C3ChartReport {
     */
    private static int fileCounter = 1;
 
+   /**
+    * Creates the final report in the given location.
+    *
+    * @param target
+    *       Root path to an existing chart report.
+    * @param mainChart
+    *       The chart that was added during this run of the performance test.
+    * @throws PerfCakeException
+    *       When it was not possible to create the report.
+    */
    static void createReport(final Path target, final C3Chart mainChart) throws PerfCakeException {
       final File outputDir = Paths.get(target.toString(), "data").toFile();
       final List<C3Chart> charts = new ArrayList<>();
@@ -89,7 +100,7 @@ public class C3ChartReport {
     * @throws IOException
     *       When it was not possible to delete any of the charts.
     */
-   static void deletePreviousCombinedCharts(final File descriptionsDirectory) throws IOException {
+   private static void deletePreviousCombinedCharts(final File descriptionsDirectory) throws IOException {
       final StringBuilder issues = new StringBuilder();
 
       final File[] files = descriptionsDirectory.listFiles(new CombinedJsFileFilter());
@@ -107,11 +118,11 @@ public class C3ChartReport {
    }
 
    /**
-    * Find all the attributes among the given charts that has a match. I.e. that are present at least in two of the charts.
+    * Finds all the attributes among the given charts that has a match. I.e. that are present at least in two of the charts.
     *
     * @param charts
     *       The charts for inspection.
-    * @return A list of attributes that are present at least twice among the charts.
+    * @return A map of chart group to a list of attributes that are present at least twice among the charts.
     */
    private static Map<String, List<String>> findMatchingAttributes(final List<C3Chart> charts) {
       final Map<String, List<String>> seen = new HashMap<>();
@@ -146,7 +157,7 @@ public class C3ChartReport {
     *
     * @param charts
     *       Existing chart for inspection.
-    * @return A list of newly created charts.
+    * @return The list of newly created charts.
     * @throws PerfCakeException
     *       When it was not possible to store any of the charts.
     */
@@ -182,7 +193,21 @@ public class C3ChartReport {
       return newCharts;
    }
 
-   static C3Chart combineCharts(final Path target, final String matchingAttribute, final List<C3Chart> matchingCharts) throws PerfCakeException {
+   /**
+    * Combines the charts in the target path according to the matching attribute. That means a new chart containing
+    * the given attribute from all the charts generated in the given location is generated.
+    *
+    * @param target
+    *       Root path to an existing chart report.
+    * @param matchingAttribute
+    *       The name of the attribute present in all of the charts.
+    * @param matchingCharts
+    *       The charts to be combined.
+    * @return The newly created chart meta-data.
+    * @throws PerfCakeException
+    *       When it was not possible to write the new chart data.
+    */
+   private static C3Chart combineCharts(final Path target, final String matchingAttribute, final List<C3Chart> matchingCharts) throws PerfCakeException {
       final C3Chart newChart = new C3Chart();
       final String newBaseName = matchingCharts.stream().map(C3Chart::getBaseName).collect(Collectors.joining("_"));
       final List<String> attributes = new ArrayList<>();

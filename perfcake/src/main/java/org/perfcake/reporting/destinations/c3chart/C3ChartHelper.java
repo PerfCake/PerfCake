@@ -22,9 +22,8 @@ package org.perfcake.reporting.destinations.c3chart;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
-import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
-import org.perfcake.reporting.destinations.C3ChartDestination;
+import org.perfcake.reporting.destinations.ChartDestination;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Helper class for the C3ChartDestination. Works as a proxy to the data files and report creation.
+ * Helper class for the ChartDestination. Bridges the destination methods to the corresponding actions of other classes in the package.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -48,20 +47,20 @@ public class C3ChartHelper {
    /**
     * Name of the time column.
     */
-   protected static final String COLUMN_TIME = "Time";
+   private static final String COLUMN_TIME = "Time";
 
    /**
     * Name of the iteration column.
     */
-   protected static final String COLUMN_ITERATION = "Iteration";
+   private static final String COLUMN_ITERATION = "Iteration";
 
    /**
     * Name of the percentage column.
     */
-   protected static final String COLUMN_PERCENT = "Percents";
+   private static final String COLUMN_PERCENT = "Percents";
 
    /**
-    * Main chart data file used to store results of the parent C3ChartDestination.
+    * Main chart data file used to store results of the parent ChartDestination.
     */
    private C3ChartDataFile chartDataFile;
 
@@ -71,12 +70,12 @@ public class C3ChartHelper {
    private boolean initialized = false;
 
    /**
-    * Creates a new helper for the given C3ChartDestination.
+    * Creates a new helper for the given ChartDestination.
     *
     * @param chartDestination
     *       The ChartDestination this helper is supposed to serve to.
     */
-   public C3ChartHelper(final C3ChartDestination chartDestination) {
+   public C3ChartHelper(final ChartDestination chartDestination) {
       try {
          final List<String> attributes = new ArrayList<>(chartDestination.getAttributesAsList()); // must be enclosed to ArrayList, as the current impl. does not support adding at index
 
@@ -140,7 +139,8 @@ public class C3ChartHelper {
    /**
     * Closes the data files.
     *
-    * @throws PerfCakeException When it was not possible to smoothly finalize the data files.
+    * @throws PerfCakeException
+    *       When it was not possible to smoothly finalize the data files.
     */
    public void close() throws PerfCakeException {
       chartDataFile.close();
@@ -149,7 +149,8 @@ public class C3ChartHelper {
    /**
     * Creates the final result report compiling all the previous charts together.
     *
-    * @throws PerfCakeException When there was an error creating the report. Typically an I/O issue.
+    * @throws PerfCakeException
+    *       When there was an error creating the report. Typically an I/O issue.
     */
    public void compileResults() throws PerfCakeException {
       C3ChartReport.createReport(chartDataFile.getTarget(), chartDataFile.getChart());

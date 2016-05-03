@@ -33,7 +33,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import java.nio.file.Path;
@@ -43,7 +42,7 @@ import java.util.Date;
 import java.util.Random;
 
 /**
- * Tests {@link org.perfcake.reporting.destinations.ChartDestination}.
+ * Tests {@link ChartDestination}.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
@@ -52,11 +51,6 @@ import java.util.Random;
 public class ChartDestinationTest extends TestSetup {
 
    private static final Logger log = LogManager.getLogger(ChartDestinationTest.class);
-
-   @BeforeMethod
-   public void beforeMethod() {
-      System.setProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY, (new SimpleDateFormat("yyyyMMddHHmmss")).format(new Date()));
-   }
 
    @Test
    public void basicGroupNameTest() throws Exception {
@@ -80,7 +74,7 @@ public class ChartDestinationTest extends TestSetup {
 
    @Test
    public void basicTest() throws Exception {
-      final String tempDir = "target/chart";//TestSetup.createTempDir("test-chart");
+      final String tempDir = TestSetup.createTempDir("test-chart");
       log.info("Created temp directory for chart: " + tempDir);
 
       final ChartDestination cd = new ChartDestination();
@@ -166,10 +160,10 @@ public class ChartDestinationTest extends TestSetup {
       verifyBasicFiles(Paths.get(tempDir));
 
       Assert.assertTrue(dir.resolve(Paths.get("data", "stats" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".js")).toFile().exists());
-      Assert.assertTrue(dir.resolve(Paths.get("data", "stats" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".dat")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("data", "stats" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".json")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "stats" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".html")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".js")).toFile().exists());
-      Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".dat")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".json")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".html")).toFile().exists());
    }
 
@@ -206,7 +200,7 @@ public class ChartDestinationTest extends TestSetup {
 
       verifyBasicFiles(dir);
 
-      Assert.assertTrue(dir.resolve(Paths.get("data", correctGroup + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".dat")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("data", correctGroup + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".json")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", correctGroup + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".js")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", correctGroup + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".html")).toFile().exists());
 
@@ -227,7 +221,8 @@ public class ChartDestinationTest extends TestSetup {
       scenario.run();
       scenario.close();
 
-      beforeMethod();
+      // change the time to get different timestamp and different data files
+      System.setProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY, String.valueOf(Long.parseLong(System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY)) + 10));
 
       scenario.init();
       final String newTime = System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
@@ -238,13 +233,13 @@ public class ChartDestinationTest extends TestSetup {
 
       verifyBasicFiles(dir);
 
-      Assert.assertTrue(dir.resolve(Paths.get("data", "default_throughput" + origTime + ".dat")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("data", "default_throughput" + origTime + ".json")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "default_throughput" + origTime + ".js")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "default_throughput" + origTime + ".html")).toFile().exists());
-      Assert.assertTrue(dir.resolve(Paths.get("data", "default_throughput" + newTime + ".dat")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("data", "default_throughput" + newTime + ".json")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "default_throughput" + newTime + ".js")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "default_throughput" + newTime + ".html")).toFile().exists());
-      int dataArrays = dir.resolve(Paths.get("data")).toFile().listFiles((directory, name) -> name.startsWith("data_array_") && name.endsWith(".js")).length;
+      int dataArrays = dir.resolve(Paths.get("data")).toFile().listFiles((directory, name) -> name.startsWith("combined_") && name.endsWith(".js")).length;
 
       Assert.assertEquals(dataArrays, 4);
 
@@ -257,7 +252,10 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertTrue(dir.resolve(Paths.get("index.html")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("src", "report.js")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("src", "report.css")).toFile().exists());
-      Assert.assertTrue(dir.resolve(Paths.get("src", "google-chart.js")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("src", "c3.min.css")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("src", "c3.min.js")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("src", "d3.v3.min.js")).toFile().exists());
+      Assert.assertTrue(dir.resolve(Paths.get("src", "favicon.svg")).toFile().exists());
    }
 
 }

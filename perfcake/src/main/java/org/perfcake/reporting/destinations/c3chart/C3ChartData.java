@@ -32,18 +32,47 @@ import java.util.List;
 import io.vertx.core.json.JsonArray;
 
 /**
+ * Data of a C3 chart stored in the .js file as a script building an array.
+ * Does not work with the data header and does not know anything about the actual data.
+ * It is the role of {@link C3Chart} to carry all the meta-data.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class C3ChartData {
 
+   /**
+    * The individual lines of data.
+    */
    private List<JsonArray> data;
+
+   /**
+    * Target path where the charts report is stored. The individual data files are located in ${target}/data/${baseName}.js.
+    */
    private Path target;
 
+   /**
+    * Initialize the class with the provided data. No other actions are taken.
+    *
+    * @param target
+    *       The target path where the chart report is stored. The individual data files are located in ${target}/data/${baseName}.js.
+    * @param data
+    *       An ordered list of individual data lines.
+    */
    private C3ChartData(final Path target, final List<JsonArray> data) {
       this.data = data;
       this.target = target;
    }
 
+   /**
+    * Reads the chart data from the appropriate data file. The data file is located in ${target}/data/${baseName}.js.
+    *
+    * @param baseName
+    *       The base of the chart data files name.
+    * @param target
+    *       The target path where the chart report is stored. The individual data files are located in ${target}/data/${baseName}.js.
+    * @throws PerfCakeException
+    *       When there was an error reading the data. Mainly because of some I/O error.
+    */
    public C3ChartData(final String baseName, final Path target) throws PerfCakeException {
       this(target, new LinkedList<>());
 
@@ -63,6 +92,14 @@ public class C3ChartData {
       }
    }
 
+   /**
+    * Creates a new chart where with only two columns from the original chart. These columns have indexes 0 and the second is specified in the parameter.
+    * This is used to create a subchart with the values of the X axis and one data line.
+    *
+    * @param keepColumnIndex
+    *       The index of the column to be kept.
+    * @return A new chart where with only two columns - the X axis values and the data line specified in the parameter.
+    */
    public C3ChartData filter(int keepColumnIndex) {
       final List<JsonArray> newData = new LinkedList<>();
 
@@ -74,8 +111,17 @@ public class C3ChartData {
       return new C3ChartData(target, newData);
    }
 
+   /**
+    * Gets the first line index where there are other values than null (except for the first index column).
+    *
+    * @return The first line index where there are other values than null
+    */
    private int getDataStart() {
       int idx = 0;
+
+      if (data.size() == 0) {
+         return -1;
+      }
 
       boolean dataHit;
       do {
@@ -92,6 +138,13 @@ public class C3ChartData {
       return idx;
    }
 
+   /**
+    * Checks whether all values in the field are null (except for the first index column).
+    *
+    * @param a
+    *       The array to be checked.
+    * @return True if and only if all values in the field are null.
+    */
    private static boolean isAllNull(final JsonArray a) {
       int i = 1;
       while (i < a.size()) {
@@ -104,6 +157,13 @@ public class C3ChartData {
       return true;
    }
 
+   /**
+    * Gets a list with null values of the given size.
+    *
+    * @param size
+    *       The size of the new list.
+    * @return The list with null values of the given size.
+    */
    @SuppressWarnings("unchecked")
    private static List getNullList(final int size) {
       final List nullList = new LinkedList<>();
@@ -114,10 +174,28 @@ public class C3ChartData {
       return nullList;
    }
 
+   /**
+    * Mixes two charts together sorted according to the first index column. Missing data for any index values in either chart are replaced with null.
+    * Records with only null values are skipped. The existing chart data are not changed, a new instance is created.
+    *
+    * @param otherData
+    *       The other chart data to be mixed with this chart data.
+    * @return A new chart data combining both input charts.
+    */
    @SuppressWarnings("unchecked")
-   public C3ChartData combineWith(final C3ChartData otherData) {
+   C3ChartData combineWith(final C3ChartData otherData) {
       final List<JsonArray> newData = new LinkedList<>();
       int idx1 = getDataStart(), idx2 = otherData.getDataStart();
+
+      if (idx1 == -1) {
+         if (idx2 == -1) {
+            return new C3ChartData(target, newData);
+         } else {
+            return new C3ChartData(target, new LinkedList<>(otherData.data));
+         }
+      } else if (idx2 == -2) {
+         return new C3ChartData(target, new LinkedList<>(data));
+      }
 
       int size1 = data.get(0).size();
       List nullList1 = getNullList(size1 - 1);
@@ -164,6 +242,11 @@ public class C3ChartData {
       return new C3ChartData(target, newData);
    }
 
+   /**
+    * Gets the data lines.
+    *
+    * @return The data lines.
+    */
    public List<JsonArray> getData() {
       return data;
    }

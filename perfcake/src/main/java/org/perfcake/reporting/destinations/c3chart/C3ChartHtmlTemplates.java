@@ -37,23 +37,56 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
+ * Renders HTML and JavaScript templates to the final chart report.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class C3ChartHtmlTemplates {
 
-   static String getJsImport(final String location) throws PerfCakeException {
+   /**
+    * Gets JavaScript import template.
+    *
+    * @param location
+    *       JavaScript file location.
+    * @return JavaScript import template.
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getJsImport(final String location) throws PerfCakeException {
       final Properties props = new Properties();
       props.setProperty("location", location);
       return Utils.readTemplateFromResource("/c3chart/js-import.html", props);
    }
 
-   static String getChartDiv(final String baseName) throws PerfCakeException {
+   /**
+    * Gets a chart div element.
+    *
+    * @param baseName
+    *       Base name of the chart.
+    * @return The chart div element.
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getChartDiv(final String baseName) throws PerfCakeException {
       final Properties props = new Properties();
       props.setProperty("baseName", baseName);
       return Utils.readTemplateFromResource("/c3chart/chart-div.html", props);
    }
 
-   static String getHeading(final int level, final String id, final String heading) throws PerfCakeException {
+   /**
+    * Gets a heading element.
+    *
+    * @param level
+    *       Heading level.
+    * @param id
+    *       Anchor id.
+    * @param heading
+    *       Heding label.
+    * @return The heading element.
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getHeading(final int level, final String id, final String heading) throws PerfCakeException {
       final Properties props = new Properties();
       props.setProperty("level", String.valueOf(level));
       props.setProperty("id", id);
@@ -61,14 +94,34 @@ public class C3ChartHtmlTemplates {
       return Utils.readTemplateFromResource("/c3chart/heading.html", props);
    }
 
-   static String getTocEntry(final String id, final String label) throws PerfCakeException {
+   /**
+    * Gets an entry of the table of content.
+    *
+    * @param id
+    *       Anchor id.
+    * @param label
+    *       Link label.
+    * @return The entry of the table of content.
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getTocEntry(final String id, final String label) throws PerfCakeException {
       final Properties props = new Properties();
       props.setProperty("id", id);
       props.setProperty("label", label);
       return Utils.readTemplateFromResource("/c3chart/toc-entry.html", props);
    }
 
-   static String getToc(final Map<String, String> headings) throws PerfCakeException {
+   /**
+    * Gets a complete table of content.
+    *
+    * @param headings
+    *       Map of anchor ids and heading labels.
+    * @return The complete table of content.
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getToc(final Map<String, String> headings) throws PerfCakeException {
       final StringBuilder leftEntries = new StringBuilder();
       final StringBuilder rightEntries = new StringBuilder();
       final int half = headings.size() / 2 + headings.size() % 2;
@@ -89,6 +142,16 @@ public class C3ChartHtmlTemplates {
       return Utils.readTemplateFromResource("/c3chart/toc.html", props);
    }
 
+   /**
+    * Writes the main index file with the complete report.
+    *
+    * @param target
+    *       Root path to an existing chart report.
+    * @param charts
+    *       List fo charts to be put in the report.
+    * @throws PerfCakeException
+    *       WHen it was not possible to read or parse the index file template, or when it was not possible to write the index file.
+    */
    static void writeIndex(final Path target, final List<C3Chart> charts) throws PerfCakeException {
       final Path indexFile = Paths.get(target.toString(), "index.html");
       final Properties indexProps = new Properties();
@@ -98,7 +161,16 @@ public class C3ChartHtmlTemplates {
       Utils.copyTemplateFromResource("/c3chart/index.html", indexFile, indexProps);
    }
 
-   static String getChartsScript(final List<C3Chart> charts) throws PerfCakeException {
+   /**
+    * Gets the JavaScript for all the charts in the given list.
+    *
+    * @param charts
+    *       The list of charts.
+    * @return The JavaScript for all the charts in the given list.
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getChartsScript(final List<C3Chart> charts) throws PerfCakeException {
       final StringBuilder sb = new StringBuilder();
       for (final C3Chart chart : charts) {
          sb.append(getSingleChartScript(chart));
@@ -107,12 +179,30 @@ public class C3ChartHtmlTemplates {
       return sb.toString();
    }
 
-   static String getSingleChartScript(final C3Chart chart) throws PerfCakeException {
+   /**
+    * Gets the JavaScript for the given chart meta-data.
+    *
+    * @param chart
+    *       Chart meta-data.
+    * @return The JavaScript for the given chart meta-data.
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getSingleChartScript(final C3Chart chart) throws PerfCakeException {
       final Properties props = getChartProperties(chart);
       return Utils.readTemplateFromResource("/c3chart/chart.js", props);
    }
 
-   static String getChartsImports(final List<C3Chart> charts) throws PerfCakeException {
+   /**
+    * Gets all the chart data imports.
+    *
+    * @param charts
+    *       List of charts to be imported.
+    * @return All the chart data imports.
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getChartsImports(final List<C3Chart> charts) throws PerfCakeException {
       final StringBuilder sb = new StringBuilder();
       for (final C3Chart chart : charts) {
          sb.append(getJsImport("data/" + chart.getBaseName() + ".js"));
@@ -121,7 +211,16 @@ public class C3ChartHtmlTemplates {
       return sb.toString();
    }
 
-   static String getChartsDiv(final List<C3Chart> charts) throws PerfCakeException {
+   /**
+    * Gets the piece of index file with all the charts.
+    *
+    * @param charts
+    *       The chart to be placed in the report.
+    * @return The piece of index file with all the charts.
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getChartsDiv(final List<C3Chart> charts) throws PerfCakeException {
       final StringBuilder sb = new StringBuilder();
       final List<String> groups = new ArrayList<>();
       final Map<String, List<C3Chart>> chartsByGroup = new HashMap<>();
@@ -181,7 +280,7 @@ public class C3ChartHtmlTemplates {
     *
     * @return The creation date and time as localized string.
     */
-   public static String getCreatedAsString(final C3Chart chart) {
+   static String getCreatedAsString(final C3Chart chart) {
       final ZonedDateTime ldt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(chart.getCreated()), ZoneId.systemDefault());
       return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).format(ldt);
    }
@@ -198,7 +297,14 @@ public class C3ChartHtmlTemplates {
       Utils.copyTemplateFromResource("/c3chart/quick-view.html", quickViewFile, quickViewProps);
    }
 
-   static Properties getChartProperties(final C3Chart chart) {
+   /**
+    * Converts chart meta-data to properties.
+    *
+    * @param chart
+    *       Chart meta-data.
+    * @return Properties pre-filled from the chart meta-data.
+    */
+   private static Properties getChartProperties(final C3Chart chart) {
       final Properties props = new Properties();
 
       props.setProperty("baseName", chart.getBaseName());
