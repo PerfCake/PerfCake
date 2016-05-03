@@ -19,6 +19,7 @@ import java.util.Random;
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = { "unit" })
 public class C3ChartTest extends TestSetup {
 
    @Test
