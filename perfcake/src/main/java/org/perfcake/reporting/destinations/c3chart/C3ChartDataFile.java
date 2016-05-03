@@ -249,7 +249,7 @@ public class C3ChartDataFile {
             break;
       }
 
-      boolean isWarmUp = (Boolean) measurement.get(PerfCakeConst.WARM_UP_TAG);
+      boolean isWarmUp = measurement.get(PerfCakeConst.WARM_UP_TAG) != null ? (Boolean) measurement.get(PerfCakeConst.WARM_UP_TAG) : false;
 
       for (final String attr : chart.getAttributes()) {
          if (chart.getAttributes().indexOf(attr) > 0) {
