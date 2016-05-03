@@ -28,8 +28,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.List;
 
 /**
- * Represents a single Google chart data file(s) stored in the file system.
- * Charts once read from a description file cannot be further modified and stored again!
+ * Represents a single C3 chart meta-data carrying all the information needed to represent the chart.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -172,26 +171,50 @@ public class C3Chart {
       return xAxisType;
    }
 
+   /**
+    * Sets the base of the file name of the chart file. E.g. from '/some/path/data/stats201501272232.js' it is just 'stats201501272232'.
+    * @param baseName The base of the file name of the chart file.
+    */
    public void setBaseName(final String baseName) {
       this.baseName = baseName;
    }
 
+   /**
+    * Gets the name of the chart.
+    * @param name The name of the chart.
+    */
    public void setName(final String name) {
       this.name = name;
    }
 
+   /**
+    * Sets the legend of the X axis of the chart.
+    * @param xAxis The legend of the X axis of the chart.
+    */
    public void setxAxis(final String xAxis) {
       this.xAxis = xAxis;
    }
 
+   /**
+    * Sets the legend of the Y axis of the chart.
+    * @param yAxis The legend of the Y axis of the chart.
+    */
    public void setyAxis(final String yAxis) {
       this.yAxis = yAxis;
    }
 
+   /**
+    * Gets the type of the X axis. It can be either Time, Percents, or Iteration number.
+    * @param xAxisType The type of the X axis. It can be either Time, Percents, or Iteration number.
+    */
    public void setxAxisType(final PeriodType xAxisType) {
       this.xAxisType = xAxisType;
    }
 
+   /**
+    * Sets the attributes stored in the chart as a List.
+    * @param attributes The attributes stored in the chart as a List.
+    */
    public void setAttributes(final List<String> attributes) {
       this.attributes = attributes;
    }
