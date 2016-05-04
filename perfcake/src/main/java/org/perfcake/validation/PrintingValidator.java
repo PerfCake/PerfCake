@@ -27,10 +27,18 @@ import org.apache.logging.log4j.Logger;
 import java.util.Properties;
 
 /**
+ * Prints the original message and its response for the validation by human eyes.
+ * Please note that the validation output is normally stored in a separate log file and
+ * not printed to all other logging output.
+ * All messages controlled by this validator are stated valid.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class PrintingValidator implements MessageValidator {
 
+   /**
+    * Logger used to print out messages.
+    */
    private static final Logger log = LogManager.getLogger(PrintingValidator.class);
 
    @Override
