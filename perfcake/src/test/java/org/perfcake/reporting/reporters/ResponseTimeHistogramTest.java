@@ -28,6 +28,10 @@ import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.util.ObjectFactory;
 
+import org.HdrHistogram.ConcurrentDoubleHistogram;
+import org.HdrHistogram.DoubleHistogram;
+import org.HdrHistogram.DoubleHistogramIterationValue;
+import org.HdrHistogram.DoublePercentileIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
@@ -35,7 +39,12 @@ import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
+import java.util.Random;
+
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -44,6 +53,41 @@ import java.util.Properties;
 public class ResponseTimeHistogramTest {
 
    private static final Logger log = LogManager.getLogger(ResponseTimeHistogramTest.class);
+
+   @Test(enabled = false)
+   public void hdrTest() {
+      DoubleHistogram histogram = new ConcurrentDoubleHistogram(3);
+      Random r = new Random();
+      double d = 0;
+      for (int i = 0; i < 1000; i++) {
+         d = d + r.nextDouble() * 1000;
+         histogram.recordValue(r.nextDouble() * 1000);
+         display(histogram, d / (i + 1));
+      }
+   }
+
+   private void display(DoubleHistogram histogram, double avg) {
+      String valueFormatString = "%12.3f";
+      String percentileFormatString = "%2.12f";
+
+      DoublePercentileIterator pi = new DoublePercentileIterator(histogram.copyCorrectedForCoordinatedOmission(avg), 1);
+      pi.reset(2);
+
+      JsonObject o = new JsonObject();
+
+      while (pi.hasNext()) {
+         DoubleHistogramIterationValue val = pi.next();
+
+         String key =  String.format(Locale.US, percentileFormatString, val.getPercentileLevelIteratedTo() / 100d);
+         String value =  String.format(Locale.US, valueFormatString, val.getValueIteratedTo());
+
+         o.put(key, value);
+
+      }
+
+      System.out.println(o.toString());
+
+   }
 
    @Test
    public void offModeTest() throws Exception {
