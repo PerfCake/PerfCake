@@ -71,7 +71,7 @@ public class AgentThread implements Runnable {
             for (final String arg : args) {
                final String[] keyValuePair = arg.split("=");
                if (keyValuePair.length == 2) {
-                  props.put(keyValuePair[0], keyValuePair[1]);
+                  props.put(keyValuePair[0], keyValuePair[1].trim());
                } else {
                   err("Invalid agent argument \"" + arg + "\" - ignoring");
                }

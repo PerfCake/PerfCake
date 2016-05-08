@@ -49,7 +49,7 @@
       <version.jacoco>0.7.5.201505241946</version.jacoco>
       <version.velocity>1.7</version.velocity>
 
-      <java.level>1.5</java.level>
+      <java.level>1.7</java.level>
    </properties>
    <dependencyManagement>
       <dependencies>
@@ -183,6 +183,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
+            <version>${maven.surefire.plugin.version}</version>
             <configuration>
                <!-- Fork every test because it will launch a separate AS instance -->
                <forkCount>1</forkCount>
@@ -256,8 +257,13 @@
                <version>${maven.jar.plugin.version}</version>
                <configuration>
                   <archive>
+                     <manifest>
+                        <addClasspath>true</addClasspath>
+                        <mainClass>org.perfcake.agent.PerfCakeAgent</mainClass>
+                     </manifest>
                      <manifestEntries>
                         <Premain-class>org.perfcake.agent.PerfCakeAgent</Premain-class>
+                        <Agent-class>org.perfcake.agent.PerfCakeAgent</Agent-class>
                         <Class-Path>../resources/ ../</Class-Path>
                      </manifestEntries>
                   </archive>
@@ -444,5 +450,30 @@
             </plugins>
          </build>
       </profile>
+
+      <profile>
+         <!--Only use this dependency if a tools.jar file exists in the JDK's lib directory-->
+         <id>toosjar-profile</id>
+         <activation>
+            <file>
+               <exists>${java.home}/../lib/tools.jar</exists>
+            </file>
+         </activation>
+         <properties>
+            <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+         </properties>
+         <dependencies>
+            <dependency>
+               <!--Need tools.jar in compilation classpath. JDK 1.7 no longer has it there by default: -->
+               <groupId>com.sun</groupId>
+               <artifactId>tools</artifactId>
+               <!-- version number is irrelevant since we exclude this from the dependencies plugin: -->
+               <version>99.9.9</version>
+               <scope>system</scope>
+               <systemPath>${java.home}/../lib/tools.jar</systemPath>
+            </dependency>
+         </dependencies>
+      </profile>
+
    </profiles>
 </project>
