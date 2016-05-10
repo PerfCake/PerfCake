@@ -50,9 +50,24 @@ import javax.script.ScriptException;
  */
 public class ScriptValidator implements MessageValidator {
 
+   /**
+    * The name of the Java Script Engine.
+    */
    private String engine;
+
+   /**
+    * The script to be used for validation (code of the script). Has priority over scriptFile.
+    */
    private String script;
+
+   /**
+    * Location of the file with the script.
+    */
    private String scriptFile;
+
+   /**
+    * Compiled representation of the script.
+    */
    private CompiledScript compiledScript = null;
 
    private static final Logger log = LogManager.getLogger(ScriptValidator.class);

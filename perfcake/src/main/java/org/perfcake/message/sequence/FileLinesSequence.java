@@ -45,7 +45,7 @@ public class FileLinesSequence implements Sequence {
    private static final Logger log = LogManager.getLogger(FileLinesSequence.class);
 
    /**
-    * The location of the file to read ro
+    * The location of the file to read from.
     */
    private String fileUrl;
 

@@ -41,7 +41,7 @@ import java.util.Properties;
 
 /**
  * Creates a dictionary of valid responses and use this to validate them in another run.
- * It is also possible to create the dictionary manually, however, this is to complicated task and we always
+ * It is also possible to create the dictionary manually, however, this is too complicated task and we always
  * recommend running the validation in record mode first. Any manual changes can be done later.
  * Dictionary validator creates an index file and a separate file for each response. A writable directory must
  * be specified. The default index file name can be redefined. The response file names are based on hash codes of
