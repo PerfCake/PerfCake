@@ -21,24 +21,35 @@ package org.perfcake.message.sequence;
 
 import org.perfcake.PerfCakeException;
 
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.ConcurrentModificationException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
- * Just an ever increasing number sequence. No tweaking available. Non-blocking.
- *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class PrimitiveNumberSequence extends AbstractSequence {
+abstract public class AbstractSequence implements Sequence {
 
-   private AtomicLong number = new AtomicLong(0);
+   private CompletableFuture<String> nextValue = null;
 
    @Override
-   public String doGetNext() {
-      return String.valueOf(number.getAndIncrement());
+   public final String getNext() {
+      final CompletableFuture<String> previousValue = nextValue;
+      nextValue = CompletableFuture.supplyAsync(this::doGetNext);
+      try {
+         return previousValue.get();
+      } catch (InterruptedException | ConcurrentModificationException | ExecutionException e) {
+         return doGetNext(); // fallback to the original sequence
+      }
    }
 
    @Override
-   public void doReset() throws PerfCakeException {
-      number.set(0);
+   public final void reset() throws PerfCakeException {
+      doReset();
+      nextValue = CompletableFuture.supplyAsync(this::doGetNext);
    }
+
+   abstract public String doGetNext();
+
+   abstract public void doReset() throws PerfCakeException;
 }

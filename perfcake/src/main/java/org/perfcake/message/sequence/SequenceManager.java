@@ -77,7 +77,7 @@ public class SequenceManager {
     *
     * @return Snapshot of the values as properties in the form sequence name -&gt; sequence next value.
     */
-   public synchronized Properties getSnapshot() {
+   public Properties getSnapshot() {
       final Properties snapshot = new Properties();
 
       sequences.forEach((name, sequence) -> snapshot.setProperty(name, sequence.getNext()));
