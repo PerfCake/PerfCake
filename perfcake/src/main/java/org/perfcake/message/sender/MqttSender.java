@@ -128,7 +128,7 @@ public class MqttSender extends AbstractSender {
    @Override
    public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
       super.preSend(message, properties, messageAttributes);
-
+      mqttResponse = null;
    }
 
    @Override
@@ -138,7 +138,7 @@ public class MqttSender extends AbstractSender {
       if (isResponseExpected) {
          mqttResponse = mqttResponseConnection.receive();
          if (mqttResponse != null) {
-            response = new String(mqttResponse.getPayload(), Utils.getDefaultEncoding());
+            response = new String(mqttResponse.getPayloadBuffer().data, Utils.getDefaultEncoding());
          }
       }
       return response;
@@ -146,6 +146,7 @@ public class MqttSender extends AbstractSender {
 
    @Override
    public void postSend(final Message message) throws Exception {
+      super.postSend(message);
       if (mqttResponse != null) {
          mqttResponse.ack();
       }
