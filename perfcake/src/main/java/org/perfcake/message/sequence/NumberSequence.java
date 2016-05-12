@@ -96,7 +96,7 @@ public class NumberSequence implements Sequence {
 
       }
 
-      return String.valueOf(res);
+      return Long.toString(res);
    }
 
    @Override

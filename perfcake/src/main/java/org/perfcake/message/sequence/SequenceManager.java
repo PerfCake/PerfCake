@@ -80,7 +80,7 @@ public class SequenceManager {
    public Properties getSnapshot() {
       final Properties snapshot = new Properties();
 
-      sequences.forEach((name, sequence) -> snapshot.setProperty(name, sequence.getNext()));
+      sequences.forEach((k, v) -> snapshot.put(k, v.getNext()));
 
       return snapshot;
    }

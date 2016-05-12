@@ -44,7 +44,7 @@ public class CanalStreet {
    /**
     * Should we interrupt the generator if there is an error?
     */
-   private boolean failFast = Boolean.parseBoolean(Utils.getProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false"));
+   private static boolean failFast = Boolean.parseBoolean(Utils.getProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false"));
 
    /**
     * Establishes a new communication channel that can be passed to a {@link SenderTask}.
@@ -54,7 +54,7 @@ public class CanalStreet {
     * @param semaphore
     *       A {@link Semaphore} that will be released upon successful sending of a message. Can be null.
     */
-   protected CanalStreet(final MessageGenerator generator, final Semaphore semaphore) {
+   CanalStreet(final MessageGenerator generator, final Semaphore semaphore) {
       this.generator = generator;
       this.semaphore = semaphore;
    }
@@ -64,7 +64,7 @@ public class CanalStreet {
     * The semaphore is released when the task is finished. This is used to control the maximum number sender tasks created
     * and waiting for execution.
     */
-   protected void acknowledgeSend() {
+   void acknowledgeSend() {
       if (semaphore != null) {
          semaphore.release();
       }
@@ -76,7 +76,7 @@ public class CanalStreet {
     * @param e
     *       The root cause of the interruption.
     */
-   protected void senderError(final Exception e) {
+   void senderError(final Exception e) {
       if (failFast) {
          generator.interrupt(e);
       }

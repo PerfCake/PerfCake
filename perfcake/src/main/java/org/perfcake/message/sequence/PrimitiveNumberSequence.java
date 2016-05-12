@@ -28,17 +28,17 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class PrimitiveNumberSequence extends AbstractSequence {
+public class PrimitiveNumberSequence implements Sequence {
 
    private AtomicLong number = new AtomicLong(0);
 
    @Override
-   public String doGetNext() {
-      return String.valueOf(number.getAndIncrement());
+   public String getNext() {
+      return Long.toString(number.getAndIncrement());
    }
 
    @Override
-   public void doReset() throws PerfCakeException {
+   public void reset() throws PerfCakeException {
       number.set(0);
    }
 }

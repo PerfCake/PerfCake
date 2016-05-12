@@ -24,29 +24,39 @@ import org.perfcake.PerfCakeException;
 import java.util.ConcurrentModificationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
+ * This abstract sequence helps with pre-calculating the next value in the row in a background thread
+ * if the computation of the value is complex. None of the built-in sequences actually do not use this class.
+ * However, any extension might benefit from it.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 abstract public class AbstractSequence implements Sequence {
 
-   private CompletableFuture<String> nextValue = null;
+   private AtomicReference<CompletableFuture<String>> nextValue = new AtomicReference<>();
 
    @Override
+   @SuppressWarnings("unchecked")
    public final String getNext() {
-      final CompletableFuture<String> previousValue = nextValue;
-      nextValue = CompletableFuture.supplyAsync(this::doGetNext);
+      // cannot use get and set as this could break the order of values (the task added later can be computed sooner)
+      final CompletableFuture<String> previousValue = nextValue.get();
       try {
-         return previousValue.get();
+         final String result = previousValue.get();
+         nextValue.set(CompletableFuture.supplyAsync(this::doGetNext));
+
+         return result;
       } catch (InterruptedException | ConcurrentModificationException | ExecutionException e) {
          return doGetNext(); // fallback to the original sequence
       }
    }
 
    @Override
+   @SuppressWarnings("unchecked")
    public final void reset() throws PerfCakeException {
       doReset();
-      nextValue = CompletableFuture.supplyAsync(this::doGetNext);
+      nextValue.set(CompletableFuture.supplyAsync(this::doGetNext));
    }
 
    abstract public String doGetNext();

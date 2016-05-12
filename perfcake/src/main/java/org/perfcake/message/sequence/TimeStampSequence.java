@@ -28,6 +28,6 @@ public class TimeStampSequence implements Sequence {
 
    @Override
    public String getNext() {
-      return String.valueOf(System.currentTimeMillis());
+      return Long.toString(System.currentTimeMillis());
    }
 }

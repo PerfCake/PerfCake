@@ -44,6 +44,11 @@ abstract public class AbstractSender implements MessageSender {
    private static final Logger log = LogManager.getLogger(AbstractSender.class);
 
    /**
+    * We need to cache the value to be really fast.
+    */
+   private boolean isTraceEnabled = false;
+
+   /**
     * The target where to send the messages.
     */
    private StringTemplate target = new StringTemplate("");
@@ -60,6 +65,7 @@ abstract public class AbstractSender implements MessageSender {
       if (keepConnection) { // otherwise this is done in preSend()
          doInit(null);
       }
+      isTraceEnabled = log.isTraceEnabled();
    }
 
    abstract public void doInit(final Properties messageAttributes) throws PerfCakeException;
@@ -80,7 +86,7 @@ abstract public class AbstractSender implements MessageSender {
 
    @Override
    public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      if (log.isTraceEnabled()) {
+      if (isTraceEnabled) {
          log.trace(String.format("Message content: %s", (message == null) ? null : message.toString()));
       }
 

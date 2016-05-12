@@ -28,6 +28,6 @@ public class ThreadIdSequence implements Sequence {
 
    @Override
    public String getNext() {
-      return String.valueOf(Thread.currentThread().getId());
+      return Long.toString(Thread.currentThread().getId());
    }
 }

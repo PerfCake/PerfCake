@@ -71,19 +71,20 @@ public class ReportManager {
    private ThreadPoolExecutor reportingTasks;
 
    /**
+    * We need to be really fast.
+    */
+   private boolean isTraceEnabled = false;
+
+   /**
     * Creates a new {@link org.perfcake.reporting.MeasurementUnit measurement unit} with a unique iteration number.
     *
     * @return A {@link org.perfcake.reporting.MeasurementUnit measurement unit} unit with a unique iteration number, or null if a measurement is not running or is already finished.
     */
    public MeasurementUnit newMeasurementUnit() {
       if (runInfo.isRunning()) {
-         if (log.isTraceEnabled()) {
-            log.trace("Creating a new measurement unit.");
-         }
-
          return new MeasurementUnit(runInfo.getNextIteration());
       }
-      
+
       return null;
    }
 
@@ -116,7 +117,7 @@ public class ReportManager {
       if (reportingTasks != null) {
          try {
             reportingTasks.submit(() -> {
-               if (log.isTraceEnabled()) {
+               if (isTraceEnabled) {
                   log.trace("Reporting a new measurement unit " + measurementUnit);
                }
 
@@ -148,6 +149,8 @@ public class ReportManager {
     * Resets reporting to the zero state. It is used after the warm-up period.
     */
    public void reset() {
+      isTraceEnabled = log.isTraceEnabled();
+
       if (log.isDebugEnabled()) {
          log.debug("Resetting reporting.");
       }

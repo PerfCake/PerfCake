@@ -19,6 +19,8 @@
  */
 package org.perfcake.message.sequence;
 
+import org.perfcake.PerfCakeException;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -28,8 +30,9 @@ import org.testng.annotations.Test;
 public class PrimitiveNumberSequenceTest {
 
    @Test
-   public void testPrimitiveNumberSequence() {
+   public void testPrimitiveNumberSequence() throws PerfCakeException {
       final Sequence s = new PrimitiveNumberSequence();
+      s.reset();
 
       Assert.assertEquals("0", s.getNext());
       Assert.assertEquals("1", s.getNext());
