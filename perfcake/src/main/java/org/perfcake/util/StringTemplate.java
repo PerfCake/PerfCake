@@ -36,8 +36,8 @@ import httl.Engine;
 import httl.Template;
 
 /**
- * Holds a template capable of replacing properties in form of ${property} and #{property} to their values.
- * The properties with the dollar sign are replaced only once, while the properties with the hash sign are replaced with each call
+ * Holds a template capable of replacing properties in form of ${property} and @{property} to their values.
+ * The properties with the dollar sign are replaced only once, while the properties with the "at" sign are replaced with each call
  * to {@link #toString()} with the current values (this simulates JavaEE EL). System properties can be accessed using the props. prefix,
  * and environment properties can be accessed using the env. prefix.
  * Automatically provides environment properties, system properties and user specified properties.

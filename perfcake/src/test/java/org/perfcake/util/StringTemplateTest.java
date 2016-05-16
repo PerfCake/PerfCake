@@ -144,4 +144,18 @@ public class StringTemplateTest {
       Assert.assertEquals(template.toString(vars2), "<script>$(function() {\n 2 'ahoj' " + function + " " + function + "\n });</script>");
    }
 
+   @Test(enabled = false)
+   public void testEscapeWithoutCurlyBraces() {
+      final String expression = "Ahoj @mm @{mm} @{zav}mm @{un}mm \\@mm $ee \\$ee ${ee} ${zav}ee ${un}ee a je to";
+      final Properties vars = new Properties();
+      vars.setProperty("mm", "1");
+      vars.setProperty("ee", "2");
+      vars.setProperty("zav", "@");
+      final StringTemplate template = new StringTemplate(expression, vars);
+      vars.setProperty("un", "@");
+
+      System.out.println(template.toString());
+      System.out.println(template.toString(vars));
+   }
+
 }
