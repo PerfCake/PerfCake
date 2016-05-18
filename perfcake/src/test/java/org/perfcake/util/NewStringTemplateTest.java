@@ -47,7 +47,11 @@ public class NewStringTemplateTest {
 
    @DataProvider(name = "patterns")
    public static Object[][] testPatterns() {
-      return new Object[][] { { "", "", props("", ""), props("", "") } };
+      return new Object[][] {
+            { "", "", props("", ""), props("", "") },
+            { "${abc}", "123", props("abc", "123"), props("", "") },
+            { "@{abc}", "null", props("abc", "123"), props("", "") }
+      };
    }
 
    @Test(dataProvider = "patterns")
