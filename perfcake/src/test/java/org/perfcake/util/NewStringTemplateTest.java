@@ -71,4 +71,10 @@ public class NewStringTemplateTest {
 
    }
 
+   @Test
+   public void basicTest() {
+      NewStringTemplate t = new NewStringTemplate("${env.JAVA_HOME} - ${env.JAVA_HOME:aaa} - ${env.nonexist:aaa} - \\${env.JAVA_HOME} - ${...");
+      System.out.println(t.toString());
+   }
+
 }
