@@ -49,8 +49,18 @@ public class NewStringTemplateTest {
    public static Object[][] testPatterns() {
       return new Object[][] {
             { "", "", props("", ""), props("", "") },
-            { "${abc}", "123", props("abc", "123"), props("", "") },
-            { "@{abc}", "null", props("abc", "123"), props("", "") }
+            { "${abc}", "123", props("abc", "123"), null },
+            { "${abc}", "null", null, props("abc", "123") },
+            { "@{abc}", "123", props("abc", "123"), null },
+            { "@{abc}", "123", null, props("abc", "123") },
+            { "$ab@cd", "$ab@cd", props("ab", "1", "cd", "2"), null },
+            { "a$ab@cda", "a$ab@cda", props("ab", "1", "cd", "2"), null },
+            { "\\${ab}\\@{cd}", "${ab}@{cd}", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
+            { "a\\$ab\\@cd", "a$ab@cd", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
+            { "a\\\\${ab}\\\\@{cd}", "a\\${ab}\\@{cd}", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
+            { "a\\$ab\\@cd", "a\\$ab\\@cd", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
+            { "${ab}${ahoj:4}@{cd:1}${env.JAVA_HOME}${props['java.runtime.name']}", "142" + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"), props("ab", "1"), props("cd", "2") },
+            { "@{ab}${cd:4}${ab:7}@{env.JAVA_HOME}@{props['java.runtime.name']}", "141" + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"), props("ab", "1"), props("cd", "2") },
       };
    }
 
