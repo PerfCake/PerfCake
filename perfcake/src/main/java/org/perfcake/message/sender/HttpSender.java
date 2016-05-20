@@ -212,7 +212,7 @@ public class HttpSender extends AbstractSender {
       if (currentMethod == Method.POST || currentMethod == Method.PUT) {
          requestConnection.setDoOutput(true);
       }
-      requestConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+      requestConnection.setRequestProperty("Content-Type", "text/plain; charset=utf-8");
       if (payloadLength > 0) {
          requestConnection.setRequestProperty("Content-Length", Integer.toString(payloadLength));
       }
