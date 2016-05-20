@@ -19,49 +19,80 @@
  */
 package org.perfcake.util;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 /**
+ * Backslash (\) = escape character, escapes anything
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class NewStringTemplate {
 
-   private String template;
+   private Properties properties;
+
+   private String[] parts, replacements, defaults;
+
+   private int patternSize;
 
    public NewStringTemplate(final String template) {
-      this.template = firstPhase(template, null);
+      this(template, null);
    }
 
    public NewStringTemplate(final String template, final Properties properties) {
-      this.template = firstPhase(template, properties);
+      this.properties = properties == null ? new Properties() : properties;
+      compilePattern(firstPhase(template));
    }
 
    public String toString() {
-      return template;
+      return toString(null);
    }
 
-   public String toString(final Properties properties) {
-      return template;
+   public String toString(final Properties localProperties) {
+      final StringBuilder result = new StringBuilder(parts[0]);
+
+      for (int i = 0; i < patternSize; i++) {
+         if (localProperties == null) {
+            result.append(getProperty(replacements[i], this.properties, defaults[i]));
+         } else {
+            final String globalProperty = this.properties.getProperty(replacements[i]);
+            result.append(getProperty(replacements[i], localProperties, globalProperty == null ? defaults[i] : globalProperty));
+         }
+         result.append(parts[i + 1]);
+      }
+
+      return result.toString();
+   }
+
+   private static void readPropertyName(final StringMill mill, final StringBuilder buffer) {
+      while(!mill.end() && mill.cur() != '}') {
+         if (mill.cur() == '\\') {
+            buffer.append(mill.next());
+            mill.cut();
+            mill.cut();
+         } else {
+            buffer.append(mill.cur());
+            mill.step();
+         }
+      }
    }
 
    // only search for unescaped ${...:...}
-   private static String firstPhase(final String template, final Properties properties) {
+   private String firstPhase(final String template) {
       final StringMill mill = new StringMill(template);
       final StringBuilder result = new StringBuilder();
       StringBuilder buffer = new StringBuilder();
 
       while (!mill.end()) {
-         if (mill.cur() == '\\' && mill.next() == '$') {
-            result.append('$');
-            mill.step();
-            mill.step();
+         if (mill.cur() == '\\' && mill.next() != '@') {
+            result.append(mill.next());
+            mill.cut();
+            mill.cut();
          } else if (mill.pre() != '\\' && mill.cur() == '$' && mill.next() == '{') {
             mill.step();
             mill.step();
-            while(!mill.end() && mill.cur() != '}') {
-               buffer.append(mill.cur());
-               mill.step();
-            }
+            readPropertyName(mill, buffer);
 
             if (mill.cur() == '}') {
                mill.step();
@@ -90,6 +121,60 @@ public class NewStringTemplate {
       return result.toString();
    }
 
+   private void compilePattern(final String template) {
+      final List<String> parts = new LinkedList<>();
+      final List<String> replacements = new LinkedList<>();
+      final List<String> defaults = new LinkedList<>();
+
+      final StringMill mill = new StringMill(template);
+      StringBuilder result = new StringBuilder();
+      StringBuilder buffer = new StringBuilder();
+
+      while (!mill.end()) {
+         if (mill.cur() == '\\' && mill.next() == '@') {
+            result.append(mill.next());
+            mill.cut();
+            mill.cut();
+         } else if (mill.pre() != '\\' && mill.cur() == '@' && mill.next() == '{') {
+            mill.step();
+            mill.step();
+            readPropertyName(mill, buffer);
+
+            if (mill.cur() == '}') {
+               mill.step();
+
+               final String[] curly = buffer.toString().split(":", 2);
+               parts.add(result.toString());
+               result = new StringBuilder();
+               replacements.add(curly[0]);
+               defaults.add(curly.length > 1 ? curly[1] : null);
+            } else {
+               result.append("@{");
+               result.append(buffer);
+            }
+            buffer = new StringBuilder();
+         } else {
+            result.append(mill.cur());
+            mill.step();
+         }
+      }
+
+      if (buffer.length() > 0) {
+         result.append(buffer);
+      }
+
+      if (result.length() > 0) {
+         parts.add(result.toString());
+      } else {
+         parts.add(""); // avoid out of bounds exception later
+      }
+
+      this.parts = parts.toArray(new String[parts.size()]);
+      this.replacements = replacements.toArray(new String[replacements.size()]);
+      this.defaults = defaults.toArray(new String[defaults.size()]);
+      this.patternSize = replacements.size();
+   }
+
    private static String getProperty(final String property, final Properties properties) {
       if (property.startsWith("env.")) {
          return System.getenv(property.substring(4));
@@ -110,9 +195,15 @@ public class NewStringTemplate {
       return properties != null ? properties.getProperty(property) : null;
    }
 
+   private static String getProperty(final String property, final Properties properties, final String defaultValue) {
+      final String value = getProperty(property, properties);
+      return value == null ? defaultValue : value;
+   }
+
    private static class StringMill {
       private final String str;
       private int i = 0;
+      private boolean preNull = false;
 
       private StringMill(final String str) {
          this.str = str;
@@ -128,6 +219,12 @@ public class NewStringTemplate {
 
       private void step() {
          i++;
+         preNull = false;
+      }
+
+      private void cut() {
+         i++;
+         preNull = true;
       }
 
       private boolean end() {
@@ -139,11 +236,7 @@ public class NewStringTemplate {
       }
 
       private char pre() {
-         return charRel(-1);
-      }
-
-      private char prePre() {
-         return charRel(-2);
+         return preNull ? 0 : charRel(-1);
       }
 
       private char next() {

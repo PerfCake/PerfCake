@@ -61,6 +61,11 @@ public class NewStringTemplateTest {
             { "a\\$ab\\@cd", "a\\$ab\\@cd", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
             { "${ab}${ahoj:4}@{cd:1}${env.JAVA_HOME}${props['java.runtime.name']}", "142" + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"), props("ab", "1"), props("cd", "2") },
             { "@{ab}${cd:4}${ab:7}@{env.JAVA_HOME}@{props['java.runtime.name']}", "141" + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"), props("ab", "1"), props("cd", "2") },
+            { "${env.JAVA_HOME} - ${env.JAVA_HOME:aaa} - ${env.nonexist:a$a\\\\a@a\\$a\\@a{a\\{a\\}a:a} - \\${env.JAVA_HOME} - ${...", System.getenv("JAVA_HOME") + " - " + System.getenv("JAVA_HOME") + " - a$a\\a@a\\$a\\@a{a\\{a}a:a - ${env.JAVA_HOME} - ${...", null, null },
+            { "${aaa\\}", "${aaa}", null, null },
+            { "\\\\${env.JAVA_HOME} \\$aa", "\\" + System.getenv("JAVA_HOME") + " $aa", null, null },
+            { "${props.java.runtime.name} ${props[java.runtime.name]} ${props['java.runtime.name']}", System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.name"), null, null },
+            { "@{aaa:@{\\@\\{\\}\\\\}", "@{@{\\}", null, null },
       };
    }
 
@@ -73,7 +78,7 @@ public class NewStringTemplateTest {
 
    @Test
    public void basicTest() {
-      NewStringTemplate t = new NewStringTemplate("${env.JAVA_HOME} - ${env.JAVA_HOME:aaa} - ${env.nonexist:aaa} - \\${env.JAVA_HOME} - ${...");
+      NewStringTemplate t = new NewStringTemplate("${props.java.runtime.name} ${props[java.runtime.name]} ${props['java.runtime.name']} @{env.JAVA_HOME} @{aaa:@{\\@\\{\\}\\\\}");
       System.out.println(t.toString());
    }
 
