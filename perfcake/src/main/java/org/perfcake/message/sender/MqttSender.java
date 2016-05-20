@@ -138,7 +138,7 @@ public class MqttSender extends AbstractSender {
       if (isResponseExpected) {
          mqttResponse = mqttResponseConnection.receive();
          if (mqttResponse != null) {
-            response = new String(mqttResponse.getPayloadBuffer().data, Utils.getDefaultEncoding());
+            response = new String(mqttResponse.getPayload(), Utils.getDefaultEncoding());
          }
       }
       return response;
