@@ -67,7 +67,7 @@ public class NewStringTemplate {
 
    private static void readPropertyName(final StringMill mill, final StringBuilder buffer) {
       while(!mill.end() && mill.cur() != '}') {
-         if (mill.cur() == '\\') {
+         if (mill.cur() == '\\' || mill.cur() == '\u0001') {
             buffer.append(mill.next());
             mill.cut();
             mill.cut();
@@ -87,6 +87,11 @@ public class NewStringTemplate {
       while (!mill.end()) {
          if (mill.cur() == '\\' && mill.next() != '@') {
             result.append(mill.next());
+            mill.cut();
+            mill.cut();
+         } else if (mill.cur() == '\\' && mill.next() == '@') { // let's mark the escaped @ for the second round
+            result.append('\u0001');
+            result.append('@');
             mill.cut();
             mill.cut();
          } else if (mill.pre() != '\\' && mill.cur() == '$' && mill.next() == '{') {
@@ -131,11 +136,11 @@ public class NewStringTemplate {
       StringBuilder buffer = new StringBuilder();
 
       while (!mill.end()) {
-         if (mill.cur() == '\\' && mill.next() == '@') {
+         if (mill.cur() == '\u0001' && mill.next() == '@') {
             result.append(mill.next());
             mill.cut();
             mill.cut();
-         } else if (mill.pre() != '\\' && mill.cur() == '@' && mill.next() == '{') {
+         } else if (mill.cur() == '@' && mill.next() == '{') {
             mill.step();
             mill.step();
             readPropertyName(mill, buffer);
@@ -241,6 +246,10 @@ public class NewStringTemplate {
 
       private char next() {
          return charRel(1);
+      }
+
+      public String toString() {
+         return "StringMill: " + pre() + " --->" + cur() + " " + next();
       }
    }
 }

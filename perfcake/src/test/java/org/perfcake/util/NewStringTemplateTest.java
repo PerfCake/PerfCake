@@ -19,6 +19,7 @@
  */
 package org.perfcake.util;
 
+import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
@@ -48,20 +49,24 @@ public class NewStringTemplateTest {
    @DataProvider(name = "patterns")
    public static Object[][] testPatterns() {
       return new Object[][] {
-            { "", "", props("", ""), props("", "") },
+            // { "", "", props("", ""), props("", "") },
             { "${abc}", "123", props("abc", "123"), null },
             { "${abc}", "null", null, props("abc", "123") },
             { "@{abc}", "123", props("abc", "123"), null },
             { "@{abc}", "123", null, props("abc", "123") },
             { "$ab@cd", "$ab@cd", props("ab", "1", "cd", "2"), null },
             { "a$ab@cda", "a$ab@cda", props("ab", "1", "cd", "2"), null },
+            { "\\\\@{cd}", "\\2", null, props("cd", "2") },
             { "\\${ab}\\@{cd}", "${ab}@{cd}", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
             { "a\\$ab\\@cd", "a$ab@cd", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
-            { "a\\\\${ab}\\\\@{cd}", "a\\${ab}\\@{cd}", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
-            { "a\\$ab\\@cd", "a\\$ab\\@cd", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
-            { "${ab}${ahoj:4}@{cd:1}${env.JAVA_HOME}${props['java.runtime.name']}", "142" + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"), props("ab", "1"), props("cd", "2") },
-            { "@{ab}${cd:4}${ab:7}@{env.JAVA_HOME}@{props['java.runtime.name']}", "141" + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"), props("ab", "1"), props("cd", "2") },
-            { "${env.JAVA_HOME} - ${env.JAVA_HOME:aaa} - ${env.nonexist:a$a\\\\a@a\\$a\\@a{a\\{a\\}a:a} - \\${env.JAVA_HOME} - ${...", System.getenv("JAVA_HOME") + " - " + System.getenv("JAVA_HOME") + " - a$a\\a@a\\$a\\@a{a\\{a}a:a - ${env.JAVA_HOME} - ${...", null, null },
+            { "a\\\\${ab}\\\\@{cd}", "a\\1\\2", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
+            { "a\\\\${ab}\\\\@{cd}", "a\\1\\2", props("ab", "1"), props("cd", "2") },
+            { "a\\\\${ab}\\\\@{cd}", "a\\null\\2", props("cd", "2"), props("ab", "1") },
+            { "a\\$ab\\@cd", "a$ab@cd", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
+            { "${ab}${ahoj:4}@{cd:1}${env.JAVA_HOME}${props['java.runtime.name']}", "142" + System.getenv("JAVA_HOME") + System.getProperty("java.runtime.name"), props("ab", "1"), props("cd", "2") },
+            { "@{ab}${cd:4}${ab:7}@{env.JAVA_HOME}@{props['java.runtime.name']}", "141" + System.getenv("JAVA_HOME") + System.getProperty("java.runtime.name"), props("ab", "1"), props("cd", "2") },
+            { "${env.JAVA_HOME} - ${env.JAVA_HOME:aaa} - ${env.nonexist:a$a\\\\a@a\\$a\\@a{a\\{a\\}a:a} - \\${env.JAVA_HOME} - ${...",
+                  System.getenv("JAVA_HOME") + " - " + System.getenv("JAVA_HOME") + " - a$a\\a@a$a@a{a{a}a:a - ${env.JAVA_HOME} - ${...", null, null },
             { "${aaa\\}", "${aaa}", null, null },
             { "\\\\${env.JAVA_HOME} \\$aa", "\\" + System.getenv("JAVA_HOME") + " $aa", null, null },
             { "${props.java.runtime.name} ${props[java.runtime.name]} ${props['java.runtime.name']}", System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.name"), null, null },
@@ -71,15 +76,15 @@ public class NewStringTemplateTest {
 
    @Test(dataProvider = "patterns")
    public void testStringTemplateLarge(final String template, final String result, final Properties permanentProps, final Properties dynamicProps) {
-      // s = new StringTemplate(template, permanentProps)
-      // Assert.equals(s.render(dynamicProps), result)
-
+      NewStringTemplate s = new NewStringTemplate(template, permanentProps);
+      Assert.assertEquals(s.toString(dynamicProps), result, String.format("Original template: '%s' perm: %s, dynamic: %s", template, permanentProps == null ? null : permanentProps.toString(),
+            dynamicProps == null ? null : dynamicProps.toString()));
    }
 
    @Test
    public void basicTest() {
-      NewStringTemplate t = new NewStringTemplate("${props.java.runtime.name} ${props[java.runtime.name]} ${props['java.runtime.name']} @{env.JAVA_HOME} @{aaa:@{\\@\\{\\}\\\\}");
-      System.out.println(t.toString());
+      NewStringTemplate t = new NewStringTemplate("\\\\@{cd}");
+      System.out.println(t.toString(props("cd", "2")));
    }
 
 }
