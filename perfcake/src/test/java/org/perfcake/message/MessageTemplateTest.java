@@ -46,9 +46,9 @@ public class MessageTemplateTest extends TestSetup {
    private static final String TEST_PROPERTY = "testProperty";
    private static final int NUMBER_VALUE = 1;
 
-   private static final String EXPECTED_MESSAGE_FROM_URI = NUMBER_VALUE + " 2 " + HELLO_VALUE + " 1 " + (NUMBER_VALUE - 1) + " " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name") + "I'm a fish!";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_1 = (NUMBER_VALUE + 1) + "null";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_1B = (NUMBER_VALUE + 2) + "null";
+   private static final String EXPECTED_MESSAGE_FROM_URI = NUMBER_VALUE + " " + HELLO_VALUE + " 1 " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name") + "I'm a fish!";
+   private static final String EXPECTED_MESSAGE_FROM_CONTENT_1 = NUMBER_VALUE + "null";
+   private static final String EXPECTED_MESSAGE_FROM_CONTENT_1B = (NUMBER_VALUE + 1) + "null";
    private static final String EXPECTED_MESSAGE_FROM_CONTENT_2 = "null";
    private static final String EXPECTED_MESSAGE_FROM_CONTENT_3 = "null";
    private static final String EXPECTED_MESSAGE_FROM_CONTENT_4 = "nullnull";

@@ -22,7 +22,7 @@
          <header name="testHeader" value="@{ThreadId}"/>
          <property name="testProperty" value="@{MessageNumber}"/>
       </message>
-      <message content="@{number + 1}@{missing1}"/>
+      <message content="@{number}@{missing1}"/>
       <message content="@{missing2}"/>
       <message content="${missing3}"/>
       <message content="@{missing4a}${missing4b}"/>

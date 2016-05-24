@@ -106,7 +106,11 @@ public class MessageTemplate implements Serializable {
       input.forEach((key, value) -> {
          final StringTemplate template = new StringTemplate(value.toString());
          if (template.hasPlaceholders()) {
-            result.put(key, template);
+            if (template.hasDynamicPlaceholders()) {
+               result.put(key, template);
+            } else {
+               result.put(key, template.toString());
+            }
          } else {
             result.put(key, value);
          }
