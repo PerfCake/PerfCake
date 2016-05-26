@@ -64,7 +64,7 @@
          <property name="pattern" value=".*[Ss]tupid.*"/>
       </validator>
       <validator id="smileValidator" class="RegExpValidator">
-         <property name="pattern" value=".*:\).*"/>
+         <property name="pattern" value=".*:\\).*"/>
       </validator>
    </validation>
 </scenario>

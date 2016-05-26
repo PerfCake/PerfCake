@@ -44,7 +44,7 @@ public class CanalStreet {
    /**
     * Should we interrupt the generator if there is an error?
     */
-   private static boolean failFast = Boolean.parseBoolean(Utils.getProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false"));
+   private final boolean failFast;
 
    /**
     * Establishes a new communication channel that can be passed to a {@link SenderTask}.
@@ -53,10 +53,13 @@ public class CanalStreet {
     *       A {@link MessageGenerator} that will be notified about possible errors.
     * @param semaphore
     *       A {@link Semaphore} that will be released upon successful sending of a message. Can be null.
+    * @param failFast
+    *       Do we want to interrupt the generator if there is an error?
     */
-   CanalStreet(final MessageGenerator generator, final Semaphore semaphore) {
+   CanalStreet(final MessageGenerator generator, final Semaphore semaphore, final boolean failFast) {
       this.generator = generator;
       this.semaphore = semaphore;
+      this.failFast = failFast;
    }
 
    /**

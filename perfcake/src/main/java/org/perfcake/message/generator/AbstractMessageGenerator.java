@@ -19,6 +19,7 @@
  */
 package org.perfcake.message.generator;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
@@ -26,6 +27,7 @@ import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
+import org.perfcake.util.Utils;
 import org.perfcake.validation.ValidationManager;
 
 import org.apache.logging.log4j.LogManager;
@@ -87,6 +89,11 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
    private int threads = 1;
 
    /**
+    * Should we interrupt the generator if there is an error?
+    */
+   private boolean failFast = false;
+
+   /**
     * Initializes the generator. During the initialization the {@link #messageSenderManager} is initialized as well.
     *
     * @param messageSenderManager
@@ -98,6 +105,8 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     */
    @Override
    public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws PerfCakeException {
+      failFast = Boolean.parseBoolean(Utils.getProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false"));
+
       this.messageStore = messageStore;
       this.messageSenderManager = messageSenderManager;
       this.messageSenderManager.init();
@@ -120,7 +129,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     * @return A sender task ready to work on another iteration.
     */
    protected SenderTask newSenderTask(final Semaphore semaphore) {
-      final SenderTask task = new SenderTask(new CanalStreet(this, semaphore));
+      final SenderTask task = new SenderTask(new CanalStreet(this, semaphore, isFailFast()));
 
       task.setMessageStore(messageStore);
       task.setReportManager(reportManager);
@@ -261,4 +270,12 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
       return executorService.getTaskCount() - executorService.getCompletedTaskCount();
    }
 
+   /**
+    * Should we interrupt the generator if there is an error?
+    *
+    * @return True if and only if we are supposed to fail fast. Can be set by <code>perfcake.fail.fast</code> system property.
+    */
+   public boolean isFailFast() {
+      return failFast;
+   }
 }

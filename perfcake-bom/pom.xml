@@ -58,7 +58,6 @@
       <version.camel>2.16.1</version.camel>
       <version.drools>6.3.0.Final</version.drools>
       <version.groovy>2.4.5</version.groovy>
-      <version.httl>1.0.12</version.httl>
       <version.slf4j>1.7.13</version.slf4j>
       <version.log4j>2.5</version.log4j>
       <version.jms-api>1.1-rev-1</version.jms-api>
@@ -99,12 +98,6 @@
             <groupId>org.perfcake</groupId>
             <artifactId>perfcake-agent</artifactId>
             <version>${project.version}</version>
-         </dependency>
-
-         <dependency>
-            <groupId>org.perfcake</groupId>
-            <artifactId>httl</artifactId>
-            <version>${version.httl}</version>
          </dependency>
 
          <!-- Logging -->
