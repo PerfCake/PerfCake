@@ -1,1 +1,1 @@
-@{number} @{hello} @{number:1} ${env.JAVA_HOME} ${props['java.runtime.name']}I'm a fish!
+@{number} @{hello} @{number:1} ${env.JAVA_HOME} ${props['java.runtime.name']} ${props.composedProperty} I'm a fish!

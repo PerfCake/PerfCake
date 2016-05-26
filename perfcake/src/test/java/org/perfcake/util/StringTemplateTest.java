@@ -19,6 +19,8 @@
  */
 package org.perfcake.util;
 
+import org.perfcake.TestUtil;
+
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -33,38 +35,25 @@ import java.util.Properties;
 @Test(groups = { "unit" })
 public class StringTemplateTest {
 
-   private static Properties props(final String... pairs) {
-      final Properties props = new Properties();
-
-      int i = 0;
-      while (i < pairs.length) {
-         if (i + 1 < pairs.length) {
-            props.setProperty(pairs[i++], pairs[i++]);
-         }
-      }
-
-      return props;
-   }
-
    @DataProvider(name = "patterns")
    public static Object[][] testPatterns() {
       return new Object[][] {
             // { "", "", props("", ""), props("", "") },
-            { "${abc}", "123", props("abc", "123"), null },
-            { "${abc}", "null", null, props("abc", "123") },
-            { "@{abc}", "123", props("abc", "123"), null },
-            { "@{abc}", "123", null, props("abc", "123") },
-            { "$ab@cd", "$ab@cd", props("ab", "1", "cd", "2"), null },
-            { "a$ab@cda", "a$ab@cda", props("ab", "1", "cd", "2"), null },
-            { "\\\\@{cd}", "\\2", null, props("cd", "2") },
-            { "\\${ab}\\@{cd}", "${ab}@{cd}", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
-            { "a\\$ab\\@cd", "a$ab@cd", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
-            { "a\\\\${ab}\\\\@{cd}", "a\\1\\2", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
-            { "a\\\\${ab}\\\\@{cd}", "a\\1\\2", props("ab", "1"), props("cd", "2") },
-            { "a\\\\${ab}\\\\@{cd}", "a\\null\\2", props("cd", "2"), props("ab", "1") },
-            { "a\\$ab\\@cd", "a$ab@cd", props("ab", "1", "cd", "2"), props("ab", "1", "cd", "2") },
-            { "${ab}${ahoj:4}@{cd:1}${env.JAVA_HOME}${props['java.runtime.name']}", "142" + System.getenv("JAVA_HOME") + System.getProperty("java.runtime.name"), props("ab", "1"), props("cd", "2") },
-            { "@{ab}${cd:4}${ab:7}@{env.JAVA_HOME}@{props['java.runtime.name']}", "141" + System.getenv("JAVA_HOME") + System.getProperty("java.runtime.name"), props("ab", "1"), props("cd", "2") },
+            { "${abc}", "123", TestUtil.props("abc", "123"), null },
+            { "${abc}", "null", null, TestUtil.props("abc", "123") },
+            { "@{abc}", "123", TestUtil.props("abc", "123"), null },
+            { "@{abc}", "123", null, TestUtil.props("abc", "123") },
+            { "$ab@cd", "$ab@cd", TestUtil.props("ab", "1", "cd", "2"), null },
+            { "a$ab@cda", "a$ab@cda", TestUtil.props("ab", "1", "cd", "2"), null },
+            { "\\\\@{cd}", "\\2", null, TestUtil.props("cd", "2") },
+            { "\\${ab}\\@{cd}", "${ab}@{cd}", TestUtil.props("ab", "1", "cd", "2"), TestUtil.props("ab", "1", "cd", "2") },
+            { "a\\$ab\\@cd", "a$ab@cd", TestUtil.props("ab", "1", "cd", "2"), TestUtil.props("ab", "1", "cd", "2") },
+            { "a\\\\${ab}\\\\@{cd}", "a\\1\\2", TestUtil.props("ab", "1", "cd", "2"), TestUtil.props("ab", "1", "cd", "2") },
+            { "a\\\\${ab}\\\\@{cd}", "a\\1\\2", TestUtil.props("ab", "1"), TestUtil.props("cd", "2") },
+            { "a\\\\${ab}\\\\@{cd}", "a\\null\\2", TestUtil.props("cd", "2"), TestUtil.props("ab", "1") },
+            { "a\\$ab\\@cd", "a$ab@cd", TestUtil.props("ab", "1", "cd", "2"), TestUtil.props("ab", "1", "cd", "2") },
+            { "${ab}${ahoj:4}@{cd:1}${env.JAVA_HOME}${props['java.runtime.name']}", "142" + System.getenv("JAVA_HOME") + System.getProperty("java.runtime.name"), TestUtil.props("ab", "1"), TestUtil.props("cd", "2") },
+            { "@{ab}${cd:4}${ab:7}@{env.JAVA_HOME}@{props['java.runtime.name']}", "141" + System.getenv("JAVA_HOME") + System.getProperty("java.runtime.name"), TestUtil.props("ab", "1"), TestUtil.props("cd", "2") },
             { "${env.JAVA_HOME} - ${env.JAVA_HOME:aaa} - ${env.nonexist:a$a\\\\a@a\\$a\\@a{a\\{a\\}a:a} - \\${env.JAVA_HOME} - ${...",
                   System.getenv("JAVA_HOME") + " - " + System.getenv("JAVA_HOME") + " - a$a\\a@a$a@a{a{a}a:a - ${env.JAVA_HOME} - ${...", null, null },
             { "${aaa\\}", "${aaa}", null, null },
@@ -86,8 +75,8 @@ public class StringTemplateTest {
    @Test
    public void hasPlaceholdersTest() {
       final StringTemplate s1 = new StringTemplate("no replacements");
-      final StringTemplate s2 = new StringTemplate("no repla${ce}ments", props("ce", "1"));
-      final StringTemplate s3 = new StringTemplate("no repla@{ce}ments", props("ce", "1"));
+      final StringTemplate s2 = new StringTemplate("no repla${ce}ments", TestUtil.props("ce", "1"));
+      final StringTemplate s3 = new StringTemplate("no repla@{ce}ments", TestUtil.props("ce", "1"));
 
       Assert.assertFalse(s1.hasPlaceholders());
       Assert.assertFalse(s1.hasDynamicPlaceholders());

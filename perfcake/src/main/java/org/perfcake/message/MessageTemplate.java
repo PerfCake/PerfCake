@@ -62,14 +62,9 @@ public class MessageTemplate implements Serializable {
    private transient StringTemplate template;
 
    /**
-    * Message headers templates.
+    * Are there any templates in any part of the message including headers and properties?
     */
-   private Properties headerTemplates;
-
-   /**
-    * Message properties templates.
-    */
-   private Properties propertyTemplates;
+   private boolean hasTemplates = false;
 
    /**
     * Creates a new template based on the message sample. Multiplicity and validator references can be provided as well.
@@ -82,15 +77,17 @@ public class MessageTemplate implements Serializable {
     *       List of validators to validate a response.
     */
    public MessageTemplate(final Message message, final long multiplicity, final List<String> validatorIds) {
-      this.message = message;
+      this.message = new Message();
+      this.message.setPayload(message.getPayload());
+      this.message.setHeaders(templatize(message.getHeaders()));
+      this.message.setProperties(templatize(message.getProperties()));
+
       this.isStringMessage = message.getPayload() instanceof String;
       if (isStringMessage) {
          prepareTemplate();
       }
       this.multiplicity = multiplicity;
       this.validatorIds = validatorIds;
-      this.headerTemplates = templatize(message.getHeaders());
-      this.propertyTemplates = templatize(message.getProperties());
    }
 
    /**
@@ -108,6 +105,7 @@ public class MessageTemplate implements Serializable {
          if (template.hasPlaceholders()) {
             if (template.hasDynamicPlaceholders()) {
                result.put(key, template);
+               hasTemplates = true;
             } else {
                result.put(key, template.toString());
             }
@@ -168,12 +166,17 @@ public class MessageTemplate implements Serializable {
     * @return A new message instance with the rendered payload.
     */
    public Message getFilteredMessage(final Properties properties) {
-      if (isStringMessage && template != null && template.hasPlaceholders()) {
+      if (isStringMessage && hasTemplates) {
          final Message m = newMessage();
 
-         m.setPayload(template.toString(properties));
-         m.setHeaders(untemplatize(headerTemplates, properties));
-         m.setProperties(untemplatize(propertyTemplates, properties));
+         if (template != null) {
+            m.setPayload(template.toString(properties));
+         } else {
+            m.setPayload(message.getPayload());
+         }
+
+         m.setHeaders(untemplatize(message.getHeaders(), properties));
+         m.setProperties(untemplatize(message.getProperties(), properties));
 
          return m;
       } else {
@@ -185,8 +188,9 @@ public class MessageTemplate implements Serializable {
       // find out if there are any attributes in the text message to be replaced
       final StringTemplate tmpTemplate = new StringTemplate((String) message.getPayload());
 
-      if (tmpTemplate.hasPlaceholders()) {
+      if (tmpTemplate.hasDynamicPlaceholders()) {
          this.template = tmpTemplate;
+         hasTemplates = true;
       } else {
          // return the rendered template back, it might not have any placeholders now, but there could have been some math replacements etc.
          message.setPayload(tmpTemplate.toString());

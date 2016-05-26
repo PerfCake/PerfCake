@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:7.0">
    <properties>
+      <property name="composedProperty" value="${props.defaultProperty}2"/>
       <property name="nonExistingProperty" value="${i.do.not.exist}"/>
       <property name="filteredProperty" value="${test.filtered.property:default1}"/>
       <property name="defaultProperty" value="${test.missing.property:default-property-value}"/>
@@ -27,5 +28,6 @@
       <message content="${missing3}"/>
       <message content="@{missing4a}${missing4b}"/>
       <message content="${missing5a}@{missing5b}"/>
+      <message content="${props.composedProperty}"/>
    </messages>
 </scenario>

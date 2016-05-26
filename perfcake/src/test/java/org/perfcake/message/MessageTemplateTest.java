@@ -21,6 +21,7 @@ package org.perfcake.message;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.TestSetup;
+import org.perfcake.TestUtil;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
@@ -61,14 +62,17 @@ public class MessageTemplateTest extends TestSetup {
       final ScenarioRetractor sr = new ScenarioRetractor(scenario);
       final List<MessageTemplate> messageStore = sr.getMessageStore();
       final SequenceManager sequenceManager = new SequenceManager();
-      Assert.assertEquals(messageStore.size(), 6);
+      Assert.assertEquals(messageStore.size(), 7);
+
+      Assert.assertEquals(System.getProperty("defaultProperty"), "default-property-value");
+      Assert.assertEquals(System.getProperty("composedProperty"), "default-property-value2");
 
       final Properties propertiesToBeFiltered = new Properties();
       sequenceManager.getSnapshot().forEach(propertiesToBeFiltered::put);
       propertiesToBeFiltered.setProperty(HELLO_NAME, HELLO_VALUE);
       propertiesToBeFiltered.setProperty(NUMBER_NAME, String.valueOf(NUMBER_VALUE));
       final Message m0 = messageStore.get(0).getFilteredMessage(propertiesToBeFiltered);
-      Assert.assertEquals(m0.getPayload(), EXPECTED_MESSAGE_FROM_URI);
+      Assert.assertEquals(m0.getPayload(), "1 hello.value 1 " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name") + " default-property-value2 I'm a fish!");
       Assert.assertEquals(m0.getHeader(TEST_HEADER), "1");
       Assert.assertEquals(m0.getProperty(TEST_PROPERTY), "0");
 
@@ -90,5 +94,80 @@ public class MessageTemplateTest extends TestSetup {
 
       final Message m5 = messageStore.get(5).getFilteredMessage(propertiesToBeFiltered);
       Assert.assertEquals(m5.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_5);
+
+      final Message m6 = messageStore.get(6).getFilteredMessage(propertiesToBeFiltered);
+      Assert.assertEquals(m6.getPayload(), "default-property-value2");
+   }
+
+   @Test
+   public void staticTemplateTest() {
+      final String runtimeName = System.getProperty("java.runtime.name");
+      final Message m = new Message();
+      m.setPayload("${props.java.runtime.name}${aa}");
+      m.setHeader("runtime", "${props.java.runtime.name}${aa}");
+      m.setProperty("name", "${props.java.runtime.name}${aa}");
+
+      final MessageTemplate t = new MessageTemplate(m, 1, null);
+      final Properties p = TestUtil.props("aa", "1");
+      final Message m2 = t.getFilteredMessage(p);
+
+      Assert.assertEquals(m2.getPayload(), runtimeName + "null");
+      Assert.assertEquals(m2.getHeader("runtime"), runtimeName + "null");
+      Assert.assertEquals(m2.getProperty("name"), runtimeName + "null");
+      Assert.assertTrue(m2 == t.getFilteredMessage(p)); // we should be getting the same instance
+   }
+
+   @Test
+   public void dynamicPayloadTest() {
+      final String runtimeName = System.getProperty("java.runtime.name");
+      final Message m = new Message();
+      m.setPayload("${props.java.runtime.name}@{aa}");
+      m.setHeader("runtime", "${props.java.runtime.name}${aa}");
+      m.setProperty("name", "${props.java.runtime.name}${aa}");
+
+      final MessageTemplate t = new MessageTemplate(m, 1, null);
+      final Properties p = TestUtil.props("aa", "1");
+      final Message m2 = t.getFilteredMessage(p);
+
+      Assert.assertEquals(m2.getPayload(), runtimeName + "1");
+      Assert.assertEquals(m2.getHeader("runtime"), runtimeName + "null");
+      Assert.assertEquals(m2.getProperty("name"), runtimeName + "null");
+      Assert.assertTrue(m2 != t.getFilteredMessage(p)); // we should be getting another instance
+   }
+
+   @Test
+   public void dynamicHeaderTest() {
+      final String runtimeName = System.getProperty("java.runtime.name");
+      final Message m = new Message();
+      m.setPayload("${props.java.runtime.name}${aa}");
+      m.setHeader("runtime", "${props.java.runtime.name}@{aa}");
+      m.setProperty("name", "${props.java.runtime.name}${aa}");
+
+      final MessageTemplate t = new MessageTemplate(m, 1, null);
+      final Properties p = TestUtil.props("aa", "1");
+      final Message m2 = t.getFilteredMessage(p);
+
+      Assert.assertEquals(m2.getPayload(), runtimeName + "null");
+      Assert.assertEquals(m2.getHeader("runtime"), runtimeName + "1");
+      Assert.assertEquals(m2.getProperty("name"), runtimeName + "null");
+      Assert.assertTrue(m2 != t.getFilteredMessage(p)); // we should be getting another instance
+   }
+
+   @Test
+   public void dynamicPropertyTest() {
+      final String runtimeName = System.getProperty("java.runtime.name");
+      final Message m = new Message();
+      m.setPayload("${props.java.runtime.name}${aa}");
+      m.setHeader("runtime", "${props.java.runtime.name}${aa}");
+      m.setProperty("name", "${props.java.runtime.name}@{aa}");
+
+      final MessageTemplate t = new MessageTemplate(m, 1, null);
+      final Properties p = TestUtil.props("aa", "1");
+      final Message m2 = t.getFilteredMessage(p);
+
+      Assert.assertEquals(m2.getPayload(), runtimeName + "null");
+      Assert.assertEquals(m2.getHeader("runtime"), runtimeName + "null");
+      Assert.assertEquals(m2.getProperty("name"), runtimeName + "1");
+      Assert.assertTrue(m2 != t.getFilteredMessage(p)); // we should be getting another instance
    }
 }
