@@ -30,6 +30,7 @@ import org.testng.annotations.Test;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.util.Properties;
+import java.util.concurrent.Semaphore;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Handler;
@@ -49,15 +50,16 @@ public class ChannelSenderSocketTest {
    private static final int PORT = 4444;
    private static String host;
    private String target;
-   final private EchoSocketVerticle vert = new EchoSocketVerticle();
+   final private Semaphore s = new Semaphore(0);
+   final private EchoSocketVerticle vert = new EchoSocketVerticle(s);
    final private Vertx vertx = Vertx.vertx();
 
    @BeforeClass
    public void setUp() throws Exception {
       host = InetAddress.getLocalHost().getHostAddress();
       target = host + ":" + PORT;
-
       vertx.deployVerticle(vert);
+      s.acquire(); // wait for deployment
    }
 
    @AfterClass
@@ -112,13 +114,25 @@ public class ChannelSenderSocketTest {
 
    static class EchoSocketVerticle extends AbstractVerticle {
 
+      private final Semaphore s;
+
+      public EchoSocketVerticle(final Semaphore s) {
+         this.s = s;
+      }
+
       @Override
       public void start() {
          vertx.createNetServer().connectHandler(new Handler<NetSocket>() {
             public void handle(final NetSocket sock) {
                sock.handler(sock::write);
             }
-         }).listen(PORT, host);
+         }).listen(PORT, host, netServerAsyncResult -> {
+            if (netServerAsyncResult.succeeded()) {
+               s.release();
+            } else {
+               throw new IllegalStateException("Listen failed: " + host + ":" + PORT, netServerAsyncResult.cause());
+            }
+         });
       }
    }
 }

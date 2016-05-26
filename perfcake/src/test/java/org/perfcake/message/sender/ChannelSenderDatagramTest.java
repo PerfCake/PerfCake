@@ -48,8 +48,6 @@ import io.vertx.core.datagram.DatagramSocketOptions;
 @Test(groups = { "unit" })
 public class ChannelSenderDatagramTest {
 
-   private final static Logger log = LogManager.getLogger(ChannelSenderDatagramTest.class);
-
    private static final String PAYLOAD = "fish";
    private static final int PORT = 4444;
    private static final String HOST = "127.0.0.1";
@@ -61,11 +59,8 @@ public class ChannelSenderDatagramTest {
    @BeforeClass
    public void setUp() throws Exception {
       target = HOST + ":" + PORT;
-
       vertx.deployVerticle(vert);
-      log.info("Waiting for Vertx start");
-      s.acquire();
-      log.info("Verticle deployed.");
+      s.acquire(); // wait for deployment
    }
 
    @AfterClass
@@ -138,8 +133,8 @@ public class ChannelSenderDatagramTest {
                   if (!asyncResult1.succeeded()) {
                      throw new IllegalStateException("Cannot send test response: ", asyncResult1.cause());
                   }
-                  s.release();
                }));
+               s.release();
             } else {
                throw new IllegalStateException("Listen failed: " + HOST + ":" + PORT, asyncResult.cause());
             }
