@@ -34,9 +34,9 @@ public class PrimitiveNumberSequenceTest {
       final Sequence s = new PrimitiveNumberSequence();
       s.reset();
 
-      Assert.assertEquals("0", s.getNext());
-      Assert.assertEquals("1", s.getNext());
-      Assert.assertEquals("2", s.getNext());
+      Assert.assertEquals(s.getNext(), "0");
+      Assert.assertEquals(s.getNext(), "1");
+      Assert.assertEquals(s.getNext(), "2");
    }
 
 }

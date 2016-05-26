@@ -30,15 +30,15 @@ public class WeightedHarmonicMeanAccumulatorTest {
    @Test
    public void testWeightedHarmonicMeanAccumulator() {
       final WeightedHarmonicMeanAccumulator wma = new WeightedHarmonicMeanAccumulator();
-      wma.add(new WeightedValue<Double>(1d, 3l));
-      wma.add(new WeightedValue<Double>(2d, 4l));
-      wma.add(new WeightedValue<Double>(3d, 5l));
+      wma.add(new WeightedValue<>(1d, 3L));
+      wma.add(new WeightedValue<>(2d, 4L));
+      wma.add(new WeightedValue<>(3d, 5L));
 
-      Assert.assertEquals(wma.getResult(), new WeightedValue<Double>(
-            (3l + 4l + 5l) / ((3l / 1d) + (4l / 2d) + (5l / 3d)), 1l));
+      Assert.assertEquals(wma.getResult(), new WeightedValue<>(
+            (3L + 4L + 5L) / ((3L / 1d) + (4L / 2d) + (5L / 3d)), 1L));
 
       wma.reset();
-      Assert.assertEquals(wma.getResult(), new WeightedValue<Double>(Double.NaN, 1l));
+      Assert.assertEquals(wma.getResult(), new WeightedValue<>(Double.NaN, 1L));
 
    }
 }

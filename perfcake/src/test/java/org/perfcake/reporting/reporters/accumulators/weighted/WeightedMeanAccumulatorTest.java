@@ -30,14 +30,14 @@ public class WeightedMeanAccumulatorTest {
    @Test
    public void testWeightedMeanAccumulator() {
       final WeightedMeanAccumulator wma = new WeightedMeanAccumulator();
-      wma.add(new WeightedValue<Double>(1d, 1l));
-      wma.add(new WeightedValue<Double>(2d, 2l));
-      wma.add(new WeightedValue<Double>(3d, 3l));
+      wma.add(new WeightedValue<>(1d, 1L));
+      wma.add(new WeightedValue<>(2d, 2L));
+      wma.add(new WeightedValue<>(3d, 3L));
 
-      Assert.assertEquals(wma.getResult(), new WeightedValue<Double>((1d * 1l + 2d * 2l + 3d * 3l) / (1l + 2l + 3l), 1l));
+      Assert.assertEquals(wma.getResult(), new WeightedValue<>((1d * 1L + 2d * 2L + 3d * 3L) / (1L + 2L + 3L), 1L));
 
       wma.reset();
-      Assert.assertEquals(wma.getResult(), new WeightedValue<Double>(Double.NaN, 1l));
+      Assert.assertEquals(wma.getResult(), new WeightedValue<>(Double.NaN, 1l));
    }
 
 }

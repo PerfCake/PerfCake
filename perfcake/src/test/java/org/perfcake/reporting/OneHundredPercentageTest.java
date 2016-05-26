@@ -71,7 +71,7 @@ public class OneHundredPercentageTest {
       s.init();
       s.run();
 
-      Assert.assertEquals(dd.getLastMeasurement().getPercentage(), 100l);
+      Assert.assertEquals(dd.getLastMeasurement().getPercentage(), 100L);
    }
 
    @Test
@@ -81,6 +81,6 @@ public class OneHundredPercentageTest {
       s.init();
       s.run();
 
-      Assert.assertEquals(dd.getLastMeasurement().getPercentage(), 100l);
+      Assert.assertEquals(dd.getLastMeasurement().getPercentage(), 100L);
    }
 }

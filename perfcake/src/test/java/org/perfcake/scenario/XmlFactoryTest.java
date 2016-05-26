@@ -67,7 +67,7 @@ public class XmlFactoryTest extends TestSetup {
    private static final String FILTERED_PROPERTY_VALUE = "filtered-property-value";
    private static final String DEFAULT_PROPERTY_VALUE = "default-property-value";
 
-   final Properties emptyProperties = new Properties();
+   private static final Properties emptyProperties = new Properties();
 
    @BeforeClass
    public void prepareScenarioParser() throws PerfCakeException, URISyntaxException, IOException {

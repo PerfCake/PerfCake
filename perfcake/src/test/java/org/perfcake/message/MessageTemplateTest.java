@@ -45,15 +45,6 @@ public class MessageTemplateTest extends TestSetup {
    private static final String NUMBER_NAME = "number";
    private static final String TEST_HEADER = "testHeader";
    private static final String TEST_PROPERTY = "testProperty";
-   private static final int NUMBER_VALUE = 1;
-
-   private static final String EXPECTED_MESSAGE_FROM_URI = NUMBER_VALUE + " " + HELLO_VALUE + " 1 " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name") + "I'm a fish!";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_1 = NUMBER_VALUE + "null";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_1B = (NUMBER_VALUE + 1) + "null";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_2 = "null";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_3 = "null";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_4 = "nullnull";
-   private static final String EXPECTED_MESSAGE_FROM_CONTENT_5 = "nullnull";
 
    @Test
    public void messageTemplateFilteringTest() throws PerfCakeException {
@@ -70,30 +61,30 @@ public class MessageTemplateTest extends TestSetup {
       final Properties propertiesToBeFiltered = new Properties();
       sequenceManager.getSnapshot().forEach(propertiesToBeFiltered::put);
       propertiesToBeFiltered.setProperty(HELLO_NAME, HELLO_VALUE);
-      propertiesToBeFiltered.setProperty(NUMBER_NAME, String.valueOf(NUMBER_VALUE));
+      propertiesToBeFiltered.setProperty(NUMBER_NAME, "1");
       final Message m0 = messageStore.get(0).getFilteredMessage(propertiesToBeFiltered);
       Assert.assertEquals(m0.getPayload(), "1 hello.value 1 " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name") + " default-property-value2 I'm a fish!");
       Assert.assertEquals(m0.getHeader(TEST_HEADER), "1");
       Assert.assertEquals(m0.getProperty(TEST_PROPERTY), "0");
 
       Message m1 = messageStore.get(1).getFilteredMessage(propertiesToBeFiltered);
-      Assert.assertEquals(m1.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_1);
+      Assert.assertEquals(m1.getPayload(), "1null");
 
-      propertiesToBeFiltered.setProperty(NUMBER_NAME, String.valueOf(NUMBER_VALUE + 1));
+      propertiesToBeFiltered.setProperty(NUMBER_NAME, "2");
       m1 = messageStore.get(1).getFilteredMessage(propertiesToBeFiltered);
-      Assert.assertEquals(m1.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_1B);
+      Assert.assertEquals(m1.getPayload(), "2null");
 
       final Message m2 = messageStore.get(2).getFilteredMessage(propertiesToBeFiltered);
-      Assert.assertEquals(m2.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_2);
+      Assert.assertEquals(m2.getPayload(), "null");
 
       final Message m3 = messageStore.get(3).getFilteredMessage(propertiesToBeFiltered);
-      Assert.assertEquals(m3.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_3);
+      Assert.assertEquals(m3.getPayload(), "null");
 
       final Message m4 = messageStore.get(4).getFilteredMessage(propertiesToBeFiltered);
-      Assert.assertEquals(m4.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_4);
+      Assert.assertEquals(m4.getPayload(), "nullnull");
 
       final Message m5 = messageStore.get(5).getFilteredMessage(propertiesToBeFiltered);
-      Assert.assertEquals(m5.getPayload(), EXPECTED_MESSAGE_FROM_CONTENT_5);
+      Assert.assertEquals(m5.getPayload(), "nullnull");
 
       final Message m6 = messageStore.get(6).getFilteredMessage(propertiesToBeFiltered);
       Assert.assertEquals(m6.getPayload(), "default-property-value2");
