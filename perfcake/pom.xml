@@ -49,7 +49,7 @@
 
       <version.gmaven>1.5</version.gmaven>
       <version.groovy>2.4.4</version.groovy>
-      <version.jacoco>0.7.5.201505241946</version.jacoco>
+      <version.jacoco>0.7.6.201602180812</version.jacoco>
       <version.arquillian>1.1.10.Final</version.arquillian>
       <version.wildfly>8.2.0.Final</version.wildfly>
       <version.velocity>1.7</version.velocity>
@@ -350,14 +350,14 @@
             </configuration>
             <executions>
                <execution>
-                  <id>jacoco-initialize</id>
+                  <id>default-prepare-agent</id>
                   <goals>
                      <goal>prepare-agent</goal>
                   </goals>
                </execution>
                <execution>
-                  <id>jacoco-site</id>
-                  <phase>package</phase>
+                  <id>default-report</id>
+                  <phase>prepare-package</phase>
                   <goals>
                      <goal>report</goal>
                   </goals>
@@ -425,7 +425,7 @@
                <dependency>
                   <groupId>lt.velykis.maven.skins</groupId>
                   <artifactId>reflow-velocity-tools</artifactId>
-                  <version>1.1.0</version>
+                  <version>1.1.1</version>
                </dependency>
                <!-- Reflow skin requires Velocity >= 1.7  -->
                <dependency>
@@ -611,7 +611,7 @@
                            <pluginExecutionFilter>
                               <groupId>org.jacoco</groupId>
                               <artifactId>jacoco-maven-plugin</artifactId>
-                              <versionRange>[0.6.3.201306030806,)</versionRange>
+                              <versionRange>[0.7.6.201602180812,)</versionRange>
                               <goals>
                                  <goal>prepare-agent</goal>
                               </goals>
@@ -677,6 +677,8 @@
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>${version.jacoco}</version>
             <configuration>
+               <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+               <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
                <includes>
                   <include>org/perfcake/**</include>
                </includes>
