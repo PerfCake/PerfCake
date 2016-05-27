@@ -95,8 +95,8 @@ public class ChartDestinationTest extends TestSetup {
       cd2.setName("Performance " + (new SimpleDateFormat("HHmmss")).format(new Date()));
       cd.setGroup("stats");
       cd2.setGroup("perf");
-      cd.setAttributes("Average, Result");
-      cd2.setAttributes("Average, Result");
+      cd.setAttributes("Average, Result, warmUp");
+      cd2.setAttributes("Average, Result, warmUp");
 
       cd.open();
       cd2.open();
@@ -170,6 +170,8 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".js")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".json")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".html")).toFile().exists());
+
+      FileUtils.deleteDirectory(dir.toFile());
    }
 
    @Test
@@ -262,7 +264,7 @@ public class ChartDestinationTest extends TestSetup {
       cd.setYAxis("Iterations per second");
       cd.setName("Statistics " + (new SimpleDateFormat("HHmmss")).format(new Date()));
       cd.setGroup("stats");
-      cd.setAttributes("Average, Result, pref*, other");
+      cd.setAttributes("Average, Result, pref*, other, warmUp");
 
       cd.open();
 
@@ -288,7 +290,7 @@ public class ChartDestinationTest extends TestSetup {
 
       cd.close();
 
-      Assert.assertEquals(cd.getAttributesAsList().size(), dynaAttrs.size() + 2);
+      Assert.assertEquals(cd.getAttributesAsList().size(), dynaAttrs.size() * 2 + 2);
       dynaAttrs.forEach(attr -> {
          Assert.assertTrue(cd.getAttributesAsList().contains(attr));
       });

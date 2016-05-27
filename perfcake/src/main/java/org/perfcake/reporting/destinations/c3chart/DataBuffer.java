@@ -19,6 +19,7 @@
  */
 package org.perfcake.reporting.destinations.c3chart;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 
@@ -49,19 +50,23 @@ public class DataBuffer {
       data.add(measurement);
 
       measurement.getAll().forEach((key, value) -> {
-         if (attributes.contains(key) && !realAttributes.contains(key)) {
-            realAttributes.add(key);
-         }
-
-         attributes.forEach(attr -> {
-            if (attr.endsWith("*")) {
-               if (key.startsWith(attr.substring(0, attr.length() - 1))) {
-                  if (!realAttributes.contains(key)) {
-                     realAttributes.add(key);
+         if (!realAttributes.contains(key)) {
+            if (attributes.contains(key)) {
+               realAttributes.add(key);
+            } else {
+               attributes.forEach(attr -> {
+                  if (attr.endsWith("*")) {
+                     if (key.startsWith(attr.substring(0, attr.length() - 1))) {
+                        realAttributes.add(key);
+                     }
+                  } else if (attr.endsWith("*_" + PerfCakeConst.WARM_UP_TAG)) {
+                     if (key.startsWith(attr.substring(0, attr.length() - 2 - PerfCakeConst.WARM_UP_TAG.length()))) {
+                        realAttributes.add(key);
+                     }
                   }
-               }
+               });
             }
-         });
+         }
       });
    }
 

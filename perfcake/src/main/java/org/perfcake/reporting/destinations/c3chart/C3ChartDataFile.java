@@ -253,13 +253,13 @@ public class C3ChartDataFile {
 
       for (final String attr : chart.getAttributes()) {
          if (chart.getAttributes().indexOf(attr) > 0) {
-            boolean warmUpAttr = attr.endsWith(PerfCakeConst.WARM_UP_TAG);
+            boolean warmUpAttr = attr.endsWith(PerfCakeConst.WARM_UP_TAG); // warmUp is handled using separate columns with the same base name and suffix _warmUp
             String pureAttr = warmUpAttr ? attr.substring(0, attr.length() - PerfCakeConst.WARM_UP_TAG.length() - 1) : attr;
 
             sb.append(", ");
 
             // we do not have all required attributes, return an empty line
-            if (!attr.endsWith(PerfCakeConst.WARM_UP_TAG) && !measurement.getAll().containsKey(attr)) {
+            if (!warmUpAttr && !measurement.getAll().containsKey(attr)) {
                missingAttributes = true;
                if (firstResultsLine) {
                   log.warn(String.format("Missing attribute %s, skipping the record.", attr));
@@ -267,6 +267,7 @@ public class C3ChartDataFile {
             } else {
                final Object data = measurement.get(pureAttr);
 
+               // we put null values in either all the fields with the _warmUp suffix, or the others depending whether we are in the warmUp phase
                if (isWarmUp ^ warmUpAttr) {
                   sb.append("null");
                } else {

@@ -316,12 +316,15 @@ public class C3ChartHtmlTemplates {
       switch (chart.getxAxisType()) {
          case TIME:
             props.setProperty("format", "ms2hms");
+            props.setProperty("xAxisKey", C3ChartHelper.COLUMN_TIME);
             break;
          case ITERATION:
             props.setProperty("format", "function(x) { return x; }");
+            props.setProperty("xAxisKey", C3ChartHelper.COLUMN_ITERATION);
             break;
          case PERCENTAGE:
             props.setProperty("format", "function(x) { return '' + x + '%'; }");
+            props.setProperty("xAxisKey", C3ChartHelper.COLUMN_PERCENT);
             break;
       }
 

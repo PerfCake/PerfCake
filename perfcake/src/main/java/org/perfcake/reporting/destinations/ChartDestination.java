@@ -19,6 +19,7 @@
  */
 package org.perfcake.reporting.destinations;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
@@ -33,10 +34,12 @@ import org.apache.logging.log4j.Logger;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Creates nice charts from the results. The charts are generated to the outputPath path. The charts in the same group can be later
@@ -109,6 +112,10 @@ public class ChartDestination implements Destination {
    @Override
    public void open() {
       dynamicAttributes = attributes.stream().anyMatch(s -> s.endsWith("*"));
+      if (attributes.contains(PerfCakeConst.WARM_UP_TAG)) {
+         attributes.remove(PerfCakeConst.WARM_UP_TAG);
+         attributes.addAll(attributes.stream().map(attr -> attr + "_" + PerfCakeConst.WARM_UP_TAG).collect(Collectors.toList()));
+      }
 
       if (dynamicAttributes) {
          buffer = new DataBuffer(attributes);
@@ -328,7 +335,7 @@ public class ChartDestination implements Destination {
     *       The attributes separated by comma.
     */
    public void setAttributes(final String attributes) {
-      this.attributes = Arrays.asList(attributes.split("\\s*,\\s*"));
+      this.attributes = new ArrayList<>(Arrays.asList(attributes.split("\\s*,\\s*")));
    }
 
    /**

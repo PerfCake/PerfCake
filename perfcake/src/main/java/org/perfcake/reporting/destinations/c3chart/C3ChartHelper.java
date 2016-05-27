@@ -47,17 +47,17 @@ public class C3ChartHelper {
    /**
     * Name of the time column.
     */
-   private static final String COLUMN_TIME = "Time";
+   static final String COLUMN_TIME = "Time";
 
    /**
     * Name of the iteration column.
     */
-   private static final String COLUMN_ITERATION = "Iteration";
+   static final String COLUMN_ITERATION = "Iteration";
 
    /**
     * Name of the percentage column.
     */
-   private static final String COLUMN_PERCENT = "Percents";
+   static final String COLUMN_PERCENT = "Percents";
 
    /**
     * Main chart data file used to store results of the parent ChartDestination.

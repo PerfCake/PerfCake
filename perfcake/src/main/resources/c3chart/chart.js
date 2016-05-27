@@ -4,7 +4,7 @@ var chart_${baseName} = c3.generate({
       height: ${height}
    },
    data: {
-      x: '${xAxis}',
+      x: '${xAxisKey}',
       rows: ${baseName},
    },
    axis: {
@@ -34,5 +34,8 @@ var chart_${baseName} = c3.generate({
    },
    line: {
       connectNull: true
+   },
+   padding: {
+      right: 40
    }
 });
