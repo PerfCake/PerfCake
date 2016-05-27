@@ -172,7 +172,12 @@ public class ObjectFactory {
     */
    public static Properties getObjectProperties(final Object object) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
       final Properties properties = new Properties();
-      properties.putAll(BeanUtils.describe(object));
+      final Map<String, String> attributes = BeanUtils.describe(object);
+      attributes.forEach((key, value) -> {
+         if (value != null) {
+            properties.put(key, value);
+         }
+      });
 
       return properties;
    }
