@@ -24,6 +24,7 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.c3chart.C3ChartHelper;
+import org.perfcake.reporting.destinations.c3chart.DataBuffer;
 import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.commons.lang.StringUtils;
@@ -98,17 +99,45 @@ public class ChartDestination implements Destination {
     */
    private C3ChartHelper helper;
 
+   /**
+    * Some attributes might end with an asterisk, in such a case, we are not able to create output until the end of the test.
+    */
+   private boolean dynamicAttributes = false;
+
+   private DataBuffer buffer;
+
    @Override
    public void open() {
-      helper = new C3ChartHelper(this);
+      dynamicAttributes = attributes.stream().anyMatch(s -> s.endsWith("*"));
+
+      if (dynamicAttributes) {
+         buffer = new DataBuffer(attributes);
+      } else {
+         helper = new C3ChartHelper(this);
+      }
    }
 
    @Override
    public void close() {
+      if (dynamicAttributes) {
+         attributes = buffer.getAttributes();
+         helper = new C3ChartHelper(this);
+      }
+
       if (!helper.isInitialized()) {
          log.error("Chart destination was not properly initialized, skipping result creation.");
       } else {
          try {
+            if (dynamicAttributes) {
+               buffer.replay((measurement) -> {
+                  try {
+                     helper.appendResult(measurement);
+                  } catch (ReportingException e) {
+                     log.error("Unable to write all reported data: ", e);
+                  }
+               });
+            }
+
             helper.close();
             helper.compileResults();
          } catch (final PerfCakeException e) {
@@ -119,11 +148,15 @@ public class ChartDestination implements Destination {
 
    @Override
    public void report(final Measurement measurement) throws ReportingException {
-      if (!helper.isInitialized()) {
-         throw new ReportingException("Chart destination was not properly initialized.");
-      }
+      if (dynamicAttributes) {
+         buffer.record(measurement);
+      } else {
+         if (!helper.isInitialized()) {
+            throw new ReportingException("Chart destination was not properly initialized.");
+         }
 
-      helper.appendResult(measurement);
+         helper.appendResult(measurement);
+      }
    }
 
    /**

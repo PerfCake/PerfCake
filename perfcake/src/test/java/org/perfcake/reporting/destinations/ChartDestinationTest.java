@@ -24,10 +24,12 @@ import org.perfcake.TestSetup;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.sender.TestSender;
 import org.perfcake.reporting.Measurement;
+import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
+import org.perfcake.util.StringTemplate;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -35,11 +37,14 @@ import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Tests {@link ChartDestination}.
@@ -244,6 +249,53 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertEquals(dataArrays, 4);
 
       FileUtils.deleteDirectory(dir.toFile());
+   }
+
+   @Test
+   public void dynamicAttributesTest() throws ReportingException, InterruptedException, IOException {
+      final String tempDir = TestSetup.createTempDir("test-chart-dyna");
+      log.info("Created temp directory for chart: " + tempDir);
+
+      final ChartDestination cd = new ChartDestination();
+      cd.setOutputDir(tempDir);
+      cd.setXAxis("Time of test");
+      cd.setYAxis("Iterations per second");
+      cd.setName("Statistics " + (new SimpleDateFormat("HHmmss")).format(new Date()));
+      cd.setGroup("stats");
+      cd.setAttributes("Average, Result, pref*, other");
+
+      cd.open();
+
+      long base = System.currentTimeMillis();
+      final Random rnd = new Random();
+      final Set<String> dynaAttrs = new HashSet<>();
+
+
+      for (int i = 1; i <= 10; i++) {
+         Measurement m = new Measurement(i * 10, System.currentTimeMillis() - base, i);
+         m.set(10.3 + rnd.nextDouble());
+         m.set("Average", 9.8 + rnd.nextDouble());
+         m.set("warmUp", true);
+         String attr = "pref" + rnd.nextInt(10);
+         dynaAttrs.add(attr);
+         m.set(attr, rnd.nextInt(100));
+         cd.report(m);
+         Thread.sleep(10);
+      }
+
+      final Path tempPath = Paths.get(tempDir);
+      Assert.assertFalse(tempPath.resolve(Paths.get("src")).toFile().exists());
+
+      cd.close();
+
+      Assert.assertEquals(cd.getAttributesAsList().size(), dynaAttrs.size() + 2);
+      dynaAttrs.forEach(attr -> {
+         Assert.assertTrue(cd.getAttributesAsList().contains(attr));
+      });
+
+      verifyBasicFiles(tempPath);
+
+      //FileUtils.deleteDirectory(tempPath.toFile());
    }
 
    private void verifyBasicFiles(final Path dir) {
