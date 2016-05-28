@@ -176,6 +176,31 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".json")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".html")).toFile().exists());
 
+      final C3ChartData data = new C3ChartData(getBaseName(dir), dir);
+      Assert.assertEquals(data.getData().get(0).size(), 5);
+
+      try {
+         Assert.assertEquals((int) data.getData().get(0).getInteger(0), 1);
+         Assert.assertNull(data.getData().get(0).getValue(1));
+         Assert.assertNull(data.getData().get(0).getValue(2));
+         Assert.assertNotNull(data.getData().get(0).getDouble(3));
+         Assert.assertNotNull(data.getData().get(0).getDouble(4));
+
+         Assert.assertEquals((int) data.getData().get(1).getInteger(0), 2);
+         Assert.assertEquals((int) data.getData().get(2).getInteger(0), 3);
+
+         Assert.assertEquals((int) data.getData().get(3).getInteger(0), 1);
+         Assert.assertNotNull(data.getData().get(3).getDouble(1));
+         Assert.assertNotNull(data.getData().get(3).getDouble(2));
+         Assert.assertNull(data.getData().get(3).getValue(3));
+         Assert.assertNull(data.getData().get(3).getValue(4));
+
+         Assert.assertEquals((int) data.getData().get(4).getInteger(0), 2);
+         Assert.assertEquals((int) data.getData().get(5).getInteger(0), 10);
+      } catch (ClassCastException cce) {
+         Assert.fail("Chart array does not contain expected data. Should be [int, null/double, null/double, double/null, double/null]. " + cce);
+      }
+
       FileUtils.deleteDirectory(dir.toFile());
    }
 
@@ -215,6 +240,20 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertTrue(dir.resolve(Paths.get("data", correctGroup + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".json")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", correctGroup + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".js")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", correctGroup + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".html")).toFile().exists());
+
+      final C3ChartData data = new C3ChartData(getBaseName(dir), dir);
+      Assert.assertEquals(data.getData().get(0).size(), 5);
+
+      JsonArray array = data.getData().get(0);
+      try {
+         Assert.assertNotNull(array.getInteger(0));
+         Assert.assertNotNull(array.getDouble(1));
+         Assert.assertNotNull(array.getDouble(2));
+         Assert.assertNotNull(array.getDouble(3));
+         Assert.assertNotNull(array.getDouble(4));
+      } catch (ClassCastException cce) {
+         Assert.fail("Chart array does not contain expected data. Should be [int, double, double, double, double]. " + cce);
+      }
 
       FileUtils.deleteDirectory(dir.toFile());
    }
@@ -318,9 +357,7 @@ public class ChartDestinationTest extends TestSetup {
 
       verifyBasicFiles(tempPath);
 
-      String baseName = getBaseName(tempPath);
-
-      final C3ChartData data = new C3ChartData(baseName, tempPath);
+      final C3ChartData data = new C3ChartData(getBaseName(tempPath), tempPath);
       Assert.assertEquals(data.getData().size(), 10);
 
       JsonArray array = data.getData().get(0);
