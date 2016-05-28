@@ -81,7 +81,7 @@ public class C3ChartHelper {
 
          if (attributes.contains(PerfCakeConst.WARM_UP_TAG)) {
             attributes.remove(PerfCakeConst.WARM_UP_TAG);
-            attributes.addAll(attributes.stream().map(a -> a + "-" + PerfCakeConst.WARM_UP_TAG).collect(Collectors.toList()));
+            attributes.addAll(attributes.stream().map(a -> a + "_" + PerfCakeConst.WARM_UP_TAG).collect(Collectors.toList()));
          }
 
          switch (chartDestination.getxAxisType()) {

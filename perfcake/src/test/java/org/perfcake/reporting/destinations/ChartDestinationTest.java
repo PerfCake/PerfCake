@@ -20,11 +20,13 @@
 package org.perfcake.reporting.destinations;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.PerfCakeException;
 import org.perfcake.TestSetup;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.sender.TestSender;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
+import org.perfcake.reporting.destinations.c3chart.C3ChartData;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
@@ -41,10 +43,13 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+
+import io.vertx.core.json.JsonArray;
 
 /**
  * Tests {@link ChartDestination}.
@@ -254,7 +259,7 @@ public class ChartDestinationTest extends TestSetup {
    }
 
    @Test
-   public void dynamicAttributesTest() throws ReportingException, InterruptedException, IOException {
+   public void dynamicAttributesTest() throws PerfCakeException, InterruptedException, IOException {
       final String tempDir = TestSetup.createTempDir("test-chart-dyna");
       log.info("Created temp directory for chart: " + tempDir);
 
@@ -273,11 +278,25 @@ public class ChartDestinationTest extends TestSetup {
       final Set<String> dynaAttrs = new HashSet<>();
 
 
-      for (int i = 1; i <= 10; i++) {
+      for (int i = 1; i < 5; i++) {
          Measurement m = new Measurement(i * 10, System.currentTimeMillis() - base, i);
          m.set(10.3 + rnd.nextDouble());
          m.set("Average", 9.8 + rnd.nextDouble());
          m.set("warmUp", true);
+         String attr = "pref" + rnd.nextInt(10);
+         dynaAttrs.add(attr);
+         dynaAttrs.add(attr + "_" + PerfCakeConst.WARM_UP_TAG);
+         m.set(attr, rnd.nextInt(100));
+         cd.report(m);
+         Thread.sleep(10);
+      }
+
+      base = System.currentTimeMillis();
+      for (int i = 5; i <= 10; i++) {
+         Measurement m = new Measurement((i - 4) * 10, System.currentTimeMillis() - base, i - 4);
+         m.set(10.3 + rnd.nextDouble());
+         m.set("Average", 9.8 + rnd.nextDouble());
+         m.set("warmUp", false);
          String attr = "pref" + rnd.nextInt(10);
          dynaAttrs.add(attr);
          m.set(attr, rnd.nextInt(100));
@@ -290,14 +309,52 @@ public class ChartDestinationTest extends TestSetup {
 
       cd.close();
 
-      Assert.assertEquals(cd.getAttributesAsList().size(), dynaAttrs.size() * 2 + 2);
+      log.info("Final attributes recorded: " + cd.getAttributesAsList());
+
+      Assert.assertEquals(cd.getAttributesAsList().size(), dynaAttrs.size() + 4);
       dynaAttrs.forEach(attr -> {
          Assert.assertTrue(cd.getAttributesAsList().contains(attr));
       });
 
       verifyBasicFiles(tempPath);
 
-      //FileUtils.deleteDirectory(tempPath.toFile());
+      String baseName = getBaseName(tempPath);
+
+      final C3ChartData data = new C3ChartData(baseName, tempPath);
+      Assert.assertEquals(data.getData().size(), 10);
+
+      JsonArray array = data.getData().get(0);
+      Assert.assertEquals(array.size(), dynaAttrs.size() + 5); // 5 = Time, Average, Result, Average_warmUp, Result_warmUp
+      try {
+         array.getInteger(0);
+         array.getDouble(1);
+         array.getDouble(2);
+      } catch (ClassCastException cce) {
+         Assert.fail("Chart array does not contain expected data. Should be [int, double, double, null..., int, null...]. " + cce);
+      }
+
+      int notNulls = 0;
+      for (int i = 3; i < array.size(); i++) {
+         if (array.getValue(i) != null) {
+            notNulls++;
+         }
+      }
+      Assert.assertEquals(notNulls, 1);
+
+      FileUtils.deleteDirectory(tempPath.toFile());
+   }
+
+   /**
+    * Derive the chart base name from the path. Works only for directories with a single chart.
+    *
+    * @param tempPath Path to the directory with the chart.
+    * @return The chart's base name.
+    */
+   private String getBaseName(final Path tempPath) {
+      String baseName = tempPath.resolve("data").toFile().list()[0];
+      baseName = baseName.substring(0, baseName.lastIndexOf("."));
+
+      return baseName;
    }
 
    private void verifyBasicFiles(final Path dir) {
