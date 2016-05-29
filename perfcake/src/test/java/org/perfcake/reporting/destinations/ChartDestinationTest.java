@@ -381,6 +381,25 @@ public class ChartDestinationTest extends TestSetup {
       FileUtils.deleteDirectory(tempPath.toFile());
    }
 
+   @Test
+   public void testHdrChart() throws PerfCakeException, IOException {
+      final Scenario scenario;
+
+      System.setProperty(PerfCakeConst.SCENARIO_PROPERTY, "default");
+      TestSender.resetCounter();
+
+      scenario = ScenarioLoader.load("test-hdr-chart");
+
+      scenario.init();
+      final String origTime = System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY);
+      scenario.run();
+      scenario.close();
+
+      final Path dir = Paths.get("target/test-chart");
+
+      FileUtils.deleteDirectory(dir.toFile());
+   }
+
    /**
     * Derive the chart base name from the path. Works only for directories with a single chart.
     *

@@ -178,12 +178,12 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     */
    protected void shutdown() throws InterruptedException {
       if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // in case of iterations, we wait for the tasks to be finished first
-         log.info(SHUTDOWN_LOG);
+         log.info("Waiting for all messages to be sent...");
          adaptiveTermination();
          setStopTime();
       } else { // in case of time, we must stop measurement first
          setStopTime();
-         log.info(SHUTDOWN_LOG);
+         log.info("Shutting down execution...");
          adaptiveTermination();
       }
 
@@ -212,7 +212,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
          }
       }
 
-      log.info("Reached test end.");
+      log.info("Reached test end. All messages were prepared to be sent.");
       shutdown();
    }
 

@@ -114,15 +114,17 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
 
       DoublePercentileIterator pi;
 
+      final DoubleHistogram localHistogram = histogram.copy();
+
       switch (correctionMode) {
          case AUTO:
-            pi = new DoublePercentileIterator(histogram.copyCorrectedForCoordinatedOmission(avg.getResult()), 1);
+            pi = new DoublePercentileIterator(localHistogram.copyCorrectedForCoordinatedOmission(avg.getResult()), 1);
             break;
          case USER:
-            pi = new DoublePercentileIterator(histogram.copyCorrectedForCoordinatedOmission(correction), 1);
+            pi = new DoublePercentileIterator(localHistogram.copyCorrectedForCoordinatedOmission(correction), 1);
             break;
          default:
-            pi = new DoublePercentileIterator(histogram, 1);
+            pi = new DoublePercentileIterator(localHistogram, 1);
       }
 
       pi.reset(detail);
