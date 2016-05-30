@@ -26,9 +26,11 @@ import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.ObjectFactory;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
+import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -56,13 +58,19 @@ public class CsvDestinationTest {
    private static final String TIMESTAMP = String.valueOf(Calendar.getInstance().getTimeInMillis());
    private static final String DEFAULT_FILE_NAME = "perfcake-results-" + TIMESTAMP + ".csv";
    private File csvFile;
+   private File csvOutputDir;
 
    @BeforeClass
    public void beforeClass() throws IOException {
       System.setProperty(PerfCakeConst.TIMESTAMP_PROPERTY, TIMESTAMP);
-      final File csvOutputDir = new File(TestSetup.createTempDir("csvdestination"));
+      csvOutputDir = new File(TestSetup.createTempDir("csvdestination"));
       csvOutputDir.deleteOnExit();
       csvFile = Paths.get(csvOutputDir.getAbsolutePath(), "perfcake-results-" + TIMESTAMP + ".csv").toFile();
+   }
+
+   @AfterClass
+   public void afterClass() throws IOException {
+      FileUtils.deleteDirectory(csvOutputDir);
    }
 
    @Test
@@ -272,18 +280,20 @@ public class CsvDestinationTest {
    @Test
    public void testReadOnlyFile() throws IOException, ReportingException {
       final File readOnlyFile = Files.createTempFile("perfcake", "csvdestination-read-only.file").toFile();
+      boolean wasException = false;
       readOnlyFile.setReadOnly();
       readOnlyFile.deleteOnExit();
 
       final Properties destinationProperties = new Properties();
       destinationProperties.setProperty("path", readOnlyFile.getPath());
+      destinationProperties.setProperty("appendStrategy", "append");
 
       try {
          final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          final Measurement measurement = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
-         measurement.set(new Quantity<Double>(1111.11, "it/s"));
-         measurement.set("another", new Quantity<Double>(222.22, "ms"));
+         measurement.set(new Quantity<>(1111.11, "it/s"));
+         measurement.set("another", new Quantity<>(222.22, "ms"));
 
          destination.open();
          destination.report(measurement);
@@ -292,10 +302,14 @@ public class CsvDestinationTest {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       } catch (final ReportingException re) {
-         Assert.assertEquals(re.getMessage(), "Could not append a report to the file: " + readOnlyFile.getPath());
+         wasException = true;
+         Assert.assertEquals(re.getMessage(), "Could not append a report to the file " + readOnlyFile.getPath() + ".");
       } finally {
+         readOnlyFile.setWritable(true);
          readOnlyFile.delete();
       }
+
+      Assert.assertTrue(wasException, "Expected exception not thrown.");
    }
 
    @Test

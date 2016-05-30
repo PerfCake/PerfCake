@@ -134,7 +134,7 @@ public class CsvDestination implements Destination {
                      log.warn(String.format("Unable to delete the file %s, forcing append.", csvFile.getAbsolutePath()));
                   }
                   break;
-               case FORCE_APPEND:
+               case APPEND:
                default:
                   // nothing to do here
             }
@@ -429,7 +429,7 @@ public class CsvDestination implements Destination {
    /**
     * Determines the strategy for a case that the output file exists. {@link AppendStrategy#OVERWRITE} means that the file
     * is overwritten, {@link AppendStrategy#RENAME} means that the current output file is renamed by adding a number-based
-    * suffix and {@link AppendStrategy#FORCE_APPEND} is for appending new results to the original file.
+    * suffix and {@link AppendStrategy#APPEND} is for appending new results to the original file.
     *
     * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
     */
@@ -447,6 +447,6 @@ public class CsvDestination implements Destination {
       /**
        * The measurements are appended to the original file.
        */
-      FORCE_APPEND
+      APPEND
    }
 }
