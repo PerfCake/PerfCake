@@ -21,7 +21,6 @@ package org.perfcake;
 
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
-import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -59,8 +58,6 @@ public class RunInfo {
     * Number of threads that is currently used to generate the load.
     */
    private volatile int threads = 1;
-
-   private final MaxLongValueAccumulator slowestTaskProcessingPeriod = new MaxLongValueAccumulator();
 
    /**
     * Number of the last iteration.
@@ -107,8 +104,6 @@ public class RunInfo {
       endTime = -1;
 
       iterations.set(0);
-
-      slowestTaskProcessingPeriod.reset();
    }
 
    /**
@@ -327,13 +322,5 @@ public class RunInfo {
     */
    public void setThreads(final int threads) {
       this.threads = threads;
-   }
-
-   public long getSlowestTaskProcessingPeriod() {
-      return slowestTaskProcessingPeriod.getResult();
-   }
-
-   public void setSlowestTaskProcessingPeriod(final long procesingPeriod) {
-      this.slowestTaskProcessingPeriod.add(procesingPeriod);
    }
 }

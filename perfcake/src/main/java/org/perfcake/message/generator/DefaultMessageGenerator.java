@@ -153,7 +153,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       executorService.shutdown();
       long active = getTasksInQueue(), lastActive = 0;
       if (isShutdownPeriodAutoTune()) {
-         shutdownPeriod = (long) (runInfo.getSlowestTaskProcessingPeriod() * 1.2);
+         shutdownPeriod = 3 * runInfo.getRunTime() * runInfo.getThreads() / runInfo.getIteration();
          if (log.isDebugEnabled()) {
             log.debug(String.format("Shut-down period auto-tuned to " + shutdownPeriod + " ms."));
          }
