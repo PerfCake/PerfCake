@@ -198,7 +198,11 @@ public class ObjectFactory {
          final File pluginsDir = new File(pluginsDirProp);
          final File[] plugins = pluginsDir.listFiles(new FileExtensionFilter(".jar"));
 
-         if ((plugins == null) || (plugins.length == 0)) {
+         for (final File f: plugins) {
+            log.info("Recognized plugin library " + f.getName());
+         }
+
+         if (plugins.length == 0) {
             return currentClassLoader;
          }
 
@@ -211,11 +215,9 @@ public class ObjectFactory {
             }
          }
 
-         AccessController.doPrivileged(new PrivilegedAction<Void>() {
-            public Void run() {
-               pluginClassLoader = new URLClassLoader(pluginURLs, currentClassLoader);
-               return null;
-            }
+         AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+            pluginClassLoader = new URLClassLoader(pluginURLs, currentClassLoader);
+            return null;
          });
       }
 
