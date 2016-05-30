@@ -19,6 +19,7 @@
  */
 package org.perfcake.message.generator;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.ReportManager;
 
@@ -198,16 +199,26 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       runInfo.setThreads(getThreads());
       setStartTime();
 
-      if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) {
+      if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // for iterations, we need a precise number of messages
          long i = 0;
          final long max = runInfo.getDuration().getPeriod();
+         boolean wasWarmUp = false;
+
          while (i < max) {
+            boolean warmUpTag = runInfo.hasTag(PerfCakeConst.WARM_UP_TAG);
+
+            if (wasWarmUp && !warmUpTag) { // if we were in the warmUp phase and it ended, we start counting from 0 again
+               i = 0;
+            }
+
             if (prepareTask()) {
                i = i + 1; // long does not work with i++
             }
+
+            wasWarmUp = warmUpTag;
          }
       } else {
-         while (runInfo.isRunning()) {
+         while (runInfo.isRunning()) { // for time controlled run, we just go until the time is over
             prepareTask();
          }
       }
