@@ -21,9 +21,6 @@ package org.perfcake.message.generator;
 
 import org.perfcake.TestSetup;
 import org.perfcake.message.sender.TestSender;
-import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.destinations.DummyDestination;
-import org.perfcake.reporting.reporters.DummyReporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
@@ -32,9 +29,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Test complete scenario execution.
+ * Test @{DefaultMessageGenerator} features.
  *
- * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class DefaultMessageGeneratorTest extends TestSetup {
 
