@@ -87,6 +87,7 @@ class SenderTask implements Runnable {
     */
    private final CanalStreet canalStreet;
 
+   private MessageGenerator generator;
    /**
     * The time when the task was enqueued.
     */

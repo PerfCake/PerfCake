@@ -125,6 +125,7 @@ public class ReportManager {
                   for (final Reporter r : getReporters()) {
                      try {
                         r.report(measurementUnit);
+                        runInfo.setSlowestTaskProcessingPeriod((long) measurementUnit.getServiceTime());
                      } catch (final ReportingException re) {
                         log.error("Error reporting a measurement unit " + measurementUnit, re);
                      }
