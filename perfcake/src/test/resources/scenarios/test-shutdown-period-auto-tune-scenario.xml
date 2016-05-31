@@ -2,7 +2,7 @@
 <scenario xmlns="urn:perfcake:scenario:7.0">
    <run type="time" value="10000"/>
    <generator class="DefaultMessageGenerator" threads="10">
-      <property name="shutdownPeriodAutoTune" value="${auto.tune:false}"/>
+      <property name="shutdownPeriod" value="${auto.tune:1000}"/>
    </generator>
    <sender class="TestSender">
       <target>Out there!</target>

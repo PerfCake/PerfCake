@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -57,6 +57,23 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    protected long monitoringPeriod = 1000; // default 1s
 
    /**
+    * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
+    * If the same amount of threads keeps running for this period, they are forcefully stopped.
+    * The unit of this value is milliseconds. The default value is 1000ms.
+    */
+   protected long shutdownPeriod = 1000;
+
+   /**
+    * The size of internal queue of prepared sender tasks. The default value is 1000 tasks.
+    */
+   protected int senderTaskQueueSize = 1000;
+
+   /**
+    * Controls the maximal number of threads running in parallel.
+    */
+   protected Semaphore semaphore;
+
+   /**
     * Gets the shutdown period.
     * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
     * If the same amount of threads keeps running for this period, they are forcefully stopped.
@@ -78,25 +95,6 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    public void setShutdownPeriod(final long shutdownPeriod) {
       this.shutdownPeriod = shutdownPeriod;
    }
-
-   /**
-    * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
-    * If the same amount of threads keeps running for this period, they are forcefully stopped.
-    * The unit of this value is milliseconds. The default value is 1000ms.
-    */
-   protected long shutdownPeriod = 1000;
-
-   protected boolean shutdownPeriodAutoTune = false;
-
-   /**
-    * The size of internal queue of prepared sender tasks. The default value is 1000 tasks.
-    */
-   protected int senderTaskQueueSize = 1000;
-
-   /**
-    * Controls the maximal number of threads running in parallel.
-    */
-   protected Semaphore semaphore;
 
    @Override
    public void setReportManager(final ReportManager reportManager) {
@@ -151,13 +149,15 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     */
    private void adaptiveTermination() throws InterruptedException {
       executorService.shutdown();
-      long active = getTasksInQueue(), lastActive = 0;
-      if (isShutdownPeriodAutoTune()) {
+
+      if (shutdownPeriod == -1) {
          shutdownPeriod = 5 * runInfo.getRunTime() * runInfo.getThreads() / runInfo.getIteration();
-         if (log.isDebugEnabled()) {
-            log.debug(String.format("Shut-down period auto-tuned to " + shutdownPeriod + " ms."));
+         if (log.isInfoEnabled()) {
+            log.info(String.format("Shut-down period auto-tuned to " + shutdownPeriod + " ms."));
          }
       }
+
+      long active = getTasksInQueue(), lastActive = 0;
       while (active > 0 && lastActive != active) { // make sure the threads are finishing
          lastActive = active;
          executorService.awaitTermination(shutdownPeriod, TimeUnit.MILLISECONDS);
@@ -290,13 +290,5 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       if (runInfo.getDuration().getPeriodType() == PeriodType.PERCENTAGE) {
          throw new IllegalStateException(String.format("%s can only be used with an iteration based run configuration.", this.getClass().getName()));
       }
-   }
-
-   public boolean isShutdownPeriodAutoTune() {
-      return shutdownPeriodAutoTune;
-   }
-
-   public void setShutdownPeriodAutoTune(final boolean shutdownPeriodAutoTune) {
-      this.shutdownPeriodAutoTune = shutdownPeriodAutoTune;
    }
 }
