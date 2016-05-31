@@ -125,6 +125,13 @@ public class ObjectFactory {
 
          if (!successSet) { // not yet set - either it was not an XML element or it failed with it
             beanUtilsBean.setProperty(object, entry.getKey().toString(), entry.getValue());
+            try {
+               beanUtilsBean.getProperty(object, entry.getKey().toString());
+            } catch (ReflectiveOperationException reo) {
+               log.warn(String.format("It was not possible to reliably configure property %s on class %s. "
+                     + "You may have a mistake in the scenario, or the class does not allow read of the property.",
+                     entry.getKey().toString(), object.getClass().getCanonicalName()));
+            }
          }
       }
    }

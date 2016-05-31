@@ -103,6 +103,11 @@ public class ChartDestination implements Destination {
    private C3ChartHelper helper;
 
    /**
+    * Should we automatically combine previous chart reports with the new one?
+    */
+   private boolean autoCombine = true;
+
+   /**
     * Some attributes might end with an asterisk, in such a case, we are not able to create output until the end of the test.
     */
    private boolean dynamicAttributes = false;
@@ -146,7 +151,7 @@ public class ChartDestination implements Destination {
             }
 
             helper.close();
-            helper.compileResults();
+            helper.compileResults(autoCombine);
          } catch (final PerfCakeException e) {
             log.error("Unable to compile all collected results in a final report: ", e);
          }
@@ -267,8 +272,27 @@ public class ChartDestination implements Destination {
     *
     * @return The legend of the Y axis of the chart.
     */
+   public String getyAxis() {
+      return yAxis;
+   }
+
+   /**
+    * Gets the legend of the Y axis of the chart.
+    *
+    * @return The legend of the Y axis of the chart.
+    */
    public String getYAxis() {
       return yAxis;
+   }
+
+   /**
+    * Sets the legend of the Y axis of the chart.
+    *
+    * @param yAxis
+    *       The legend of the Y axis of the chart.
+    */
+   public void setyAxis(final String yAxis) {
+      this.yAxis = yAxis;
    }
 
    /**
@@ -286,8 +310,27 @@ public class ChartDestination implements Destination {
     *
     * @return The legend of the X axis of the chart.
     */
+   public String getxAxis() {
+      return xAxis;
+   }
+
+   /**
+    * Gets the legend of the X axis of the chart.
+    *
+    * @return The legend of the X axis of the chart.
+    */
    public String getXAxis() {
       return xAxis;
+   }
+
+   /**
+    * Sets the legend of the X axis of the chart.
+    *
+    * @param xAxis
+    *       The legend of the X axis of the chart.
+    */
+   public void setxAxis(final String xAxis) {
+      this.xAxis = xAxis;
    }
 
    /**
@@ -346,4 +389,24 @@ public class ChartDestination implements Destination {
    public List<String> getAttributesAsList() {
       return attributes;
    }
+
+   /**
+    * Should we automatically combine previous chart reports with the new one?
+    *
+    * @return True if and only if the combining feature is turned on.
+    */
+   public boolean isAutoCombine() {
+      return autoCombine;
+   }
+
+   /**
+    * Should we automatically combine previous chart reports with the new one?
+    *
+    * @param autoCombine
+    *       True to turn the feature on, false to turn it off. Default is true/on.
+    */
+   public void setAutoCombine(final boolean autoCombine) {
+      this.autoCombine = autoCombine;
+   }
+
 }

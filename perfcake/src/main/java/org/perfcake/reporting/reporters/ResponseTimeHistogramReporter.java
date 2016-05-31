@@ -92,6 +92,11 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
    private String valueFormatString = "%12." + precision + "f";
 
    /**
+    * Should we print the output nicely formatted to the same length in digits?
+    */
+   private boolean formatOutput = true;
+
+   /**
     * Format of the percentile expression.
     */
    private static final String percentileFormatString = "%2.12f";
@@ -133,7 +138,7 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
          DoubleHistogramIterationValue val = pi.next();
 
          m.set(prefix + String.format(Locale.US, percentileFormatString, val.getPercentileLevelIteratedTo() / 100d),
-               String.format(Locale.US, valueFormatString, val.getValueIteratedTo()));
+               formatOutput ? String.format(Locale.US, valueFormatString, val.getValueIteratedTo()) : val.getValueIteratedTo());
       }
 
       destination.report(m);
@@ -240,5 +245,24 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
     */
    public void setDetail(final int detail) {
       this.detail = detail;
+   }
+
+   /**
+    * Should we print the output nicely formatted to the same length in digits?
+    *
+    * @return True to set the pretty formatting on.
+    */
+   public boolean isFormatOutput() {
+      return formatOutput;
+   }
+
+   /**
+    * Should we print the output nicely formatted to the same length in digits?
+    *
+    * @param formatOutput
+    *       True if and only if the pretty formatting is on.
+    */
+   public void setFormatOutput(final boolean formatOutput) {
+      this.formatOutput = formatOutput;
    }
 }

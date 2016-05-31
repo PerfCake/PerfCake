@@ -59,10 +59,12 @@ public class C3ChartReport {
     *       Root path to an existing chart report.
     * @param mainChart
     *       The chart that was added during this run of the performance test.
+    * @param autoCombine
+    *       True if we should combine the new results with the previous reports.
     * @throws PerfCakeException
     *       When it was not possible to create the report.
     */
-   static void createReport(final Path target, final C3Chart mainChart) throws PerfCakeException {
+   static void createReport(final Path target, final C3Chart mainChart, final boolean autoCombine) throws PerfCakeException {
       final File outputDir = Paths.get(target.toString(), "data").toFile();
       final List<C3Chart> charts = new ArrayList<>();
       charts.add(mainChart);
@@ -84,7 +86,9 @@ public class C3ChartReport {
 
          charts.sort(Comparator.comparingLong(C3Chart::getCreated));
 
-         charts.addAll(analyzeMatchingCharts(target, charts));
+         if (autoCombine) {
+            charts.addAll(analyzeMatchingCharts(target, charts));
+         }
       } catch (final IOException e) {
          throw new PerfCakeException("Unable to parse stored results: ", e);
       }
@@ -209,7 +213,6 @@ public class C3ChartReport {
     */
    private static C3Chart combineCharts(final Path target, final String matchingAttribute, final List<C3Chart> matchingCharts) throws PerfCakeException {
       final C3Chart newChart = new C3Chart();
-      final String newBaseName = matchingCharts.stream().map(C3Chart::getBaseName).collect(Collectors.joining("_"));
       final List<String> attributes = new ArrayList<>();
       attributes.add(matchingCharts.get(0).getAttributes().get(0));
       attributes.addAll(matchingCharts.stream().map(ch -> String.format("%s (%s)", ch.getName(), C3ChartHtmlTemplates.getCreatedAsString(ch))).collect(Collectors.toList()));

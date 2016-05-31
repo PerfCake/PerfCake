@@ -19,7 +19,6 @@
  */
 package org.perfcake.reporting.destinations.c3chart;
 
-import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
@@ -30,7 +29,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Helper class for the ChartDestination. Bridges the destination methods to the corresponding actions of other classes in the package.
@@ -79,11 +77,6 @@ public class C3ChartHelper {
       try {
          final List<String> attributes = new ArrayList<>(chartDestination.getAttributesAsList()); // must be enclosed to ArrayList, as the current impl. does not support adding at index
 
-         if (attributes.contains(PerfCakeConst.WARM_UP_TAG)) {
-            attributes.remove(PerfCakeConst.WARM_UP_TAG);
-            attributes.addAll(attributes.stream().map(a -> a + "_" + PerfCakeConst.WARM_UP_TAG).collect(Collectors.toList()));
-         }
-
          switch (chartDestination.getxAxisType()) {
             case PERCENTAGE:
                attributes.add(0, COLUMN_PERCENT);
@@ -101,8 +94,8 @@ public class C3ChartHelper {
          chart.setAttributes(attributes);
          chart.setName(chartDestination.getName());
          chart.setxAxisType(chartDestination.getxAxisType());
-         chart.setxAxis(chartDestination.getXAxis());
-         chart.setyAxis(chartDestination.getYAxis());
+         chart.setxAxis(chartDestination.getxAxis());
+         chart.setyAxis(chartDestination.getyAxis());
          chart.setHeight(chartDestination.getChartHeight());
 
          chartDataFile = new C3ChartDataFile(chart, chartDestination.getOutputDirAsPath());
@@ -149,11 +142,13 @@ public class C3ChartHelper {
    /**
     * Creates the final result report compiling all the previous charts together.
     *
+    * @param autoCombine
+    *       True if we should combine the new results with the previous reports.
     * @throws PerfCakeException
     *       When there was an error creating the report. Typically an I/O issue.
     */
-   public void compileResults() throws PerfCakeException {
-      C3ChartReport.createReport(chartDataFile.getTarget(), chartDataFile.getChart());
+   public void compileResults(final boolean autoCombine) throws PerfCakeException {
+      C3ChartReport.createReport(chartDataFile.getTarget(), chartDataFile.getChart(), autoCombine);
    }
 
 }

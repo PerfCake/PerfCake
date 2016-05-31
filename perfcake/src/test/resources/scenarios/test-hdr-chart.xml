@@ -3,7 +3,7 @@
    <run type="iteration" value="100000"/>
    <generator class="DefaultMessageGenerator" threads="${threads:25}"/>
    <sender class="TestSender">
-      <property name="delay" value="3" />
+      <property name="delay" value="2" />
    </sender>
    <reporting>
       <reporter class="WarmUpReporter" enabled="true">
@@ -11,17 +11,20 @@
          <property name="minimalWarmUpDuration" value="100"/>
       </reporter>
       <reporter class="ResponseTimeHistogramReporter">
+         <property name="detail" value="1" />
+         <property name="formatOutput" value="false" />
          <destination class="ConsoleDestination">
             <period type="time" value="1000"/>
          </destination>
          <destination class="ChartDestination">
             <period type="time" value="500"/>
             <property name="outputDir" value="target/test-chart"/>
-            <property name="yAxis" value="Response time [ms]"/>
+            <property name="YAxis" value="Response time [ms]"/>
             <property name="group" value="${perfcake.scenario}_hdr_resp"/>
             <property name="name" value="Response Time (${threads:25} threads)"/>
-            <property name="attributes" value="perc*, warmUp"/>
-            <property name="target" value="${perfcake.scenario}-charts"/>
+            <property name="attributes" value="*, warmUp"/>
+            <property name="autoCombine" value="false" />
+            <property name="outputDir" value="target/${perfcake.scenario}-charts"/>
          </destination>
       </reporter>
    </reporting>

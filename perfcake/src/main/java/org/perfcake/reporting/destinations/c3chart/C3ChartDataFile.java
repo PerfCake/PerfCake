@@ -234,6 +234,7 @@ public class C3ChartDataFile {
    private String getResultLine(final Measurement measurement) {
       final StringBuilder sb = new StringBuilder();
       boolean missingAttributes = false;
+      boolean isWarmUp = measurement.get(PerfCakeConst.WARM_UP_TAG) != null ? (Boolean) measurement.get(PerfCakeConst.WARM_UP_TAG) : false;
 
       sb.append(chart.getBaseName());
       sb.append(".push([");
@@ -249,8 +250,7 @@ public class C3ChartDataFile {
             break;
       }
 
-      boolean isWarmUp = measurement.get(PerfCakeConst.WARM_UP_TAG) != null ? (Boolean) measurement.get(PerfCakeConst.WARM_UP_TAG) : false;
-
+      int nullFields = 0;
       for (final String attr : chart.getAttributes()) {
          if (chart.getAttributes().indexOf(attr) > 0) {
             boolean warmUpAttr = attr.endsWith(PerfCakeConst.WARM_UP_TAG); // warmUp is handled using separate columns with the same base name and suffix _warmUp
@@ -269,6 +269,7 @@ public class C3ChartDataFile {
 
                // we put null values in either all the fields with the _warmUp suffix, or the others depending whether we are in the warmUp phase
                if (isWarmUp ^ warmUpAttr) {
+                  nullFields++;
                   sb.append("null");
                } else {
                   if (data instanceof String) {
@@ -278,7 +279,12 @@ public class C3ChartDataFile {
                   } else if (data instanceof Quantity) {
                      sb.append(((Quantity) data).getNumber().toString());
                   } else {
-                     sb.append(data == null ? "null" : data.toString());
+                     if (data == null) {
+                        nullFields++;
+                        sb.append("null");
+                     } else {
+                        sb.append(data.toString());
+                     }
                   }
                }
             }
@@ -287,7 +293,9 @@ public class C3ChartDataFile {
 
       firstResultsLine = false;
 
-      if (missingAttributes) { // we must postpone the return for all misses to be shown
+      // we must postpone the return for all misses to be shown
+      // we also want to skip any records with just null values
+      if (missingAttributes || chart.getAttributes().size() - nullFields <= 1) {
          return "";
       }
 

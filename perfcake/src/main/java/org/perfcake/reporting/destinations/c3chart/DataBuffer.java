@@ -23,9 +23,14 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.reporting.Measurement;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Buffer for storing measurements. It notices which attributes passed through and creates an ultimate list of them.
@@ -36,7 +41,7 @@ public class DataBuffer {
 
    private final List<String> attributes;
 
-   private List<String> realAttributes = new LinkedList<>();
+   private Set<String> realAttributes = Collections.synchronizedSet(new HashSet<>());
 
    private List<Measurement> data = new ArrayList<>();
 
@@ -66,14 +71,16 @@ public class DataBuffer {
          final String warmUpKey = key + (isWarmUp ? "_" + PerfCakeConst.WARM_UP_TAG : "");
 
          // did we already see the attribute?
-         if (!realAttributes.contains(warmUpKey)) {
+         if ((isWarmUp && !realAttributes.contains(warmUpKey)) || (!isWarmUp && !realAttributes.contains(key))) {
             if (attributes.contains(warmUpKey)) { // plain storage, there is no * for this attribute in the list of required attributes
                realAttributes.add(warmUpKey);
+            } if (attributes.contains(key)) {
+               realAttributes.add(key);
             } else {
                attributes.forEach(attr -> { // search the list of required attributes for the names with *
                   if (attr.endsWith("*")) {
                      // no matter the warmUp state, we always record the attributes if there is a plain match, where there is attr*_warmUp, there also is attr*
-                     if (key.startsWith(attr.substring(0, attr.length() - 1))) {
+                     if (key.startsWith(attr.substring(0, attr.length() - 1)) && !PerfCakeConst.WARM_UP_TAG.equals(key)) {
                         realAttributes.add(key);
                      }
                   } else if (attr.endsWith("*_" + PerfCakeConst.WARM_UP_TAG)) {
@@ -111,6 +118,9 @@ public class DataBuffer {
     * @return The list of all attributes noticed during recording.
     */
    public List<String> getAttributes() {
-      return realAttributes;
+      final List<String> result = realAttributes.stream().collect(Collectors.toList());
+      result.sort(String::compareTo);
+
+      return result;
    }
 }

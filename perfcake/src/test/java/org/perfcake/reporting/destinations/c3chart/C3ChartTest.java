@@ -72,8 +72,8 @@ public class C3ChartTest extends TestSetup {
       Assert.assertEquals(desc.getChart().getBaseName(), "speedGroup" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY));
       Assert.assertEquals(desc.getChart().getName(), dst.getName());
       Assert.assertEquals(desc.getChart().getGroup(), dst.getGroup());
-      Assert.assertEquals(desc.getChart().getxAxis(), dst.getXAxis());
-      Assert.assertEquals(desc.getChart().getyAxis(), dst.getYAxis());
+      Assert.assertEquals(desc.getChart().getxAxis(), dst.getxAxis());
+      Assert.assertEquals(desc.getChart().getyAxis(), dst.getyAxis());
       Assert.assertEquals(desc.getChart().getxAxisType(), dst.getxAxisType());
    }
 
