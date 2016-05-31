@@ -86,6 +86,8 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     */
    protected long shutdownPeriod = 1000;
 
+   protected boolean shutdownPeriodAutoTune = false;
+
    /**
     * The size of internal queue of prepared sender tasks. The default value is 1000 tasks.
     */
@@ -150,7 +152,12 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    private void adaptiveTermination() throws InterruptedException {
       executorService.shutdown();
       long active = getTasksInQueue(), lastActive = 0;
-
+      if (isShutdownPeriodAutoTune()) {
+         shutdownPeriod = 5 * runInfo.getRunTime() * runInfo.getThreads() / runInfo.getIteration();
+         if (log.isDebugEnabled()) {
+            log.debug(String.format("Shut-down period auto-tuned to " + shutdownPeriod + " ms."));
+         }
+      }
       while (active > 0 && lastActive != active) { // make sure the threads are finishing
          lastActive = active;
          executorService.awaitTermination(shutdownPeriod, TimeUnit.MILLISECONDS);
@@ -283,5 +290,13 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       if (runInfo.getDuration().getPeriodType() == PeriodType.PERCENTAGE) {
          throw new IllegalStateException(String.format("%s can only be used with an iteration based run configuration.", this.getClass().getName()));
       }
+   }
+
+   public boolean isShutdownPeriodAutoTune() {
+      return shutdownPeriodAutoTune;
+   }
+
+   public void setShutdownPeriodAutoTune(final boolean shutdownPeriodAutoTune) {
+      this.shutdownPeriodAutoTune = shutdownPeriodAutoTune;
    }
 }
