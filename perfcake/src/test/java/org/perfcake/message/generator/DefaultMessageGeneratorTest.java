@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ public class DefaultMessageGeneratorTest extends TestSetup {
 
       TestSender.resetCounter();
 
-      System.setProperty("auto.tune", "true");
+      System.setProperty("auto.tune", "-1");
       scenario = ScenarioLoader.load("test-shutdown-period-auto-tune-scenario");
       scenario.init();
       scenario.run();
@@ -53,7 +53,7 @@ public class DefaultMessageGeneratorTest extends TestSetup {
       final ScenarioRetractor retractor = new ScenarioRetractor(scenario);
       final MessageGenerator generator = retractor.getGenerator();
       Assert.assertTrue(generator instanceof DefaultMessageGenerator, "DefaultMessageGenerator");
-      Assert.assertTrue(((DefaultMessageGenerator) generator).getShutdownPeriod() > 5000, "Auto tuned shuthown period.");
+      Assert.assertTrue(((DefaultMessageGenerator) generator).getShutdownPeriod() > 24999, "Auto tuned shuthown period.");
    }
 
    @Test
@@ -61,7 +61,7 @@ public class DefaultMessageGeneratorTest extends TestSetup {
       final Scenario scenario;
 
       TestSender.resetCounter();
-      System.setProperty("auto.tune", "false");
+      System.setProperty("auto.tune", "1000");
       scenario = ScenarioLoader.load("test-shutdown-period-auto-tune-scenario");
       scenario.init();
       scenario.run();
