@@ -28,10 +28,9 @@ import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.destinations.DummyDestination;
 import org.perfcake.util.ObjectFactory;
 
-import org.HdrHistogram.ConcurrentDoubleHistogram;
-import org.HdrHistogram.DoubleHistogram;
-import org.HdrHistogram.DoubleHistogramIterationValue;
-import org.HdrHistogram.DoublePercentileIterator;
+import org.HdrHistogram.Histogram;
+import org.HdrHistogram.HistogramIterationValue;
+import org.HdrHistogram.PercentileIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
@@ -41,9 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.Random;
 
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 
 /**
@@ -54,39 +51,26 @@ public class ResponseTimeHistogramTest {
 
    private static final Logger log = LogManager.getLogger(ResponseTimeHistogramTest.class);
 
-   @Test(enabled = false)
-   public void hdrTest() {
-      DoubleHistogram histogram = new ConcurrentDoubleHistogram(3);
-      Random r = new Random();
-      double d = 0;
-      for (int i = 0; i < 1000; i++) {
-         d = d + r.nextDouble() * 1000;
-         histogram.recordValue(r.nextDouble() * 1000);
-         display(histogram, d / (i + 1));
-      }
-   }
-
-   private void display(DoubleHistogram histogram, double avg) {
+   private void display(Histogram histogram, long avg) {
       String valueFormatString = "%12.3f";
-      String percentileFormatString = "%2.12f";
+      String percentileFormatString = "%d";
 
-      DoublePercentileIterator pi = new DoublePercentileIterator(histogram.copyCorrectedForCoordinatedOmission(avg), 1);
+      PercentileIterator pi = new PercentileIterator(histogram.copyCorrectedForCoordinatedOmission(avg), 1);
       pi.reset(2);
 
       JsonObject o = new JsonObject();
 
       while (pi.hasNext()) {
-         DoubleHistogramIterationValue val = pi.next();
+         HistogramIterationValue val = pi.next();
 
-         String key =  String.format(Locale.US, percentileFormatString, val.getPercentileLevelIteratedTo() / 100d);
-         String value =  String.format(Locale.US, valueFormatString, val.getValueIteratedTo());
+         String key = String.format(Locale.US, percentileFormatString, val.getPercentileLevelIteratedTo() / 100d);
+         String value = String.format(Locale.US, valueFormatString, val.getValueIteratedTo());
 
          o.put(key, value);
 
       }
 
       System.out.println(o.toString());
-
    }
 
    @Test
@@ -97,18 +81,18 @@ public class ResponseTimeHistogramTest {
       props.setProperty("prefix", "p");
       Measurement m = runTest(props);
 
-      final List<Double> res = new ArrayList<>();
+      final List<Long> res = new ArrayList<>();
 
       m.getAll().forEach((k, v) -> {
          if (k.startsWith("p0.998") || k.startsWith("p0.999") || k.startsWith("p1.000")) {
-            res.add(Double.valueOf((String) v));
+            res.add(Long.valueOf((String) v));
          }
       });
 
-      Assert.assertEquals(res.get(0), 2d);
-      Assert.assertEquals(res.get(1), 2d);
-      Assert.assertEquals(res.get(2), 100.48d);
-      Assert.assertEquals(res.get(3), 100.48d);
+      Assert.assertEquals((long) res.get(0), 2L);
+      Assert.assertEquals((long) res.get(1), 2L);
+      Assert.assertEquals((long) res.get(2), 100L);
+      Assert.assertEquals((long) res.get(3), 100L);
    }
 
    @Test
@@ -119,19 +103,49 @@ public class ResponseTimeHistogramTest {
       props.setProperty("prefix", "p");
       Measurement m = runTest(props);
 
-      final List<Double> res = new ArrayList<>();
+      final List<Long> res = new ArrayList<>();
 
       m.getAll().forEach((k, v) -> {
          if (k.startsWith("p0.953") || k.startsWith("p0.968") || k.startsWith("p0.976") || k.startsWith("p0.999")) {
-            res.add(Double.valueOf((String) v));
+            res.add(Long.valueOf((String) v));
          }
       });
 
-      Assert.assertEquals(res.get(0), 2d);
-      Assert.assertEquals(res.get(1), 33.48d);
-      Assert.assertEquals(res.get(2), 50.23d);
-      Assert.assertEquals(res.get(3), 98.48d);
-      Assert.assertEquals(res.get(4), 100.48d);
+      Assert.assertEquals((long) res.get(0), 2L);
+      Assert.assertEquals((long) res.get(1), 36L);
+      Assert.assertEquals((long) res.get(2), 52L);
+      Assert.assertEquals((long) res.get(3), 98L);
+      Assert.assertEquals((long) res.get(4), 100L);
+   }
+
+   @Test
+   public void maxExpectedTest() throws Exception {
+      final Properties props = new Properties();
+      props.setProperty("correctionMode", "auto");
+      props.setProperty("precision", "1");
+      props.setProperty("detail", "1");
+      props.setProperty("prefix", "p");
+      props.setProperty("maxExpectedValue", "1000");
+      Measurement m = runTest(props);
+
+      final List<Long> res = new ArrayList<>();
+
+      System.out.println(m.getAll());
+
+      m.getAll().forEach((k, v) -> {
+         if (k.startsWith("p0.937") || k.startsWith("p0.968") || k.startsWith("p0.984") || k.startsWith("p0.992") || k.startsWith("p0.996") || k.startsWith("p0.998") || k.startsWith("p0.999")) {
+            res.add(Long.valueOf((String) v));
+         }
+      });
+
+      int i = 0;
+      Assert.assertEquals((long) res.get(i++), 2L);
+      Assert.assertEquals((long) res.get(i++), 39L);
+      Assert.assertEquals((long) res.get(i++), 71L);
+      Assert.assertEquals((long) res.get(i++), 87L);
+      Assert.assertEquals((long) res.get(i++), 95L);
+      Assert.assertEquals((long) res.get(i++), 99L);
+      Assert.assertEquals((long) res.get(i), 103L);
    }
 
    @Test
@@ -144,19 +158,21 @@ public class ResponseTimeHistogramTest {
       props.setProperty("prefix", "p");
       Measurement m = runTest(props);
 
-      final List<Double> res = new ArrayList<>();
+      final List<Long> res = new ArrayList<>();
 
       m.getAll().forEach((k, v) -> {
-         if (k.startsWith("p0.937") || k.startsWith("p0.968") || k.startsWith("p0.984") || k.startsWith("p0.999")) {
-            res.add(Double.valueOf((String) v));
+         if (k.startsWith("p0.937") || k.startsWith("p0.968") || k.startsWith("p0.984") || k.startsWith("p0.992") || k.startsWith("p0.999")) {
+            res.add(Long.valueOf((String) v));
          }
       });
 
-      Assert.assertEquals(res.get(0), 2d);
-      Assert.assertEquals(res.get(1), 50.98d);
-      Assert.assertEquals(res.get(2), 76.48d);
-      Assert.assertEquals(res.get(3), 98.98d);
-      Assert.assertEquals(res.get(4), 100.48d);
+      Assert.assertEquals((long) res.get(0), 2);
+      Assert.assertEquals((long) res.get(1), 35);
+      Assert.assertEquals((long) res.get(2), 68);
+      Assert.assertEquals((long) res.get(3), 84);
+      Assert.assertEquals((long) res.get(4), 98);
+      Assert.assertEquals((long) res.get(5), 99);
+      Assert.assertEquals((long) res.get(6), 100);
    }
 
    private Measurement runTest(final Properties props) throws Exception {

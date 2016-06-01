@@ -129,7 +129,7 @@ public class ObjectFactory {
                beanUtilsBean.getProperty(object, entry.getKey().toString());
             } catch (ReflectiveOperationException reo) {
                log.warn(String.format("It was not possible to reliably configure property %s on class %s. "
-                     + "You may have a mistake in the scenario, or the class does not allow read of the property.",
+                     + "You may have a mistake in the scenario, or the class does not allow reading of the property.",
                      entry.getKey().toString(), object.getClass().getCanonicalName()));
             }
          }

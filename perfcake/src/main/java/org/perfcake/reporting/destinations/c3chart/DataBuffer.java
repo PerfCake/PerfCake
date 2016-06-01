@@ -67,28 +67,31 @@ public class DataBuffer {
       boolean isWarmUp = measurement.get(PerfCakeConst.WARM_UP_TAG) != null ? (Boolean) measurement.get(PerfCakeConst.WARM_UP_TAG) : false;
 
       measurement.getAll().forEach((key, value) -> {
-         // should we record in the attribute with the _warmUp extension?
-         final String warmUpKey = key + (isWarmUp ? "_" + PerfCakeConst.WARM_UP_TAG : "");
+         if (!PerfCakeConst.WARM_UP_TAG.equals(key)) {
+            // should we record in the attribute with the _warmUp extension?
+            final String warmUpKey = key + (isWarmUp ? "_" + PerfCakeConst.WARM_UP_TAG : "");
 
-         // did we already see the attribute?
-         if ((isWarmUp && !realAttributes.contains(warmUpKey)) || (!isWarmUp && !realAttributes.contains(key))) {
-            if (attributes.contains(warmUpKey)) { // plain storage, there is no * for this attribute in the list of required attributes
-               realAttributes.add(warmUpKey);
-            } if (attributes.contains(key)) {
-               realAttributes.add(key);
-            } else {
-               attributes.forEach(attr -> { // search the list of required attributes for the names with *
-                  if (attr.endsWith("*")) {
-                     // no matter the warmUp state, we always record the attributes if there is a plain match, where there is attr*_warmUp, there also is attr*
-                     if (key.startsWith(attr.substring(0, attr.length() - 1)) && !PerfCakeConst.WARM_UP_TAG.equals(key)) {
-                        realAttributes.add(key);
+            // did we already see the attribute?
+            if ((isWarmUp && !realAttributes.contains(warmUpKey)) || (!isWarmUp && !realAttributes.contains(key))) {
+               if (attributes.contains(warmUpKey)) { // plain storage, there is no * for this attribute in the list of required attributes
+                  realAttributes.add(warmUpKey);
+               }
+               if (attributes.contains(key)) {
+                  realAttributes.add(key);
+               } else {
+                  attributes.forEach(attr -> { // search the list of required attributes for the names with *
+                     if (attr.endsWith("*")) {
+                        // no matter the warmUp state, we always record the attributes if there is a plain match, where there is attr*_warmUp, there also is attr*
+                        if (key.startsWith(attr.substring(0, attr.length() - 1)) && !PerfCakeConst.WARM_UP_TAG.equals(key)) {
+                           realAttributes.add(key);
+                        }
+                     } else if (attr.endsWith("*_" + PerfCakeConst.WARM_UP_TAG)) {
+                        if (key.startsWith(attr.substring(0, attr.length() - 2 - PerfCakeConst.WARM_UP_TAG.length())) && isWarmUp) {
+                           realAttributes.add(warmUpKey);
+                        }
                      }
-                  } else if (attr.endsWith("*_" + PerfCakeConst.WARM_UP_TAG)) {
-                     if (key.startsWith(attr.substring(0, attr.length() - 2 - PerfCakeConst.WARM_UP_TAG.length())) && isWarmUp) {
-                        realAttributes.add(warmUpKey);
-                     }
-                  }
-               });
+                  });
+               }
             }
          }
       });

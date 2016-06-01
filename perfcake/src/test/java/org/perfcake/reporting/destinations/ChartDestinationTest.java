@@ -381,11 +381,12 @@ public class ChartDestinationTest extends TestSetup {
       FileUtils.deleteDirectory(tempPath.toFile());
    }
 
-   @Test
+   @Test(enabled = false) // manual test so far
    public void testHdrChart() throws PerfCakeException, IOException {
       final Scenario scenario;
 
       System.setProperty(PerfCakeConst.SCENARIO_PROPERTY, "default");
+      System.setProperty("attributes", "*");
       TestSender.resetCounter();
 
       scenario = ScenarioLoader.load("test-hdr-chart");
@@ -395,7 +396,7 @@ public class ChartDestinationTest extends TestSetup {
       scenario.run();
       scenario.close();
 
-      final Path dir = Paths.get("target/test-chart");
+      final Path dir = Paths.get("target/default-charts");
 
       FileUtils.deleteDirectory(dir.toFile());
    }
