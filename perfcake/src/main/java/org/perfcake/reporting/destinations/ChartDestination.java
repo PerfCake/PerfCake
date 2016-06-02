@@ -112,6 +112,9 @@ public class ChartDestination implements Destination {
     */
    private boolean dynamicAttributes = false;
 
+   /**
+    * Holds the data when the dynamic attributes are used and we cannot stream directly to a file.
+    */
    private DataBuffer buffer;
 
    @Override

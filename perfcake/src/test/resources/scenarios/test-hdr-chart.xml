@@ -17,7 +17,6 @@
          </destination>
          <destination class="ChartDestination">
             <period type="time" value="500"/>
-            <property name="outputDir" value="target/test-chart"/>
             <property name="yAxis" value="Response time [ms]"/>
             <property name="group" value="${perfcake.scenario}_norm_resp"/>
             <property name="name" value="Response Time (${threads:25} threads)"/>
@@ -38,7 +37,6 @@
          </destination>
          <destination class="ChartDestination">
             <period type="time" value="500"/>
-            <property name="outputDir" value="target/test-chart"/>
             <property name="yAxis" value="HDR Response time [ms]"/>
             <property name="group" value="${perfcake.scenario}_hdr_resp"/>
             <property name="name" value="HDR Response Time (${threads:25} threads)"/>
