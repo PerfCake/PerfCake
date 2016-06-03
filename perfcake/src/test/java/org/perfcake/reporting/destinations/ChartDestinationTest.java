@@ -370,15 +370,17 @@ public class ChartDestinationTest extends TestSetup {
          Assert.fail("Chart array does not contain expected data. Should be [int, double, double, null..., int, null...]. " + cce);
       }
 
+      System.out.println(array);
+
       int notNulls = 0;
-      for (int i = 3; i < array.size(); i++) {
+      for (int i = 5; i < array.size(); i++) {
          if (array.getValue(i) != null) {
             notNulls++;
          }
       }
       Assert.assertEquals(notNulls, 1);
 
-      FileUtils.deleteDirectory(tempPath.toFile());
+     // FileUtils.deleteDirectory(tempPath.toFile());
    }
 
    @Test(enabled = false) // manual test so far
