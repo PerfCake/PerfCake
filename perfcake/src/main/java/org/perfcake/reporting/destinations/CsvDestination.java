@@ -137,6 +137,9 @@ public class CsvDestination implements Destination {
     */
    private boolean dynamicAttributes = false;
 
+   /**
+    * Was the warmUp attribute required in expectedFields?
+    */
    private boolean wasWarmUp = false;
 
    /**
@@ -494,7 +497,11 @@ public class CsvDestination implements Destination {
     *       The exppected attributes separated by comma.
     */
    public void setExpectedAttributes(final String expectedAttributes) {
-      this.expectedAttributes = new ArrayList<>(Arrays.asList(expectedAttributes.split("\\s*,\\s*")));
+      if (expectedAttributes == null || "".equals(expectedAttributes)) {
+         this.expectedAttributes = new ArrayList<>();
+      } else {
+         this.expectedAttributes = new ArrayList<>(Arrays.asList(expectedAttributes.split("\\s*,\\s*")));
+      }
    }
 
    /**

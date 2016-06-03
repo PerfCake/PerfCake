@@ -589,6 +589,13 @@ public class CsvDestinationTest {
                   + "0:00:04;5;4;false\n"
                   + "0:00:05;6;5;false\n"
                   + "0:00:06;7;6;false", CsvDestination.MissingStrategy.SKIP },
+            { "", "Time;Iterations;Result;param1;param2;warmUp",
+                  "0:00:01;2;1;10;12;true\n"
+                  + "0:00:02;3;2;20;null;true\n"
+                  + "0:00:03;4;3;30;null;false\n"
+                  + "0:00:04;5;4;null;40;false\n"
+                  + "0:00:05;6;5;13;50;false\n"
+                  + "0:00:06;7;6;null;null;false", CsvDestination.MissingStrategy.NULL }
       };
    }
 
