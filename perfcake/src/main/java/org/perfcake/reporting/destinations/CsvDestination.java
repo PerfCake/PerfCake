@@ -23,6 +23,7 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
+import org.perfcake.reporting.destinations.util.DataBuffer;
 import org.perfcake.util.Utils;
 
 import org.apache.commons.lang.StringUtils;
@@ -123,56 +124,109 @@ public class CsvDestination implements Destination {
     */
    private MissingStrategy missingStrategy = MissingStrategy.NULL;
 
+   /**
+    * Some attributes might end with an asterisk, in such a case, we are not able to create output until the end of the test.
+    */
+   private boolean dynamicAttributes = false;
+
+   /**
+    * Holds the data when the dynamic attributes are used and we cannot stream directly to a file.
+    */
+   private DataBuffer buffer;
+
    @Override
    public void open() {
-      synchronized (this) {
-         csvFile = new File(path);
-
-         if (csvFile.exists()) {
-            switch (appendStrategy) {
-               case RENAME:
-                  final String name = csvFile.getAbsolutePath();
-                  File f;
-                  int ind = 1;
-                  do {
-                     //
-                     final int lastDot = name.lastIndexOf(".");
-                     if (lastDot > -1) {
-                        f = new File(name.substring(0, lastDot) + "." + (ind++) + name.substring(lastDot));
-                     } else {
-                        f = new File(name + "." + (ind++));
-                     }
-                  } while (f.exists());
-                  csvFile = f;
-                  break;
-               case OVERWRITE:
-                  if (!csvFile.delete()) {
-                     log.warn(String.format("Unable to delete the file %s, forcing append.", csvFile.getAbsolutePath()));
-                  }
-                  break;
-               case APPEND:
-               default:
-                  // nothing to do here
-            }
-         }
+      dynamicAttributes = expectedAttributes.stream().anyMatch(s -> s.endsWith("*"));
+      if (expectedAttributes.contains(PerfCakeConst.WARM_UP_TAG)) {
+         expectedAttributes.remove(PerfCakeConst.WARM_UP_TAG);
+         expectedAttributes.addAll(expectedAttributes.stream().map(attr -> attr + "_" + PerfCakeConst.WARM_UP_TAG).collect(Collectors.toList()));
       }
-      if (log.isDebugEnabled()) {
-         log.debug(String.format("Opened CSV destination to the file %s.", path));
+
+      csvFile = new File(path);
+
+      if (dynamicAttributes) {
+         buffer = new DataBuffer(expectedAttributes);
+      } else {
+         openFile();
       }
    }
 
    @Override
    public void close() {
-      synchronized (this) {
-         if (outputChannel != null) {
+      if (dynamicAttributes) {
+         expectedAttributes = buffer.getAttributes();
+         openFile();
+
+         buffer.replay((measurement) -> {
             try {
-               outputChannel.close();
-            } catch (final IOException e) {
-               log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
+               realReport(measurement);
+            } catch (ReportingException e) {
+               log.error("Unable to write all reported data: ", e);
             }
-         }
-         csvFile = null;
+         });
       }
+
+      closeFile();
+   }
+
+   @Override
+   public void report(final Measurement measurement) throws ReportingException {
+      if (dynamicAttributes) {
+         buffer.record(measurement);
+      } else {
+         realReport(measurement);
+      }
+   }
+
+   /**
+    * Opens the result file according to the configured overwrite strategy.
+    */
+   private void openFile() {
+      if (csvFile.exists()) {
+         switch (appendStrategy) {
+            case RENAME:
+               final String name = csvFile.getAbsolutePath();
+               File f;
+               int ind = 1;
+               do {
+                  //
+                  final int lastDot = name.lastIndexOf(".");
+                  if (lastDot > -1) {
+                     f = new File(name.substring(0, lastDot) + "." + (ind++) + name.substring(lastDot));
+                  } else {
+                     f = new File(name + "." + (ind++));
+                  }
+               } while (f.exists());
+               csvFile = f;
+               break;
+            case OVERWRITE:
+               if (!csvFile.delete()) {
+                  log.warn(String.format("Unable to delete the file %s, forcing append.", csvFile.getAbsolutePath()));
+               }
+               break;
+            case APPEND:
+            default:
+               // nothing to do here
+         }
+      }
+
+      if (log.isDebugEnabled()) {
+         log.debug(String.format("Opened CSV destination to the file %s.", path));
+      }
+   }
+
+   /**
+    * Closes the result file.
+    */
+   private void closeFile() {
+      if (outputChannel != null) {
+         try {
+            outputChannel.close();
+         } catch (final IOException e) {
+            log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
+         }
+      }
+      csvFile = null;
    }
 
    private void presetResultNames(final Measurement m) {
@@ -243,16 +297,19 @@ public class CsvDestination implements Destination {
       return sb.toString();
    }
 
-   @Override
-   public void report(final Measurement measurement) throws ReportingException {
+   /**
+    * Performs the real reporting of the measurement.
+    *
+    * @param measurement
+    *       The measurement to be reported.
+    * @throws ReportingException
+    *       If it was not possible the write the reported data to the result file.
+    */
+   private void realReport(final Measurement measurement) throws ReportingException {
       // make sure the order of columns is consistent
       if (resultNames.isEmpty()) { // performance optimization before we enter the sync. block
-         synchronized (this) {
-            if (resultNames.isEmpty()) { // make sure the array did not get initialized while we were entering the sync. block
-               presetResultNames(measurement);
-               fileHeaders = getFileHeaders(measurement);
-            }
-         }
+         presetResultNames(measurement);
+         fileHeaders = getFileHeaders(measurement);
       }
 
       if (attributesExpected) {
@@ -287,24 +344,21 @@ public class CsvDestination implements Destination {
       }
       sb.append(lineBreak);
 
-      synchronized (this) {
-         try {
-            final boolean csvFileExists = csvFile.exists();
+      try {
+         final boolean csvFileExists = csvFile.exists();
 
-            if (outputChannel == null) {
-               outputChannel = FileChannel.open(csvFile.toPath(), csvFileExists ? StandardOpenOption.APPEND : StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-            }
-
-            if (!csvFileExists && !skipHeader) {
-               sb.insert(0, fileHeaders + lineBreak);
-            }
-
-            outputChannel.write(ByteBuffer.wrap(sb.toString().getBytes(Charset.forName(Utils.getDefaultEncoding()))));
-         } catch (final IOException ioe) {
-            throw new ReportingException(String.format("Could not append a report to the file %s.", csvFile.getPath()), ioe);
+         if (outputChannel == null) {
+            outputChannel = FileChannel.open(csvFile.toPath(), csvFileExists ? StandardOpenOption.APPEND : StandardOpenOption.CREATE, StandardOpenOption.WRITE);
          }
-      }
 
+         if (!csvFileExists && !skipHeader) {
+            sb.insert(0, fileHeaders + lineBreak);
+         }
+
+         outputChannel.write(ByteBuffer.wrap(sb.toString().getBytes(Charset.forName(Utils.getDefaultEncoding()))));
+      } catch (final IOException ioe) {
+         throw new ReportingException(String.format("Could not append a report to the file %s.", csvFile.getPath()), ioe);
+      }
    }
 
    /**
@@ -325,17 +379,15 @@ public class CsvDestination implements Destination {
     * @return Instance of this to support fluent API.
     */
    public CsvDestination setPath(final String path) {
-      synchronized (this) {
-         if (csvFile != null) {
-            throw new UnsupportedOperationException("Changing the value of path after opening the destination is not allowed.");
-         }
-         if (outputChannel != null) {
-            try {
-               outputChannel.close();
-               outputChannel = null;
-            } catch (final IOException e) {
-               log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
-            }
+      if (csvFile != null) {
+         throw new UnsupportedOperationException("Changing the value of path after opening the destination is not allowed.");
+      }
+      if (outputChannel != null) {
+         try {
+            outputChannel.close();
+            outputChannel = null;
+         } catch (final IOException e) {
+            log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
          }
       }
 
