@@ -25,7 +25,7 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.c3chart.C3ChartHelper;
-import org.perfcake.reporting.destinations.c3chart.DataBuffer;
+import org.perfcake.reporting.destinations.util.DataBuffer;
 import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.commons.lang.StringUtils;

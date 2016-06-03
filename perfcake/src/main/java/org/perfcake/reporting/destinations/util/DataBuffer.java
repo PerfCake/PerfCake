@@ -17,16 +17,15 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake.reporting.destinations.c3chart;
+package org.perfcake.reporting.destinations.util;
 
 import org.perfcake.PerfCakeConst;
 import org.perfcake.reporting.Measurement;
+import org.perfcake.reporting.destinations.c3chart.C3ChartHelper;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -48,7 +47,8 @@ public class DataBuffer {
    /**
     * Creates an empty buffer with an initial list of attributes to watch for.
     *
-    * @param attributes The attributes to watch for, including * expansions.
+    * @param attributes
+    *       The attributes to watch for, including * expansions.
     */
    public DataBuffer(final List<String> attributes) {
       this.attributes = attributes;
@@ -59,7 +59,8 @@ public class DataBuffer {
     * In case of the warmUp phase, we record the attributes with _warmUp suffix to later separate the two phases.
     * The list of attributes with the _warmUp extension is created in {@link C3ChartHelper}.
     *
-    * @param measurement The measurement to be recorded.
+    * @param measurement
+    *       The measurement to be recorded.
     */
    public void record(final Measurement measurement) {
       data.add(measurement);
@@ -101,18 +102,32 @@ public class DataBuffer {
     * Replays the stored measurements to the given consumer.
     * Makes sure that each measurement contains all the attributes (it adds them with null values if some were missing).
     *
-    * @param consumer Consumer of the records. The records are replayed in the original order.
+    * @param consumer
+    *       Consumer of the records. The records are replayed in the original order.
+    * @param fillNulls
+    *       If true, the missing attributes will be added and their value set to null.
     */
-   public void replay(final Consumer<Measurement> consumer) {
+   public void replay(final Consumer<Measurement> consumer, final boolean fillNulls) {
       data.forEach(measurement -> {
          realAttributes.forEach(attribute -> {
-            if (measurement.get(attribute) == null) {
+            if (fillNulls && measurement.get(attribute) == null) {
                measurement.set(attribute, null);
             }
          });
 
          consumer.accept(measurement);
       });
+   }
+
+   /**
+    * Replays the stored measurements to the given consumer.
+    * Makes sure that each measurement contains all the attributes (it adds them with null values if some were missing).
+    *
+    * @param consumer
+    *       Consumer of the records. The records are replayed in the original order.
+    */
+   public void replay(final Consumer<Measurement> consumer) {
+      replay(consumer, true);
    }
 
    /**

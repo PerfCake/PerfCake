@@ -426,6 +426,90 @@ public class CsvDestinationTest {
       delete(outf1);
    }
 
+   @Test
+   public void testMissingAttributesSkip() {
+      final Properties destinationProperties = new Properties();
+      destinationProperties.put("path", csvFile.getAbsolutePath());
+      destinationProperties.put("expectedAttributes", "StringResult");
+      destinationProperties.put("missingStrategy", "skip");
+      prepareFile(csvFile);
+
+      try {
+         final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
+
+         final Measurement measurementStringResult = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
+         measurementStringResult.set("StringValue");
+         measurementStringResult.set("StringResult", "StringValue2");
+
+         destination.open();
+         // #1
+         destination.report(measurementStringResult);
+
+         // #2
+         final Measurement measurementStringResult2 = new Measurement(42, 123456000, ITERATION);
+         measurementStringResult2.set("StringValue");
+         destination.report(measurementStringResult2);
+
+         // #3
+         final Measurement measurementStringResult3 = new Measurement(42, 123456000, ITERATION + 1);
+         measurementStringResult3.set("StringValue+2");
+         measurementStringResult3.set("StringResult", "StringValue2+2");
+         destination.report(measurementStringResult3);
+
+         destination.close();
+
+         assertCSVFileContent(csvFile, "Time;Iterations;" + Measurement.DEFAULT_RESULT + ";StringResult\n"
+               + "34:17:36;" + ITERATION + ";StringValue;StringValue2\n"
+               + "34:17:36;" + (ITERATION + 2) + ";StringValue+2;StringValue2+2");
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
+         e.printStackTrace();
+         Assert.fail(e.getMessage());
+      }
+   }
+
+   @Test
+   public void testMissingAttributesNull() {
+      final Properties destinationProperties = new Properties();
+      destinationProperties.put("path", csvFile.getAbsolutePath());
+      destinationProperties.put("expectedAttributes", "StringResult");
+      destinationProperties.put("missingStrategy", "null");
+
+      prepareFile(csvFile);
+
+      try {
+         final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
+
+         final Measurement measurementStringResult = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
+         measurementStringResult.set("StringValue");
+         measurementStringResult.set("StringResult", "StringValue2");
+
+         destination.open();
+         // #1
+         destination.report(measurementStringResult);
+
+         // #2
+         final Measurement measurementStringResult2 = new Measurement(42, 123456000, ITERATION);
+         measurementStringResult2.set("StringValue");
+         destination.report(measurementStringResult2);
+
+         // #3
+         final Measurement measurementStringResult3 = new Measurement(42, 123456000, ITERATION + 1);
+         measurementStringResult3.set("StringValue+2");
+         measurementStringResult3.set("StringResult", "StringValue2+2");
+         destination.report(measurementStringResult3);
+
+         destination.close();
+
+         assertCSVFileContent(csvFile, "Time;Iterations;" + Measurement.DEFAULT_RESULT + ";StringResult\n"
+               + "34:17:36;" + ITERATION + ";StringValue;StringValue2\n"
+               + "34:17:36;" + (ITERATION + 1) + ";StringValue;null\n"
+               + "34:17:36;" + (ITERATION + 2) + ";StringValue+2;StringValue2+2");
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
+         e.printStackTrace();
+         Assert.fail(e.getMessage());
+      }
+   }
+
    private void assertCSVFileContent(final File file, final String expected) {
       try (Scanner scanner = new Scanner(file).useDelimiter("\\Z")) {
          Assert.assertEquals(scanner.next(), expected, "CSV file's content");

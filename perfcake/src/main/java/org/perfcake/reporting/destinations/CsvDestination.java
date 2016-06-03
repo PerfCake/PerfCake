@@ -23,8 +23,10 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
+import org.perfcake.reporting.destinations.util.DataBuffer;
 import org.perfcake.util.Utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,8 +37,11 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Appends a {@link org.perfcake.reporting.Measurement} into a CSV file.
@@ -55,6 +60,13 @@ public class CsvDestination implements Destination {
     * The list containing names of results from measurement.
     */
    private final List<String> resultNames = new ArrayList<>();
+
+   /**
+    * A comma separated list of expected attributes, that should be present in measurement to be published.
+    */
+   private List<String> expectedAttributes = new ArrayList<>();
+
+   private boolean attributesExpected = false;
 
    /**
     * Output CSV file path.
@@ -107,65 +119,129 @@ public class CsvDestination implements Destination {
     */
    private AppendStrategy appendStrategy = AppendStrategy.RENAME;
 
+   /**
+    * A strategy that determines the destination's behavior for a case that the value of an expected attribute in report to be published is missing.
+    */
+   private MissingStrategy missingStrategy = MissingStrategy.NULL;
+
+   /**
+    * Some attributes might end with an asterisk, in such a case, we are not able to create output until the end of the test.
+    */
+   private boolean dynamicAttributes = false;
+
+   /**
+    * Holds the data when the dynamic attributes are used and we cannot stream directly to a file.
+    */
+   private DataBuffer buffer;
+
    @Override
    public void open() {
-      synchronized (this) {
-         csvFile = new File(path);
-
-         if (csvFile.exists()) {
-            switch (appendStrategy) {
-               case RENAME:
-                  final String name = csvFile.getAbsolutePath();
-                  File f;
-                  int ind = 1;
-                  do {
-                     //
-                     final int lastDot = name.lastIndexOf(".");
-                     if (lastDot > -1) {
-                        f = new File(name.substring(0, lastDot) + "." + (ind++) + name.substring(lastDot));
-                     } else {
-                        f = new File(name + "." + (ind++));
-                     }
-                  } while (f.exists());
-                  csvFile = f;
-                  break;
-               case OVERWRITE:
-                  if (!csvFile.delete()) {
-                     log.warn(String.format("Unable to delete the file %s, forcing append.", csvFile.getAbsolutePath()));
-                  }
-                  break;
-               case APPEND:
-               default:
-                  // nothing to do here
-            }
-         }
+      dynamicAttributes = expectedAttributes.stream().anyMatch(s -> s.endsWith("*"));
+      if (expectedAttributes.contains(PerfCakeConst.WARM_UP_TAG)) {
+         expectedAttributes.remove(PerfCakeConst.WARM_UP_TAG);
+         expectedAttributes.addAll(expectedAttributes.stream().map(attr -> attr + "_" + PerfCakeConst.WARM_UP_TAG).collect(Collectors.toList()));
       }
-      if (log.isDebugEnabled()) {
-         log.debug(String.format("Opened CSV destination to the file %s.", path));
+
+      csvFile = new File(path);
+
+      if (dynamicAttributes) {
+         buffer = new DataBuffer(expectedAttributes);
+      } else {
+         openFile();
       }
    }
 
    @Override
    public void close() {
-      synchronized (this) {
-         if (outputChannel != null) {
+      if (dynamicAttributes) {
+         expectedAttributes = buffer.getAttributes();
+         openFile();
+
+         buffer.replay((measurement) -> {
             try {
-               outputChannel.close();
-            } catch (final IOException e) {
-               log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
+               realReport(measurement);
+            } catch (ReportingException e) {
+               log.error("Unable to write all reported data: ", e);
             }
-         }
-         csvFile = null;
+         });
+      }
+
+      closeFile();
+   }
+
+   @Override
+   public void report(final Measurement measurement) throws ReportingException {
+      if (dynamicAttributes) {
+         buffer.record(measurement);
+      } else {
+         realReport(measurement);
       }
    }
 
-   private void presetResultNames(final Measurement m) {
-      final Map<String, Object> results = m.getAll();
-
-      for (final String key : results.keySet()) {
-         if (!key.equals(Measurement.DEFAULT_RESULT)) {
-            resultNames.add(key);
+   /**
+    * Opens the result file according to the configured overwrite strategy.
+    */
+   private void openFile() {
+      if (csvFile.exists()) {
+         switch (appendStrategy) {
+            case RENAME:
+               final String name = csvFile.getAbsolutePath();
+               File f;
+               int ind = 1;
+               do {
+                  //
+                  final int lastDot = name.lastIndexOf(".");
+                  if (lastDot > -1) {
+                     f = new File(name.substring(0, lastDot) + "." + (ind++) + name.substring(lastDot));
+                  } else {
+                     f = new File(name + "." + (ind++));
+                  }
+               } while (f.exists());
+               csvFile = f;
+               break;
+            case OVERWRITE:
+               if (!csvFile.delete()) {
+                  log.warn(String.format("Unable to delete the file %s, forcing append.", csvFile.getAbsolutePath()));
+               }
+               break;
+            case APPEND:
+            default:
+               // nothing to do here
          }
+      }
+
+      if (log.isDebugEnabled()) {
+         log.debug(String.format("Opened CSV destination to the file %s.", path));
+      }
+   }
+
+   /**
+    * Closes the result file.
+    */
+   private void closeFile() {
+      if (outputChannel != null) {
+         try {
+            outputChannel.close();
+         } catch (final IOException e) {
+            log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
+         }
+      }
+      csvFile = null;
+   }
+
+   private void presetResultNames(final Measurement m) {
+      if (expectedAttributes.isEmpty()) {
+         attributesExpected = false;
+
+         final Map<String, Object> results = m.getAll();
+         for (final String key : results.keySet()) {
+            if (!key.equals(Measurement.DEFAULT_RESULT)) {
+               resultNames.add(key);
+            }
+         }
+      } else {
+         resultNames.addAll(expectedAttributes);
+         attributesExpected = true;
       }
    }
 
@@ -210,6 +286,7 @@ public class CsvDestination implements Destination {
       for (final String resultName : resultNames) {
          sb.append(delimiter);
          currentResult = results.get(resultName);
+
          if (currentResult instanceof Quantity<?>) {
             sb.append(((Quantity<?>) currentResult).getNumber());
          } else {
@@ -220,14 +297,37 @@ public class CsvDestination implements Destination {
       return sb.toString();
    }
 
-   @Override
-   public void report(final Measurement measurement) throws ReportingException {
+   /**
+    * Performs the real reporting of the measurement.
+    *
+    * @param measurement
+    *       The measurement to be reported.
+    * @throws ReportingException
+    *       If it was not possible the write the reported data to the result file.
+    */
+   private void realReport(final Measurement measurement) throws ReportingException {
       // make sure the order of columns is consistent
       if (resultNames.isEmpty()) { // performance optimization before we enter the sync. block
-         synchronized (this) {
-            if (resultNames.isEmpty()) { // make sure the array did not get initialized while we were entering the sync. block
-               presetResultNames(measurement);
-               fileHeaders = getFileHeaders(measurement);
+         presetResultNames(measurement);
+         fileHeaders = getFileHeaders(measurement);
+      }
+
+      if (attributesExpected) {
+         if (MissingStrategy.SKIP.equals(missingStrategy)) {
+            final Set<String> measurementResults = measurement.getAll().keySet();
+            final List<String> missingAttributes = resultNames.stream().filter(ea -> !measurementResults.contains(ea)).collect(Collectors.toList());
+            if (!missingAttributes.isEmpty()) {
+               if (log.isWarnEnabled()) {
+                  StringBuilder sb = new StringBuilder();
+                  sb.append("Expected attributes are missing from results:\n");
+                  missingAttributes.forEach(s -> {
+                     sb.append(s);
+                     sb.append("\n");
+                  });
+                  sb.append("Skipping the report from appending to the destination.");
+                  log.warn(sb.toString());
+               }
+               return;
             }
          }
       }
@@ -236,30 +336,29 @@ public class CsvDestination implements Destination {
       if (linePrefix != null && !linePrefix.isEmpty()) {
          sb.append(linePrefix);
       }
+
       sb.append(getResultsLine(measurement));
+
       if (lineSuffix != null && !lineSuffix.isEmpty()) {
          sb.append(lineSuffix);
       }
       sb.append(lineBreak);
 
-      synchronized (this) {
-         try {
-            final boolean csvFileExists = csvFile.exists();
+      try {
+         final boolean csvFileExists = csvFile.exists();
 
-            if (outputChannel == null) {
-               outputChannel = FileChannel.open(csvFile.toPath(), csvFileExists ? StandardOpenOption.APPEND : StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-            }
-
-            if (!csvFileExists && !skipHeader) {
-               sb.insert(0, fileHeaders + lineBreak);
-            }
-
-            outputChannel.write(ByteBuffer.wrap(sb.toString().getBytes(Charset.forName(Utils.getDefaultEncoding()))));
-         } catch (final IOException ioe) {
-            throw new ReportingException(String.format("Could not append a report to the file %s.", csvFile.getPath()), ioe);
+         if (outputChannel == null) {
+            outputChannel = FileChannel.open(csvFile.toPath(), csvFileExists ? StandardOpenOption.APPEND : StandardOpenOption.CREATE, StandardOpenOption.WRITE);
          }
-      }
 
+         if (!csvFileExists && !skipHeader) {
+            sb.insert(0, fileHeaders + lineBreak);
+         }
+
+         outputChannel.write(ByteBuffer.wrap(sb.toString().getBytes(Charset.forName(Utils.getDefaultEncoding()))));
+      } catch (final IOException ioe) {
+         throw new ReportingException(String.format("Could not append a report to the file %s.", csvFile.getPath()), ioe);
+      }
    }
 
    /**
@@ -280,17 +379,15 @@ public class CsvDestination implements Destination {
     * @return Instance of this to support fluent API.
     */
    public CsvDestination setPath(final String path) {
-      synchronized (this) {
-         if (csvFile != null) {
-            throw new UnsupportedOperationException("Changing the value of path after opening the destination is not allowed.");
-         }
-         if (outputChannel != null) {
-            try {
-               outputChannel.close();
-               outputChannel = null;
-            } catch (final IOException e) {
-               log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
-            }
+      if (csvFile != null) {
+         throw new UnsupportedOperationException("Changing the value of path after opening the destination is not allowed.");
+      }
+      if (outputChannel != null) {
+         try {
+            outputChannel.close();
+            outputChannel = null;
+         } catch (final IOException e) {
+            log.error(String.format("Could not close file channel with CSV results for file %s.", csvFile), e);
          }
       }
 
@@ -338,6 +435,55 @@ public class CsvDestination implements Destination {
    public CsvDestination setAppendStrategy(final AppendStrategy appendStrategy) {
       this.appendStrategy = appendStrategy;
       return this;
+   }
+
+   /**
+    * Gets the current missing strategy used to write results to the CSV file.
+    *
+    * @return The currently used missing strategy
+    */
+   public MissingStrategy getMissingStrategy() {
+      return missingStrategy;
+   }
+
+   /**
+    * Sets the missing strategy to be used when writing to the CSV file.
+    *
+    * @param missingStrategy
+    *       The missingStrategy value to set.
+    * @return Instance of this to support fluent API.
+    */
+   public CsvDestination setMissingStrategy(final MissingStrategy missingStrategy) {
+      this.missingStrategy = missingStrategy;
+      return this;
+   }
+
+   /**
+    * Gets the exppected attributes that will be written to the CSV file.
+    *
+    * @return The exppected attributes separated by comma.
+    */
+   public String getExpectedAttributes() {
+      return StringUtils.join(expectedAttributes, ",");
+   }
+
+   /**
+    * Sets the exppected attributes that will be written to the CSV file.
+    *
+    * @param expectedAttributes
+    *       The exppected attributes separated by comma.
+    */
+   public void setExpectedAttributes(final String expectedAttributes) {
+      this.expectedAttributes = new ArrayList<>(Arrays.asList(expectedAttributes.split("\\s*,\\s*")));
+   }
+
+   /**
+    * Gets the exppected attributes that will be written to the CSV file as a List.
+    *
+    * @return The attributes list.
+    */
+   public List<String> getExpectedAttributesAsList() {
+      return expectedAttributes;
    }
 
    /**
@@ -448,5 +594,22 @@ public class CsvDestination implements Destination {
        * The measurements are appended to the original file.
        */
       APPEND
+   }
+
+   /**
+    * Determines the strategy for a case that the value of an expected attribute in report to be published is missing.
+    *
+    * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+    */
+   public enum MissingStrategy {
+      /**
+       * The records with the missing values are skipped/ignored.
+       */
+      SKIP,
+
+      /**
+       * The missing values are replaced by <code>null</code> strings in the output.
+       */
+      NULL
    }
 }
