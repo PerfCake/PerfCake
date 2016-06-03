@@ -130,8 +130,6 @@ public class ResponseTimeHistogramTest {
 
       final List<Long> res = new ArrayList<>();
 
-      System.out.println(m.getAll());
-
       m.getAll().forEach((k, v) -> {
          if (k.startsWith("p0.937") || k.startsWith("p0.968") || k.startsWith("p0.984") || k.startsWith("p0.992") || k.startsWith("p0.996") || k.startsWith("p0.998") || k.startsWith("p0.999")) {
             res.add(Long.valueOf((String) v));
@@ -198,6 +196,8 @@ public class ResponseTimeHistogramTest {
       }
 
       rm.stop();
+
+      Thread.sleep(500);
 
       Measurement m = d.getLastMeasurement();
 

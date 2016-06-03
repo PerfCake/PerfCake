@@ -224,6 +224,8 @@ public class HttpSenderTest {
          noPayloadMessage.setProperty(TEST_PROPERTY_NAME, TEST_PROPERTY_VALUE);
 
          response = _sendMessage((HttpSender) ObjectFactory.summonInstance(HttpSender.class.getName(), senderProperties), noPayloadMessage, null);
+
+         Assert.fail("Expected exception was not thrown.");
       } catch (final Exception e) {
          if (e instanceof PerfCakeException) {
             Assert.assertTrue(e.getMessage().contains("unexpected HTTP response code: 500"));
