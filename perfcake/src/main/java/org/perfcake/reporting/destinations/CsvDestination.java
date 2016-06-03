@@ -25,6 +25,7 @@ import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.Utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,8 +36,11 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Appends a {@link org.perfcake.reporting.Measurement} into a CSV file.
@@ -55,6 +59,13 @@ public class CsvDestination implements Destination {
     * The list containing names of results from measurement.
     */
    private final List<String> resultNames = new ArrayList<>();
+
+   /**
+    * A comma separated list of expected attributes, that should be present in measurement to be published.
+    */
+   private List<String> expectedAttributes = new ArrayList<>();
+
+   private boolean attributesExpected = false;
 
    /**
     * Output CSV file path.
@@ -106,6 +117,11 @@ public class CsvDestination implements Destination {
     * was used by a different destination or scenario run before.
     */
    private AppendStrategy appendStrategy = AppendStrategy.RENAME;
+
+   /**
+    * A strategy that determines the destination's behavior for a case that the value of an expected attribute in report to be published is missing.
+    */
+   private MissingStrategy missingStrategy = MissingStrategy.NULL;
 
    @Override
    public void open() {
@@ -160,12 +176,18 @@ public class CsvDestination implements Destination {
    }
 
    private void presetResultNames(final Measurement m) {
-      final Map<String, Object> results = m.getAll();
+      if (expectedAttributes.isEmpty()) {
+         attributesExpected = false;
 
-      for (final String key : results.keySet()) {
-         if (!key.equals(Measurement.DEFAULT_RESULT)) {
-            resultNames.add(key);
+         final Map<String, Object> results = m.getAll();
+         for (final String key : results.keySet()) {
+            if (!key.equals(Measurement.DEFAULT_RESULT)) {
+               resultNames.add(key);
+            }
          }
+      } else {
+         resultNames.addAll(expectedAttributes);
+         attributesExpected = true;
       }
    }
 
@@ -210,6 +232,7 @@ public class CsvDestination implements Destination {
       for (final String resultName : resultNames) {
          sb.append(delimiter);
          currentResult = results.get(resultName);
+
          if (currentResult instanceof Quantity<?>) {
             sb.append(((Quantity<?>) currentResult).getNumber());
          } else {
@@ -232,11 +255,33 @@ public class CsvDestination implements Destination {
          }
       }
 
+      if (attributesExpected) {
+         if (MissingStrategy.SKIP.equals(missingStrategy)) {
+            final Set<String> measurementResults = measurement.getAll().keySet();
+            final List<String> missingAttributes = resultNames.stream().filter(ea -> !measurementResults.contains(ea)).collect(Collectors.toList());
+            if (!missingAttributes.isEmpty()) {
+               if (log.isWarnEnabled()) {
+                  StringBuilder sb = new StringBuilder();
+                  sb.append("Expected attributes are missing from results:\n");
+                  missingAttributes.forEach(s -> {
+                     sb.append(s);
+                     sb.append("\n");
+                  });
+                  sb.append("Skipping the report from appending to the destination.");
+                  log.warn(sb.toString());
+               }
+               return;
+            }
+         }
+      }
+
       final StringBuilder sb = new StringBuilder();
       if (linePrefix != null && !linePrefix.isEmpty()) {
          sb.append(linePrefix);
       }
+
       sb.append(getResultsLine(measurement));
+
       if (lineSuffix != null && !lineSuffix.isEmpty()) {
          sb.append(lineSuffix);
       }
@@ -338,6 +383,55 @@ public class CsvDestination implements Destination {
    public CsvDestination setAppendStrategy(final AppendStrategy appendStrategy) {
       this.appendStrategy = appendStrategy;
       return this;
+   }
+
+   /**
+    * Gets the current missing strategy used to write results to the CSV file.
+    *
+    * @return The currently used missing strategy
+    */
+   public MissingStrategy getMissingStrategy() {
+      return missingStrategy;
+   }
+
+   /**
+    * Sets the missing strategy to be used when writing to the CSV file.
+    *
+    * @param missingStrategy
+    *       The missingStrategy value to set.
+    * @return Instance of this to support fluent API.
+    */
+   public CsvDestination setMissingStrategy(final MissingStrategy missingStrategy) {
+      this.missingStrategy = missingStrategy;
+      return this;
+   }
+
+   /**
+    * Gets the exppected attributes that will be written to the CSV file.
+    *
+    * @return The exppected attributes separated by comma.
+    */
+   public String getExpectedAttributes() {
+      return StringUtils.join(expectedAttributes, ",");
+   }
+
+   /**
+    * Sets the exppected attributes that will be written to the CSV file.
+    *
+    * @param expectedAttributes
+    *       The exppected attributes separated by comma.
+    */
+   public void setExpectedAttributes(final String expectedAttributes) {
+      this.expectedAttributes = new ArrayList<>(Arrays.asList(expectedAttributes.split("\\s*,\\s*")));
+   }
+
+   /**
+    * Gets the exppected attributes that will be written to the CSV file as a List.
+    *
+    * @return The attributes list.
+    */
+   public List<String> getExpectedAttributesAsList() {
+      return expectedAttributes;
    }
 
    /**
@@ -448,5 +542,22 @@ public class CsvDestination implements Destination {
        * The measurements are appended to the original file.
        */
       APPEND
+   }
+
+   /**
+    * Determines the strategy for a case that the value of an expected attribute in report to be published is missing.
+    *
+    * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+    */
+   public enum MissingStrategy {
+      /**
+       * The records with the missing values are skipped/ignored.
+       */
+      SKIP,
+
+      /**
+       * The missing values are replaced by <code>null</code> strings in the output.
+       */
+      NULL
    }
 }
