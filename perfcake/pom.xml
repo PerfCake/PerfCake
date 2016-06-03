@@ -154,6 +154,12 @@
          <artifactId>mqtt-client</artifactId>
       </dependency>
 
+      <!-- CoAP -->
+      <dependency>
+         <groupId>org.eclipse.californium</groupId>
+         <artifactId>californium-core</artifactId>
+      </dependency>
+
       <!-- Commons -->
       <dependency>
          <groupId>org.apache.commons</groupId>

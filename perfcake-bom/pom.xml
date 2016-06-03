@@ -55,6 +55,7 @@
       <maven.project.info.reports.plugin>2.9</maven.project.info.reports.plugin>
       <maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
 
+      <version.californium>1.0.4</version.californium>
       <version.camel>2.16.1</version.camel>
       <version.drools>6.3.0.Final</version.drools>
       <version.groovy>2.4.5</version.groovy>
@@ -178,6 +179,13 @@
             <groupId>org.fusesource.mqtt-client</groupId>
             <artifactId>mqtt-client</artifactId>
             <version>${version.mqtt}</version>
+         </dependency>
+
+         <!-- CoAP -->
+         <dependency>
+            <groupId>org.eclipse.californium</groupId>
+            <artifactId>californium-core</artifactId>
+            <version>1.0.4</version>
          </dependency>
 
          <!-- Commons -->
