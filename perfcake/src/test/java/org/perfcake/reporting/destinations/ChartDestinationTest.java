@@ -84,7 +84,7 @@ public class ChartDestinationTest extends TestSetup {
 
    @Test
    public void basicTest() throws Exception {
-      final String tempDir = TestSetup.createTempDir("test-chart");
+      final String tempDir = TestSetup.createTempDir("test-chart-basic");
       log.info("Created temp directory for chart: " + tempDir);
 
       final ChartDestination cd = new ChartDestination();
