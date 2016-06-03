@@ -25,6 +25,7 @@ import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.ObjectFactory;
+import org.perfcake.util.Utils;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -32,6 +33,7 @@ import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.io.File;
@@ -85,8 +87,8 @@ public class CsvDestinationTest {
          final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          final Measurement measurement = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
-         measurement.set(new Quantity<Double>(1111.11, "it/s"));
-         measurement.set("another", new Quantity<Double>(222.22, "ms"));
+         measurement.set(new Quantity<>(1111.11, "it/s"));
+         measurement.set("another", new Quantity<>(222.22, "ms"));
 
          destination.open();
          destination.report(measurement);
@@ -114,8 +116,8 @@ public class CsvDestinationTest {
          Assert.assertEquals(destination.getDelimiter(), ";");
 
          final Measurement measurement = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
-         measurement.set(new Quantity<Double>(1111.11, "it/s"));
-         measurement.set("another", new Quantity<Double>(222.22, "ms"));
+         measurement.set(new Quantity<>(1111.11, "it/s"));
+         measurement.set("another", new Quantity<>(222.22, "ms"));
 
          destination.open();
          destination.report(measurement);
@@ -188,12 +190,12 @@ public class CsvDestinationTest {
          final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          final Measurement measurement = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
-         measurement.set(new Quantity<Double>(1111.11, "it/s"));
-         measurement.set("another", new Quantity<Double>(222.22, "ms"));
+         measurement.set(new Quantity<>(1111.11, "it/s"));
+         measurement.set("another", new Quantity<>(222.22, "ms"));
 
          final Measurement measurement2 = new Measurement(43, 123457000, ITERATION); // first iteration index is 0
-         measurement2.set(new Quantity<Double>(2222.22, "it/s"));
-         measurement2.set("another", new Quantity<Double>(333.33, "ms"));
+         measurement2.set(new Quantity<>(2222.22, "it/s"));
+         measurement2.set("another", new Quantity<>(333.33, "ms"));
 
          destination.open();
          destination.report(measurement);
@@ -265,8 +267,8 @@ public class CsvDestinationTest {
          final CsvDestination destination = (CsvDestination) ObjectFactory.summonInstance(CsvDestination.class.getName(), destinationProperties);
 
          final Measurement measurement = new Measurement(42, 123456000, ITERATION - 1); // first iteration index is 0
-         measurement.set(new Quantity<Double>(1111.11, "it/s"));
-         measurement.set("another", new Quantity<Double>(222.22, "ms"));
+         measurement.set(new Quantity<>(1111.11, "it/s"));
+         measurement.set("another", new Quantity<>(222.22, "ms"));
 
          destination.open();
          destination.report(measurement);
@@ -510,8 +512,146 @@ public class CsvDestinationTest {
       }
    }
 
+   @DataProvider(name = "wildcards")
+   public Object[][] wildcardsDataProvider() {
+      return new Object[][] {
+            { "param1,param2", "Time;Iterations;Result;param1;param2",
+                  "0:00:01;2;1;10;12\n"
+                  + "0:00:02;3;2;20;null\n"
+                  + "0:00:03;4;3;30;null\n"
+                  + "0:00:04;5;4;null;40\n"
+                  + "0:00:05;6;5;13;50\n"
+                  + "0:00:06;7;6;null;null", CsvDestination.MissingStrategy.NULL },
+            { "param1,param2", "Time;Iterations;Result;param1;param2",
+                  "0:00:01;2;1;10;12\n"
+                  + "0:00:05;6;5;13;50", CsvDestination.MissingStrategy.SKIP },
+            { "param*", "Time;Iterations;Result;param1;param2",
+                  "0:00:01;2;1;10;12\n"
+                  + "0:00:02;3;2;20;null\n"
+                  + "0:00:03;4;3;30;null\n"
+                  + "0:00:04;5;4;null;40\n"
+                  + "0:00:05;6;5;13;50\n"
+                  + "0:00:06;7;6;null;null", CsvDestination.MissingStrategy.NULL },
+            { "param*", "Time;Iterations;Result;param1;param2",
+                  "0:00:01;2;1;10;12\n"
+                  + "0:00:05;6;5;13;50", CsvDestination.MissingStrategy.SKIP },
+            { "param1,param2,warmUp", "Time;Iterations;Result;param1;param2;warmUp",
+                  "0:00:01;2;1;10;12;true\n"
+                  + "0:00:02;3;2;20;null;true\n"
+                  + "0:00:03;4;3;30;null;false\n"
+                  + "0:00:04;5;4;null;40;false\n"
+                  + "0:00:05;6;5;13;50;false\n"
+                  + "0:00:06;7;6;null;null;false", CsvDestination.MissingStrategy.NULL },
+            { "param1,param2,warmUp", "Time;Iterations;Result;param1;param2;warmUp",
+                  "0:00:01;2;1;10;12;true\n"
+                  + "0:00:05;6;5;13;50;false", CsvDestination.MissingStrategy.SKIP },
+            { "param*,warmUp", "Time;Iterations;Result;param1;param2;warmUp",
+                  "0:00:01;2;1;10;12;true\n"
+                  + "0:00:02;3;2;20;null;true\n"
+                  + "0:00:03;4;3;30;null;false\n"
+                  + "0:00:04;5;4;null;40;false\n"
+                  + "0:00:05;6;5;13;50;false\n"
+                  + "0:00:06;7;6;null;null;false", CsvDestination.MissingStrategy.NULL },
+            { "param*,warmUp", "Time;Iterations;Result;param1;param2;warmUp",
+                  "0:00:01;2;1;10;12;true\n"
+                  + "0:00:05;6;5;13;50;false", CsvDestination.MissingStrategy.SKIP },
+            { "*", "Time;Iterations;Result;Result;param1;param2",
+                  "0:00:01;2;1;1;10;12\n"
+                  + "0:00:02;3;2;2;20;null\n"
+                  + "0:00:03;4;3;3;30;null\n"
+                  + "0:00:04;5;4;4;null;40\n"
+                  + "0:00:05;6;5;5;13;50\n"
+                  + "0:00:06;7;6;6;null;null", CsvDestination.MissingStrategy.NULL },
+            { "*", "Time;Iterations;Result;Result;param1;param2",
+                  "0:00:01;2;1;1;10;12\n"
+                  + "0:00:05;6;5;5;13;50", CsvDestination.MissingStrategy.SKIP },
+            { "*,warmUp", "Time;Iterations;Result;Result;param1;param2;warmUp",
+                  "0:00:01;2;1;1;10;12;true\n"
+                  + "0:00:02;3;2;2;20;null;true\n"
+                  + "0:00:03;4;3;3;30;null;false\n"
+                  + "0:00:04;5;4;4;null;40;false\n"
+                  + "0:00:05;6;5;5;13;50;false\n"
+                  + "0:00:06;7;6;6;null;null;false", CsvDestination.MissingStrategy.NULL },
+            { "*,warmUp", "Time;Iterations;Result;Result;param1;param2;warmUp",
+                  "0:00:01;2;1;1;10;12;true\n"
+                  + "0:00:05;6;5;5;13;50;false", CsvDestination.MissingStrategy.SKIP },
+            { "warmUp", "Time;Iterations;Result;warmUp",
+                  "0:00:01;2;1;true\n"
+                  + "0:00:02;3;2;true\n"
+                  + "0:00:03;4;3;false\n"
+                  + "0:00:04;5;4;false\n"
+                  + "0:00:05;6;5;false\n"
+                  + "0:00:06;7;6;false", CsvDestination.MissingStrategy.NULL },
+            { "warmUp", "Time;Iterations;Result;warmUp",
+                  "0:00:01;2;1;true\n"
+                  + "0:00:02;3;2;true\n"
+                  + "0:00:03;4;3;false\n"
+                  + "0:00:04;5;4;false\n"
+                  + "0:00:05;6;5;false\n"
+                  + "0:00:06;7;6;false", CsvDestination.MissingStrategy.SKIP },
+      };
+   }
+
+   @Test(dataProvider = "wildcards")
+   public void testWildcards(final String attributes, final String expectedHeader, final String expectedContent, final CsvDestination.MissingStrategy strategy) throws IOException, ReportingException, InterruptedException {
+      final CsvDestination dest = new CsvDestination();
+      final File outf = File.createTempFile("perfcake", "csvdestination-wildcards");
+      outf.deleteOnExit();
+
+      dest.setPath(outf.getAbsolutePath());
+      dest.setExpectedAttributes(attributes);
+      dest.setMissingStrategy(strategy);
+      dest.setAppendStrategy(CsvDestination.AppendStrategy.OVERWRITE);
+
+      dest.open();
+
+      Measurement m = new Measurement(1, 1000, 1);
+      m.set(1);
+      m.set("param1", 10);
+      m.set("param2", 12);
+      m.set(PerfCakeConst.WARM_UP_TAG, true);
+      dest.report(m);
+
+      m = new Measurement(2, 2000, 2);
+      m.set(2);
+      m.set("param1", 20);
+      m.set(PerfCakeConst.WARM_UP_TAG, true);
+      dest.report(m);
+
+      m = new Measurement(3, 3000, 3);
+      m.set(3);
+      m.set("param1", 30);
+      m.set(PerfCakeConst.WARM_UP_TAG, false);
+      dest.report(m);
+
+      m = new Measurement(4, 4000, 4);
+      m.set(4);
+      m.set("param2", 40);
+      m.set(PerfCakeConst.WARM_UP_TAG, false);
+      dest.report(m);
+
+      m = new Measurement(5, 5000, 5);
+      m.set(5);
+      m.set("param1", 13);
+      m.set("param2", 50);
+      m.set(PerfCakeConst.WARM_UP_TAG, false);
+      dest.report(m);
+
+      m = new Measurement(6, 6000, 6);
+      m.set(6);
+      m.set(PerfCakeConst.WARM_UP_TAG, false);
+      dest.report(m);
+
+      dest.close();
+
+      assertCSVFileContent(outf, expectedHeader + "\n" + expectedContent);
+
+      delete(outf);
+   }
+
+
    private void assertCSVFileContent(final File file, final String expected) {
-      try (Scanner scanner = new Scanner(file).useDelimiter("\\Z")) {
+      try (Scanner scanner = new Scanner(file, Utils.getDefaultEncoding()).useDelimiter("\\Z")) {
          Assert.assertEquals(scanner.next(), expected, "CSV file's content");
       } catch (final FileNotFoundException fnfe) {
          fnfe.printStackTrace();

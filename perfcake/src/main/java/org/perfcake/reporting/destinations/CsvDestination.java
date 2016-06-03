@@ -57,6 +57,11 @@ public class CsvDestination implements Destination {
    private static final Logger log = LogManager.getLogger(CsvDestination.class);
 
    /**
+    * Caching the state of trace logging level to speed up reporting.
+    */
+   private static final boolean logTrace = log.isTraceEnabled();
+
+   /**
     * The list containing names of results from measurement.
     */
    private final List<String> resultNames = new ArrayList<>();
@@ -66,7 +71,10 @@ public class CsvDestination implements Destination {
     */
    private List<String> expectedAttributes = new ArrayList<>();
 
-   private boolean attributesExpected = false;
+   /**
+    * Here we cache the result of expectedAttributes.isEmpty().
+    */
+   private boolean expectedAttributesEmpty = false;
 
    /**
     * Output CSV file path.
@@ -129,6 +137,8 @@ public class CsvDestination implements Destination {
     */
    private boolean dynamicAttributes = false;
 
+   private boolean wasWarmUp = false;
+
    /**
     * Holds the data when the dynamic attributes are used and we cannot stream directly to a file.
     */
@@ -137,10 +147,7 @@ public class CsvDestination implements Destination {
    @Override
    public void open() {
       dynamicAttributes = expectedAttributes.stream().anyMatch(s -> s.endsWith("*"));
-      if (expectedAttributes.contains(PerfCakeConst.WARM_UP_TAG)) {
-         expectedAttributes.remove(PerfCakeConst.WARM_UP_TAG);
-         expectedAttributes.addAll(expectedAttributes.stream().map(attr -> attr + "_" + PerfCakeConst.WARM_UP_TAG).collect(Collectors.toList()));
-      }
+      wasWarmUp = expectedAttributes.contains(PerfCakeConst.WARM_UP_TAG); // this gets removed by dataBuffer, so we'll need to put it back later
 
       csvFile = new File(path);
 
@@ -155,6 +162,11 @@ public class CsvDestination implements Destination {
    public void close() {
       if (dynamicAttributes) {
          expectedAttributes = buffer.getAttributes();
+
+         if (wasWarmUp) {
+            expectedAttributes.add(PerfCakeConst.WARM_UP_TAG);
+         }
+
          openFile();
 
          buffer.replay((measurement) -> {
@@ -163,7 +175,7 @@ public class CsvDestination implements Destination {
             } catch (ReportingException e) {
                log.error("Unable to write all reported data: ", e);
             }
-         });
+         }, false);
       }
 
       closeFile();
@@ -229,25 +241,33 @@ public class CsvDestination implements Destination {
       csvFile = null;
    }
 
-   private void presetResultNames(final Measurement m) {
-      if (expectedAttributes.isEmpty()) {
-         attributesExpected = false;
+   /**
+    * Autocompute the expectedAttributes when theyw ere not specified by the user.
+    *
+    * @param measurement
+    *       A sample measurement to read the attributes from.
+    */
+   private void presetResultNames(final Measurement measurement) {
+      expectedAttributesEmpty = expectedAttributes.isEmpty();
+      if (expectedAttributesEmpty) {
 
-         final Map<String, Object> results = m.getAll();
-         for (final String key : results.keySet()) {
-            if (!key.equals(Measurement.DEFAULT_RESULT)) {
-               resultNames.add(key);
-            }
-         }
+         final Map<String, Object> results = measurement.getAll();
+         resultNames.addAll(results.keySet().stream().filter(key -> !key.equals(Measurement.DEFAULT_RESULT)).collect(Collectors.toList()));
       } else {
          resultNames.addAll(expectedAttributes);
-         attributesExpected = true;
       }
    }
 
-   private String getFileHeaders(final Measurement m) {
+   /**
+    * Gets the CSV result file header based on the attributes in the measurement.
+    *
+    * @param measurement
+    *       The measurement to read the attributes from.
+    * @return The CSV result file header string.
+    */
+   private String getFileHeader(final Measurement measurement) {
       final StringBuilder sb = new StringBuilder();
-      final Object defaultResult = m.get();
+      final Object defaultResult = measurement.get();
 
       sb.append("Time");
       sb.append(delimiter);
@@ -264,14 +284,21 @@ public class CsvDestination implements Destination {
       return sb.toString();
    }
 
-   private String getResultsLine(final Measurement m) {
-      final Object defaultResult = m.get();
-      final Map<String, Object> results = m.getAll();
+   /**
+    * Gets a single CSV result file line based on the measurement.
+    *
+    * @param measurement
+    *       The measurement to be reported in the CSV result file.
+    * @return A new line entry to the CSV result file.
+    */
+   private String getResultsLine(final Measurement measurement) {
+      final Object defaultResult = measurement.get();
+      final Map<String, Object> results = measurement.getAll();
       final StringBuilder sb = new StringBuilder();
 
-      sb.append(Utils.timeToHMS(m.getTime()));
+      sb.append(Utils.timeToHMS(measurement.getTime()));
       sb.append(delimiter);
-      sb.append(m.getIteration() + 1);
+      sb.append(measurement.getIteration() + 1);
 
       if (defaultResult != null) {
          sb.append(delimiter);
@@ -309,23 +336,16 @@ public class CsvDestination implements Destination {
       // make sure the order of columns is consistent
       if (resultNames.isEmpty()) { // performance optimization before we enter the sync. block
          presetResultNames(measurement);
-         fileHeaders = getFileHeaders(measurement);
+         fileHeaders = getFileHeader(measurement);
       }
 
-      if (attributesExpected) {
+      if (!expectedAttributesEmpty) {
          if (MissingStrategy.SKIP.equals(missingStrategy)) {
             final Set<String> measurementResults = measurement.getAll().keySet();
             final List<String> missingAttributes = resultNames.stream().filter(ea -> !measurementResults.contains(ea)).collect(Collectors.toList());
             if (!missingAttributes.isEmpty()) {
-               if (log.isWarnEnabled()) {
-                  StringBuilder sb = new StringBuilder();
-                  sb.append("Expected attributes are missing from results:\n");
-                  missingAttributes.forEach(s -> {
-                     sb.append(s);
-                     sb.append("\n");
-                  });
-                  sb.append("Skipping the report from appending to the destination.");
-                  log.warn(sb.toString());
+               if (logTrace) {
+                  log.trace("Expected attributes " + missingAttributes.toString() + " are missing from results " + measurement.getAll().toString() + ". Skipping this entry.");
                }
                return;
             }
