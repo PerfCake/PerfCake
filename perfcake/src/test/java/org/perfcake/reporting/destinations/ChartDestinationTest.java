@@ -380,7 +380,7 @@ public class ChartDestinationTest extends TestSetup {
       }
       Assert.assertEquals(notNulls, 1);
 
-     // FileUtils.deleteDirectory(tempPath.toFile());
+      FileUtils.deleteDirectory(tempPath.toFile());
    }
 
    @Test(enabled = false) // manual test so far
