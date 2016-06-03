@@ -180,6 +180,7 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertEquals(data.getData().get(0).size(), 5);
 
       try {
+         log.info(data.getData().toString());
          Assert.assertEquals((int) data.getData().get(0).getInteger(0), 1);
          Assert.assertNull(data.getData().get(0).getValue(1));
          Assert.assertNull(data.getData().get(0).getValue(2));
