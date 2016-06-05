@@ -166,16 +166,17 @@ public class ReportManager {
     * Resets the executor of reporting tasks.
     */
    private void resetReportingTasks() {
-      if (reportingTasks != null) {
-         reportingTasks.shutdownNow();
+      final ThreadPoolExecutor oldTasks = reportingTasks;
+      reportingTasks = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+
+      if (oldTasks != null) {
+         oldTasks.shutdownNow();
          try {
-            reportingTasks.awaitTermination(1, TimeUnit.SECONDS);
+            oldTasks.awaitTermination(5, TimeUnit.SECONDS);
          } catch (InterruptedException ie) {
-            log.info("Could not terminate reporting tasks.");
+            log.info("Could not terminate pre-warmup reporting tasks.");
          }
       }
-
-      reportingTasks = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
    }
 
    /**

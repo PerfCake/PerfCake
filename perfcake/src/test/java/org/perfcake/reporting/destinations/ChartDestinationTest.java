@@ -25,13 +25,11 @@ import org.perfcake.TestSetup;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.sender.TestSender;
 import org.perfcake.reporting.Measurement;
-import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.c3chart.C3ChartData;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
-import org.perfcake.util.StringTemplate;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +41,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Random;
@@ -316,7 +313,6 @@ public class ChartDestinationTest extends TestSetup {
       final Random rnd = new Random();
       final Set<String> dynaAttrs = new HashSet<>();
 
-
       for (int i = 1; i < 5; i++) {
          Measurement m = new Measurement(i * 10, System.currentTimeMillis() - base, i);
          m.set(10.3 + rnd.nextDouble());
@@ -404,7 +400,8 @@ public class ChartDestinationTest extends TestSetup {
    /**
     * Derive the chart base name from the path. Works only for directories with a single chart.
     *
-    * @param tempPath Path to the directory with the chart.
+    * @param tempPath
+    *       Path to the directory with the chart.
     * @return The chart's base name.
     */
    private String getBaseName(final Path tempPath, final String content) {
