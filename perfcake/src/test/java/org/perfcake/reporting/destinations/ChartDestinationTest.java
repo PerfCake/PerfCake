@@ -176,11 +176,10 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".json")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".html")).toFile().exists());
 
-      final C3ChartData data = new C3ChartData(getBaseName(dir), dir);
+      final C3ChartData data = new C3ChartData(getBaseName(dir, "perf"), dir);
       Assert.assertEquals(data.getData().get(0).size(), 5);
 
       try {
-         log.info(data.getData().toString());
          Assert.assertEquals((int) data.getData().get(0).getInteger(0), 1);
          Assert.assertNull(data.getData().get(0).getValue(1));
          Assert.assertNull(data.getData().get(0).getValue(2));
@@ -242,7 +241,7 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertTrue(dir.resolve(Paths.get("data", correctGroup + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".js")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", correctGroup + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".html")).toFile().exists());
 
-      final C3ChartData data = new C3ChartData(getBaseName(dir), dir);
+      final C3ChartData data = new C3ChartData(getBaseName(dir, null), dir);
       Assert.assertEquals(data.getData().get(0).size(), 5);
 
       JsonArray array = data.getData().get(0);
@@ -358,7 +357,7 @@ public class ChartDestinationTest extends TestSetup {
 
       verifyBasicFiles(tempPath);
 
-      final C3ChartData data = new C3ChartData(getBaseName(tempPath), tempPath);
+      final C3ChartData data = new C3ChartData(getBaseName(tempPath, null), tempPath);
       Assert.assertEquals(data.getData().size(), 10);
 
       JsonArray array = data.getData().get(0);
@@ -370,8 +369,6 @@ public class ChartDestinationTest extends TestSetup {
       } catch (ClassCastException cce) {
          Assert.fail("Chart array does not contain expected data. Should be [int, double, double, null..., int, null...]. " + cce);
       }
-
-      System.out.println(array);
 
       int notNulls = 0;
       for (int i = 5; i < array.size(); i++) {
@@ -410,8 +407,8 @@ public class ChartDestinationTest extends TestSetup {
     * @param tempPath Path to the directory with the chart.
     * @return The chart's base name.
     */
-   private String getBaseName(final Path tempPath) {
-      String baseName = tempPath.resolve("data").toFile().list()[0];
+   private String getBaseName(final Path tempPath, final String content) {
+      String baseName = tempPath.resolve("data").toFile().list((dir, name) -> content == null || "".equals(content) || name.contains(content))[0];
       baseName = baseName.substring(0, baseName.lastIndexOf("."));
 
       return baseName;
