@@ -181,10 +181,8 @@ public abstract class AbstractReporter implements Reporter {
     */
    @SuppressWarnings({ "unchecked", "rawtypes" })
    private void accumulateResults(final Map<String, Object> results) {
-      for (final Entry<String, Object> entry : results.entrySet()) {
-         final String key = entry.getKey();
-         final Object value = entry.getValue();
-         Accumulator accumulator = accumulatedResults.get(key); //IfAbsentPutWith(key, getAccumulatorFunction, entry);
+      results.forEach((key, value) -> {
+         Accumulator accumulator = accumulatedResults.get(key);
 
          if (accumulator == null) {
             accumulator = getAccumulator(key, value.getClass());
@@ -195,7 +193,7 @@ public abstract class AbstractReporter implements Reporter {
          } else {
             accumulator.add(value);
          }
-      }
+      });
    }
 
    /**
