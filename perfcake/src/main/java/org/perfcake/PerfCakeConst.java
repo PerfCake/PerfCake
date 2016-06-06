@@ -42,14 +42,9 @@ public final class PerfCakeConst {
    public static final String USAGE_HELP = "ScenarioExecution -s <SCENARIO> [-sd <SCENARIOS_DIR>] [-md <MESSAGES_DIR>] [-D<property=value>]*";
 
    /**
-    * Name of the message header that stores message number.
+    * Name of the message header that stores the number of the current iteration.
     */
-   public static final String MESSAGE_NUMBER_HEADER = "PerfCake_Performance_Message_Number";
-
-   /**
-    * Name of the sequence and property placeholder that stores message number. It can be used in message templates.
-    */
-   public static final String MESSAGE_NUMBER_PROPERTY = "MessageNumber";
+   public static final String ITERATION_NUMBER_PROPERTY = "perfcake.iteration.number";
 
    /**
     * Name of the system property that stores name of scenario that is executed.

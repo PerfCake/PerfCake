@@ -44,17 +44,6 @@ public class SequenceManager {
    private Map<String, Sequence> sequences = new HashMap<>();
 
    /**
-    * Gets a default {@link SequenceManager} instance with a default number sequence prepared for message numbering (stored under the key {@link PerfCakeConst#MESSAGE_NUMBER_PROPERTY}).
-    */
-   public SequenceManager() {
-      try {
-         addSequence(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, new PrimitiveNumberSequence());
-      } catch (PerfCakeException e) {
-         log.warn("Cannot initialize default sequences: ", e);
-      }
-   }
-
-   /**
     * Registers a new sequence in the registry.
     *
     * @param name
