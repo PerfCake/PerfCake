@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * Counts of occurrences of individual values in the given message attribute.
@@ -48,7 +49,7 @@ public class ClassifyingReporter extends AbstractReporter {
     */
    private String prefix = "class_";
 
-   private Map<String, AtomicLong> classes = new ConcurrentHashMap<>();
+   private Map<String, LongAdder> classes = new ConcurrentHashMap<>();
 
    @Override
    protected void doReset() {
@@ -62,8 +63,8 @@ public class ClassifyingReporter extends AbstractReporter {
       if (messageAttributes != null && attribute != null) {
          final String attributeClass = messageAttributes.getProperty(attribute);
          if (attributeClass != null) {
-            classes.computeIfAbsent(attributeClass, k -> new AtomicLong(0));
-            classes.get(attributeClass).incrementAndGet();
+            classes.computeIfAbsent(attributeClass, k -> new LongAdder());
+            classes.get(attributeClass).increment();
          }
       }
    }
@@ -73,7 +74,7 @@ public class ClassifyingReporter extends AbstractReporter {
       final Measurement m = newMeasurement();
       publishAccumulatedResult(m);
 
-      classes.forEach((key, value) -> m.set(prefix + key, value.get()));
+      classes.forEach((key, value) -> m.set(prefix + key, value.longValue()));
 
       destination.report(m);
    }
