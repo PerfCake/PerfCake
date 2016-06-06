@@ -43,11 +43,17 @@ public class CoapSender extends AbstractSender {
 
    private boolean isResponseExpected = false;
 
-   // Properties
-   private String username = null;
-   private String password = null;
+   private enum CoapMethod {
+      GET, POST, PUT, DELETE
+   }
 
-   private String requestType = null;
+   private enum CoapRequestType {
+      NON, CON
+   }
+
+   // Properties
+   private CoapRequestType requestType = CoapRequestType.NON;
+   private CoapMethod method = CoapMethod.POST;
 
    @Override
    public void doInit(Properties messageAttributes) throws PerfCakeException {
@@ -61,18 +67,50 @@ public class CoapSender extends AbstractSender {
 
    @Override
    public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit measurementUnit) throws Exception {
-      coapResponse = client.put(message.getPayload().toString(), MediaTypeRegistry.TEXT_PLAIN);
+      switch (method) {
+         case GET:
+            coapResponse = client.get();
+            break;
+         case POST:
+            coapResponse = client.post(message.getPayload().toString(), MediaTypeRegistry.TEXT_PLAIN);
+            break;
+         case PUT:
+            coapResponse = client.put(message.getPayload().toString(), MediaTypeRegistry.TEXT_PLAIN);
+            break;
+         case DELETE:
+            coapResponse = client.delete();
+            break;
+      }
+
       return coapResponse.getResponseText();
    }
 
    @Override
    public void postSend(final Message message) throws Exception {
       super.postSend(message);
-
+      //nop
    }
 
    @Override
    public void doClose() throws PerfCakeException {
+      // nop
+   }
 
+   public CoapMethod getMethod() {
+      return method;
+   }
+
+   public CoapSender setMethod(final CoapMethod method) {
+      this.method = method;
+      return this;
+   }
+
+   public CoapRequestType getRequestType() {
+      return requestType;
+   }
+
+   public CoapSender setRequestType(final CoapRequestType requestType) {
+      this.requestType = requestType;
+      return this;
    }
 }
