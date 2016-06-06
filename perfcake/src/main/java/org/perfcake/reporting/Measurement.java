@@ -148,6 +148,16 @@ public class Measurement {
    }
 
    /**
+    * Puts all the results from the result map into the measurement.
+    *
+    * @param newResults
+    *       New results to be added.
+    */
+   public void setAll(Map<String, Object> newResults) {
+      results.putAll(newResults);
+   }
+
+   /**
     * Puts the default result in the result map. The default value is placed in the result map
     * under {@link org.perfcake.reporting.Measurement#DEFAULT_RESULT} key.
     *

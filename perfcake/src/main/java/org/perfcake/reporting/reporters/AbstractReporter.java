@@ -168,9 +168,7 @@ public abstract class AbstractReporter implements Reporter {
     *       The {@link org.perfcake.reporting.Measurement} to be filled with the results.
     */
    protected void publishAccumulatedResult(final Measurement measurement) {
-      for (final Entry<String, Accumulator> entry : accumulatedResults.entrySet()) {
-         measurement.set(entry.getKey(), entry.getValue().getResult());
-      }
+      accumulatedResults.forEach((key, value) -> measurement.set(key, value.getResult()));
    }
 
    /**
@@ -182,16 +180,18 @@ public abstract class AbstractReporter implements Reporter {
    @SuppressWarnings({ "unchecked", "rawtypes" })
    private void accumulateResults(final Map<String, Object> results) {
       results.forEach((key, value) -> {
-         Accumulator accumulator = accumulatedResults.get(key);
+         if (!PerfCakeConst.ATTRIBUTES_TAG.equals(key)) { // we don't want to accumulate attributes
+            Accumulator accumulator = accumulatedResults.get(key);
 
-         if (accumulator == null) {
-            accumulator = getAccumulator(key, value.getClass());
-            if (accumulator != null) {
+            if (accumulator == null) {
+               accumulator = getAccumulator(key, value.getClass());
+               if (accumulator != null) {
+                  accumulator.add(value);
+                  accumulatedResults.put(key, accumulator);
+               }
+            } else {
                accumulator.add(value);
-               accumulatedResults.put(key, accumulator);
             }
-         } else {
-            accumulator.add(value);
          }
       });
    }
@@ -211,6 +211,8 @@ public abstract class AbstractReporter implements Reporter {
    protected Accumulator getAccumulator(final String key, final Class clazz) {
       if (PerfCakeConst.FAILURES_TAG.equals(key)) {
          return new SumLongAccumulator();
+      } else if (PerfCakeConst.ATTRIBUTES_TAG.equals(key)) {
+         return null; // we do not want to accumulate attributes
       }
 
       return new LastValueAccumulator();

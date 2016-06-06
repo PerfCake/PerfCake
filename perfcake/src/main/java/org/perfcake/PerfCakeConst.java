@@ -142,6 +142,11 @@ public final class PerfCakeConst {
    public static final String FAILURES_TAG = "failures";
 
    /**
+    * Result name of message attributes stored in the measurement unit.
+    */
+   public static final String ATTRIBUTES_TAG = "attrbutes";
+
+   /**
     * Result name the number of threads.
     */
    public static final String THREADS_TAG = "Threads";

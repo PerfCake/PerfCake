@@ -159,9 +159,9 @@ class SenderTask implements Runnable {
 
          if (mu != null) {
             mu.setEnqueueTime(enqueueTime);
-            // only set numbering to headers if it is enabled, later there is no change to
-            // filter out the headers before sending
+
             if (messageAttributes != null) {
+               mu.appendResult(PerfCakeConst.ATTRIBUTES_TAG, messageAttributes);
                messageAttributes.put(PerfCakeConst.ITERATION_NUMBER_PROPERTY, String.valueOf(mu.getIteration()));
             }
 
