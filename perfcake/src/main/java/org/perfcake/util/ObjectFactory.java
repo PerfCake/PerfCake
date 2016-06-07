@@ -199,7 +199,8 @@ public class ObjectFactory {
          final ClassLoader currentClassLoader = ObjectFactory.class.getClassLoader();
          final String pluginsDirProp = Utils.getProperty(PerfCakeConst.PLUGINS_DIR_PROPERTY);
          if (pluginsDirProp == null) {
-            return currentClassLoader;
+            pluginClassLoader = currentClassLoader;
+            return pluginClassLoader;
          }
 
          final File pluginsDir = new File(pluginsDirProp);
@@ -209,11 +210,13 @@ public class ObjectFactory {
             if (log.isWarnEnabled()) {
                log.warn("Plugin directory (" + pluginsDir + ") is invalid. Skipping plugins loading.");
             }
-            return currentClassLoader;
+            pluginClassLoader = currentClassLoader;
+            return pluginClassLoader;
          }
 
          if (plugins.length == 0) {
-            return currentClassLoader;
+            pluginClassLoader = currentClassLoader;
+            return pluginClassLoader;
          }
 
          for (final File f : plugins) {
