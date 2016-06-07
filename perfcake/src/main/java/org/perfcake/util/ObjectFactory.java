@@ -129,7 +129,7 @@ public class ObjectFactory {
                beanUtilsBean.getProperty(object, entry.getKey().toString());
             } catch (ReflectiveOperationException reo) {
                log.warn(String.format("It was not possible to reliably configure property %s on class %s. "
-                     + "You may have a mistake in the scenario, or the class does not allow reading of the property.",
+                           + "You may have a mistake in the scenario, or the class does not allow reading of the property.",
                      entry.getKey().toString(), object.getClass().getCanonicalName()));
             }
          }
@@ -205,12 +205,19 @@ public class ObjectFactory {
          final File pluginsDir = new File(pluginsDirProp);
          final File[] plugins = pluginsDir.listFiles(new FileExtensionFilter(".jar"));
 
-         for (final File f: plugins) {
-            log.info("Recognized plugin library " + f.getName());
+         if (plugins == null) {
+            if (log.isWarnEnabled()) {
+               log.warn("Plugin directory (" + pluginsDir + ") is invalid. Skipping plugins loading.");
+            }
+            return currentClassLoader;
          }
 
          if (plugins.length == 0) {
             return currentClassLoader;
+         }
+
+         for (final File f : plugins) {
+            log.info("Recognized plugin library " + f.getName());
          }
 
          final URL[] pluginURLs = new URL[plugins.length];
