@@ -24,10 +24,13 @@ import org.perfcake.PerfCakeConst;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * A result of the smallest measurement unit - an iteration.
@@ -310,4 +313,102 @@ public class MeasurementUnit implements Serializable {
             ", timeStarted=" + timeStarted +
             ']';
    }
+
+   public void writeObject(ObjectOutputStream oos) throws IOException {
+      oos.writeLong(iteration);
+      oos.writeLong(startTime);
+      oos.writeLong(stopTime);
+      oos.writeLong(timeStarted);
+      oos.writeLong(enqueueTime);
+      oos.writeDouble(totalTime);
+
+      // write FAILURES_TAG
+      final Long failures = (Long) measurementResults.get(PerfCakeConst.FAILURES_TAG);
+      oos.writeLong(failures == null ? 0 : failures);
+
+      // write all reasults from the map except for FAILURES_TAG and properties under ATTRIBUTES_TAG
+      oos.writeInt(measurementResults.size() - (measurementResults.get(PerfCakeConst.ATTRIBUTES_TAG) != null ? 1 : 0)
+            - (failures != null ? 1 : 0));
+      measurementResults.forEach((key, value) -> {
+         if (!PerfCakeConst.ATTRIBUTES_TAG.equals(key) && !PerfCakeConst.FAILURES_TAG.equals(key)) {
+            try {
+               oos.writeUTF(key);
+               oos.writeObject(value);
+            } catch (IOException e) {
+               log.warn("Unable to serialize Measurement Unit: ", e);
+            }
+         }
+      });
+
+      // write properties under ATTRIBUTES_TAG
+      final Properties props = (Properties) measurementResults.get(PerfCakeConst.ATTRIBUTES_TAG);
+      if (props == null) {
+         oos.writeInt(0);
+      } else {
+
+         //write iteration number in the attributes
+         final String iteration = props.getProperty(PerfCakeConst.ITERATION_NUMBER_PROPERTY);
+         oos.writeLong(iteration == null ? 0 : Long.valueOf(iteration));
+
+         // write all remaining attributes
+         oos.writeInt(props.size() - (iteration != null ? 1 : 0));
+         props.forEach((key, value) -> {
+            if (!PerfCakeConst.ITERATION_NUMBER_PROPERTY.equals(key)) {
+               try {
+                  oos.writeUTF((String) key);
+                  oos.writeUTF((String) value);
+               } catch (IOException e) {
+                  log.warn("Unable to serialize Measurement Unit: ", e);
+               }
+            }
+         });
+      }
+
+      // write exception if it is stored
+      oos.writeInt(failure == null ? 0 : 1);
+      if (failure != null) {
+         oos.writeObject(failure);
+      }
+   }
+
+  /* public void writeExternal(ObjectOutput out) throws IOException {
+      out.writeLong(iteration);
+      out.writeLong(startTime);
+      out.writeLong(stopTime);
+      out.writeLong(timeStarted);
+      out.writeLong(enqueueTime);
+      out.writeDouble(totalTime);
+      out.writeInt(measurementResults.size());
+      measurementResults.forEach((key, value) -> {
+         try {
+            out.writeUTF(key);
+            out.writeObject(value);
+         } catch (IOException e) {
+            log.warn("Unable to serialize Measurement Unit: ", e);
+         }
+      });
+      out.writeInt(failure == null ? 0 : 1);
+      if (failure != null) {
+         out.writeObject(failure);
+      }
+   }
+
+   public void readExternal(ObjectInput in) throws ClassNotFoundException, IOException {
+      iteration = in.readLong();
+      startTime = in.readLong();
+      stopTime = in.readLong();
+      timeStarted = in.readLong();
+      enqueueTime = in.readLong();
+      totalTime = in.readDouble();
+
+      final int entries = in.readInt();
+      for (int i = 0; i < entries; i++) {
+         measurementResults.put(in.readUTF(), in.readObject());
+      }
+
+      final int isFailure = in.readInt();
+      if (isFailure > 0) {
+         failure = (Exception) in.readObject();
+      }
+   }*/
 }

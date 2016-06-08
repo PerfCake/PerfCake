@@ -103,7 +103,8 @@ public class RawReporter extends AbstractReporter {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             final ObjectOutputStream oos = new ObjectOutputStream(baos);
       ) {
-         oos.writeObject(measurementUnit);
+         measurementUnit.writeObject(oos);
+         //oos.writeObject(measurementUnit);
          oos.flush();
 
          final byte[] bytes = baos.toByteArray();
