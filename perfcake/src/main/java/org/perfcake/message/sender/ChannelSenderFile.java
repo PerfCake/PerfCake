@@ -38,6 +38,7 @@ import java.util.Properties;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ChannelSenderFile extends ChannelSender {
+
    /**
     * Sender's fileChannel
     */
