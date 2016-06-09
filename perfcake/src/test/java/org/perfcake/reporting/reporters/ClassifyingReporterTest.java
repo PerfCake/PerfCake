@@ -44,6 +44,7 @@ public class ClassifyingReporterTest extends TestSetup {
       scenario.run();
       Thread.sleep(1000); // make sure all values are reported
       scenario.close();
+      Thread.sleep(500); // make sure all values are reported
 
       final ScenarioRetractor scenarioRetractor = new ScenarioRetractor(scenario);
       final DummyDestination dummyDestination = (DummyDestination) scenarioRetractor.getReportManager().getReporters().iterator().next().getDestinations().iterator().next();

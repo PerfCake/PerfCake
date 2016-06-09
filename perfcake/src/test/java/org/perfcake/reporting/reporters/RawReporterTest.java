@@ -21,8 +21,10 @@ package org.perfcake.reporting.reporters;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.TestSetup;
+import org.perfcake.scenario.ReplayResults;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
+import org.perfcake.scenario.ScenarioRetractor;
 
 import org.testng.annotations.Test;
 
@@ -34,18 +36,26 @@ import java.io.IOException;
  */
 public class RawReporterTest extends TestSetup {
 
-   @Test(enabled = false)
+   @Test(enabled = true)
    public void rawReporterBasicTest() throws PerfCakeException, InterruptedException, IOException {
       final File outputFile = File.createTempFile("perfcake", ".raw");
       System.setProperty("output.file", outputFile.getAbsolutePath());
-      outputFile.deleteOnExit();
+      //outputFile.deleteOnExit();
       System.out.println(outputFile.getAbsolutePath());
 
       final Scenario scenario = ScenarioLoader.load("test-raw");
+
+      ScenarioRetractor sr = new ScenarioRetractor(scenario);
+      sr.getReportManager();
 
       scenario.init();
       scenario.run();
       Thread.sleep(500);
       scenario.close();
+
+      final Scenario scenarioCopy = ScenarioLoader.load("test-raw-replay");
+      final ReplayResults replay = new ReplayResults(scenarioCopy, outputFile.getAbsolutePath());
+      replay.replay();
+      replay.close();
    }
 }

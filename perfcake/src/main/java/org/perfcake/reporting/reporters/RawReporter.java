@@ -35,7 +35,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.AsynchronousFileChannel;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * Streams all recorded {@link org.perfcake.reporting.MeasurementUnit MesurementUnits} to a file for later replay.
@@ -59,6 +65,12 @@ public class RawReporter extends AbstractReporter {
     */
    private final AtomicLong filePointer = new AtomicLong(0L);
 
+   private List<Future<Integer>> fileOperations = new LinkedList<>();
+
+   private int gcCounter = 0;
+
+   private static Semaphore gcSemaphore = new Semaphore(1);
+
    /**
     * Output file.
     */
@@ -76,6 +88,13 @@ public class RawReporter extends AbstractReporter {
    public void stop() {
       if (fileChannel != null && fileChannel.isOpen()) {
          try {
+            fileOperations.stream().forEach(fo -> {
+               try {
+                  fo.get();
+               } catch (Exception e) {
+                  log.warn("Unable to complete file operation: ", e);
+               }
+            });
             fileChannel.close();
          } catch (IOException e) {
             log.warn("Unable to close file channel with results: ", e);
@@ -103,16 +122,37 @@ public class RawReporter extends AbstractReporter {
             final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             final ObjectOutputStream oos = new ObjectOutputStream(baos);
       ) {
-         measurementUnit.writeObject(oos);
-         //oos.writeObject(measurementUnit);
+         measurementUnit.streamOut(oos);
          oos.flush();
 
          final byte[] bytes = baos.toByteArray();
-         final ByteBuffer bb = ByteBuffer.wrap(baos.toByteArray());
-
-         fileChannel.write(ByteBuffer.wrap(baos.toByteArray()), filePointer.getAndAdd(bytes.length));
+         enqueueFileOperation(fileChannel.write(ByteBuffer.wrap(bytes), filePointer.getAndAdd(bytes.length)));
       } catch (IOException e) {
          throw new ReportingException("Unable to report to raw reporter. Cannot write to the output file: ", e);
+      }
+   }
+
+   private void enqueueFileOperation(final Future<Integer> fileOperation) {
+      fileOperations.add(fileOperation);
+
+      // perform garbage collection of completed file operations
+      if (gcCounter++ > 1000) {
+         gcCounter = 0;
+
+         try {
+            gcSemaphore.acquire();
+            List<Future<Integer>> newFileOperations = new LinkedList<>();
+            fileOperations.stream().forEach(fo -> {
+               if (!fo.isDone()) {
+                  newFileOperations.add(fo);
+               }
+            });
+            fileOperations = newFileOperations;
+         } catch (InterruptedException ie) {
+            // nothing happened, we will give it one more try
+         } finally {
+            gcSemaphore.release();
+         }
       }
    }
 

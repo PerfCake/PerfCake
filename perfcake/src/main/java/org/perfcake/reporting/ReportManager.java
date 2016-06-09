@@ -45,8 +45,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class ReportManager {
 
+   /**
+    * Logger of the class.
+    */
    private static final Logger log = LogManager.getLogger(ReportManager.class);
 
+   /**
+    * Signaling the time based reporting thread to reset the recorded last reported times and start from scratch.
+    */
    private volatile boolean resetLastTimes = false;
 
    /**
@@ -103,6 +109,15 @@ public class ReportManager {
       for (final Reporter r : reporters) {
          r.setRunInfo(runInfo);
       }
+   }
+
+   /**
+    * Gets {@link RunInfo} associated with this reporter.
+    *
+    * @return The {@link RunInfo} associated with this reporter.
+    */
+   public RunInfo getRunInfo() {
+      return runInfo;
    }
 
    /**

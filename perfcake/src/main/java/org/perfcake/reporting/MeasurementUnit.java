@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collections;
@@ -154,6 +155,24 @@ public class MeasurementUnit implements Serializable {
     */
    public double getTotalTime() {
       return totalTime;
+   }
+
+   /**
+    * Gets the start time of the measurement in nanoseconds.
+    *
+    * @return The start time of the measurement in nanoseconds.
+    */
+   public long getStartTime() {
+      return startTime;
+   }
+
+   /**
+    * Gets the stop time of the measurement in nanoseconds.
+    *
+    * @return The stop time of the measurement in nanoseconds.
+    */
+   public long getStopTime() {
+      return stopTime;
    }
 
    /**
@@ -314,7 +333,13 @@ public class MeasurementUnit implements Serializable {
             ']';
    }
 
-   public void writeObject(ObjectOutputStream oos) throws IOException {
+   /**
+    * Writes this instance into output stream with a minimum data needed. This serves for easy transfer of serialized Mesurement Units.
+    *
+    * @param oos Stream to write the data to.
+    * @throws IOException When there was an error writing the data.
+    */
+   public void streamOut(ObjectOutputStream oos) throws IOException {
       oos.writeLong(iteration);
       oos.writeLong(startTime);
       oos.writeLong(stopTime);
@@ -326,7 +351,7 @@ public class MeasurementUnit implements Serializable {
       final Long failures = (Long) measurementResults.get(PerfCakeConst.FAILURES_TAG);
       oos.writeLong(failures == null ? 0 : failures);
 
-      // write all reasults from the map except for FAILURES_TAG and properties under ATTRIBUTES_TAG
+      // write all results from the map except for FAILURES_TAG and properties under ATTRIBUTES_TAG
       oos.writeInt(measurementResults.size() - (measurementResults.get(PerfCakeConst.ATTRIBUTES_TAG) != null ? 1 : 0)
             - (failures != null ? 1 : 0));
       measurementResults.forEach((key, value) -> {
@@ -343,6 +368,7 @@ public class MeasurementUnit implements Serializable {
       // write properties under ATTRIBUTES_TAG
       final Properties props = (Properties) measurementResults.get(PerfCakeConst.ATTRIBUTES_TAG);
       if (props == null) {
+         oos.writeLong(0);
          oos.writeInt(0);
       } else {
 
@@ -371,44 +397,42 @@ public class MeasurementUnit implements Serializable {
       }
    }
 
-  /* public void writeExternal(ObjectOutput out) throws IOException {
-      out.writeLong(iteration);
-      out.writeLong(startTime);
-      out.writeLong(stopTime);
-      out.writeLong(timeStarted);
-      out.writeLong(enqueueTime);
-      out.writeDouble(totalTime);
-      out.writeInt(measurementResults.size());
-      measurementResults.forEach((key, value) -> {
-         try {
-            out.writeUTF(key);
-            out.writeObject(value);
-         } catch (IOException e) {
-            log.warn("Unable to serialize Measurement Unit: ", e);
-         }
-      });
-      out.writeInt(failure == null ? 0 : 1);
-      if (failure != null) {
-         out.writeObject(failure);
+   /**
+    * Reads the minimalistic serialization of Measurement Unit from the input stream.
+    * @param in THe stream to read the object data from.
+    * @throws ClassNotFoundException When it is not possible to restore an unknown class from the data.
+    * @throws IOException When there was an I/O error reading data.
+    */
+   public static MeasurementUnit streamIn(ObjectInputStream in) throws ClassNotFoundException, IOException {
+      final MeasurementUnit mu = new MeasurementUnit(in.readLong());
+      mu.startTime = in.readLong();
+      mu.stopTime = in.readLong();
+      mu.timeStarted = in.readLong();
+      mu.enqueueTime = in.readLong();
+      mu.totalTime = in.readDouble();
+
+      mu.measurementResults.put(PerfCakeConst.FAILURES_TAG, in.readLong());
+
+      int size = in.readInt();
+      for (int i = 0; i < size; i++) {
+         mu.measurementResults.put(in.readUTF(), in.readObject());
       }
-   }
 
-   public void readExternal(ObjectInput in) throws ClassNotFoundException, IOException {
-      iteration = in.readLong();
-      startTime = in.readLong();
-      stopTime = in.readLong();
-      timeStarted = in.readLong();
-      enqueueTime = in.readLong();
-      totalTime = in.readDouble();
+      final Properties props = new Properties();
+      mu.measurementResults.put(PerfCakeConst.ATTRIBUTES_TAG, props);
 
-      final int entries = in.readInt();
-      for (int i = 0; i < entries; i++) {
-         measurementResults.put(in.readUTF(), in.readObject());
+      props.setProperty(PerfCakeConst.ITERATION_NUMBER_PROPERTY, String.valueOf(in.readLong()));
+
+      size = in.readInt();
+      for (int i = 0; i < size; i++) {
+         props.setProperty(in.readUTF(), in.readUTF());
       }
 
       final int isFailure = in.readInt();
       if (isFailure > 0) {
-         failure = (Exception) in.readObject();
+         mu.failure = (Exception) in.readObject();
       }
-   }*/
+
+      return mu;
+   }
 }

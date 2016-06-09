@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:7.0">
-   <run type="iteration" value="100000"/>
-   <generator class="DefaultMessageGenerator" threads="10"/>
-   <sender class="TestSender" />
+   <run type="iteration" value="1"/>
+   <generator class="DefaultMessageGenerator" threads="1"/>
+   <sender class="TestSender">
+   	  <property name="delay" value="1" />
+   </sender>
    <reporting>
       <reporter class="RawReporter">
          <property name="outputFile" value="${output.file}" />
