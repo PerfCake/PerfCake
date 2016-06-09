@@ -164,6 +164,7 @@ class SenderTask implements Runnable {
                mu.appendResult(PerfCakeConst.ATTRIBUTES_TAG, messageAttributes);
                messageAttributes.put(PerfCakeConst.ITERATION_NUMBER_PROPERTY, String.valueOf(mu.getIteration()));
             }
+            mu.appendResult(PerfCakeConst.THREADS_TAG, reportManager.getRunInfo().getThreads());
 
             sender = senderManager.acquireSender();
 

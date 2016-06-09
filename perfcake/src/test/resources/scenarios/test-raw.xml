@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:7.0">
-   <run type="iteration" value="1"/>
-   <generator class="DefaultMessageGenerator" threads="1"/>
+   <run type="iteration" value="5000"/>
+   <generator class="DefaultMessageGenerator" threads="10"/>
    <sender class="TestSender">
    	  <property name="delay" value="1" />
    </sender>

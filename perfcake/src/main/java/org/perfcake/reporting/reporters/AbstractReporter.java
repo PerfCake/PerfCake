@@ -140,7 +140,6 @@ public abstract class AbstractReporter implements Reporter {
       final Long iterations = maxIteration.getResult();
       final Measurement measurement = new Measurement(Math.round(runInfo.getPercentage(iterations)), runInfo.getRunTime(), iterations);
       measurement.set(PerfCakeConst.WARM_UP_TAG, runInfo.hasTag(PerfCakeConst.WARM_UP_TAG));
-      measurement.set(PerfCakeConst.THREADS_TAG, runInfo.getThreads());
       return measurement;
    }
 

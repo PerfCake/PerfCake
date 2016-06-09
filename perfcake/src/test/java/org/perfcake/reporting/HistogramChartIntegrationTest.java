@@ -88,6 +88,7 @@ public class HistogramChartIntegrationTest extends TestSetup {
       while (ri.isRunning()) {
          FakeMeasurementUnit mu = new FakeMeasurementUnit(ri.getNextIteration());
          mu.setTime(rnd.nextInt(10000) > 9990 ? rnd.nextInt(10) + 6 : 2);
+         mu.appendResult(PerfCakeConst.THREADS_TAG, "10");
 
          if (ri.getIteration() == 4000 && ri.hasTag(PerfCakeConst.WARM_UP_TAG)) {
             ri.removeTag(PerfCakeConst.WARM_UP_TAG);

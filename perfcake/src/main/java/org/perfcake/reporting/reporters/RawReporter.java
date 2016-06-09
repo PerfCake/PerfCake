@@ -28,20 +28,9 @@ import org.perfcake.reporting.destinations.Destination;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.nio.ByteBuffer;
-import java.nio.channels.AsynchronousFileChannel;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
 /**
  * Streams all recorded {@link org.perfcake.reporting.MeasurementUnit MesurementUnits} to a file for later replay.
@@ -58,18 +47,9 @@ public class RawReporter extends AbstractReporter {
    /**
     * Channel to store data.
     */
-   private AsynchronousFileChannel fileChannel;
+   private FileOutputStream fileOutputStream;
 
-   /**
-    * Keeps the position of the next write to the file.
-    */
-   private final AtomicLong filePointer = new AtomicLong(0L);
-
-   private List<Future<Integer>> fileOperations = new LinkedList<>();
-
-   private int gcCounter = 0;
-
-   private static Semaphore gcSemaphore = new Semaphore(1);
+   private ObjectOutputStream outputStream;
 
    /**
     * Output file.
@@ -86,18 +66,12 @@ public class RawReporter extends AbstractReporter {
 
    @Override
    public void stop() {
-      if (fileChannel != null && fileChannel.isOpen()) {
+      if (outputStream != null) {
          try {
-            fileOperations.stream().forEach(fo -> {
-               try {
-                  fo.get();
-               } catch (Exception e) {
-                  log.warn("Unable to complete file operation: ", e);
-               }
-            });
-            fileChannel.close();
+            outputStream.flush();
+            outputStream.close();
          } catch (IOException e) {
-            log.warn("Unable to close file channel with results: ", e);
+            log.warn("Unable to close the file with results: ", e);
          }
       }
    }
@@ -107,10 +81,8 @@ public class RawReporter extends AbstractReporter {
       stop();
 
       try {
-         synchronized (filePointer) {
-            fileChannel = AsynchronousFileChannel.open(Paths.get(outputFile), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.WRITE);
-            filePointer.set(0);
-         }
+         fileOutputStream = new FileOutputStream(outputFile);
+         outputStream = new ObjectOutputStream(fileOutputStream);
       } catch (IOException e) {
          log.error("Unable to open file for writing results. No results will be written: ", e);
       }
@@ -118,41 +90,11 @@ public class RawReporter extends AbstractReporter {
 
    @Override
    protected void doReport(final MeasurementUnit measurementUnit) throws ReportingException {
-      try (
-            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            final ObjectOutputStream oos = new ObjectOutputStream(baos);
-      ) {
-         measurementUnit.streamOut(oos);
-         oos.flush();
-
-         final byte[] bytes = baos.toByteArray();
-         enqueueFileOperation(fileChannel.write(ByteBuffer.wrap(bytes), filePointer.getAndAdd(bytes.length)));
+      try {
+         measurementUnit.streamOut(outputStream);
+         outputStream.flush();
       } catch (IOException e) {
          throw new ReportingException("Unable to report to raw reporter. Cannot write to the output file: ", e);
-      }
-   }
-
-   private void enqueueFileOperation(final Future<Integer> fileOperation) {
-      fileOperations.add(fileOperation);
-
-      // perform garbage collection of completed file operations
-      if (gcCounter++ > 1000) {
-         gcCounter = 0;
-
-         try {
-            gcSemaphore.acquire();
-            List<Future<Integer>> newFileOperations = new LinkedList<>();
-            fileOperations.stream().forEach(fo -> {
-               if (!fo.isDone()) {
-                  newFileOperations.add(fo);
-               }
-            });
-            fileOperations = newFileOperations;
-         } catch (InterruptedException ie) {
-            // nothing happened, we will give it one more try
-         } finally {
-            gcSemaphore.release();
-         }
       }
    }
 

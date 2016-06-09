@@ -30,7 +30,6 @@ import org.perfcake.reporting.reporters.Reporter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.ByteArrayInputStream;
 import java.io.Closeable;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -61,6 +60,8 @@ public class ReplayResults implements Closeable {
       reportManager = scenario.getReportManager();
       runInfo = reportManager.getRunInfo();
 
+      // provide our own ReplayRunInfo
+
       reportManager.getReporters().forEach(reporter -> {
          final Map<Destination, Long> lastTimes = new HashMap<>();
          reportLastTimes.put(reporter, lastTimes);
@@ -73,14 +74,14 @@ public class ReplayResults implements Closeable {
    }
 
    public void replay() throws IOException {
-      while (inputStream.available() > 0) {
-         try (
+      try (
             final ObjectInputStream ois = new ObjectInputStream(inputStream);
-         ) {
+      ) {
+         while (inputStream.available() > 0) {
             report(MeasurementUnit.streamIn(ois));
-         } catch (ClassNotFoundException cnfe) {
-            throw new IOException("Unknown class in the recorded data. Make sure all the plugins are loaded that were used during recording: ", cnfe);
          }
+      } catch (ClassNotFoundException cnfe) {
+         throw new IOException("Unknown class in the recorded data. Make sure all the plugins are loaded that were used during recording: ", cnfe);
       }
    }
 

@@ -155,6 +155,7 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
    @Override
    public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
       final Measurement m = newMeasurement();
+      publishAccumulatedResult(m);
 
       PercentileIterator pi;
 

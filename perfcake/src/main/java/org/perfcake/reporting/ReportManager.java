@@ -357,12 +357,21 @@ public class ReportManager {
    }
 
    /**
+    * Gets the number of reporting tasks in the queue awaiting to be processed.
+    *
+    * @return The number of reporting tasks in the queue awaiting to be processed.
+    */
+   private long getTasksInQueue() {
+      return reportingTasks.getTaskCount() - reportingTasks.getCompletedTaskCount();
+   }
+
+   /**
     * Shutdowns reporting task thread and waits for the reporting tasks to be finished.
     */
    private void waitForReportingTasks() {
       // in case of time bound execution, we do not want to see any more results
       if (runInfo.getDuration().getPeriodType() == PeriodType.TIME) {
-         int lastTasks = 0, tasks = reportingTasks.getQueue().size();
+         long lastTasks = 0, tasks = getTasksInQueue();
 
          reportingTasks.shutdown();
 
@@ -375,12 +384,12 @@ public class ReportManager {
                // no problem
             }
 
-            tasks = reportingTasks.getQueue().size();
+            tasks = getTasksInQueue();
          }
 
          reportingTasks = null;
       } else {
-         while (reportingTasks.getQueue().size() > 0) {
+         while (getTasksInQueue() > 0) {
             try {
                Thread.sleep(1000);
             } catch (InterruptedException ie) {
