@@ -57,7 +57,7 @@ public class ClassifyingReporterTest extends TestSetup {
          }
       });
 
-      Assert.assertTrue(sum.longValue() > 99_990);
+      Assert.assertEquals(sum.longValue(), 100_000);
       Assert.assertEquals(threads.longValue(), 10);
    }
 

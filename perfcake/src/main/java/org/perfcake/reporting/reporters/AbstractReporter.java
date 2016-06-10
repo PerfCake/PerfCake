@@ -31,7 +31,6 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.accumulators.Accumulator;
 import org.perfcake.reporting.reporters.accumulators.LastValueAccumulator;
-import org.perfcake.reporting.reporters.accumulators.MaxLongValueAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SumLongAccumulator;
 
 import org.apache.logging.log4j.LogManager;
@@ -40,9 +39,9 @@ import org.apache.logging.log4j.Logger;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.stream.Collectors;
 
 /**
@@ -74,11 +73,6 @@ public abstract class AbstractReporter implements Reporter {
    protected RunInfo runInfo = null;
 
    /**
-    * Remembers the maximal value of observed MeasurementUnits.
-    */
-   private final MaxLongValueAccumulator maxIteration = new MaxLongValueAccumulator();
-
-   /**
     * Remembers the last observed percentage state of the measurement run. This is used to report change to this value only once.
     */
    private long lastPercentage = -1L;
@@ -90,6 +84,11 @@ public abstract class AbstractReporter implements Reporter {
    private Map<String, Accumulator> accumulatedResults = new ConcurrentHashMap<>();
 
    /**
+    * The count of reported iterations.
+    */
+   private LongAdder iterationCounter = new LongAdder();
+
+   /**
     * Reports a single {@link org.perfcake.reporting.MeasurementUnit} to this reporter. This calls {@link #doReport(MeasurementUnit)} overridden by a child, accumulates results and reports iteration change and percentage change (if any).
     */
    @Override
@@ -98,15 +97,15 @@ public abstract class AbstractReporter implements Reporter {
          throw new ReportingException("RunInfo has not been set for this reporter.");
       }
 
-      reportIterationNumber(measurementUnit.getIteration(), measurementUnit);
+      reportIterationNumber(measurementUnit);
 
       doReport(measurementUnit);
 
       accumulateResults(measurementUnit.getResults());
 
-      reportIterations(measurementUnit.getIteration());
+      reportIterations(iterationCounter.longValue());
 
-      reportAllPercentage((long) Math.floor(runInfo.getPercentage(measurementUnit.getIteration())));
+      reportAllPercentage((long) Math.floor(runInfo.getPercentage(iterationCounter.longValue())));
    }
 
    private void reportAllPercentage(final long percentage) throws ReportingException {
@@ -122,12 +121,12 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    protected Long getMaxIteration() {
-      return maxIteration.getResult();
+      return iterationCounter.longValue(); //maxIteration.getResult();
    }
 
-   private void reportIterationNumber(final long iteration, final MeasurementUnit mu) {
-      if (mu.startedAfter(runInfo.getStartTime())) { // only MUs from the current run should be taken into account
-         maxIteration.add(iteration);
+   private void reportIterationNumber(final MeasurementUnit mu) {
+      if (mu.startedAfter(runInfo.getStartTime() - 1)) { // only MUs from the current run should be taken into account
+         iterationCounter.increment();
       }
    }
 
@@ -137,7 +136,7 @@ public abstract class AbstractReporter implements Reporter {
     * @return The new measurement with current values from run info.
     */
    public Measurement newMeasurement() {
-      final Long iterations = maxIteration.getResult();
+      final Long iterations = iterationCounter.longValue(); //maxIteration.getResult();
       final Measurement measurement = new Measurement(Math.round(runInfo.getPercentage(iterations)), runInfo.getRunTime(), iterations);
       measurement.set(PerfCakeConst.WARM_UP_TAG, runInfo.hasTag(PerfCakeConst.WARM_UP_TAG));
       return measurement;
@@ -293,8 +292,8 @@ public abstract class AbstractReporter implements Reporter {
    @Override
    public final void reset() {
       lastPercentage = -1;
-      maxIteration.reset();
-      maxIteration.add(0l);
+      iterationCounter.reset();
+      iterationCounter.decrement();
       accumulatedResults = new ConcurrentHashMap<>();
       doReset();
    }
