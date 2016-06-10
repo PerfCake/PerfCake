@@ -83,6 +83,8 @@ public class RawReporter extends AbstractReporter {
       try {
          fileOutputStream = new FileOutputStream(outputFile);
          outputStream = new ObjectOutputStream(fileOutputStream);
+         outputStream.writeObject(runInfo);
+         outputStream.flush();
       } catch (IOException e) {
          log.error("Unable to open file for writing results. No results will be written: ", e);
       }

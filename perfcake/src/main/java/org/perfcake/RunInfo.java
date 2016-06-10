@@ -22,6 +22,7 @@ package org.perfcake;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +33,9 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class RunInfo {
+public class RunInfo implements Serializable {
+
+   private static final long serialVersionUID = 2616572877123413497L;
 
    /**
     * How long is this measurement scheduled to run in milliseconds or iterations.
@@ -57,17 +60,17 @@ public class RunInfo {
    /**
     * Number of threads that is currently used to generate the load.
     */
-   private volatile int threads = 1;
+   private volatile transient int threads = 1;
 
    /**
     * Number of the last iteration.
     */
-   private final AtomicLong iterations = new AtomicLong(0);
+   private final transient AtomicLong iterations = new AtomicLong(0);
 
    /**
     * Tags associated with this measurement run.
     */
-   private final Set<String> tags = new HashSet<>();
+   private final transient Set<String> tags = new HashSet<>();
 
    /**
     * Creates a new RunInfo.

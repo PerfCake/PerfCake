@@ -352,12 +352,13 @@ public class MeasurementUnit implements Serializable {
       oos.writeLong(failures == null ? 0 : failures);
 
       // write THREADS_TAG
-      final Long threads = (Long) measurementResults.get(PerfCakeConst.THREADS_TAG);
-      oos.writeLong(threads == null ? 0 : threads);
+      final Integer threads = (Integer) measurementResults.get(PerfCakeConst.THREADS_TAG);
+      oos.writeInt(threads == null ? 0 : threads);
 
       // write all results from the map except for FAILURES_TAG and properties under ATTRIBUTES_TAG
-      oos.writeInt(measurementResults.size() - (measurementResults.get(PerfCakeConst.ATTRIBUTES_TAG) != null ? 1 : 0)
-            - (failures != null ? 1 : 0) - (threads != null ? 1 : 0));
+      int size = measurementResults.size() - (measurementResults.get(PerfCakeConst.ATTRIBUTES_TAG) != null ? 1 : 0)
+            - (failures != null ? 1 : 0) - (threads != null ? 1 : 0);
+      oos.writeInt(size);
       measurementResults.forEach((key, value) -> {
          if (!PerfCakeConst.ATTRIBUTES_TAG.equals(key) && !PerfCakeConst.FAILURES_TAG.equals(key) && !PerfCakeConst.THREADS_TAG.equals(key)) {
             try {
@@ -417,7 +418,7 @@ public class MeasurementUnit implements Serializable {
 
       mu.measurementResults.put(PerfCakeConst.FAILURES_TAG, in.readLong());
 
-      mu.measurementResults.put(PerfCakeConst.THREADS_TAG, in.readLong());
+      mu.measurementResults.put(PerfCakeConst.THREADS_TAG, in.readInt());
 
       int size = in.readInt();
       for (int i = 0; i < size; i++) {

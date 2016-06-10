@@ -77,6 +77,10 @@ public class ReplayResults implements Closeable {
       try (
             final ObjectInputStream ois = new ObjectInputStream(inputStream);
       ) {
+         final RunInfo originalRunInfo = (RunInfo) ois.readObject();
+         final ReplayRunInfo replayRunInfo = new ReplayRunInfo(originalRunInfo);
+         reportManager.setRunInfo(replayRunInfo);
+
          while (inputStream.available() > 0) {
             report(MeasurementUnit.streamIn(ois));
          }
@@ -138,5 +142,16 @@ public class ReplayResults implements Closeable {
    public void close() throws IOException {
       reportManager.getReporters().forEach(Reporter::stop);
       inputStream.close();
+   }
+
+   private static class ReplayRunInfo extends RunInfo {
+
+      private final RunInfo originalRunInfo;
+
+      private ReplayRunInfo(final RunInfo originalRunInfo) {
+         super(originalRunInfo.getDuration());
+
+         this.originalRunInfo = originalRunInfo;
+      }
    }
 }
