@@ -46,6 +46,7 @@ public class ChannelSenderFileTest {
    public void testNormalMessage() throws Exception {
       final Properties senderProperties = new Properties();
       final File file = File.createTempFile("perfcake-", "message.txt");
+      file.deleteOnExit();
       Files.write(file.toPath(), originalContent.getBytes());
       senderProperties.setProperty("target", file.getAbsolutePath());
       senderProperties.setProperty("awaitResponse", "true");

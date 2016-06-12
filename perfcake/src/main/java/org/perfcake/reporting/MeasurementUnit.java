@@ -355,12 +355,21 @@ public class MeasurementUnit implements Serializable {
       final Integer threads = (Integer) measurementResults.get(PerfCakeConst.THREADS_TAG);
       oos.writeInt(threads == null ? 0 : threads);
 
+      // write REQUEST_SIZE_TAG
+      final Long requestSize = (long) measurementResults.get(PerfCakeConst.REQUEST_SIZE_TAG);
+      oos.writeLong(requestSize == null ? 0 : requestSize);
+
+      // write RESPONSE_SIZE_TAG
+      final Long responseSize = (long) measurementResults.get(PerfCakeConst.RESPONSE_SIZE_TAG);
+      oos.writeLong(responseSize == null ? 0 : responseSize);
+
       // write all results from the map except for FAILURES_TAG and properties under ATTRIBUTES_TAG
       int size = measurementResults.size() - (measurementResults.get(PerfCakeConst.ATTRIBUTES_TAG) != null ? 1 : 0)
-            - (failures != null ? 1 : 0) - (threads != null ? 1 : 0);
+            - (failures != null ? 1 : 0) - (threads != null ? 1 : 0) - (requestSize != null ? 1 : 0) - (responseSize != null ? 1 : 0);
       oos.writeInt(size);
       measurementResults.forEach((key, value) -> {
-         if (!PerfCakeConst.ATTRIBUTES_TAG.equals(key) && !PerfCakeConst.FAILURES_TAG.equals(key) && !PerfCakeConst.THREADS_TAG.equals(key)) {
+         if (!PerfCakeConst.ATTRIBUTES_TAG.equals(key) && !PerfCakeConst.FAILURES_TAG.equals(key) && !PerfCakeConst.THREADS_TAG.equals(key)
+               && !PerfCakeConst.REQUEST_SIZE_TAG.equals(key) && !PerfCakeConst.RESPONSE_SIZE_TAG.equals(key)) {
             try {
                oos.writeUTF(key);
                oos.writeObject(value);
@@ -417,8 +426,9 @@ public class MeasurementUnit implements Serializable {
       mu.totalTime = in.readDouble();
 
       mu.measurementResults.put(PerfCakeConst.FAILURES_TAG, in.readLong());
-
       mu.measurementResults.put(PerfCakeConst.THREADS_TAG, in.readInt());
+      mu.measurementResults.put(PerfCakeConst.REQUEST_SIZE_TAG, in.readLong());
+      mu.measurementResults.put(PerfCakeConst.RESPONSE_SIZE_TAG, in.readLong());
 
       int size = in.readInt();
       for (int i = 0; i < size; i++) {

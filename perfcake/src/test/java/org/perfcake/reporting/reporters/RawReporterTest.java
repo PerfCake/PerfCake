@@ -63,7 +63,7 @@ public class RawReporterTest extends TestSetup {
       replay.replay();
       replay.close();
 
-      List<String> origLines = Utils.readLines(outputReplayFile.toURI().toURL());
+      List<String> origLines = Utils.readLines(outputResultFile.toURI().toURL());
       List<String> replayLines = Utils.readLines(outputReplayFile.toURI().toURL());
 
       Assert.assertTrue(origLines.size() == replayLines.size()); // not equals, there is no expected value

@@ -147,9 +147,19 @@ public final class PerfCakeConst {
    public static final String ATTRIBUTES_TAG = "attributes";
 
    /**
-    * Result name the number of threads.
+    * Result name of the number of threads.
     */
    public static final String THREADS_TAG = "Threads";
+
+   /**
+    * Result name of the total size of response.
+    */
+   public static final String RESPONSE_SIZE_TAG = "ResponseSize";
+
+   /**
+    * Result name of the total size of request.
+    */
+   public static final String REQUEST_SIZE_TAG = "RequestSize";
 
    /**
     * Property that can disable templating engine (HTTL) in {@link org.perfcake.util.StringTemplate}.

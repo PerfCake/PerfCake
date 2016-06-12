@@ -156,6 +156,8 @@ class SenderTask implements Runnable {
       ReceivedMessage receivedMessage;
       try {
          final MeasurementUnit mu = reportManager.newMeasurementUnit();
+         long requestSize = 0;
+         long responseSize = 0;
 
          if (mu != null) {
             mu.setEnqueueTime(enqueueTime);
@@ -175,9 +177,13 @@ class SenderTask implements Runnable {
                   final MessageTemplate messageToSend = iterator.next();
                   final Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
                   final long multiplicity = messageToSend.getMultiplicity();
+                  requestSize = requestSize + (currentMessage.getPayload().toString().length() * multiplicity);
 
                   for (int i = 0; i < multiplicity; i++) {
                      receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
+                     if (receivedMessage.getResponse() != null) {
+                        responseSize = responseSize + receivedMessage.getResponse().toString().length();
+                     }
                      if (validationManager.isEnabled()) {
                         validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                      }
@@ -193,6 +199,9 @@ class SenderTask implements Runnable {
 
             senderManager.releaseSender(sender); // !!! important !!!
             sender = null;
+
+            mu.appendResult(PerfCakeConst.REQUEST_SIZE_TAG, requestSize);
+            mu.appendResult(PerfCakeConst.RESPONSE_SIZE_TAG, responseSize);
 
             reportManager.report(mu);
          }
