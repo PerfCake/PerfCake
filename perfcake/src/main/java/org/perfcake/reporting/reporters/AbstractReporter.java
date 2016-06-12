@@ -121,7 +121,7 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    protected Long getMaxIteration() {
-      return iterationCounter.longValue(); //maxIteration.getResult();
+      return iterationCounter.longValue();
    }
 
    private void reportIterationNumber(final MeasurementUnit mu) {
@@ -136,7 +136,7 @@ public abstract class AbstractReporter implements Reporter {
     * @return The new measurement with current values from run info.
     */
    public Measurement newMeasurement() {
-      final Long iterations = iterationCounter.longValue(); //maxIteration.getResult();
+      final Long iterations = iterationCounter.longValue();
       final Measurement measurement = new Measurement(Math.round(runInfo.getPercentage(iterations)), runInfo.getRunTime(), iterations);
       measurement.set(PerfCakeConst.WARM_UP_TAG, runInfo.hasTag(PerfCakeConst.WARM_UP_TAG));
       return measurement;

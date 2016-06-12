@@ -25,23 +25,29 @@ import org.perfcake.scenario.ReplayResults;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
+import org.perfcake.util.Utils;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class RawReporterTest extends TestSetup {
 
-   @Test(enabled = false)
+   @Test
    public void rawReporterBasicTest() throws PerfCakeException, InterruptedException, IOException {
       final File outputFile = File.createTempFile("perfcake", ".raw");
+      final File outputResultFile = new File(outputFile.getAbsolutePath() + "-result.csv");
+      final File outputReplayFile = new File(outputFile.getAbsolutePath() + "-replay.csv");
       System.setProperty("output.file", outputFile.getAbsolutePath());
-      //outputFile.deleteOnExit();
-      System.out.println(outputFile.getAbsolutePath());
+      outputFile.deleteOnExit();
+      outputResultFile.deleteOnExit();
+      outputReplayFile.deleteOnExit();
 
       final Scenario scenario = ScenarioLoader.load("test-raw");
 
@@ -56,5 +62,20 @@ public class RawReporterTest extends TestSetup {
       final ReplayResults replay = new ReplayResults(scenarioCopy, outputFile.getAbsolutePath());
       replay.replay();
       replay.close();
+
+      List<String> origLines = Utils.readLines(outputReplayFile.toURI().toURL());
+      List<String> replayLines = Utils.readLines(outputReplayFile.toURI().toURL());
+
+      Assert.assertTrue(origLines.size() == replayLines.size()); // not equals, there is no expected value
+
+      // the time shifts a little bit
+      for (int i = 0; i < origLines.size(); i++) {
+         String origLine = origLines.get(i).split(";", 2)[1];
+         String replayLine = replayLines.get(i).split(";", 2)[1];
+         Assert.assertTrue(origLine.equals(replayLine));
+      }
+
+      // there must be some time information at the end
+      Assert.assertEquals(replayLines.get(replayLines.size() - 1).split(";", 2)[0], "0:00:02");
    }
 }

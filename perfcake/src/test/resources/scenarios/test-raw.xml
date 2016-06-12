@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:7.0">
-   <run type="iteration" value="5000"/>
+   <run type="iteration" value="20000"/>
    <generator class="DefaultMessageGenerator" threads="10"/>
    <sender class="TestSender">
    	  <property name="delay" value="1" />
@@ -8,6 +8,12 @@
    <reporting>
       <reporter class="RawReporter">
          <property name="outputFile" value="${output.file}" />
+      </reporter>
+      <reporter class="ResponseTimeStatsReporter">
+         <destination class="CsvDestination">
+            <period type="iteration" value="1000"/>
+            <property name="path" value="${output.file}-result.csv" />
+         </destination>
       </reporter>
    </reporting>
 </scenario>

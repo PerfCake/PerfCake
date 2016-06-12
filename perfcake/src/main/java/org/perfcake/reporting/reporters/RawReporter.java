@@ -31,6 +31,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Streams all recorded {@link org.perfcake.reporting.MeasurementUnit MesurementUnits} to a file for later replay.
@@ -45,10 +46,8 @@ public class RawReporter extends AbstractReporter {
    private static final Logger log = LogManager.getLogger(RawReporter.class);
 
    /**
-    * Channel to store data.
+    * Where to write all the objects.
     */
-   private FileOutputStream fileOutputStream;
-
    private ObjectOutputStream outputStream;
 
    /**
@@ -81,8 +80,9 @@ public class RawReporter extends AbstractReporter {
       stop();
 
       try {
-         fileOutputStream = new FileOutputStream(outputFile);
-         outputStream = new ObjectOutputStream(fileOutputStream);
+         final FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+         final GZIPOutputStream gzip = new GZIPOutputStream(fileOutputStream);
+         outputStream = new ObjectOutputStream(gzip);
          outputStream.writeObject(runInfo);
          outputStream.flush();
       } catch (IOException e) {

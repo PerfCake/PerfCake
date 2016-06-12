@@ -25,111 +25,182 @@ import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
+import org.perfcake.reporting.reporters.RawReporter;
 import org.perfcake.reporting.reporters.Reporter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Closeable;
+import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
 /**
+ * Replays the results previously recorded with {@link org.perfcake.reporting.reporters.RawReporter}. The same
+ * scenario should be used, and its reporting section will be used to configure reporters and destinations.
+ * Then the normal reporting operation is emulated to achieve repeatable results.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ReplayResults implements Closeable {
 
+   /**
+    * The logger.
+    */
    private static final Logger log = LogManager.getLogger(ReplayResults.class);
 
+   /**
+    * Reading the recorded and serialized Measurement Units.
+    */
    private FileInputStream inputStream;
 
+   /**
+    * Unzipper of the data.
+    */
+   private GZIPInputStream gzip;
+
+   /**
+    * We need to remember when we reported for the last time to emulate time based reporting.
+    */
    private Map<Reporter, Map<Destination, Long>> reportLastTimes = new HashMap<>();
 
+   /**
+    * Link to {@link ReportManager} used to report results.
+    */
    private ReportManager reportManager;
 
-   private RunInfo runInfo;
+   /**
+    * Fake information about the run.
+    */
+   private ReplayRunInfo runInfo;
 
-   private long lastIteration = -1;
+   /**
+    * Artificial test start time.
+    */
+   private long firstTime = -1;
 
+   /**
+    * Gets a new replay facility for the given scenario and data file reported by {@link RawReporter}.
+    *
+    * @param scenario
+    *       The scenario from which the reporting configuration will be taken.
+    * @param rawRecords
+    *       The file wit recorded results.
+    * @throws IOException
+    *       When it was not possible to read the recorded results.
+    */
    public ReplayResults(final Scenario scenario, final String rawRecords) throws IOException {
       inputStream = new FileInputStream(rawRecords);
+      gzip = new GZIPInputStream(inputStream);
 
       reportManager = scenario.getReportManager();
-      runInfo = reportManager.getRunInfo();
-
-      // provide our own ReplayRunInfo
 
       reportManager.getReporters().forEach(reporter -> {
-         final Map<Destination, Long> lastTimes = new HashMap<>();
-         reportLastTimes.put(reporter, lastTimes);
+         if (!(reporter instanceof RawReporter)) { // we do not want to cycle or rewrite the results
+            final Map<Destination, Long> lastTimes = new HashMap<>();
+            reportLastTimes.put(reporter, lastTimes);
 
-         reporter.getReportingPeriods().forEach(boundPeriod -> {
-            lastTimes.put(boundPeriod.getBinding(), 0L);
-         });
-         reporter.start();
+            reporter.getReportingPeriods().forEach(boundPeriod -> {
+               lastTimes.put(boundPeriod.getBinding(), 0L);
+            });
+            reporter.start();
+         }
       });
    }
 
+   /**
+    * Replays the recorded data through the scenario's reporters. Any instance of {@link RawReporter} is ignored.
+    *
+    * @throws IOException
+    *       When there was an error reading the replay data.
+    */
    public void replay() throws IOException {
       try (
-            final ObjectInputStream ois = new ObjectInputStream(inputStream);
+            final ObjectInputStream ois = new ObjectInputStream(gzip);
       ) {
          final RunInfo originalRunInfo = (RunInfo) ois.readObject();
-         final ReplayRunInfo replayRunInfo = new ReplayRunInfo(originalRunInfo);
-         reportManager.setRunInfo(replayRunInfo);
+         runInfo = new ReplayRunInfo(originalRunInfo);
+         reportManager.setRunInfo(runInfo);
 
-         while (inputStream.available() > 0) {
-            report(MeasurementUnit.streamIn(ois));
+         try {
+            while (gzip.available() > 0) {
+               report(MeasurementUnit.streamIn(ois));
+            }
+         } catch (EOFException eof) {
+            // nothing wrong, we just stop reporting here, gzip actually keeps some excessive buffer at the end
          }
+
       } catch (ClassNotFoundException cnfe) {
          throw new IOException("Unknown class in the recorded data. Make sure all the plugins are loaded that were used during recording: ", cnfe);
       }
    }
 
+   /**
+    * Reports the recorded {@link MeasurementUnit} through the scenario's reporters. All instances of {@link RawReporter} are ignored.
+    * Needs to emulate time flow because the replay runs faster than the original data recording.
+    *
+    * @param mu
+    *       Thhe {@link MeasurementUnit} to be reported.
+    */
    private void report(final MeasurementUnit mu) {
-      if (mu.getIteration() == 0 && lastIteration > 0) { // probably end of warmUp
-         resetReporters();
-      }
+      runInfo.getNextIteration();
 
-      while (runInfo.getIteration() < mu.getIteration()) {
-         runInfo.getNextIteration();
+      if (firstTime == -1) {
+         firstTime = mu.getStartTime();
       }
+      runInfo.moveTime(mu);
 
       reportManager.getReporters().forEach(reporter -> {
-         try {
-            reporter.report(mu);
-         } catch (ReportingException e) {
-            log.warn("Unable to report result: ", e);
+         if (!(reporter instanceof RawReporter)) { // we do not want to cycle or rewrite our results
+            try {
+               reporter.report(mu);
+            } catch (ReportingException e) {
+               log.warn("Unable to report result: ", e);
+            }
          }
       });
 
-      publishResults(mu.getStopTime() / 1_000_000);
-
-      lastIteration = mu.getIteration();
+      publishResults((mu.getStopTime() - firstTime) / 1_000_000);
    }
 
+   /**
+    * Takes care of publishing via time-bound destinations. This is only triggered by reading the next {@link MeasurementUnit} from
+    * the input file. This is a different to real test where we simply report at the given time periods no matter if we have
+    * any new recorded data or not. In a faster replay mode, this cannot be emulated.
+    *
+    * @param currentTime
+    *       Artificial time.
+    */
    private void publishResults(final long currentTime) {
       reportManager.getReporters().forEach(reporter -> {
-         reporter.getReportingPeriods().forEach(boundPeriod -> {
-            if (boundPeriod.getPeriodType() == PeriodType.TIME) {
-               if (reportLastTimes.get(reporter).get(boundPeriod.getBinding()) + boundPeriod.getPeriod() < currentTime) {
-                  reportLastTimes.get(reporter).put(boundPeriod.getBinding(), currentTime);
-                  try {
-                     reporter.publishResult(boundPeriod.getPeriodType(), boundPeriod.getBinding());
-                  } catch (ReportingException e) {
-                     log.warn("Unable to publish result: ", e);
+         if (!(reporter instanceof RawReporter)) {
+            reporter.getReportingPeriods().forEach(boundPeriod -> {
+               if (boundPeriod.getPeriodType() == PeriodType.TIME) {
+                  if (reportLastTimes.get(reporter).get(boundPeriod.getBinding()) + boundPeriod.getPeriod() < currentTime) {
+                     reportLastTimes.get(reporter).put(boundPeriod.getBinding(), currentTime);
+                     try {
+                        reporter.publishResult(boundPeriod.getPeriodType(), boundPeriod.getBinding());
+                     } catch (ReportingException e) {
+                        log.warn("Unable to publish result: ", e);
+                     }
                   }
                }
-            }
-         });
+            });
+         }
       });
    }
 
+   /**
+    * Resets all reporters and remembered reporting periods. This is a callback from the {@link ReplayRunInfo}.
+    */
    private void resetReporters() {
-      reportManager.getReporters().forEach(Reporter::reset);
+      reportManager.getReporters().stream().filter(reporter -> !(reporter instanceof RawReporter)).forEach(Reporter::reset);
 
       reportLastTimes.forEach((reporter, boundPeriod) -> {
          boundPeriod.keySet().forEach(destination -> {
@@ -140,18 +211,62 @@ public class ReplayResults implements Closeable {
 
    @Override
    public void close() throws IOException {
-      reportManager.getReporters().forEach(Reporter::stop);
+      reportManager.getReporters().stream().filter(reporter -> !(reporter instanceof RawReporter)).forEach(Reporter::stop);
       inputStream.close();
    }
 
-   private static class ReplayRunInfo extends RunInfo {
+   /**
+    * A replacement of original {@link RunInfo} that allows us to create a notion of
+    * artificial time flow and report time bounded results in a faster replay mode.
+    */
+   private class ReplayRunInfo extends RunInfo {
 
-      private final RunInfo originalRunInfo;
+      /**
+       * Current artificial time.
+       */
+      private long time;
 
+      /**
+       * Gets a new replay run information based on the original one stored in the replay data header.
+       *
+       * @param originalRunInfo
+       *       The original {@link RunInfo}.
+       */
       private ReplayRunInfo(final RunInfo originalRunInfo) {
          super(originalRunInfo.getDuration());
 
-         this.originalRunInfo = originalRunInfo;
+         try {
+            final Field startTimeField = RunInfo.class.getDeclaredField("startTime");
+            startTimeField.setAccessible(true);
+            startTimeField.set(this, originalRunInfo.getStartTime());
+
+            final Field endTimeField = RunInfo.class.getDeclaredField("endTime");
+            endTimeField.setAccessible(true);
+            endTimeField.set(this, originalRunInfo.getEndTime());
+         } catch (NoSuchFieldException | IllegalAccessException e) {
+            log.error("Unable to properly configure the replay run information: ", e);
+         }
+      }
+
+      /**
+       * Keeps the artificial time clock ticking.
+       *
+       * @param mu
+       *       Another {@link MeasurementUnit} to count/estimate the current artificial time.
+       */
+      private void moveTime(final MeasurementUnit mu) {
+         time = Math.max(time, (mu.getStopTime() - firstTime) / 1_000_000);
+      }
+
+      @Override
+      public long getRunTime() {
+         return time; // returns the artificial clock's time
+      }
+
+      @Override
+      public void reset() {
+         super.reset();
+         resetReporters(); // callback to reset remembered reporting time periods
       }
    }
 }
