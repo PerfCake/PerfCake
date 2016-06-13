@@ -113,7 +113,7 @@ public abstract class StatsReporter extends AbstractReporter {
    @SuppressWarnings("rawtypes")
    @Override
    protected Accumulator getAccumulator(final String key, final Class clazz) {
-      if (Double.class.equals(clazz)) {
+      if (Double.class.equals(clazz) || PerfCakeConst.REQUEST_SIZE_TAG.equals(key) || PerfCakeConst.RESPONSE_SIZE_TAG.equals(key)) {
          if (windowSize == Integer.MAX_VALUE) {
             return getNonWindowedAccumulator(key);
          } else {

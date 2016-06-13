@@ -19,6 +19,7 @@
  */
 package org.perfcake.reporting.reporters;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.RunInfo;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
@@ -58,6 +59,8 @@ public class StatsReporterTest {
       Assert.assertNull(tsr.getAccumulatedResult(StatsReporter.MINIMUM));
       Assert.assertNull(tsr.getAccumulatedResult(StatsReporter.MAXIMUM));
       Assert.assertNull(tsr.getAccumulatedResult(Measurement.DEFAULT_RESULT));
+      Assert.assertNull(tsr.getAccumulatedResult(PerfCakeConst.REQUEST_SIZE_TAG));
+      Assert.assertNull(tsr.getAccumulatedResult(PerfCakeConst.RESPONSE_SIZE_TAG));
 
       final ResponseTimeStatsReporter rtsr = (ResponseTimeStatsReporter) ObjectFactory.summonInstance(ResponseTimeStatsReporter.class.getName(), new Properties());
       Assert.assertTrue(rtsr.isAverageEnabled());
@@ -67,6 +70,8 @@ public class StatsReporterTest {
       Assert.assertNull(rtsr.getAccumulatedResult(StatsReporter.MINIMUM));
       Assert.assertNull(rtsr.getAccumulatedResult(StatsReporter.MAXIMUM));
       Assert.assertNull(rtsr.getAccumulatedResult(Measurement.DEFAULT_RESULT));
+      Assert.assertNull(rtsr.getAccumulatedResult(PerfCakeConst.REQUEST_SIZE_TAG));
+      Assert.assertNull(rtsr.getAccumulatedResult(PerfCakeConst.RESPONSE_SIZE_TAG));
    }
 
    @DataProvider(name = "reporterProperties")
