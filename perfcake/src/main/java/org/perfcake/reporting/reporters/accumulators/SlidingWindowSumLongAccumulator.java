@@ -20,41 +20,33 @@
 package org.perfcake.reporting.reporters.accumulators;
 
 /**
- * Accumulates an harmonic mean over a set of the number of recently reported values.
+ * Accumulates a sum over a set of the number of recently reported values.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
-public class SlidingWindowHarmonicMeanAccumulator extends AbstractSlidingWindowAccumulator<Double> {
+public class SlidingWindowSumLongAccumulator extends AbstractSlidingWindowAccumulator<Long> {
 
    /**
-    * Creates a new harmonic mean accumulator with the sliding window of a given size.
+    * Creates a new sum accumulator with the sliding window of a given size.
     *
     * @param windowSize
     *       Size of the sliding window.
     */
-   public SlidingWindowHarmonicMeanAccumulator(final int windowSize) {
+   public SlidingWindowSumLongAccumulator(final int windowSize) {
       super(windowSize);
    }
 
-   @SuppressWarnings("unchecked")
    @Override
-   public void add(final Double number) {
-      fifo.add(1.0 / number);
-   }
-
-   @Override
-   public Double getResult() {
-      double accum = 0;
-      double size;
+   public Long getResult() {
+      long accum = 0;
 
       synchronized (fifo) {
          for (final Object o : fifo) {
-            accum = accum + (Double) o;
+            accum = accum + (Long) o;
          }
-         size = fifo.size();
       }
 
-      return size == 0 ? 0d : size / accum;
+      return accum;
    }
 }

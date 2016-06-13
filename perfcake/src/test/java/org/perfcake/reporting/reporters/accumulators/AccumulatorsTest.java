@@ -115,6 +115,31 @@ public class AccumulatorsTest {
    }
 
    @Test
+   public void slidingWindowSumLongAccumulatorTest() {
+      final int START = 10, END = 100, WINDOW = 16;
+
+      final SlidingWindowSumLongAccumulator aa = new SlidingWindowSumLongAccumulator(WINDOW);
+
+      Assert.assertEquals(aa.getResult(), (Long) 0L);
+
+      aa.add(5L);
+      Assert.assertEquals(aa.getResult(), (Long) 5L);
+      aa.reset();
+      Assert.assertEquals(aa.getResult(), (Long) 0L, "SlidingWindowSumLongAccumulator must be 0 after reset.");
+
+      for (int i = START; i <= END; i++) {
+         aa.add((long) i);
+      }
+
+      final int m = END - WINDOW;
+      final int n = END;
+      Assert.assertEquals(aa.getResult(), (Long) ((WINDOW) * (WINDOW + 1L) / 2L + WINDOW * m));
+
+      aa.reset();
+      Assert.assertEquals(aa.getResult(), (Long) 0L, "SlidingWindowSumLongAccumulator must be 0 after reset.");
+   }
+
+   @Test
    public void maxLongValueAccumulatorTest() {
       final MaxLongValueAccumulator mlva = new MaxLongValueAccumulator();
       Assert.assertEquals((long) mlva.getResult(), (long) Long.MIN_VALUE);

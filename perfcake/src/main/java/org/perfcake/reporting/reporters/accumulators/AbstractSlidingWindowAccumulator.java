@@ -30,7 +30,7 @@ import org.apache.commons.collections.buffer.CircularFifoBuffer;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
-public abstract class AbstractSlidingWindowAccumulator implements Accumulator<Double> {
+public abstract class AbstractSlidingWindowAccumulator<T> implements Accumulator<T> {
 
    protected final Buffer fifo;
 
@@ -46,7 +46,7 @@ public abstract class AbstractSlidingWindowAccumulator implements Accumulator<Do
 
    @SuppressWarnings("unchecked")
    @Override
-   public void add(final Double value) {
+   public void add(final T value) {
       fifo.add(value);
    }
 
