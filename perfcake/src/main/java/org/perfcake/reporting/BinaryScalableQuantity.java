@@ -24,15 +24,15 @@ package org.perfcake.reporting;
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
-public class BinaryScalableQuantity extends ScalableQuantity<Double> {
+public class BinaryScalableQuantity extends ScalableQuantity<Long> {
 
-   public BinaryScalableQuantity(final Double number, final String unit) {
+   public BinaryScalableQuantity(final Long number, final String unit) {
       super(number, unit);
    }
 
    @Override
-   public Double getScaleFactor() {
-      return 1024.0;
+   public Long getScaleFactor() {
+      return 1024L;
    }
 
    @Override

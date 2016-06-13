@@ -39,9 +39,9 @@ public class ScalableQuantityTest {
 
    @Test
    public void testBinaryScalableQuantity() {
-      Assert.assertEquals(new BinaryScalableQuantity(1000.0, "b").toString(), "1000.00 b");
-      Assert.assertEquals(new BinaryScalableQuantity(1024.0, "b").toString(), "1.00 Kib");
-      Assert.assertEquals(new BinaryScalableQuantity(2048.0, "b").toString(), "2.00 Kib");
-      Assert.assertEquals(new BinaryScalableQuantity(3.0 * 1024 * 1024, "b").toString(), "3.00 Mib");
+      Assert.assertEquals(new BinaryScalableQuantity(1000L, "b").toString(), "1000.00 b");
+      Assert.assertEquals(new BinaryScalableQuantity(1024L, "b").toString(), "1.00 Kib");
+      Assert.assertEquals(new BinaryScalableQuantity(2048L, "b").toString(), "2.00 Kib");
+      Assert.assertEquals(new BinaryScalableQuantity(3L * 1024 * 1024, "b").toString(), "3.00 Mib");
    }
 }
