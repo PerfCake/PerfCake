@@ -336,8 +336,10 @@ public class MeasurementUnit implements Serializable {
    /**
     * Writes this instance into output stream with a minimum data needed. This serves for easy transfer of serialized Mesurement Units.
     *
-    * @param oos Stream to write the data to.
-    * @throws IOException When there was an error writing the data.
+    * @param oos
+    *       Stream to write the data to.
+    * @throws IOException
+    *       When there was an error writing the data.
     */
    public void streamOut(ObjectOutputStream oos) throws IOException {
       oos.writeLong(iteration);
@@ -413,9 +415,14 @@ public class MeasurementUnit implements Serializable {
 
    /**
     * Reads the minimalistic serialization of Measurement Unit from the input stream.
-    * @param in THe stream to read the object data from.
-    * @throws ClassNotFoundException When it is not possible to restore an unknown class from the data.
-    * @throws IOException When there was an I/O error reading data.
+    *
+    * @param in
+    *       The stream to read the object data from.
+    * @return The deserialized {@link MeasurementUnit}.
+    * @throws ClassNotFoundException
+    *       When it is not possible to restore an unknown class from the data.
+    * @throws IOException
+    *       When there was an I/O error reading data.
     */
    public static MeasurementUnit streamIn(ObjectInputStream in) throws ClassNotFoundException, IOException {
       final MeasurementUnit mu = new MeasurementUnit(in.readLong());

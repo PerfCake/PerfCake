@@ -19,8 +19,9 @@
  */
 package org.perfcake.common;
 
-import java.util.Deque;
-import java.util.concurrent.ConcurrentLinkedDeque;
+import org.apache.commons.collections4.list.CursorableLinkedList;
+
+import java.util.Iterator;
 import java.util.function.Consumer;
 
 /**
@@ -39,8 +40,9 @@ public class TimeSlidingWindow<E> {
 
    /**
     * The internal data structure maintaining the records of objects together with the time when they were added.
+    * The data are kept ordered because we assume mainly linear behavior.
     */
-   private final Deque<TemporalObject<E>> dequeue = new ConcurrentLinkedDeque<>();
+   private CursorableLinkedList<TemporalObject<E>> window = new CursorableLinkedList<>();
 
    /**
     * The length of the window in milliseconds.
@@ -73,7 +75,7 @@ public class TimeSlidingWindow<E> {
     *       Object to be added.
     */
    public void add(final E object) {
-      dequeue.add(new TemporalObject<E>(object));
+      add(object, System.currentTimeMillis());
    }
 
    /**
@@ -86,10 +88,13 @@ public class TimeSlidingWindow<E> {
     *       Artificial time when the object was added to the window.
     */
    public void add(final E object, final long time) {
-      if (dequeue.peekLast() == null || dequeue.peekLast().time <= time) {
-         dequeue.add(new TemporalObject<>(object, time));
+      if (window.size() == 0 || window.getLast().time <= time) {
+         window.add(new TemporalObject<E>(object, time));
       } else {
-         throw new IllegalStateException("Cannot enqueue an element older then the last added.");
+         CursorableLinkedList.Cursor<TemporalObject<E>> c = window.cursor(window.size());
+         while (c.hasPrevious() && c.previous().time > time) {
+         }
+         c.add(new TemporalObject<>(object, time));
       }
    }
 
@@ -106,7 +111,7 @@ public class TimeSlidingWindow<E> {
    public void forEach(final Consumer<E> action) {
       gc();
 
-      dequeue.forEach(te -> action.accept(te.object));
+      window.forEach(te -> action.accept(te.object));
    }
 
    /**
@@ -126,7 +131,7 @@ public class TimeSlidingWindow<E> {
    public void forEach(final long currentTime, final Consumer<E> action) {
       gc(currentTime);
 
-      for (final TemporalObject<E> te: dequeue) {
+      for (final TemporalObject<E> te: window) {
          if (te.time <= currentTime) {
             action.accept(te.object);
          } else {
@@ -153,10 +158,9 @@ public class TimeSlidingWindow<E> {
     */
    public void gc(final long time) {
       // remove all leading old objects
-      TemporalObject<E> e = dequeue.peek();
-      while (e != null && e.time < time - length) {
-         dequeue.remove();
-         e = dequeue.peek();
+      Iterator<TemporalObject<E>> it = window.iterator();
+      while (it.hasNext() && it.next().time < time - length) {
+         it.remove();
       }
    }
 
@@ -166,7 +170,7 @@ public class TimeSlidingWindow<E> {
     * @param <E>
     *       The type of object to carry.
     */
-   private static class TemporalObject<E> {
+   private static class TemporalObject<E> implements Comparable<TemporalObject<E>> {
 
       /**
        * The object carried.
@@ -218,6 +222,13 @@ public class TimeSlidingWindow<E> {
        */
       public long getTime() {
          return time;
+      }
+
+      @Override
+      public int compareTo(final TemporalObject<E> o) {
+         long result = o.time - this.time;
+
+         return result == 0 ? 0 : (result < 0 ? -1 : 1);
       }
    }
 }
