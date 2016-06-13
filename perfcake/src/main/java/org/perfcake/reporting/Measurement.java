@@ -148,6 +148,16 @@ public class Measurement {
    }
 
    /**
+    * Removes the result stored under the given <code>name</code> from the results map.
+    *
+    * @param name
+    *       The name of the result to be removed.
+    */
+   public void remove(final String name) {
+      results.remove(name);
+   }
+
+   /**
     * Puts all the results from the result map into the measurement.
     *
     * @param newResults
