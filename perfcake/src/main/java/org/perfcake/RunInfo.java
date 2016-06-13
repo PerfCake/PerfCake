@@ -73,6 +73,12 @@ public class RunInfo implements Serializable {
    private final transient Set<String> tags = new HashSet<>();
 
    /**
+    * The name of the scenario. This can be used in reporting and is filled with scenario file name
+    * by {@link org.perfcake.scenario.ScenarioLoader}.
+    */
+   private String scenarioName = "";
+
+   /**
     * Creates a new RunInfo.
     *
     * @param duration
@@ -325,5 +331,26 @@ public class RunInfo implements Serializable {
     */
    public void setThreads(final int threads) {
       this.threads = threads;
+   }
+
+   /**
+    * Gets the current scenario name. This can carry any useful information. Gets filled
+    * by {@link org.perfcake.scenario.ScenarioLoader} to the scenario file name.
+    *
+    * @return The scenario name.
+    */
+   public String getScenarioName() {
+      return scenarioName;
+   }
+
+   /**
+    * Sets the current scenario name. This is useful for reporting to refer to the original
+    * scenario file name for example.
+    *
+    * @param scenarioName
+    *       The name of current scenario.
+    */
+   public void setScenarioName(final String scenarioName) {
+      this.scenarioName = scenarioName;
    }
 }
