@@ -131,9 +131,7 @@ public class AccumulatorsTest {
          aa.add((long) i);
       }
 
-      final int m = END - WINDOW;
-      final int n = END;
-      Assert.assertEquals(aa.getResult(), (Long) ((WINDOW) * (WINDOW + 1L) / 2L + WINDOW * m));
+      Assert.assertEquals(aa.getResult(), (Long) (WINDOW * (WINDOW + 1L) / 2L + WINDOW * (END - WINDOW)));
 
       aa.reset();
       Assert.assertEquals(aa.getResult(), (Long) 0L, "SlidingWindowSumLongAccumulator must be 0 after reset.");
