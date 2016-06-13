@@ -54,10 +54,8 @@ public class BinaryScalableQuantity extends ScalableQuantity<Double> {
             return "Ei";
          case 7:
             return "Zi";
-         case 8:
-            return "Yi";
          default:
-            return null;
+            return "Yi";
       }
    }
 }

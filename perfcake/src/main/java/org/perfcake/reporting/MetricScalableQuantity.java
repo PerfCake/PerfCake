@@ -54,10 +54,8 @@ public class MetricScalableQuantity extends ScalableQuantity<Double> {
             return "E";
          case 7:
             return "Z";
-         case 8:
-            return "Y";
          default:
-            return null;
+            return "Y";
       }
    }
 }
