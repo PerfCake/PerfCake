@@ -27,6 +27,7 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
 import org.perfcake.reporting.reporters.RawReporter;
 import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.util.Utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -112,6 +113,8 @@ public class ReplayResults implements Closeable {
             reporter.start();
          }
       });
+
+      Utils.initTimeStamps();
    }
 
    /**
