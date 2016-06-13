@@ -239,7 +239,7 @@ public abstract class StatsReporter extends AbstractReporter {
    }
 
    private void wrapResultByScalableQuantity(final Measurement measurement, final String key, final String unit) {
-      final Number result = (Number) measurement.get(key);
+      final Long result = (Long) measurement.get(key);
       if (result != null) {
          measurement.set(key, new BinaryScalableQuantity(result, unit));
       }
