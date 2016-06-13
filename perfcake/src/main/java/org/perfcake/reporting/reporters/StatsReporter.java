@@ -397,4 +397,42 @@ public abstract class StatsReporter extends AbstractReporter {
    public void setHistogramPrefix(String histogramPrefix) {
       this.histogramPrefix = histogramPrefix;
    }
+
+   /**
+    * Is the metric of the request size enabled?
+    *
+    * @return True if and only if the metric of the request size is enabled.
+    */
+   public boolean isRequestSizeEnabled() {
+      return requestSizeEnabled;
+   }
+
+   /**
+    * Enables and disables the metric of the request size.
+    *
+    * @param requestSizeEnabled
+    *       True to enable the metric.
+    */
+   public void setRequestSizeEnabled(final boolean requestSizeEnabled) {
+      this.requestSizeEnabled = requestSizeEnabled;
+   }
+
+   /**
+    * Is the metric of the response size enabled?
+    *
+    * @return True if and only if the metric of the response size is enabled.
+    */
+   public boolean isResponseSizeEnabled() {
+      return responseSizeEnabled;
+   }
+
+   /**
+    * Enables and disables the metric of the response size.
+    *
+    * @param responseSizeEnabled
+    *       True to enable the metric.
+    */
+   public void setResponseSizeEnabled(final boolean responseSizeEnabled) {
+      this.responseSizeEnabled = responseSizeEnabled;
+   }
 }
