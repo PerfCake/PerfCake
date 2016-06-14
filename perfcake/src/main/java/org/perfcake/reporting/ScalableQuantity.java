@@ -52,8 +52,13 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
    /**
     * Gets a unit prefix for the current value of the quantity.
     *
-    * For example in the case of decimal numbers
-    * the scale prefix for the value of 1,000 would be <code>k</code> or for the value of 1,000,000 would be <code>M</code>.
+    * For example in the case of decimal numbers the scale prefix for the value of 1,000
+    * would be <code>k</code> or for the value of 1,000,000 would be <code>M</code> which needs
+    * to be passed as 1 and 2 respectively. The result is the prefix for the number of 10^(power * 3).
+    *
+    * @param power
+    *       Power of the base quantity divided by 3. I.e. 10^(power * 3).
+    * @return The scale prefix for the number 10^(power * 3), -2 = μ, -1 = m, 1 = k, 2 = M, 3 = G etc.
     **/
    protected abstract String getScalePrefix(final int power);
 
