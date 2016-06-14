@@ -87,6 +87,11 @@ public class ReplayResults implements Closeable {
    private long firstTime = -1;
 
    /**
+    * Artificial test last reporting time.
+    */
+   private long lastTime = -1;
+
+   /**
     * Gets a new replay facility for the given scenario and data file reported by {@link RawReporter}.
     *
     * @param scenario
@@ -139,6 +144,8 @@ public class ReplayResults implements Closeable {
             // nothing wrong, we just stop reporting here, gzip actually keeps some excessive buffer at the end
          }
 
+         resetLastTimes();
+         publishResults(lastTime);
       } catch (ClassNotFoundException cnfe) {
          throw new IOException("Unknown class in the recorded data. Make sure all the plugins are loaded that were used during recording: ", cnfe);
       }
@@ -169,7 +176,8 @@ public class ReplayResults implements Closeable {
          }
       });
 
-      publishResults((mu.getStopTime() - firstTime) / 1_000_000);
+      lastTime = (mu.getStopTime() - firstTime) / 1_000_000;
+      publishResults(lastTime);
    }
 
    /**
@@ -185,7 +193,7 @@ public class ReplayResults implements Closeable {
          if (!(reporter instanceof RawReporter)) {
             reporter.getReportingPeriods().forEach(boundPeriod -> {
                if (boundPeriod.getPeriodType() == PeriodType.TIME) {
-                  if (reportLastTimes.get(reporter).get(boundPeriod.getBinding()) + boundPeriod.getPeriod() < currentTime) {
+                  if (reportLastTimes.get(reporter).get(boundPeriod.getBinding()) == 0L || reportLastTimes.get(reporter).get(boundPeriod.getBinding()) + boundPeriod.getPeriod() < currentTime) {
                      reportLastTimes.get(reporter).put(boundPeriod.getBinding(), currentTime);
                      try {
                         reporter.publishResult(boundPeriod.getPeriodType(), boundPeriod.getBinding());
@@ -204,7 +212,13 @@ public class ReplayResults implements Closeable {
     */
    private void resetReporters() {
       reportManager.getReporters().stream().filter(reporter -> !(reporter instanceof RawReporter)).forEach(Reporter::reset);
+      resetLastTimes();
+   }
 
+   /**
+    * Resets all remembered reporting periods.
+    */
+   private void resetLastTimes() {
       reportLastTimes.forEach((reporter, boundPeriod) -> {
          boundPeriod.keySet().forEach(destination -> {
             boundPeriod.put(destination, 0L);
