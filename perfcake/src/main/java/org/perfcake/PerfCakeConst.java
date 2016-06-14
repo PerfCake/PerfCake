@@ -132,6 +132,11 @@ public final class PerfCakeConst {
    public static final String SKIP_TIMER_BENCHMARK_OPT = "skip-timer-benchmark";
 
    /**
+    * Name of the cli argument to start raw recording replay.
+    */
+   public static final String REPLAY_OPT = "replay";
+
+   /**
     * Result name indicating whether the scenario.
     */
    public static final String WARM_UP_TAG = "warmUp";
@@ -195,6 +200,11 @@ public final class PerfCakeConst {
     * Exit code when there are blocked threads after the scenario was executed.
     */
    public static final int ERR_BLOCKED_THREADS = 6;
+
+   /**
+    * Error while trying to replay scenario.
+    */
+   public static final int ERR_SCENARIO_REPLAY = 7;
 
    /**
     * There should be no instance of a utility class.

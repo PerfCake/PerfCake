@@ -19,6 +19,7 @@
  */
 package org.perfcake;
 
+import org.perfcake.scenario.ReplayResults;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.util.TimerBenchmark;
@@ -74,6 +75,11 @@ public class ScenarioExecution {
    private boolean skipTimerBenchmark = false;
 
    /**
+    * Raw file with results to be replayed.
+    */
+   private String rawFile = null;
+
+   /**
     * Parses command line arguments and creates this class to take care of the Scenario execution.
     *
     * @param args
@@ -99,7 +105,11 @@ public class ScenarioExecution {
       // Print system properties
       se.printTraceInformation();
 
-      se.executeScenario();
+      if (se.rawFile == null) {
+         se.executeScenario();
+      } else {
+         se.replayScenario();
+      }
 
       log.info("=== Goodbye! ===");
    }
@@ -144,7 +154,6 @@ public class ScenarioExecution {
       for (final Entry<Object, Object> entry : props.entrySet()) {
          System.setProperty(entry.getKey().toString(), entry.getValue().toString());
       }
-
    }
 
    /**
@@ -164,6 +173,7 @@ public class ScenarioExecution {
       options.addOption(Option.builder("pd").longOpt(PerfCakeConst.PLUGINS_DIR_OPT).desc("directory for plugins").hasArg().argName("PLUGINS_DIR").build());
       options.addOption(Option.builder("pf").longOpt(PerfCakeConst.PROPERTIES_FILE_OPT).desc("custom system properties file").hasArg().argName("PROPERTIES_FILE").build());
       options.addOption(Option.builder("log").longOpt(PerfCakeConst.LOGGING_LEVEL_OPT).desc("logging level").hasArg().argName("LOG_LEVEL").build());
+      options.addOption(Option.builder("r").longOpt(PerfCakeConst.REPLAY_OPT).desc("raw file to be replayed").hasArg().argName("RAW_FILE").build());
       options.addOption(Option.builder("skip").longOpt(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT).desc("skip system timer benchmark").build());
       options.addOption(Option.builder("D").argName("property=value").numberOfArgs(2).valueSeparator().desc("system properties").build());
 
@@ -187,6 +197,10 @@ public class ScenarioExecution {
 
       if (commandLine.hasOption(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT)) {
          skipTimerBenchmark = true;
+      }
+
+      if (commandLine.hasOption(PerfCakeConst.REPLAY_OPT)) {
+         rawFile = commandLine.getOptionValue(PerfCakeConst.REPLAY_OPT);
       }
 
       parseParameter(PerfCakeConst.SCENARIOS_DIR_OPT, PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"));
@@ -276,6 +290,20 @@ public class ScenarioExecution {
          log.warn("There are some blocked threads that were not possible to terminate. The test results might be flawed."
                + " This is usually caused by deadlocks or race conditions in the application under test.");
          System.exit(PerfCakeConst.ERR_BLOCKED_THREADS);
+      }
+   }
+
+   /**
+    * Replays the previously recorded raw results.
+    */
+   private void replayScenario() {
+      log.info("Replaying raw results recorded in {}.", rawFile);
+
+      try (final ReplayResults replay = new ReplayResults(scenario, rawFile)) {
+         replay.replay();
+      } catch (IOException ioe) {
+         log.fatal("Unable to replay scenario: ", ioe);
+         System.exit(PerfCakeConst.ERR_SCENARIO_REPLAY);
       }
    }
 }
