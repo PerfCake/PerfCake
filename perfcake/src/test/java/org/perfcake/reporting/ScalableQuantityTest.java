@@ -23,9 +23,9 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 /**
- * Fake measurement unit for test usage.
+ * Tests scalable quantities.
  *
- * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class ScalableQuantityTest {
    @Test
@@ -35,6 +35,21 @@ public class ScalableQuantityTest {
       Assert.assertEquals(new MetricScalableQuantity(1234.5, "b").toString(), "1.23 kb");
       Assert.assertEquals(new MetricScalableQuantity(1234567.8, "b").toString(), "1.23 Mb");
       Assert.assertEquals(new MetricScalableQuantity(1000000.0, "b").toString(), "1.00 Mb");
+      // Corner cases
+      Assert.assertEquals(new MetricScalableQuantity(1e27, "b").toString(), "1000.00 Yb");
+      Assert.assertEquals(new MetricScalableQuantity(1e28, "b").toString(), "10000.00 Yb");
+   }
+
+   @Test
+   public void testMetricScalableQuantityDown() {
+      Assert.assertEquals(new MetricScalableQuantity(0.5, "b").toString(), "500.00 mb");
+      Assert.assertEquals(new MetricScalableQuantity(0.0003, "b").toString(), "300.00 μb");
+      Assert.assertEquals(new MetricScalableQuantity(1.0, "b").toString(), "1.00 b");
+      Assert.assertEquals(new MetricScalableQuantity(0.001, "b").toString(), "1.00 mb");
+      // Corner cases
+      Assert.assertEquals(new MetricScalableQuantity(1e-26, "b").toString(), "0.01 yb");
+      Assert.assertEquals(new MetricScalableQuantity(1e-27, "b").toString(), "0.00 yb");
+      Assert.assertEquals(new MetricScalableQuantity(1e-28, "b").toString(), "0.00 yb");
    }
 
    @Test

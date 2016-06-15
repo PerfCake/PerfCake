@@ -31,13 +31,39 @@ public class MetricScalableQuantity extends ScalableQuantity<Double> {
    }
 
    @Override
-   public Double getScaleFactor() {
+   protected Double getScaleFactor() {
       return 1000.0;
    }
 
    @Override
-   public String getScalePrefix(final int power) {
+   protected int getMinPower() {
+      return -8;
+   }
+
+   @Override
+   protected int getMaxPower() {
+      return 8;
+   }
+
+   @Override
+   protected String getBoundedScalePrefix(final int power) {
       switch (power) {
+         case -8:
+            return "y";
+         case -7:
+            return "z";
+         case -6:
+            return "a";
+         case -5:
+            return "f";
+         case -4:
+            return "p";
+         case -3:
+            return "n";
+         case -2:
+            return "μ";
+         case -1:
+            return "m";
          case 0:
             return "";
          case 1:
@@ -54,8 +80,11 @@ public class MetricScalableQuantity extends ScalableQuantity<Double> {
             return "E";
          case 7:
             return "Z";
-         default:
+         case 8:
             return "Y";
+         default:
+            // should not happen ever
+            throw new IllegalArgumentException("Unable to determine prefix for the power " + power);
       }
    }
 }

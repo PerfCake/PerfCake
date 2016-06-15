@@ -60,16 +60,49 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
     *       Power of the base quantity divided by 3. I.e. 10^(power * 3).
     * @return The scale prefix for the number 10^(power * 3), -2 = μ, -1 = m, 1 = k, 2 = M, 3 = G etc.
     **/
-   protected abstract String getScalePrefix(final int power);
+   protected abstract String getBoundedScalePrefix(final int power);
+
+   /**
+    * Gets a minimal power for which the scalable quantity has a unit prefix.
+    *
+    * @return The minimal power value.
+    **/
+   protected abstract int getMinPower();
+
+   /**
+    * Gets a max power for which the scalable quantity has a unit prefix.
+    *
+    * @return The minimal power value.
+    **/
+   protected abstract int getMaxPower();
+
+   protected String getScalePrefix(final int power) {
+      int boundedPower;
+      if (power < getMinPower()) {
+         boundedPower = getMinPower();
+      } else if (power > getMaxPower()) {
+         boundedPower = getMaxPower();
+      } else {
+         boundedPower = power;
+      }
+      return getBoundedScalePrefix(boundedPower);
+   }
 
    @Override
    public String toString() {
       double valuePan = getNumber().doubleValue();
       final double scaleFactor = getScaleFactor().doubleValue();
       int i = 0;
-      while (valuePan >= scaleFactor) {
-         valuePan = valuePan / scaleFactor;
-         i++;
+      if (valuePan > 1.0) { // need to scale the value down
+         while (valuePan >= scaleFactor && i < getMaxPower()) {
+            valuePan = valuePan / scaleFactor;
+            i++;
+         }
+      } else {
+         while (valuePan < 1.0 && i > getMinPower()) {
+            valuePan = valuePan * scaleFactor;
+            i--;
+         }
       }
       return String.format(Locale.US, "%.2f", valuePan) + " " + getScalePrefix(i) + getUnit();
    }

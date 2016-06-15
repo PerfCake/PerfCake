@@ -31,12 +31,22 @@ public class BinaryScalableQuantity extends ScalableQuantity<Long> {
    }
 
    @Override
-   public Long getScaleFactor() {
+   protected Long getScaleFactor() {
       return 1024L;
    }
 
    @Override
-   public String getScalePrefix(final int power) {
+   protected int getMinPower() {
+      return 0;
+   }
+
+   @Override
+   protected int getMaxPower() {
+      return 8;
+   }
+
+   @Override
+   protected String getBoundedScalePrefix(final int power) {
       switch (power) {
          case 0:
             return "";
@@ -54,8 +64,11 @@ public class BinaryScalableQuantity extends ScalableQuantity<Long> {
             return "Ei";
          case 7:
             return "Zi";
-         default:
+         case 8:
             return "Yi";
+         default:
+            // should not happen ever
+            throw new IllegalArgumentException("Unable to determine prefix for the power " + power);
       }
    }
 }
