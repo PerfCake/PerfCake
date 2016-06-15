@@ -50,15 +50,12 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
    protected abstract N getScaleFactor();
 
    /**
-    * Gets a unit prefix for the current value of the quantity.
-    *
-    * For example in the case of decimal numbers the scale prefix for the value of 1,000
-    * would be <code>k</code> or for the value of 1,000,000 would be <code>M</code> which needs
-    * to be passed as 1 and 2 respectively. The result is the prefix for the number of 10^(power * 3).
+    * Do the actual mapping of the scaling power to the unit prefix. After the power value was bounded to the
+    * range of {@link #getMinPower()} to {@link #getMaxPower()}.
     *
     * @param power
-    *       Power of the base quantity divided by 3. I.e. 10^(power * 3).
-    * @return The scale prefix for the number 10^(power * 3), -2 = μ, -1 = m, 1 = k, 2 = M, 3 = G etc.
+    *       Power of the base quantity
+    * @return The scale prefix for the number.
     **/
    protected abstract String getBoundedScalePrefix(final int power);
 
@@ -76,6 +73,17 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
     **/
    protected abstract int getMaxPower();
 
+   /**
+    * Gets a unit prefix for the current value of the quantity.
+    *
+    * For example in the case of decimal numbers the scale prefix for the value of 1,000
+    * would be <code>k</code> or for the value of 1,000,000 would be <code>M</code> which needs
+    * to be passed as 1 and 2 respectively. The result is the prefix for the number of 10^(power * 3).
+    *
+    * @param power
+    *       Scale power of the base quantity I.e. 10^(power * 3) for decimal numbers.
+    * @return The scale prefix for the number. E.g. 10^(power * 3), -2 = μ, -1 = m, 1 = k, 2 = M, 3 = G etc. for decimal numbers.
+    **/
    protected String getScalePrefix(final int power) {
       int boundedPower;
       if (power < getMinPower()) {
