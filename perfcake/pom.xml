@@ -99,6 +99,10 @@
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-log4j12</artifactId>
       </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+      </dependency>
 
       <!-- Test NG -->
       <dependency>
@@ -115,6 +119,12 @@
       <dependency>
          <groupId>org.drools</groupId>
          <artifactId>drools-compiler</artifactId>
+      </dependency>
+
+      <!-- Elasticsearch client -->
+      <dependency>
+         <groupId>io.searchbox</groupId>
+         <artifactId>jest</artifactId>
       </dependency>
 
       <!-- Groovy -->
@@ -214,11 +224,6 @@
       <dependency>
          <groupId>org.apache.activemq</groupId>
          <artifactId>activemq-mqtt</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-api</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>

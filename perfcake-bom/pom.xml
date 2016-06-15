@@ -57,8 +57,9 @@
 
       <version.camel>2.16.1</version.camel>
       <version.drools>6.3.0.Final</version.drools>
+      <version.jest>2.0.3</version.jest>
       <version.groovy>2.4.5</version.groovy>
-      <version.slf4j>1.7.13</version.slf4j>
+      <version.slf4j>1.7.21</version.slf4j>
       <version.log4j>2.5</version.log4j>
       <version.jms-api>1.1-rev-1</version.jms-api>
       <version.mqtt>1.14</version.mqtt>
@@ -135,6 +136,13 @@
             <groupId>org.drools</groupId>
             <artifactId>drools-compiler</artifactId>
             <version>${version.drools}</version>
+         </dependency>
+
+         <!-- Elasticsearch client -->
+         <dependency>
+            <groupId>io.searchbox</groupId>
+            <artifactId>jest</artifactId>
+            <version>${version.jest}</version>
          </dependency>
 
          <!-- Groovy -->
@@ -253,12 +261,6 @@
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-mqtt</artifactId>
             <version>${version.amq}</version>
-            <scope>test</scope>
-         </dependency>
-         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${version.slf4j}</version>
             <scope>test</scope>
          </dependency>
          <dependency>
