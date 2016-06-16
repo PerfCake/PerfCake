@@ -28,6 +28,13 @@ import java.util.Locale;
  */
 public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
 
+   /**
+    * The base power for the quantity value.
+    *
+    * For example in case of decimal numbers, when we want to insert 123 ms, we don't have to re-compute the value to the base unit power
+    * (and pass it as <code>0.123 s</code>. With the base power we can pass the number value as is <code>123</code> and pass it with
+    * the base power of <code>-1</code>.
+    */
    private int basePower = 0;
 
    /**
@@ -43,7 +50,11 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
    }
 
    /**
-    * Creates a new scalable quantity.
+    * Creates a new scalable quantity with the specified base power.
+    *
+    * For example in case of decimal numbers, when we want to insert 123 ms, we don't have to re-compute the value to the base unit power
+    * (and pass it as <code>0.123 s</code>. With the base power we can pass the number value as is <code>123</code> and pass it with
+    * the base power of <code>-1</code>.
     *
     * @param number
     *       The value.
@@ -94,6 +105,19 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
    protected abstract int getMaxPower();
 
    /**
+    * Gets the base power for the quantity value.
+    *
+    * For example in case of decimal numbers, when we want to insert 123 ms, we don't have to re-compute the value to the base unit power
+    * (and pass it as <code>0.123 s</code>. With the base power we can pass the number value as is <code>123</code> and pass it with
+    * the base power of <code>-1</code>.
+    *
+    * @return The base power value.
+    */
+   protected int getBasePower() {
+      return basePower;
+   }
+
+   /**
     * Gets a unit prefix for the current value of the quantity.
     *
     * For example in the case of decimal numbers the scale prefix for the value of 1,000
@@ -120,7 +144,7 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
    public String toString() {
       double valuePan = getNumber().doubleValue();
       final double scaleFactor = getScaleFactor().doubleValue();
-      int i = basePower;
+      int i = getBasePower();
       if (valuePan > 1.0) { // need to scale the value down
          while (valuePan >= scaleFactor && i < getMaxPower()) {
             valuePan = valuePan / scaleFactor;
