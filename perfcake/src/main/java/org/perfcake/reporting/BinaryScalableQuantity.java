@@ -30,18 +30,22 @@ public class BinaryScalableQuantity extends ScalableQuantity<Long> {
       super(number, unit);
    }
 
+   public BinaryScalableQuantity(final Long number, final int basePower, final String unit) {
+      super(number, basePower, unit);
+   }
+
    @Override
    protected Long getScaleFactor() {
       return 1024L;
    }
 
    @Override
-   protected int getMinPower() {
+   protected final int getMinPower() {
       return 0;
    }
 
    @Override
-   protected int getMaxPower() {
+   protected final int getMaxPower() {
       return 8;
    }
 

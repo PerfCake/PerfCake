@@ -28,6 +28,8 @@ import java.util.Locale;
  */
 public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
 
+   private int basePower = 0;
+
    /**
     * Creates a new scalable quantity.
     *
@@ -37,7 +39,25 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
     *       The unit of the value.
     */
    public ScalableQuantity(final N number, final String unit) {
+      this(number, 0, unit);
+   }
+
+   /**
+    * Creates a new scalable quantity.
+    *
+    * @param number
+    *       The value.
+    * @param basePower
+    *       The base power of the value.
+    * @param unit
+    *       The unit of the value.
+    */
+   public ScalableQuantity(final N number, final int basePower, final String unit) {
       super(number, unit);
+      if (basePower < getMinPower() || basePower > getMaxPower()) {
+         throw new IllegalArgumentException("Base power " + basePower + " is out of range. It should be between " + getMinPower() + " and " + getMaxPower() + ".");
+      }
+      this.basePower = basePower;
    }
 
    /**
@@ -100,7 +120,7 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
    public String toString() {
       double valuePan = getNumber().doubleValue();
       final double scaleFactor = getScaleFactor().doubleValue();
-      int i = 0;
+      int i = basePower;
       if (valuePan > 1.0) { // need to scale the value down
          while (valuePan >= scaleFactor && i < getMaxPower()) {
             valuePan = valuePan / scaleFactor;

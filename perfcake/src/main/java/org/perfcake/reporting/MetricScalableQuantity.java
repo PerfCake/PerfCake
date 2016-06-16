@@ -30,18 +30,22 @@ public class MetricScalableQuantity extends ScalableQuantity<Double> {
       super(number, unit);
    }
 
+   public MetricScalableQuantity(final Double number, final int basePower, final String unit) {
+      super(number, basePower, unit);
+   }
+
    @Override
    protected Double getScaleFactor() {
       return 1000.0;
    }
 
    @Override
-   protected int getMinPower() {
+   protected final int getMinPower() {
       return -8;
    }
 
    @Override
-   protected int getMaxPower() {
+   protected final int getMaxPower() {
       return 8;
    }
 

@@ -53,6 +53,45 @@ public class ScalableQuantityTest {
    }
 
    @Test
+   public void testMetricScalableQuantityBasePower() {
+      Assert.assertEquals(new MetricScalableQuantity(100.0, 2, "b").toString(), "100.00 Mb");
+      Assert.assertEquals(new MetricScalableQuantity(100.0, -2, "b").toString(), "100.00 μb");
+   }
+
+   @Test
+   public void testBinaryScalableQuantityBasePower() {
+      Assert.assertEquals(new BinaryScalableQuantity(100L, 2, "b").toString(), "100.00 Mib");
+   }
+
+   @Test
+   public void testScalableQuantityBasePowerOutOfRange() {
+      try {
+         new MetricScalableQuantity(100.0, -9, "b").toString();
+         Assert.fail("An " + IllegalArgumentException.class.getName() + " should be thrown here.");
+      } catch (IllegalArgumentException e) {
+         e.printStackTrace();
+      }
+      try {
+         new MetricScalableQuantity(100.0, 9, "b").toString();
+         Assert.fail("An " + IllegalArgumentException.class.getName() + " should be thrown here.");
+      } catch (IllegalArgumentException e) {
+         e.printStackTrace();
+      }
+      try {
+         new BinaryScalableQuantity(100L, -1, "b").toString();
+         Assert.fail("An " + IllegalArgumentException.class.getName() + " should be thrown here.");
+      } catch (IllegalArgumentException e) {
+         e.printStackTrace();
+      }
+      try {
+         new BinaryScalableQuantity(100L, 9, "b").toString();
+         Assert.fail("An " + IllegalArgumentException.class.getName() + " should be thrown here.");
+      } catch (IllegalArgumentException e) {
+         e.printStackTrace();
+      }
+   }
+
+   @Test
    public void testBinaryScalableQuantity() {
       Assert.assertEquals(new BinaryScalableQuantity(1000L, "b").toString(), "1000.00 b");
       Assert.assertEquals(new BinaryScalableQuantity(1024L, "b").toString(), "1.00 Kib");
