@@ -19,11 +19,13 @@
  */
 package org.perfcake.reporting.destinations;
 
-import static org.testng.Assert.*;
+import org.testng.annotations.Test;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ElasticsearchDestinationTest {
 
+   public void testingTest() {
+   }
 }

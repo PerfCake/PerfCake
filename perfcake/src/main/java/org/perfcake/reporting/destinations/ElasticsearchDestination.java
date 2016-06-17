@@ -42,8 +42,11 @@ import java.util.stream.Collectors;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
+import io.searchbox.client.JestResultHandler;
 import io.searchbox.client.config.HttpClientConfig;
+import io.searchbox.core.DocumentResult;
 import io.searchbox.core.Index;
+import io.searchbox.indices.mapping.PutMapping;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -72,7 +75,6 @@ public class ElasticsearchDestination implements Destination {
 
    private JsonArray tagsArray = new JsonArray();
 
-   private ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1, new ThreadFactoryBuilder().setDaemon(true).build());
 
    @Override
    public void open() {
@@ -92,17 +94,32 @@ public class ElasticsearchDestination implements Destination {
       final JestClientFactory factory = new JestClientFactory();
       factory.setHttpClientConfig(builder.build());
       jest = factory.getObject();
+
+      if (configureMapping) {
+         final PutMapping mapping = (new PutMapping.Builder(index, type,
+               "{ \"document\" : { "
+                     + "\"properties\" : { "
+                     + "\"" + PeriodType.TIME.toString().toLowerCase() + "\" : {"
+                     + "\"type\" : \"date\", "
+                     + "\"format\" : \"epoch_millis\""
+                     + "}, "
+                     + "\"" + PerfCakeConst.REAL_TIME_TAG + "\" : {"
+                     + "\"type\" : \"date\", "
+                     + "\"format\" : \"epoch_millis\""
+                     + "} "
+                     + "} "
+                     + "} "
+                     + "}")).build();
+         try {
+            jest.execute(mapping);
+         } catch (IOException e) {
+            log.warn("Unable to configure mapping: ", e);
+         }
+      }
    }
 
    @Override
    public void close() {
-      pool.shutdown();
-      try {
-         pool.awaitTermination(30, TimeUnit.SECONDS);
-      } catch (InterruptedException e) {
-         log.warn("Unable to report all results to Elasticsearch: ", e);
-      }
-
       jest.shutdownClient();
    }
 
@@ -126,13 +143,17 @@ public class ElasticsearchDestination implements Destination {
          }
       });
 
-      pool.submit(() -> {
-         final Index indexInstance = new Index.Builder(jsonObject.toString()).index(index).type(type).build();
+      final Index indexInstance = new Index.Builder(jsonObject.toString()).index(index).type(type).build();
 
-         try {
-            jest.execute(indexInstance);
-         } catch (IOException e) {
-            log.error("Unable to write results to Elasticsearch: ", e);
+      jest.executeAsync(indexInstance, new JestResultHandler<DocumentResult>() {
+         @Override
+         public void completed(final DocumentResult result) {
+            // ignore
+         }
+
+         @Override
+         public void failed(final Exception ex) {
+            log.error("Unable to write results to Elasticsearch: ", ex);
          }
       });
    }
