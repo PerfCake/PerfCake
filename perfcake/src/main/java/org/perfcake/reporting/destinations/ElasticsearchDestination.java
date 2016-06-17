@@ -1,8 +1,8 @@
 /*
  * -----------------------------------------------------------------------\
- * SilverWare
+ * PerfCake
  *  
- * Copyright (C) 2014 - 2016 the original author or authors.
+ * Copyright (C) 2010 - 2016 the original author or authors.
  *  
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,22 @@ package org.perfcake.reporting.destinations;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
+import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.StringUtil;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import io.searchbox.client.JestClient;
@@ -42,6 +49,8 @@ import io.searchbox.core.Index;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ElasticsearchDestination implements Destination {
+
+   private final static Logger log = LogManager.getLogger(ElasticsearchDestination.class);
 
    private String serverUri;
 
@@ -55,12 +64,20 @@ public class ElasticsearchDestination implements Destination {
 
    private String password = "";
 
+   private boolean configureMapping = true;
+
+   private long startTime;
+
    private JestClient jest;
 
    private JsonArray tagsArray = new JsonArray();
 
+   private ThreadPoolExecutor pool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1, new ThreadFactoryBuilder().setDaemon(true).build());
+
    @Override
    public void open() {
+      startTime = Long.getLong(System.getProperty(PerfCakeConst.TIMESTAMP_PROPERTY));
+
       final List<String> serverUris = Arrays.asList(serverUri.split(",")).stream().map(StringUtil::trim).collect(Collectors.toList());
       final HttpClientConfig.Builder builder = new HttpClientConfig.Builder(serverUris);
 
@@ -79,6 +96,13 @@ public class ElasticsearchDestination implements Destination {
 
    @Override
    public void close() {
+      pool.shutdown();
+      try {
+         pool.awaitTermination(30, TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+         log.warn("Unable to report all results to Elasticsearch: ", e);
+      }
+
       jest.shutdownClient();
    }
 
@@ -86,26 +110,31 @@ public class ElasticsearchDestination implements Destination {
    public void report(final Measurement measurement) throws ReportingException {
       final JsonObject jsonObject = new JsonObject();
 
-      jsonObject.addProperty(PeriodType.ITERATION.toString(), measurement.getIteration());
-      jsonObject.addProperty(PeriodType.TIME.toString(), measurement.getTime());
-      jsonObject.addProperty(PeriodType.PERCENTAGE.toString(), measurement.getPercentage());
+      jsonObject.addProperty(PeriodType.ITERATION.toString().toLowerCase(), measurement.getIteration());
+      jsonObject.addProperty(PeriodType.TIME.toString().toLowerCase(), measurement.getTime());
+      jsonObject.addProperty(PeriodType.PERCENTAGE.toString().toLowerCase(), measurement.getPercentage());
+      jsonObject.addProperty(PerfCakeConst.REAL_TIME_TAG, startTime + measurement.getTime());
       jsonObject.add(PerfCakeConst.TAGS_TAG, tagsArray);
 
       measurement.getAll().forEach((k, v) -> {
          if (v instanceof Number) {
             jsonObject.addProperty(k, (Number) v);
+         } else if (v instanceof Quantity) {
+            jsonObject.addProperty(k, ((Quantity) v).getNumber());
          } else {
             jsonObject.addProperty(k, v.toString());
          }
       });
 
-      final Index indexInstance = new Index.Builder(jsonObject.toString()).index(index).type(type).build();
+      pool.submit(() -> {
+         final Index indexInstance = new Index.Builder(jsonObject.toString()).index(index).type(type).build();
 
-      try {
-         jest.execute(indexInstance);
-      } catch (IOException e) {
-         throw new ReportingException("Unable to write results to Elasticsearch: ", e);
-      }
+         try {
+            jest.execute(indexInstance);
+         } catch (IOException e) {
+            log.error("Unable to write results to Elasticsearch: ", e);
+         }
+      });
    }
 
    public String getServerUri() {
@@ -154,5 +183,13 @@ public class ElasticsearchDestination implements Destination {
 
    public void setPassword(final String password) {
       this.password = password;
+   }
+
+   public boolean isConfigureMapping() {
+      return configureMapping;
+   }
+
+   public void setConfigureMapping(final boolean configureMapping) {
+      this.configureMapping = configureMapping;
    }
 }

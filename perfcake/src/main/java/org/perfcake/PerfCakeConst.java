@@ -172,6 +172,11 @@ public final class PerfCakeConst {
    public static final String TAGS_TAG = "tags";
 
    /**
+    * Result name of the test execution real time tag.
+    */
+   public static final String REAL_TIME_TAG = "rt";
+
+   /**
     * Property that can disable templating engine (HTTL) in {@link org.perfcake.util.StringTemplate}.
     */
    public static final String DISABLE_TEMPLATES_PROPERTY = "perfcake.templates.disabled";
