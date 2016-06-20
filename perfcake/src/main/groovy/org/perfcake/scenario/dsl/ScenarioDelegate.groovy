@@ -76,7 +76,7 @@ class PropertiesBacked {
 }
 
 /**
- * Furthermore, the object can have a class name and the automatic properties.
+ * Furthermore, the object can have a class name and the automatic PROPERTIES.
  */
 class ObjectWithClassName extends PropertiesBacked {
    def className
@@ -271,7 +271,7 @@ class DslScenario extends PropertiesBacked {
             builder.addMessage(it.buildMessageTemplate())
 
             // this must be done after building the message, as array of validators may need to be obtained
-            // from properties during the message template creation
+            // from PROPERTIES during the message template creation
             it.validators.each {validatorId ->
                if (!validatorIds.contains(validatorId)) {
                   throw new PerfCakeException("Reference '$validatorId' to non-existing validator.")
@@ -543,7 +543,7 @@ class Message extends PropertiesBacked {
          throw new PerfCakeException("Both 'uri' and 'content' cannot be set at the same time on message ${this.toString()}.")
       }
 
-      // if validator ids were specified as a list, they ended up in the object properties
+      // if validator ids were specified as a list, they ended up in the object PROPERTIES
       if (properties.get('validate')) {
          validators.addAll(properties.get('validate'))
          properties.remove('validate')
@@ -660,7 +660,7 @@ abstract class BaseDslScriptClass extends Script {
       Long.metaClass.getTimes = {-> delegate}
    }
 
-   // all missing method calls are stored as generic scenario properties
+   // all missing method calls are stored as generic scenario PROPERTIES
    def methodMissing(String name, args) {
       def scenario = this.binding.scenario
       scenario.properties[name] = args[0]
