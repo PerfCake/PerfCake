@@ -127,6 +127,12 @@
          <artifactId>jest</artifactId>
       </dependency>
 
+      <!-- InfluxDB client -->
+      <dependency>
+         <groupId>org.influxdb</groupId>
+         <artifactId>influxdb-java</artifactId>
+      </dependency>
+
       <!-- Groovy -->
       <dependency>
          <groupId>org.codehaus.groovy</groupId>

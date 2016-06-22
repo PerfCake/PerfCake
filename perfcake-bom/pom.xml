@@ -57,6 +57,7 @@
 
       <version.camel>2.16.1</version.camel>
       <version.drools>6.3.0.Final</version.drools>
+      <version.influxdb>2.2</version.influxdb>
       <version.jest>2.0.3</version.jest>
       <version.groovy>2.4.5</version.groovy>
       <version.slf4j>1.7.21</version.slf4j>
@@ -148,6 +149,13 @@
             <groupId>io.searchbox</groupId>
             <artifactId>jest</artifactId>
             <version>${version.jest}</version>
+         </dependency>
+
+         <!-- InfluxDB client -->
+         <dependency>
+            <groupId>org.influxdb</groupId>
+            <artifactId>influxdb-java</artifactId>
+            <version>${version.influxdb}</version>
          </dependency>
 
          <!-- Groovy -->

@@ -24,7 +24,7 @@ import org.perfcake.PerfCakeException;
 import java.util.Random;
 
 /**
- * Sequence of random numbers in the given range <min, max).
+ * Sequence of random numbers in the given range &lt;min, max).
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
