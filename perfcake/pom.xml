@@ -129,6 +129,10 @@
 
       <!-- InfluxDB client -->
       <dependency>
+         <groupId>com.google.guava</groupId>
+         <artifactId>guava</artifactId>
+      </dependency>
+      <dependency>
          <groupId>org.influxdb</groupId>
          <artifactId>influxdb-java</artifactId>
       </dependency>

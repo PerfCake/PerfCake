@@ -75,6 +75,7 @@
       <version.commons.cli>1.3.1</version.commons.cli>
       <version.hdrhistogram>2.1.8</version.hdrhistogram>
       <version.vertx>3.2.0</version.vertx>
+      <version.guava>19.0</version.guava>
 
       <!-- Tools -->
       <version.findbugs>1.3.2</version.findbugs>
@@ -152,6 +153,11 @@
          </dependency>
 
          <!-- InfluxDB client -->
+         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${version.guava}</version>
+         </dependency>
          <dependency>
             <groupId>org.influxdb</groupId>
             <artifactId>influxdb-java</artifactId>

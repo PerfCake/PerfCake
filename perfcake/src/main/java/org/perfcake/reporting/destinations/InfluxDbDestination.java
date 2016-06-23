@@ -43,9 +43,9 @@ public class InfluxDbDestination implements Destination {
 
    private String measurement = "results";
 
-   private String userName = "";
+   private String userName = "admin";
 
-   private String password = "";
+   private String password = "admin";
 
    private String tags = "";
 
@@ -82,5 +82,53 @@ public class InfluxDbDestination implements Destination {
       pBuilder.fields(measurement.getAll());
 
       influxDb.write(database, "default", pBuilder.build());
+   }
+
+   public String getServerUrl() {
+      return serverUrl;
+   }
+
+   public void setServerUrl(final String serverUrl) {
+      this.serverUrl = serverUrl;
+   }
+
+   public String getDatabase() {
+      return database;
+   }
+
+   public void setDatabase(final String database) {
+      this.database = database;
+   }
+
+   public String getMeasurement() {
+      return measurement;
+   }
+
+   public void setMeasurement(final String measurement) {
+      this.measurement = measurement;
+   }
+
+   public String getUserName() {
+      return userName;
+   }
+
+   public void setUserName(final String userName) {
+      this.userName = userName;
+   }
+
+   public String getPassword() {
+      return password;
+   }
+
+   public void setPassword(final String password) {
+      this.password = password;
+   }
+
+   public String getTags() {
+      return tags;
+   }
+
+   public void setTags(final String tags) {
+      this.tags = tags;
    }
 }

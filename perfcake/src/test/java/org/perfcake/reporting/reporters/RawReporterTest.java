@@ -76,6 +76,7 @@ public class RawReporterTest extends TestSetup {
       }
 
       // there must be some time information at the end
-      Assert.assertEquals(replayLines.get(replayLines.size() - 1).split(";", 2)[0], "0:00:02");
+      final String time = replayLines.get(replayLines.size() - 1).split(";", 2)[0];
+      Assert.assertTrue(time.equals("0:00:02") || time.equals("0:00:03"));
    }
 }
