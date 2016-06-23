@@ -50,7 +50,7 @@ import java.util.Properties;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @see org.perfcake.message.sender.MessageSenderManager
  */
-class SenderTask implements Runnable {
+public class SenderTask implements Runnable {
 
    /**
     * Sender task's logger.
@@ -214,6 +214,17 @@ class SenderTask implements Runnable {
             senderManager.releaseSender(sender);
          }
       }
+   }
+
+   /**
+    * Notifies the sender task of receiving a response from a separate message channel.
+    * This is calle from {@link org.perfcake.message.correlator.Correlator} when {@link org.perfcake.message.receiver.Receiver} is used.
+    *
+    * @param response
+    *       The response corresponding to the original request.
+    */
+   public void registerResponse(final Serializable response) {
+      // nop
    }
 
    /**
