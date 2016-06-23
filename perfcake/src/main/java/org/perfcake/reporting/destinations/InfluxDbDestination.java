@@ -22,6 +22,7 @@ package org.perfcake.reporting.destinations;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
+import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 
 import com.google.gson.JsonArray;
@@ -79,7 +80,15 @@ public class InfluxDbDestination implements Destination {
       pBuilder.addField(PeriodType.PERCENTAGE.toString().toLowerCase(), measurement.getPercentage());
       pBuilder.addField(PerfCakeConst.TAGS_TAG, tagsArray.toString());
 
-      pBuilder.fields(measurement.getAll());
+      measurement.getAll().forEach((k, v) -> {
+         if (v instanceof Number) {
+            pBuilder.addField(k, (Number) v);
+         } else if (v instanceof Quantity) {
+            pBuilder.addField(k, ((Quantity) v).getNumber());
+         } else {
+            pBuilder.addField(k, v.toString());
+         }
+      });
 
       influxDb.write(database, "default", pBuilder.build());
    }

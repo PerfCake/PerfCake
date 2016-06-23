@@ -115,6 +115,11 @@
             <version>${version.log4j}</version>
          </dependency>
          <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jul</artifactId>
+            <version>${version.log4j}</version>
+         </dependency>
+         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${version.slf4j}</version>
