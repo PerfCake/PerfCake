@@ -213,6 +213,10 @@ public class ScenarioExecution {
       }
 
       parseUserProperties();
+
+      if (System.getProperty(PerfCakeConst.KEYSTORES_DIR_PROPERTY) == null) {
+         System.setProperty(PerfCakeConst.KEYSTORES_DIR_PROPERTY, Utils.determineDefaultLocation("keystores"));
+      }
    }
 
    /**

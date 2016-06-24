@@ -20,12 +20,18 @@
 package org.perfcake.reporting.destinations;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.PerfCakeException;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
+import org.perfcake.util.SslSocketFactoryFactory;
 
 import com.google.gson.JsonArray;
+import com.squareup.okhttp.CertificatePinner;
+import com.squareup.okhttp.OkHttpClient;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
@@ -33,10 +39,18 @@ import org.influxdb.dto.Point;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+
+import retrofit.client.OkClient;
+
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class InfluxDbDestination implements Destination {
+
+   private static final Logger log = LogManager.getLogger(InfluxDbDestination.class);
 
    private String serverUrl = "";
 
@@ -51,28 +65,79 @@ public class InfluxDbDestination implements Destination {
    private String tags = "";
 
    /**
+    * SSL key store location.
+    */
+   private String keyStore;
+
+   /**
+    * SSL key store password.
+    */
+   private String keyStorePassword;
+
+   /**
+    * SSL trust store location.
+    */
+   private String trustStore;
+
+   /**
+    * SSL trust store password.
+    */
+   private String trustStorePassword;
+
+   /**
+    * Initialized SSL factory.
+    */
+   private SSLSocketFactory sslFactory;
+
+   /**
     * Cached array with tags.
     */
    private JsonArray tagsArray = new JsonArray();
 
-   private InfluxDB influxDb;
+   private InfluxDB influxDb = null;
 
    @Override
    public void open() {
       Arrays.asList(tags.split(",")).stream().forEach(tagsArray::add);
 
-      influxDb = InfluxDBFactory.connect(serverUrl, userName, password);
-      influxDb.createDatabase(database);
-      influxDb.enableBatch(100, 500, TimeUnit.MILLISECONDS);
+      try {
+         if ((keyStore != null && !"".equals(keyStore)) || (trustStore != null && !"".equals(trustStore))) {
+            sslFactory = SslSocketFactoryFactory.newSslSocketFactory(keyStore, keyStorePassword, trustStore, trustStorePassword);
+         }
+      } catch (PerfCakeException e) {
+         log.warn("Unable to initialize SSL socket factory: ", e);
+      }
+
+      try {
+         if (sslFactory != null) {
+            final OkHttpClient client = new OkHttpClient();
+            client.setSslSocketFactory(sslFactory);
+            client.setHostnameVerifier((hostname, session) -> true);
+            influxDb = InfluxDBFactory.connect(serverUrl, userName, password, new OkClient(client));
+         } else {
+            influxDb = InfluxDBFactory.connect(serverUrl, userName, password);
+         }
+         influxDb.createDatabase(database);
+         influxDb.enableBatch(100, 500, TimeUnit.MILLISECONDS);
+      } catch (RuntimeException rte) {
+         influxDb = null;
+         log.error("Unable to connect to InfluxDb: ", rte);
+      }
    }
 
    @Override
    public void close() {
-      influxDb.disableBatch(); // flushes batch
+      if (influxDb != null) {
+         influxDb.disableBatch(); // flushes batch
+      }
    }
 
    @Override
    public void report(final Measurement measurement) throws ReportingException {
+      if (influxDb == null) {
+         throw new ReportingException("Not connected to InfluxDb.");
+      }
+
       Point.Builder pBuilder = Point.measurement(this.measurement).time(System.currentTimeMillis(), TimeUnit.MILLISECONDS);
 
       pBuilder.addField(PeriodType.TIME.toString().toLowerCase(), measurement.getTime());
@@ -139,5 +204,37 @@ public class InfluxDbDestination implements Destination {
 
    public void setTags(final String tags) {
       this.tags = tags;
+   }
+
+   public String getKeyStore() {
+      return keyStore;
+   }
+
+   public void setKeyStore(final String keyStore) {
+      this.keyStore = keyStore;
+   }
+
+   public String getKeyStorePassword() {
+      return keyStorePassword;
+   }
+
+   public void setKeyStorePassword(final String keyStorePassword) {
+      this.keyStorePassword = keyStorePassword;
+   }
+
+   public String getTrustStore() {
+      return trustStore;
+   }
+
+   public void setTrustStore(final String trustStore) {
+      this.trustStore = trustStore;
+   }
+
+   public String getTrustStorePassword() {
+      return trustStorePassword;
+   }
+
+   public void setTrustStorePassword(final String trustStorePassword) {
+      this.trustStorePassword = trustStorePassword;
    }
 }

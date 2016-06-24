@@ -82,6 +82,11 @@ public final class PerfCakeConst {
    public static final String PLUGINS_DIR_PROPERTY = "perfcake.plugins.dir";
 
    /**
+    * Name of the system property that specifies SSL key store directory.
+    */
+   public static final String KEYSTORES_DIR_PROPERTY = "perfcake.keystores.dir";
+
+   /**
     * Name of the system property that stores path to the property file with system properties.
     */
    public static final String PROPERTIES_FILE_PROPERTY = "perfcake.properties.file";
