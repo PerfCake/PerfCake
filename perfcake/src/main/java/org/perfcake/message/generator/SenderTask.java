@@ -23,6 +23,7 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.ReceivedMessage;
+import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Semaphore;
 
 /**
  * Executes a single task of sending messages from the message store
@@ -91,6 +93,22 @@ public class SenderTask implements Runnable {
     * The time when the task was enqueued.
     */
    private long enqueueTime = System.nanoTime();
+
+   /**
+    * Correlator to correlate message received from a separate channel.
+    */
+   private Correlator correlator = null;
+
+   /**
+    * A response matched by a correlator.
+    */
+   private Serializable correlatedResponse = null;
+
+   /**
+    * Synchronize on waiting for a message from a correlator.
+    * Must be set before correlator is used.
+    */
+   private Semaphore waitForResponse;
 
    /**
     * Creates a new task to send a message.
@@ -218,13 +236,14 @@ public class SenderTask implements Runnable {
 
    /**
     * Notifies the sender task of receiving a response from a separate message channel.
-    * This is calle from {@link org.perfcake.message.correlator.Correlator} when {@link org.perfcake.message.receiver.Receiver} is used.
+    * This is called from {@link org.perfcake.message.correlator.Correlator} when {@link org.perfcake.message.receiver.Receiver} is used.
     *
     * @param response
     *       The response corresponding to the original request.
     */
    public void registerResponse(final Serializable response) {
-      // nop
+      correlatedResponse = response;
+      waitForResponse.release();
    }
 
    /**
@@ -275,5 +294,16 @@ public class SenderTask implements Runnable {
     */
    public void setSequenceManager(final SequenceManager sequenceManager) {
       this.sequenceManager = sequenceManager;
+   }
+
+   /**
+    * Sets the correlator that is used to notify us about receiving a response from a separate message channel.
+    *
+    * @param correlator
+    *       The correlator to be used.
+    */
+   public void setCorrelator(final Correlator correlator) {
+      waitForResponse = new Semaphore(0);
+      this.correlator = correlator;
    }
 }
