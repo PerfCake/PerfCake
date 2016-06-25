@@ -80,9 +80,9 @@ public class ChannelSenderSocketTest {
          final ChannelSender sender = (ChannelSenderSocket) ObjectFactory.summonInstance(ChannelSenderSocket.class.getName(), senderProperties);
 
          sender.init();
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
 
-         final Serializable response = sender.doSend(message, null, null);
+         final Serializable response = sender.doSend(message, null);
          Assert.assertEquals(response, "fish");
 
          sender.postSend(message);
@@ -101,9 +101,9 @@ public class ChannelSenderSocketTest {
          final ChannelSender sender = (ChannelSenderSocket) ObjectFactory.summonInstance(ChannelSenderSocket.class.getName(), senderProperties);
 
          sender.init();
-         sender.preSend(null, null, null);
+         sender.preSend(null, null);
 
-         final Serializable response = sender.doSend(null, null, null);
+         final Serializable response = sender.doSend(null, null);
          Assert.assertNull(response);
 
          sender.postSend(null);

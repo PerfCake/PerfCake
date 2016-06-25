@@ -19,21 +19,13 @@
  */
 package org.perfcake.message.sender;
 
-import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.util.SslSocketFactoryFactory;
-import org.perfcake.util.Utils;
 
-import java.io.InputStream;
-import java.security.KeyStore;
-import java.util.Map;
 import java.util.Properties;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Sends messages via HTTPs protocol.
@@ -61,8 +53,8 @@ public class HttpsSender extends HttpSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
       ((HttpsURLConnection) requestConnection).setSSLSocketFactory(sslFactory);
    }
 

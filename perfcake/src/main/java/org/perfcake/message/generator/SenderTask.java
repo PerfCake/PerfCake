@@ -124,9 +124,9 @@ public class SenderTask implements Runnable {
       this.canalStreet = canalStreet;
    }
 
-   private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final Properties messageAttributes, final MeasurementUnit mu) {
+   private Serializable sendMessage(final MessageSender sender, final Message message, final Properties messageAttributes, final MeasurementUnit mu) {
       try {
-         sender.preSend(message, messageHeaders, messageAttributes);
+         sender.preSend(message, messageAttributes);
       } catch (final Exception e) {
          if (log.isErrorEnabled()) {
             log.error("Unable to initialize sending of a message: ", e);
@@ -138,7 +138,7 @@ public class SenderTask implements Runnable {
 
       Serializable result = null;
       try {
-         result = sender.send(message, messageHeaders, mu);
+         result = sender.send(message, mu);
       } catch (final Exception e) {
          mu.setFailure(e);
          if (log.isErrorEnabled()) {
@@ -169,7 +169,6 @@ public class SenderTask implements Runnable {
 
       final Properties messageAttributes = sequenceManager != null ? sequenceManager.getSnapshot() : new Properties();
 
-      final HashMap<String, String> messageHeaders = new HashMap<>();
       MessageSender sender = null;
       ReceivedMessage receivedMessage;
       try {
@@ -198,7 +197,7 @@ public class SenderTask implements Runnable {
                   requestSize = requestSize + (currentMessage.getPayload().toString().length() * multiplicity);
 
                   for (int i = 0; i < multiplicity; i++) {
-                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
+                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
                      if (receivedMessage.getResponse() != null) {
                         responseSize = responseSize + receivedMessage.getResponse().toString().length();
                      }
@@ -209,7 +208,7 @@ public class SenderTask implements Runnable {
 
                }
             } else {
-               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, messageAttributes, mu), null, null, messageAttributes);
+               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageAttributes, mu), null, null, messageAttributes);
                if (validationManager.isEnabled()) {
                   validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                }

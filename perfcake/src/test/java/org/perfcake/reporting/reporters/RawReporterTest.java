@@ -37,6 +37,7 @@ import java.util.List;
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = { "integration" })
 public class RawReporterTest extends TestSetup {
 
    @Test

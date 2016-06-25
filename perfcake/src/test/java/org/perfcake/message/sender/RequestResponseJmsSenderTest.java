@@ -127,7 +127,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
          org.perfcake.message.Message message = new org.perfcake.message.Message();
          final String payload = "Hello World!";
          message.setPayload(payload);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          Serializable response = sender.send(message, null);
          sender.postSend(message);
 
@@ -144,7 +144,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
          message = new org.perfcake.message.Message();
          final Long payloadObject = 42L;
          message.setPayload(payloadObject);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          response = sender.send(message, null);
          sender.postSend(message);
 
@@ -161,7 +161,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
          sender.setMessageType(JmsSender.MessageType.BYTEARRAY);
          message = new org.perfcake.message.Message();
          message.setPayload(payload);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          response = sender.send(message, null);
          sender.postSend(message);
 
@@ -227,7 +227,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
             final org.perfcake.message.Message message = new org.perfcake.message.Message();
             message.setPayload(collidePayload);
-            collideSender.preSend(message, null, null);
+            collideSender.preSend(message, null);
             collideSender.send(message, null);
             collideSender.postSend(message);
          } finally {
@@ -237,7 +237,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
          final org.perfcake.message.Message message = new org.perfcake.message.Message();
          final String payload = "Correlating Hello World!";
          message.setPayload(payload);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          final Serializable response = sender.send(message, null);
          sender.postSend(message);
 
@@ -288,7 +288,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
          final org.perfcake.message.Message message = new org.perfcake.message.Message();
          final String payload = "Timeout Hello World!";
          message.setPayload(payload);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          try {
             final Serializable response = sender.send(message, null);
             Assert.assertFalse(true, "The expected exception was not thrown.");

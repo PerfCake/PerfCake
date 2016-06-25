@@ -31,7 +31,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -108,15 +107,15 @@ public class TestSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
       if (log.isDebugEnabled()) {
          log.debug("Sending to " + safeGetTarget(messageAttributes) + "...");
       }
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
       final long count = counter.incrementAndGet();
 
       if (log.isDebugEnabled()) {
@@ -203,14 +202,14 @@ public class TestSender extends AbstractSender {
    }
 
    /**
-    * Resets the iteration counter (how many times the {@link #doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)} method has been called).
+    * Resets the iteration counter (how many times the {@link #doSend(org.perfcake.message.Message, org.perfcake.reporting.MeasurementUnit)} method has been called).
     */
    public static void resetCounter() {
       counter.set(0);
    }
 
    /**
-    * Gets the iteration counter (how many times the {@link #doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)} method has been called).
+    * Gets the iteration counter (how many times the {@link #doSend(org.perfcake.message.Message, org.perfcake.reporting.MeasurementUnit)} method has been called).
     *
     * @return The iteration counter value.
     */

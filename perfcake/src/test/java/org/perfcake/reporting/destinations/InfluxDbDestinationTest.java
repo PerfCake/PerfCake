@@ -40,6 +40,7 @@ import io.vertx.ext.web.handler.BodyHandler;
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = { "unit" })
 public class InfluxDbDestinationTest extends TestSetup {
 
    @Test

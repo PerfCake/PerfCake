@@ -27,9 +27,7 @@ import org.perfcake.util.ObjectFactory;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -67,8 +65,8 @@ public class HttpSenderTest {
          Assert.assertEquals(sender.getMethod(), Method.GET);
          Assert.assertNull(sender.getExpectedResponseCodes());
 
-         final Map<String, String> additionalMessageProperties = new HashMap<>();
-         additionalMessageProperties.put(TEST_ADDITIONAL_PROPERTY_NAME, TEST_ADDITIONAL_PROPERTY_VALUE);
+         final Properties additionalMessageProperties = new Properties();
+         additionalMessageProperties.setProperty(TEST_ADDITIONAL_PROPERTY_NAME, TEST_ADDITIONAL_PROPERTY_VALUE);
 
          final Message noPayloadMessage = new Message();
          noPayloadMessage.setHeader(TEST_HEADER_NAME, TEST_HEADER_VALUE);
@@ -101,7 +99,7 @@ public class HttpSenderTest {
 
          final Message noPayloadMessage = new Message();
 
-         response = _sendMessage(sender, noPayloadMessage, null, messageAttributes);
+         response = _sendMessage(sender, noPayloadMessage, messageAttributes);
 
          Assert.assertEquals(sender.getDynamicMethod(messageAttributes), Method.valueOf(METHOD_VALUE));
       } catch (final Exception e) {
@@ -257,15 +255,15 @@ public class HttpSenderTest {
       Assert.assertTrue(response.contains("500 Internal Server Error"));
    }
 
-   private String _sendMessage(final MessageSender sender, final Message message, final Map<String, String> additionalProperties) throws Exception {
-      return _sendMessage(sender, message, additionalProperties, null);
+   private String _sendMessage(final MessageSender sender, final Message message) throws Exception {
+      return _sendMessage(sender, message, null);
    }
 
-   private String _sendMessage(final MessageSender sender, final Message message, final Map<String, String> additionalProperties, final Properties messageAttributes) throws Exception {
+   private String _sendMessage(final MessageSender sender, final Message message, final Properties messageAttributes) throws Exception {
       String response = null;
       sender.init();
-      sender.preSend(message, additionalProperties, messageAttributes);
-      response = (String) sender.send(message, additionalProperties, null);
+      sender.preSend(message, messageAttributes);
+      response = (String) sender.send(message, null);
       sender.postSend(message);
       sender.close();
       return response;

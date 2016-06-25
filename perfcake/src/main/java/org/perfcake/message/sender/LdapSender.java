@@ -30,7 +30,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Properties;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -179,15 +178,15 @@ public class LdapSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
       if (searchBase == null || filter == null) {
          throw new PerfCakeException("LDAP search base or filter is not set. Both properties have to be set up");
       }
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
       final NamingEnumeration<SearchResult> results = ctx.search(searchBase, filter, searchControls);
       final ArrayList<SearchResult> res = new ArrayList<SearchResult>();
       while (results.hasMoreElements()) {

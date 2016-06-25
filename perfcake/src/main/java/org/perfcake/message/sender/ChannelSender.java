@@ -25,7 +25,6 @@ import org.perfcake.message.Message;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -62,8 +61,8 @@ abstract public class ChannelSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
 
       // Encode message payload into buffer
       if (message != null && message.getPayload() != null) {

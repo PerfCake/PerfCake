@@ -34,13 +34,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
 import java.util.Properties;
 
 /**
  * Sends SQL queries via JDBC.
- *
- * TODO: Report individual result lines to result validator
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -103,13 +100,13 @@ public class JdbcSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
       statement = connection.createStatement();
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
       final boolean result = statement.execute((String) message.getPayload());
       Serializable retVal;
       if (result) {

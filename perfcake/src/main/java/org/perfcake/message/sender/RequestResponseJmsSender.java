@@ -27,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import javax.jms.BytesMessage;
@@ -237,17 +236,17 @@ public class RequestResponseJmsSender extends JmsSender {
    }
 
    @Override
-   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final org.perfcake.message.Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
       if (useCorrelationId) { // set the correlation ID
          mess.setJMSCorrelationID(correlationId);
       }
    }
 
    @Override
-   public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final org.perfcake.message.Message message, final MeasurementUnit measurementUnit) throws Exception {
       // send the request message
-      super.doSend(message, properties, measurementUnit);
+      super.doSend(message, measurementUnit);
 
       try {
          if (transacted) {
