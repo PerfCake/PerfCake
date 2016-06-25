@@ -20,15 +20,18 @@
 package org.perfcake.reporting.destinations;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.PerfCakeException;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
+import org.perfcake.util.SslSocketFactoryFactory;
 import org.perfcake.util.StringUtil;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -39,6 +42,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import javax.net.ssl.SSLContext;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
@@ -104,6 +108,31 @@ public class ElasticsearchDestination implements Destination {
    private boolean configureMapping = true;
 
    /**
+    * SSL key store location.
+    */
+   private String keyStore;
+
+   /**
+    * SSL key store password.
+    */
+   private String keyStorePassword;
+
+   /**
+    * SSL trust store location.
+    */
+   private String trustStore;
+
+   /**
+    * SSL trust store password.
+    */
+   private String trustStorePassword;
+
+   /**
+    * Initialized SSL context.
+    */
+   private SSLContext sslContext = null;
+
+   /**
     * Time when the test was started.
     */
    private long startTime;
@@ -127,10 +156,22 @@ public class ElasticsearchDestination implements Destination {
    public void open() {
       startTime = Long.getLong(PerfCakeConst.TIMESTAMP_PROPERTY);
 
+      try {
+         if ((keyStore != null && !"".equals(keyStore)) || (trustStore != null && !"".equals(trustStore))) {
+            sslContext = SslSocketFactoryFactory.newSslContext(keyStore, keyStorePassword, trustStore, trustStorePassword);
+         }
+      } catch (PerfCakeException e) {
+         log.warn("Unable to initialize SSL socket factory: ", e);
+      }
+
       final List<String> serverUris = Arrays.asList(serverUri.split(",")).stream().map(StringUtil::trim).collect(Collectors.toList());
       final HttpClientConfig.Builder builder = new HttpClientConfig.Builder(serverUris);
 
-      Arrays.asList(tags.split(",")).stream().forEach(tagsArray::add);
+      if (sslContext != null) {
+         builder.sslSocketFactory(new SSLConnectionSocketFactory(sslContext));
+      }
+
+      Arrays.asList(tags.split(",")).stream().map(StringUtil::trim).forEach(tagsArray::add);
 
       builder.multiThreaded(true);
 
@@ -228,19 +269,19 @@ public class ElasticsearchDestination implements Destination {
    }
 
    /**
-    * Gets the comma separated list of Elastisearch servers including protocol and port number.
+    * Gets the comma separated list of Elasticsearch servers including protocol and port number.
     *
-    * @return The comma separated list of Elastisearch servers including protocol and port number.
+    * @return The comma separated list of Elasticsearch servers including protocol and port number.
     */
    public String getServerUri() {
       return serverUri;
    }
 
    /**
-    * Sets the comma separated list of Elastisearch servers including protocol and port number.
+    * Sets the comma separated list of Elasticsearch servers including protocol and port number.
     *
     * @param serverUri
-    *       The comma separated list of Elastisearch servers including protocol and port number.
+    *       The comma separated list of Elasticsearch servers including protocol and port number.
     */
    public void setServerUri(final String serverUri) {
       this.serverUri = serverUri;
@@ -379,5 +420,81 @@ public class ElasticsearchDestination implements Destination {
     */
    public void setTimeout(final int timeout) {
       this.timeout = timeout;
+   }
+
+   /**
+    * Gets the SSL key store location.
+    *
+    * @return The SSL key store location.
+    */
+   public String getKeyStore() {
+      return keyStore;
+   }
+
+   /**
+    * Sets the SSL key store location.
+    *
+    * @param keyStore
+    *       The SSL key store location.
+    */
+   public void setKeyStore(final String keyStore) {
+      this.keyStore = keyStore;
+   }
+
+   /**
+    * Gets the SSL key store password.
+    *
+    * @return The SSL key store password.
+    */
+   public String getKeyStorePassword() {
+      return keyStorePassword;
+   }
+
+   /**
+    * Sets the SSL key store password.
+    *
+    * @param keyStorePassword
+    *       The SSL key store password.
+    */
+   public void setKeyStorePassword(final String keyStorePassword) {
+      this.keyStorePassword = keyStorePassword;
+   }
+
+   /**
+    * Gets the SSL trust store location.
+    *
+    * @return The SSL trust store location.
+    */
+   public String getTrustStore() {
+      return trustStore;
+   }
+
+   /**
+    * Sets the SSL trust store location.
+    *
+    * @param trustStore
+    *       The SSL trust store location.
+    */
+   public void setTrustStore(final String trustStore) {
+      this.trustStore = trustStore;
+   }
+
+   /**
+    * Gets the SSL trust store password.
+    *
+    * @return The SSL trust store password.
+    */
+   public String getTrustStorePassword() {
+      return trustStorePassword;
+   }
+
+   /**
+    * Sets the SSL trust store password.
+    *
+    * @param trustStorePassword
+    *       The SSL trust store password.
+    */
+   public void setTrustStorePassword(final String trustStorePassword) {
+      this.trustStorePassword = trustStorePassword;
    }
 }

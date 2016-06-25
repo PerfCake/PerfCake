@@ -68,7 +68,7 @@ public class SslSocketFactoryFactory {
    }
 
    /**
-    * Gets a new SSL socket factory configured with the provided key and trust store.
+    * Gets a new SSL socket factory configured with the provided key and trust store using TLS protocol.
     *
     * @param keyStore
     *       Key store location.
@@ -104,6 +104,46 @@ public class SslSocketFactoryFactory {
     *       When it was not possible to create the SSL socket factory.
     */
    public static SSLSocketFactory newSslSocketFactory(final String keyStore, final String keyStorePassword, final String trustStore, final String trustStorePassword, final String protocol) throws PerfCakeException {
+      return newSslContext(keyStore, keyStorePassword, trustStore, trustStorePassword, protocol).getSocketFactory();
+   }
+
+   /**
+    * Gets a new SSL context configured with the provided key and trust store using TLS protocol.
+    *
+    * @param keyStore
+    *       Key store location.
+    * @param keyStorePassword
+    *       Key store password.
+    * @param trustStore
+    *       Trust store location.
+    * @param trustStorePassword
+    *       Trust store password.
+    * @return The new SSL context configured with the provided key and trust store.
+    * @throws PerfCakeException
+    *       When it was not possible to create the SSL context.
+    */
+   public static SSLContext newSslContext(final String keyStore, final String keyStorePassword, final String trustStore, final String trustStorePassword) throws PerfCakeException {
+      return newSslContext(keyStore, keyStorePassword, trustStore, trustStorePassword, "TLS");
+   }
+
+   /**
+    * Gets a new SSL context configured with the provided key and trust store.
+    *
+    * @param keyStore
+    *       Key store location.
+    * @param keyStorePassword
+    *       Key store password.
+    * @param trustStore
+    *       Trust store location.
+    * @param trustStorePassword
+    *       Trust store password.
+    * @param protocol
+    *       Protocol for the factory (TLS, SSL...).
+    * @return The new SSL context configured with the provided key and trust store.
+    * @throws PerfCakeException
+    *       When it was not possible to create the SSL context.
+    */
+   public static SSLContext newSslContext(final String keyStore, final String keyStorePassword, final String trustStore, final String trustStorePassword, final String protocol) throws PerfCakeException {
       KeyStore keyStore_;
       KeyStore trustStore_;
       KeyManagerFactory keyManager = null;
@@ -129,12 +169,12 @@ public class SslSocketFactoryFactory {
             trustManager.init(trustStore_);
          }
 
-         final SSLContext ctx = SSLContext.getInstance("TLS");
+         final SSLContext ctx = SSLContext.getInstance(protocol);
          ctx.init(keyManager == null ? null : keyManager.getKeyManagers(), trustManager == null ? null : trustManager.getTrustManagers(), null);
 
-         return ctx.getSocketFactory();
+         return ctx;
       } catch (GeneralSecurityException | IOException e) {
-         throw new PerfCakeException("Unable to prepare SSL socket factory: ", e);
+         throw new PerfCakeException("Unable to prepare SSL context: ", e);
       }
    }
 }

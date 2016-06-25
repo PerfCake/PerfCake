@@ -47,7 +47,7 @@ import retrofit.client.OkClient;
  * Writes the resulting data to InfluxDb using a simple HTTP REST client.
  * The reported data have information about the test progress (time in milliseconds since start, percentage and iteration),
  * real time of each result, and the complete results map. Quantities are stored without their unit.
- * Supports SSL connection. Teh database is by default created.
+ * Supports SSL connection. The database is by default created on connection.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -113,7 +113,7 @@ public class InfluxDbDestination implements Destination {
    /**
     * Initialized SSL factory.
     */
-   private SSLSocketFactory sslFactory;
+   private SSLSocketFactory sslFactory = null;
 
    /**
     * Cached array with tags.
