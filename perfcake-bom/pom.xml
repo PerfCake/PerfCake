@@ -389,7 +389,6 @@
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
             <version>${version.vertx}</version>
-            <scope>test</scope>
          </dependency>
          <dependency>
             <groupId>io.netty</groupId>

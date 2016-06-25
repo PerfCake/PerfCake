@@ -19,18 +19,40 @@
  */
 package org.perfcake.message.receiver;
 
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.correlator.Correlator;
 
 /**
- * Represents a thread for receiving messages from a separate message channel.
+ * Represents a receiver for receiving messages from a separate message channel.
  * All received messages are passed to the correlator which notifies the correct {@link org.perfcake.message.generator.SenderTask}.
- * Receivers are started as threads and stopped with {@link Thread#interrupt()}. It is up to the receiver to react accordingly.
- * Receivers are executed as daemon threads and can be terminated at the end of the test execution if they do not react to the interruption.
+ * A receiver must start the defined (using the {@link Receiver#setThreads(int)} method) threads to receive messages.
+ * These threads are later stopped with {@link Thread#interrupt()}. It is up to the receiver threads to react accordingly.
+ * Receivers must be executed as daemon threads and can be terminated at the end of the test execution if they do not react to the interruption.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public interface Receiver extends Runnable {
+public interface Receiver {
 
+   /**
+    * Sets the number of threads that will be receiving responses.
+    * @param threadCount The number of threads that will be receiving responses.
+    */
+   void setThreads(final int threadCount);
+
+   /**
+    * Sets the correlator that will be handling the responses.
+    * @param correlator The correlator that will be handling the responses.
+    */
    void setCorrelator(final Correlator correlator);
 
+   /**
+    * Starts all receiver threads.
+    * @throws PerfCakeException When it was not possible to start all threads.
+    */
+   void start() throws PerfCakeException;
+
+   /**
+    * Stops all the receiver threads.
+    */
+   void stop();
 }
