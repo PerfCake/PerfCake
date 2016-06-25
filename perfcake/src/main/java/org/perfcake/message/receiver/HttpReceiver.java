@@ -73,7 +73,7 @@ public class HttpReceiver extends AbstractReceiver {
       Router router = Router.router(vertx);
       router.route().handler(BodyHandler.create());
       router.route().blockingHandler(context -> {
-         correlator.registerResponse(context.getBodyAsString());
+         correlator.registerResponse(context.getBodyAsString(), context.request().headers());
          final HttpServerResponse response = context.response();
          response.setStatusCode(httpStatusCode);
 

@@ -25,6 +25,8 @@ import org.perfcake.message.generator.SenderTask;
 import java.io.Serializable;
 import java.util.Properties;
 
+import io.vertx.core.MultiMap;
+
 /**
  * Correlates requests with their responses and notifies {@link SenderTask} of receiving the appropriate response to the
  * original request. This is done based on a correlation id that is extracted from both request and response.
@@ -53,6 +55,8 @@ public interface Correlator {
     *
     * @param response
     *       The response received by {@link org.perfcake.message.receiver.Receiver}.
+    * @param headers
+    *       Headers received with the response. Can be useful for discovering correlation id.
     */
-   void registerResponse(final Serializable response);
+   void registerResponse(final Serializable response, final MultiMap headers);
 }

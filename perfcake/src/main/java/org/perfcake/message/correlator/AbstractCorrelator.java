@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.vertx.core.MultiMap;
+
 /**
  * Default implementation of a correlator that provides an easy way to extend it by providing
  * the minimum functionality that is necessary, which is correlation id extraction from request and response.
@@ -56,11 +58,11 @@ public abstract class AbstractCorrelator implements Correlator {
     *       The request message attributes.
     * @return The correlation id corresponding to this request.
     */
-   abstract String getRequestCorrelationId(final Message message, final Properties messageAttributes);
+   abstract public String getRequestCorrelationId(final Message message, final Properties messageAttributes);
 
    @Override
-   public void registerResponse(final Serializable response) {
-      waitingTasks.remove(getResponseCorrelationId(response)).registerResponse(response);
+   public void registerResponse(final Serializable response, final MultiMap headers) {
+      waitingTasks.remove(getResponseCorrelationId(response, headers)).registerResponse(response);
    }
 
    /**
@@ -70,5 +72,5 @@ public abstract class AbstractCorrelator implements Correlator {
     *       The received response.
     * @return The correlation id corresponding to this response.
     */
-   abstract String getResponseCorrelationId(final Serializable response);
+   abstract public String getResponseCorrelationId(final Serializable response, final MultiMap headers);
 }
