@@ -289,8 +289,10 @@ public class JmsSender extends AbstractSender {
       }
 
       // set additional properties
-      for (String prop : messageAttributes.stringPropertyNames()) {
-         mess.setStringProperty(prop, messageAttributes.getProperty(prop));
+      if (messageAttributes != null) {
+         for (String prop : messageAttributes.stringPropertyNames()) {
+            mess.setStringProperty(prop, messageAttributes.getProperty(prop));
+         }
       }
 
       if (replyToDestination != null) {

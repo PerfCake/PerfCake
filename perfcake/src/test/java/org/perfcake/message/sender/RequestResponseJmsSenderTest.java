@@ -69,13 +69,10 @@ public class RequestResponseJmsSenderTest extends Arquillian {
    public static JavaArchive createDeployment() {
       return ShrinkWrap.create(JavaArchive.class).addPackages(true,
             "org.perfcake",
-            "httl",
             "javassist",
             "org.apache.commons.beanutils",
             "org.apache.logging.log4j",
             "org.apache.commons.collections")
-                       .addAsResource("httl-default.properties")
-                       .addAsResource("httl-web.properties")
                        .deleteClass("org.perfcake.message.sender.WebSocketSender").deleteClass("org.perfcake.message.sender.WebSocketSender$PerfCakeClientEndpoint");
    }
 
