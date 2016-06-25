@@ -48,7 +48,7 @@ import io.searchbox.core.Index;
 import io.searchbox.indices.CreateIndex;
 
 /**
- * Writes the resulting data to Elasticsearch using a simple HTTP client.
+ * Writes the resulting data to Elasticsearch using a simple HTTP REST client.
  * The reported data have information about the test progress (time in milliseconds since start, percentage and iteration),
  * real time of each result, and the complete results map. Quantities are stored without their unit.
  * To properly search through the data, we need to set the mapping (to be able to interpret time as time).
