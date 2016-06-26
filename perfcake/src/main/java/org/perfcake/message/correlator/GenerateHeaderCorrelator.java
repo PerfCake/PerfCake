@@ -22,6 +22,7 @@ package org.perfcake.message.correlator;
 import org.perfcake.message.Message;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -50,7 +51,7 @@ public class GenerateHeaderCorrelator extends AbstractCorrelator {
    }
 
    @Override
-   public String getResponseCorrelationId(final Serializable response, final MultiMap headers) {
-      return headers.get(CORRELATION_HEADER);
+   public List<String> getResponseCorrelationIds(final Serializable response, final MultiMap headers) {
+      return headers.getAll(CORRELATION_HEADER);
    }
 }

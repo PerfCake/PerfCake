@@ -26,12 +26,14 @@ import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
+import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.generator.MessageGenerator;
+import org.perfcake.message.receiver.Receiver;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.Sequence;
 import org.perfcake.message.sequence.SequenceManager;
-import org.perfcake.model.Header;
-import org.perfcake.model.Property;
+import org.perfcake.model.HeaderType;
+import org.perfcake.model.PropertyType;
 import org.perfcake.model.Scenario.Generator;
 import org.perfcake.model.Scenario.Messages;
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
@@ -161,6 +163,8 @@ public class XmlFactory implements ScenarioFactory {
 
          scenario.setGenerator(messageGenerator);
          scenario.setMessageSenderManager(parseSender(messageGenerator.getThreads()));
+         scenario.setReceiver(parseReceiver());
+         scenario.setCorrelator(parseCorrelator());
          scenario.setReportManager(parseReporting());
          scenario.getReportManager().setRunInfo(runInfo);
 
@@ -172,6 +176,62 @@ public class XmlFactory implements ScenarioFactory {
       }
 
       return scenario;
+   }
+
+   private Receiver parseReceiver() throws PerfCakeException {
+      if (scenarioModel.getReceiver() != null) {
+         try {
+            final org.perfcake.model.Scenario.Receiver rec = scenarioModel.getReceiver();
+            String receiverClass = rec.getClazz();
+            if (!receiverClass.contains(".")) {
+               receiverClass = DEFAULT_RECEIVER_PACKAGE + "." + receiverClass;
+            }
+
+            final int threads = Integer.parseInt(rec.getThreads());
+
+            if (log.isDebugEnabled()) {
+               log.debug("--- Receiver (" + receiverClass + ") ---");
+               log.debug("  threads=" + threads);
+            }
+
+            final Properties receiverProperties = getPropertiesFromList(rec.getProperty());
+            Utils.logProperties(log, Level.DEBUG, receiverProperties, "   ");
+
+            final Receiver receiver = (Receiver) ObjectFactory.summonInstance(receiverClass, receiverProperties);
+            receiver.setThreads(threads);
+
+            return receiver;
+         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new PerfCakeException("Cannot parse message generator configuration: ", e);
+         }
+      } else {
+         return null;
+      }
+   }
+
+   private Correlator parseCorrelator() throws PerfCakeException {
+      if (scenarioModel.getReceiver() != null && scenarioModel.getReceiver().getCorrelator() != null) {
+         try {
+            final org.perfcake.model.Scenario.Receiver.Correlator cor = scenarioModel.getReceiver().getCorrelator();
+            String correlatorClass = cor.getClazz();
+            if (!correlatorClass.contains(".")) {
+               correlatorClass = DEFAULT_CORRELATOR_PACKAGE + "." + correlatorClass;
+            }
+
+            if (log.isDebugEnabled()) {
+               log.debug("  '- Correlator (" + correlatorClass + ")");
+            }
+
+            final Properties correlatorProperties = getPropertiesFromList(cor.getProperty());
+            Utils.logProperties(log, Level.DEBUG, correlatorProperties, "   '- ");
+
+            return (Correlator) ObjectFactory.summonInstance(correlatorClass, correlatorProperties);
+         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new PerfCakeException("Cannot parse message generator configuration: ", e);
+         }
+      } else {
+         return null;
+      }
    }
 
    /**
@@ -222,10 +282,10 @@ public class XmlFactory implements ScenarioFactory {
       }
    }
 
-   private static Properties getPropertiesFromList(final List<Property> properties) throws PerfCakeException {
+   private static Properties getPropertiesFromList(final List<PropertyType> properties) throws PerfCakeException {
       final Properties props = new Properties();
 
-      for (final Property p : properties) {
+      for (final PropertyType p : properties) {
          final Element valueElement = p.getAny();
          final String valueString = p.getValue();
 
@@ -412,7 +472,7 @@ public class XmlFactory implements ScenarioFactory {
 
                final Properties currentMessageProperties = getPropertiesFromList(m.getProperty());
                final Properties currentMessageHeaders = new Properties();
-               for (final Header h : m.getHeader()) {
+               for (final HeaderType h : m.getHeader()) {
                   currentMessageHeaders.setProperty(h.getName(), h.getValue());
                }
 

@@ -36,7 +36,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Simplifies writing of the receivers. An implementation just needs to override its {@link Thread#run()} method.
  * The needed number of threads is started and terminated automatically. It is just necessary to pass the received
- * messages to the correlator using {@link Correlator#registerResponse(Serializable)}.
+ * messages to the correlator using {@link Correlator#registerResponse(Serializable, io.vertx.core.MultiMap)}.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */

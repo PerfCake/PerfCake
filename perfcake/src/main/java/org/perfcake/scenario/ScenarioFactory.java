@@ -39,6 +39,8 @@ public interface ScenarioFactory {
    String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
    String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
    String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
+   String DEFAULT_CORRELATOR_PACKAGE = "org.perfcake.message.correlator";
+   String DEFAULT_RECEIVER_PACKAGE = "org.perfcake.message.receiver";
 
    /**
     * Initializes all resources needed to prepare the scenario object. All I/O operations should happen here.

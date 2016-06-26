@@ -23,6 +23,7 @@ import org.perfcake.message.Message;
 import org.perfcake.message.generator.SenderTask;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -62,15 +63,19 @@ public abstract class AbstractCorrelator implements Correlator {
 
    @Override
    public void registerResponse(final Serializable response, final MultiMap headers) {
-      waitingTasks.remove(getResponseCorrelationId(response, headers)).registerResponse(response);
+      getResponseCorrelationIds(response, headers).forEach(correlationId -> {
+         waitingTasks.remove(correlationId).registerResponse(response);
+      });
    }
 
    /**
-    * Extracts the correlation id from the response.
+    * Extracts the correlation ids from the response. It is possible that a single response represents multiple requests.
     *
     * @param response
     *       The received response.
-    * @return The correlation id corresponding to this response.
+    * @param headers
+    *       Headers received with the response. Can be useful for discovering correlation id.
+    * @return The list of correlation ids corresponding to this response.
     */
-   abstract public String getResponseCorrelationId(final Serializable response, final MultiMap headers);
+   abstract public List<String> getResponseCorrelationIds(final Serializable response, final MultiMap headers);
 }
