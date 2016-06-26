@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.Properties;
 import java.util.concurrent.Semaphore;
 
+import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 
@@ -79,7 +80,7 @@ public class HttpReceiverTest {
       }
 
       @Override
-      public void registerResponse(final Serializable response) {
+      public void registerResponse(final Serializable response, final MultiMap headers) {
          received = response.toString();
          semaphore.release();
       }
