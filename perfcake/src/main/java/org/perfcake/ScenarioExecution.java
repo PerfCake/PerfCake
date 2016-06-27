@@ -115,6 +115,38 @@ public class ScenarioExecution {
    }
 
    /**
+    * Executes the given scenario in the same way as PerfCake was started from the command line.
+    * It just allows easy usage in TestNG and jUnit frameworks for instance.
+    *
+    * @param scenarioFile
+    *       The file with scenario definition.
+    * @param properties
+    *       Any additional properties that would be normally set using -Dprop=value (most command line arguments can be set like this).
+    * @throws PerfCakeException
+    *       When it was not possible to load the scenario.
+    */
+   public static void execute(final String scenarioFile, final Properties properties) throws PerfCakeException {
+      final Properties backup = new Properties();
+
+      properties.forEach((k, v) -> {
+         if (System.getProperty(k.toString()) != null) {
+            backup.setProperty(k.toString(), System.getProperty(k.toString()));
+         }
+
+         System.setProperty(k.toString(), v.toString());
+      });
+
+      final Scenario scenario = ScenarioLoader.load(scenarioFile);
+      scenario.init();
+      scenario.run();
+      scenario.close();
+
+      backup.forEach((k, v) -> {
+         System.setProperty(k.toString(), v.toString());
+      });
+   }
+
+   /**
     * Parses a single command line parameter/option.
     *
     * @param option
