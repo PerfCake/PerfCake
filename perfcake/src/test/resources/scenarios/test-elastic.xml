@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:7.0">
+   <run type="iteration" value="${perfcake.run.duration:10}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:1}" />
+   <sender class="TestSender" />
+   <reporting>
+      <reporter class="IterationsPerSecondReporter">
+         <destination class="ElasticsearchDestination">
+            <period type="iteration" value="5"/>
+            <property name="serverUri" value="http://localhost:9292" />
+            <property name="index" value="perfcake" />
+            <property name="tags" value="tag1,tag2" />
+            <property name="timeout" value="5000" />
+         </destination>
+      </reporter>
+   </reporting>
+</scenario>

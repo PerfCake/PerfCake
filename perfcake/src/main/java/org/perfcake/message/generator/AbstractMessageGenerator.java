@@ -23,6 +23,7 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
+import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
@@ -94,6 +95,11 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
    private boolean failFast = false;
 
    /**
+    * Correlates received messages with the sent ones. Null means that it is unused.
+    */
+   private Correlator correlator = null;
+
+   /**
     * Initializes the generator. During the initialization the {@link #messageSenderManager} is initialized as well.
     *
     * @param messageSenderManager
@@ -136,6 +142,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
       task.setSenderManager(messageSenderManager);
       task.setValidationManager(validationManager);
       task.setSequenceManager(sequenceManager);
+      task.setCorrelator(correlator);
 
       return task;
    }
@@ -277,5 +284,10 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     */
    public boolean isFailFast() {
       return failFast;
+   }
+
+   @Override
+   public void setCorrelator(final Correlator correlator) {
+      this.correlator = correlator;
    }
 }

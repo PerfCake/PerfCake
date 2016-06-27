@@ -85,9 +85,9 @@ public class ChannelSenderDatagramTest {
          Assert.assertEquals(sender.maxResponseSize, 5);
 
          sender.init();
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
 
-         final Serializable response = sender.doSend(message, null, null);
+         final Serializable response = sender.doSend(message, null);
          Assert.assertEquals(response, "fish2");
 
          sender.postSend(message);
@@ -105,9 +105,9 @@ public class ChannelSenderDatagramTest {
          final ChannelSender sender = (ChannelSenderDatagram) ObjectFactory.summonInstance(ChannelSenderDatagram.class.getName(), senderProperties);
 
          sender.init();
-         sender.preSend(null, null, null);
+         sender.preSend(null, null);
 
-         final Serializable response = sender.doSend(null, null, null);
+         final Serializable response = sender.doSend(null, null);
          Assert.assertNull(response);
 
          sender.postSend(null);

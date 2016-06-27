@@ -32,7 +32,6 @@ import org.fusesource.mqtt.client.Topic;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -126,13 +125,13 @@ public class MqttSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
       mqttResponse = null;
    }
 
    @Override
-   public Serializable doSend(Message message, Map<String, String> properties, MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(Message message, MeasurementUnit measurementUnit) throws Exception {
       String response = null;
       mqttConnection.publish(topicName, message.getPayload().toString().getBytes(Utils.getDefaultEncoding()), QoS.valueOf(qos.toUpperCase()), false);
       if (isResponseExpected) {

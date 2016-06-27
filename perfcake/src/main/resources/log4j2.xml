@@ -26,7 +26,7 @@
    <Loggers>
       <Logger name="com" level="info"/>
       <Logger name="org" level="info"/>
-      <Logger name="httl" level="warn"/>
+      <Logger name="io.searchbox" level="warn"/>
       <Logger name="org.perfcake" level="info"/>
       <Logger name="org.perfcake.validation" additivity="false" level="info">
          <AppenderRef ref="VALIDATION"/>

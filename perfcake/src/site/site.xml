@@ -11,6 +11,7 @@
          <toc>sidebar</toc>
          <tocTopFlatten>true</tocTopFlatten>
          <breadcrumbs>true</breadcrumbs>
+         <absoluteResourceURL>https://andriusvelykis.github.io/reflow-maven-skin/</absoluteResourceURL>
          <brand>
             <name>PerfCake</name>
             <href>https://www.perfcake.org</href>

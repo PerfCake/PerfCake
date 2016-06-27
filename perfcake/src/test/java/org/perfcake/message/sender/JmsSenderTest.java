@@ -71,12 +71,10 @@ public class JmsSenderTest extends Arquillian {
    public static JavaArchive createDeployment() {
       return ShrinkWrap.create(JavaArchive.class).addPackages(true,
             "org.perfcake",
-            "httl",
             "javassist",
             "org.apache.commons.beanutils",
             "org.apache.logging.log4j",
             "org.apache.commons.collections")
-                       .addAsResource("httl-default.properties")
                        .deleteClass("org.perfcake.message.sender.WebSocketSender").deleteClass("org.perfcake.message.sender.WebSocketSender$PerfCakeClientEndpoint");
    }
 
@@ -122,7 +120,7 @@ public class JmsSenderTest extends Arquillian {
          final org.perfcake.message.Message message = new org.perfcake.message.Message();
          final String payload1 = "Hello World!";
          message.setPayload(payload1);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          sender.send(message, null);
          sender.postSend(message);
 
@@ -135,7 +133,7 @@ public class JmsSenderTest extends Arquillian {
          sender.setMessageType(JmsSender.MessageType.OBJECT);
          final Long payload2 = 42L;
          message.setPayload(payload2);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          sender.send(message, null);
          sender.postSend(message);
 
@@ -147,7 +145,7 @@ public class JmsSenderTest extends Arquillian {
          // BYTEARRAY Type
          sender.setMessageType(JmsSender.MessageType.BYTEARRAY);
          message.setPayload(payload1);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          sender.send(message, null);
          sender.postSend(message);
 
@@ -189,7 +187,7 @@ public class JmsSenderTest extends Arquillian {
          // STRING Type
          final org.perfcake.message.Message message = new org.perfcake.message.Message();
          message.setPayload(payload);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          sender.send(message, null);
          sender.postSend(message);
 
@@ -229,7 +227,7 @@ public class JmsSenderTest extends Arquillian {
          final org.perfcake.message.Message message = new org.perfcake.message.Message();
          final String payload1 = "Hello World!";
          message.setPayload(payload1);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          sender.send(message, null);
          sender.postSend(message);
 
@@ -264,7 +262,7 @@ public class JmsSenderTest extends Arquillian {
          final org.perfcake.message.Message message = new org.perfcake.message.Message();
          final String payload = "Hello World Client Ack!";
          message.setPayload(payload);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          sender.send(message, null);
          sender.postSend(message);
 
@@ -349,7 +347,7 @@ public class JmsSenderTest extends Arquillian {
          final org.perfcake.message.Message message = new org.perfcake.message.Message();
          message.setPayload(payload);
          message.setProperty("kulíšek", "kulíšek nejmenší");
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          sender.send(message, null);
          sender.postSend(message);
 
@@ -397,7 +395,7 @@ public class JmsSenderTest extends Arquillian {
          final org.perfcake.message.Message message = new org.perfcake.message.Message();
          final String payload = "Hello from Client!";
          message.setPayload(payload);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          sender.send(message, null);
          sender.postSend(message);
 
@@ -431,9 +429,9 @@ public class JmsSenderTest extends Arquillian {
          // STRING Type
          final org.perfcake.message.Message message = new org.perfcake.message.Message();
          message.setPayload(payload);
-         final Map<String, String> mapProps = new HashMap<>();
-         mapProps.put("kulisek", "kulisek nejmensi");
-         sender.preSend(message, mapProps, null);
+         final Properties mapProps = new Properties();
+         mapProps.setProperty("kulisek", "kulisek nejmensi");
+         sender.preSend(message, mapProps);
          sender.send(message, null);
          sender.postSend(message);
 
@@ -469,7 +467,7 @@ public class JmsSenderTest extends Arquillian {
          // STRING Type
          final org.perfcake.message.Message message = new org.perfcake.message.Message();
          message.setPayload(payload);
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
          sender.send(message, null);
          sender.postSend(message);
 

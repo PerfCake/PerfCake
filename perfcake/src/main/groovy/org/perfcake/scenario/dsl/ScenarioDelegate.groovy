@@ -97,6 +97,7 @@ class DslScenario extends PropertiesBacked {
    def description
    def generator
    def sender
+   def receiver
    def sequences = []
    def reporters = []
    def messages = []
@@ -114,6 +115,7 @@ class DslScenario extends PropertiesBacked {
                   "\n      " + sequences.join(',\n      ') + "\n   ") +
             "], \n" +
             "   $sender, \n" +
+            (receiver != null ? "   $receiver, \n   $correlator, \n" : "") +
             "   Reporters: [" +
             (reporters.empty ?
                   "" :
@@ -154,6 +156,17 @@ class DslScenario extends PropertiesBacked {
    def sender(def className) {
       this.sender = new Sender(className)
       this.sender
+   }
+
+   // new receiver
+   def receiver(def className) {
+      this.receiver = new Receiver(className)
+      this.receiver
+   }
+
+   // new correlator
+   def correlator(def className) {
+      this.receiver.correlator(className)
    }
 
    // new sequence
@@ -241,6 +254,15 @@ class DslScenario extends PropertiesBacked {
       MessageGenerator g = generator.buildMessageGenerator()
       g.setThreads((int) runInfo.getThreads()) // get the number of threads from DSL run info
       ScenarioBuilder builder = new ScenarioBuilder(runInfo.buildRunInfo(), g, sender.messageSenderClassName, sender.messageSenderProperties)
+
+      if (receiver) {
+         if (receiver.correlator) {
+            builder.setCorrelator(receiver.correlator.buildCorrelator())
+         } else {
+            throw new PerfCakeException("A correlator must be specified when a receiver is used.")
+         }
+         builder.setReceiver(receiver.buildReceiver())
+      }
 
       if (sequences) {
          sequences.each {
@@ -391,6 +413,68 @@ class Sender extends ObjectWithClassName {
 
    String getMessageSenderClassName() {
       className.contains('.') ?: ScenarioFactory.DEFAULT_SENDER_PACKAGE + '.' + className
+   }
+}
+
+class Receiver extends ObjectWithClassName {
+
+   def correlator
+
+   Receiver(def className) {
+      super(className)
+   }
+
+   String toString() {
+      "Receiver: {\n         ${correlator.toString()},\n         ${super.toString()}}"
+   }
+
+   // new correlator for this receiver
+   def destination(def className) {
+      this.correlator = new Correlator(className)
+      this.correlator
+   }
+
+   Properties getReceiverProperties() {
+      def props = new Properties()
+      props.putAll(properties)
+      props
+   }
+
+   String getReceiverClassName() {
+      className.contains('.') ?: ScenarioFactory.DEFAULT_RECEIVER_PACKAGE + '.' + className
+   }
+
+   org.perfcake.message.receiver.Receiver buildReceiver() {
+      def props = new Properties()
+      props.putAll(properties)
+      ObjectFactory.summonInstance(className.contains('.') ?: ScenarioFactory.DEFAULT_RECEIVER_PACKAGE + '.' + className, props)
+   }
+}
+
+class Correlator extends ObjectWithClassName {
+
+   Correlator(def className) {
+      super(className)
+   }
+
+   String toString() {
+      "Correlator: {${super.toString()}}"
+   }
+
+   Properties getCorrelatorProperties() {
+      def props = new Properties()
+      props.putAll(properties)
+      props
+   }
+
+   String getCorrelatorClassName() {
+      className.contains('.') ?: ScenarioFactory.DEFAULT_CORRELATOR_PACKAGE + '.' + className
+   }
+
+   org.perfcake.message.correlator.Correlator buildCorrelator() {
+      def props = new Properties()
+      props.putAll(properties)
+      ObjectFactory.summonInstance(className.contains('.') ?: ScenarioFactory.DEFAULT_CORRELATOR_PACKAGE + '.' + className, props)
    }
 }
 
@@ -680,6 +764,16 @@ abstract class BaseDslScriptClass extends Script {
    // pass the call to the DSL scenario
    def sender(def className) {
       scenario.sender(className)
+   }
+
+   // pass the call to the DSL scenario
+   def receiver(def className) {
+      scenario.receiver(className)
+   }
+
+   // pass the call to the DSL scenario
+   def correlator(def className) {
+      scenario.correlator(className)
    }
 
    // pass the call to the DSL scenario

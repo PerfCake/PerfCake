@@ -187,6 +187,7 @@ PERFCAKE_JAR=$(find "$PERFCAKE_HOME/lib" -type f -regex '.*lib/perfcake-[0-9][0-
 # Run PerfCake
 exec "$JAVACMD" \
   -Dlog4j.configurationFile="${PERFCAKE_HOME}/log4j2.xml" \
+  -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager \
   -Djava.ext.dirs="${JAVA_HOME}/lib/ext:${JAVA_HOME}/jre/lib/ext:${PERFCAKE_HOME}/lib/ext" \
   -jar "${PERFCAKE_JAR}" \
   "$@"

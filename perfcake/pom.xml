@@ -96,8 +96,16 @@
          <artifactId>log4j-1.2-api</artifactId>
       </dependency>
       <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-jul</artifactId>
+      </dependency>
+      <dependency>
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-log4j12</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
       </dependency>
 
       <!-- Test NG -->
@@ -115,6 +123,22 @@
       <dependency>
          <groupId>org.drools</groupId>
          <artifactId>drools-compiler</artifactId>
+      </dependency>
+
+      <!-- Elasticsearch client -->
+      <dependency>
+         <groupId>io.searchbox</groupId>
+         <artifactId>jest</artifactId>
+      </dependency>
+
+      <!-- InfluxDB client -->
+      <dependency>
+         <groupId>com.google.guava</groupId>
+         <artifactId>guava</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.influxdb</groupId>
+         <artifactId>influxdb-java</artifactId>
       </dependency>
 
       <!-- Groovy -->
@@ -170,16 +194,16 @@
          <artifactId>commons-io</artifactId>
       </dependency>
       <dependency>
-         <groupId>commons-configuration</groupId>
-         <artifactId>commons-configuration</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>commons-collections</groupId>
-         <artifactId>commons-collections</artifactId>
-      </dependency>
-      <dependency>
          <groupId>commons-beanutils</groupId>
          <artifactId>commons-beanutils</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-collections4</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-lang3</artifactId>
       </dependency>
       <dependency>
          <groupId>commons-logging</groupId>
@@ -220,11 +244,6 @@
       <dependency>
          <groupId>org.apache.activemq</groupId>
          <artifactId>activemq-mqtt</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-api</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
@@ -301,9 +320,13 @@
          <artifactId>vertx-core</artifactId>
       </dependency>
       <dependency>
+         <groupId>io.vertx</groupId>
+         <artifactId>vertx-web</artifactId>
+      </dependency>
+      <dependency>
          <groupId>io.netty</groupId>
          <artifactId>netty-all</artifactId>
-         <!--scope>test</scope-->
+         <scope>test</scope>
       </dependency>
    </dependencies>
    <build>

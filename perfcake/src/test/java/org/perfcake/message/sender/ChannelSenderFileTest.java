@@ -46,6 +46,7 @@ public class ChannelSenderFileTest {
    public void testNormalMessage() throws Exception {
       final Properties senderProperties = new Properties();
       final File file = File.createTempFile("perfcake-", "message.txt");
+      file.deleteOnExit();
       Files.write(file.toPath(), originalContent.getBytes());
       senderProperties.setProperty("target", file.getAbsolutePath());
       senderProperties.setProperty("awaitResponse", "true");
@@ -59,9 +60,9 @@ public class ChannelSenderFileTest {
          sender.init();
          Assert.assertEquals(sender.getTarget(), file.getAbsolutePath());
 
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
 
-         final Serializable response = sender.doSend(message, null, null);
+         final Serializable response = sender.doSend(message, null);
          Assert.assertEquals(response, "lion");
 
          Assert.assertEquals(new String(Files.readAllBytes(file.toPath())), finalContent);

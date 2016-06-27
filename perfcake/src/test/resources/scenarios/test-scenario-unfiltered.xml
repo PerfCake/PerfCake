@@ -8,6 +8,10 @@
    </properties>
    <run type="iteration" value="100"/>
    <generator class="DefaultMessageGenerator" threads="10"/>
+   <sequences>
+      <sequence class="ThreadIdSequence" name="ThreadId" />
+      <sequence class="PrimitiveNumberSequence" name="MessageNumber" />
+   </sequences>
    <sender class="TestSender">
       <target>http://${server.host}:${server.port}/HTTPGateway/http/PerformanceTest/HTTPGateway</target>
    </sender>

@@ -19,6 +19,7 @@
  */
 package org.perfcake;
 
+import org.perfcake.scenario.ReplayResults;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.util.TimerBenchmark;
@@ -74,6 +75,11 @@ public class ScenarioExecution {
    private boolean skipTimerBenchmark = false;
 
    /**
+    * Raw file with results to be replayed.
+    */
+   private String rawFile = null;
+
+   /**
     * Parses command line arguments and creates this class to take care of the Scenario execution.
     *
     * @param args
@@ -99,9 +105,45 @@ public class ScenarioExecution {
       // Print system properties
       se.printTraceInformation();
 
-      se.executeScenario();
+      if (se.rawFile == null) {
+         se.executeScenario();
+      } else {
+         se.replayScenario();
+      }
 
       log.info("=== Goodbye! ===");
+   }
+
+   /**
+    * Executes the given scenario in the same way as PerfCake was started from the command line.
+    * It just allows easy usage in TestNG and jUnit frameworks for instance.
+    *
+    * @param scenarioFile
+    *       The file with scenario definition.
+    * @param properties
+    *       Any additional properties that would be normally set using -Dprop=value (most command line arguments can be set like this).
+    * @throws PerfCakeException
+    *       When it was not possible to load the scenario.
+    */
+   public static void execute(final String scenarioFile, final Properties properties) throws PerfCakeException {
+      final Properties backup = new Properties();
+
+      properties.forEach((k, v) -> {
+         if (System.getProperty(k.toString()) != null) {
+            backup.setProperty(k.toString(), System.getProperty(k.toString()));
+         }
+
+         System.setProperty(k.toString(), v.toString());
+      });
+
+      final Scenario scenario = ScenarioLoader.load(scenarioFile);
+      scenario.init();
+      scenario.run();
+      scenario.close();
+
+      backup.forEach((k, v) -> {
+         System.setProperty(k.toString(), v.toString());
+      });
    }
 
    /**
@@ -144,7 +186,6 @@ public class ScenarioExecution {
       for (final Entry<Object, Object> entry : props.entrySet()) {
          System.setProperty(entry.getKey().toString(), entry.getValue().toString());
       }
-
    }
 
    /**
@@ -164,6 +205,7 @@ public class ScenarioExecution {
       options.addOption(Option.builder("pd").longOpt(PerfCakeConst.PLUGINS_DIR_OPT).desc("directory for plugins").hasArg().argName("PLUGINS_DIR").build());
       options.addOption(Option.builder("pf").longOpt(PerfCakeConst.PROPERTIES_FILE_OPT).desc("custom system properties file").hasArg().argName("PROPERTIES_FILE").build());
       options.addOption(Option.builder("log").longOpt(PerfCakeConst.LOGGING_LEVEL_OPT).desc("logging level").hasArg().argName("LOG_LEVEL").build());
+      options.addOption(Option.builder("r").longOpt(PerfCakeConst.REPLAY_OPT).desc("raw file to be replayed").hasArg().argName("RAW_FILE").build());
       options.addOption(Option.builder("skip").longOpt(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT).desc("skip system timer benchmark").build());
       options.addOption(Option.builder("D").argName("property=value").numberOfArgs(2).valueSeparator().desc("system properties").build());
 
@@ -189,6 +231,10 @@ public class ScenarioExecution {
          skipTimerBenchmark = true;
       }
 
+      if (commandLine.hasOption(PerfCakeConst.REPLAY_OPT)) {
+         rawFile = commandLine.getOptionValue(PerfCakeConst.REPLAY_OPT);
+      }
+
       parseParameter(PerfCakeConst.SCENARIOS_DIR_OPT, PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"));
       parseParameter(PerfCakeConst.MESSAGES_DIR_OPT, PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"));
       parseParameter(PerfCakeConst.PLUGINS_DIR_OPT, PerfCakeConst.PLUGINS_DIR_PROPERTY, Utils.DEFAULT_PLUGINS_DIR.getAbsolutePath());
@@ -199,6 +245,10 @@ public class ScenarioExecution {
       }
 
       parseUserProperties();
+
+      if (System.getProperty(PerfCakeConst.KEYSTORES_DIR_PROPERTY) == null) {
+         System.setProperty(PerfCakeConst.KEYSTORES_DIR_PROPERTY, Utils.determineDefaultLocation("keystores"));
+      }
    }
 
    /**
@@ -276,6 +326,20 @@ public class ScenarioExecution {
          log.warn("There are some blocked threads that were not possible to terminate. The test results might be flawed."
                + " This is usually caused by deadlocks or race conditions in the application under test.");
          System.exit(PerfCakeConst.ERR_BLOCKED_THREADS);
+      }
+   }
+
+   /**
+    * Replays the previously recorded raw results.
+    */
+   private void replayScenario() {
+      log.info("Replaying raw results recorded in {}.", rawFile);
+
+      try (final ReplayResults replay = new ReplayResults(scenario, rawFile)) {
+         replay.replay();
+      } catch (IOException ioe) {
+         log.fatal("Unable to replay scenario: ", ioe);
+         System.exit(PerfCakeConst.ERR_SCENARIO_REPLAY);
       }
    }
 }

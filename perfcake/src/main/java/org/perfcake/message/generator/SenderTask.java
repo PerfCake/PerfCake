@@ -23,6 +23,7 @@ import org.perfcake.PerfCakeConst;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.ReceivedMessage;
+import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Semaphore;
 
 /**
  * Executes a single task of sending messages from the message store
@@ -50,7 +52,7 @@ import java.util.Properties;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @see org.perfcake.message.sender.MessageSenderManager
  */
-class SenderTask implements Runnable {
+public class SenderTask implements Runnable {
 
    /**
     * Sender task's logger.
@@ -93,6 +95,22 @@ class SenderTask implements Runnable {
    private long enqueueTime = System.nanoTime();
 
    /**
+    * Correlator to correlate message received from a separate channel.
+    */
+   private Correlator correlator = null;
+
+   /**
+    * A response matched by a correlator.
+    */
+   private Serializable correlatedResponse = null;
+
+   /**
+    * Synchronize on waiting for a message from a correlator.
+    * Must be set before correlator is used.
+    */
+   private Semaphore waitForResponse;
+
+   /**
     * Creates a new task to send a message.
     * There is a communication channel established that allows and requires the sender task to report the task completion and any possible error.
     * The visibility of this constructor is limited as it is not intended for normal use.
@@ -106,9 +124,9 @@ class SenderTask implements Runnable {
       this.canalStreet = canalStreet;
    }
 
-   private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final Properties messageAttributes, final MeasurementUnit mu) {
+   private Serializable sendMessage(final MessageSender sender, final Message message, final Properties messageAttributes, final MeasurementUnit mu) {
       try {
-         sender.preSend(message, messageHeaders, messageAttributes);
+         sender.preSend(message, messageAttributes);
       } catch (final Exception e) {
          if (log.isErrorEnabled()) {
             log.error("Unable to initialize sending of a message: ", e);
@@ -120,7 +138,7 @@ class SenderTask implements Runnable {
 
       Serializable result = null;
       try {
-         result = sender.send(message, messageHeaders, mu);
+         result = sender.send(message, mu);
       } catch (final Exception e) {
          mu.setFailure(e);
          if (log.isErrorEnabled()) {
@@ -151,19 +169,21 @@ class SenderTask implements Runnable {
 
       final Properties messageAttributes = sequenceManager != null ? sequenceManager.getSnapshot() : new Properties();
 
-      final HashMap<String, String> messageHeaders = new HashMap<>();
       MessageSender sender = null;
       ReceivedMessage receivedMessage;
       try {
          final MeasurementUnit mu = reportManager.newMeasurementUnit();
+         long requestSize = 0;
+         long responseSize = 0;
 
          if (mu != null) {
             mu.setEnqueueTime(enqueueTime);
-            // only set numbering to headers if it is enabled, later there is no change to
-            // filter out the headers before sending
+
             if (messageAttributes != null) {
-               messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_HEADER, messageAttributes.getProperty(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration())));
+               mu.appendResult(PerfCakeConst.ATTRIBUTES_TAG, messageAttributes);
+               messageAttributes.put(PerfCakeConst.ITERATION_NUMBER_PROPERTY, String.valueOf(mu.getIteration()));
             }
+            mu.appendResult(PerfCakeConst.THREADS_TAG, reportManager.getRunInfo().getThreads());
 
             sender = senderManager.acquireSender();
 
@@ -174,9 +194,13 @@ class SenderTask implements Runnable {
                   final MessageTemplate messageToSend = iterator.next();
                   final Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
                   final long multiplicity = messageToSend.getMultiplicity();
+                  requestSize = requestSize + (currentMessage.getPayload().toString().length() * multiplicity);
 
                   for (int i = 0; i < multiplicity; i++) {
-                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
+                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
+                     if (receivedMessage.getResponse() != null) {
+                        responseSize = responseSize + receivedMessage.getResponse().toString().length();
+                     }
                      if (validationManager.isEnabled()) {
                         validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                      }
@@ -184,7 +208,7 @@ class SenderTask implements Runnable {
 
                }
             } else {
-               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, messageAttributes, mu), null, null, messageAttributes);
+               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageAttributes, mu), null, null, messageAttributes);
                if (validationManager.isEnabled()) {
                   validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                }
@@ -192,6 +216,9 @@ class SenderTask implements Runnable {
 
             senderManager.releaseSender(sender); // !!! important !!!
             sender = null;
+
+            mu.appendResult(PerfCakeConst.REQUEST_SIZE_TAG, requestSize);
+            mu.appendResult(PerfCakeConst.RESPONSE_SIZE_TAG, responseSize);
 
             reportManager.report(mu);
          }
@@ -204,6 +231,18 @@ class SenderTask implements Runnable {
             senderManager.releaseSender(sender);
          }
       }
+   }
+
+   /**
+    * Notifies the sender task of receiving a response from a separate message channel.
+    * This is called from {@link org.perfcake.message.correlator.Correlator} when {@link org.perfcake.message.receiver.Receiver} is used.
+    *
+    * @param response
+    *       The response corresponding to the original request.
+    */
+   public void registerResponse(final Serializable response) {
+      correlatedResponse = response;
+      waitForResponse.release();
    }
 
    /**
@@ -254,5 +293,16 @@ class SenderTask implements Runnable {
     */
    public void setSequenceManager(final SequenceManager sequenceManager) {
       this.sequenceManager = sequenceManager;
+   }
+
+   /**
+    * Sets the correlator that is used to notify us about receiving a response from a separate message channel.
+    *
+    * @param correlator
+    *       The correlator to be used.
+    */
+   public void setCorrelator(final Correlator correlator) {
+      waitForResponse = new Semaphore(0);
+      this.correlator = correlator;
    }
 }

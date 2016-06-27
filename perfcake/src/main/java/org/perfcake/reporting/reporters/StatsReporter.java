@@ -19,7 +19,9 @@
  */
 package org.perfcake.reporting.reporters;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
+import org.perfcake.reporting.BinaryScalableQuantity;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.Quantity;
@@ -34,6 +36,8 @@ import org.perfcake.reporting.reporters.accumulators.MinAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SlidingWindowAvgAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SlidingWindowMaxAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SlidingWindowMinAccumulator;
+import org.perfcake.reporting.reporters.accumulators.SlidingWindowSumLongAccumulator;
+import org.perfcake.reporting.reporters.accumulators.SumLongAccumulator;
 
 /**
  * Reports the minimal, maximal and average value from the beginning
@@ -60,6 +64,16 @@ public abstract class StatsReporter extends AbstractReporter {
     * A property that determines if the metric of an average value is enabled or disabled.
     */
    private boolean averageEnabled = true;
+
+   /**
+    * Is the reporting of request size enabled?
+    */
+   private boolean requestSizeEnabled = true;
+
+   /**
+    * Is the reporting of response size enabled?
+    */
+   private boolean responseSizeEnabled = true;
 
    /**
     * A property that specifies a window size with the default value of {@link Integer#MAX_VALUE}.
@@ -99,7 +113,7 @@ public abstract class StatsReporter extends AbstractReporter {
    @SuppressWarnings("rawtypes")
    @Override
    protected Accumulator getAccumulator(final String key, final Class clazz) {
-      if (Double.class.equals(clazz)) {
+      if (Double.class.equals(clazz) || PerfCakeConst.REQUEST_SIZE_TAG.equals(key) || PerfCakeConst.RESPONSE_SIZE_TAG.equals(key)) {
          if (windowSize == Integer.MAX_VALUE) {
             return getNonWindowedAccumulator(key);
          } else {
@@ -126,6 +140,9 @@ public abstract class StatsReporter extends AbstractReporter {
             return new SlidingWindowMinAccumulator(windowSize);
          case Measurement.DEFAULT_RESULT:
             return new LastValueAccumulator();
+         case PerfCakeConst.REQUEST_SIZE_TAG:
+         case PerfCakeConst.RESPONSE_SIZE_TAG:
+            return new SlidingWindowSumLongAccumulator(windowSize);
          case AVERAGE:
          default:
             return new SlidingWindowAvgAccumulator(windowSize);
@@ -149,6 +166,9 @@ public abstract class StatsReporter extends AbstractReporter {
             return new MinAccumulator();
          case Measurement.DEFAULT_RESULT:
             return new LastValueAccumulator();
+         case PerfCakeConst.REQUEST_SIZE_TAG:
+         case PerfCakeConst.RESPONSE_SIZE_TAG:
+            return new SumLongAccumulator();
          case AVERAGE:
          default:
             return new AvgAccumulator();
@@ -199,11 +219,30 @@ public abstract class StatsReporter extends AbstractReporter {
          wrapResultByQuantity(m, MAXIMUM, unit);
       }
 
+      if (requestSizeEnabled) {
+         wrapResultByScalableQuantity(m, PerfCakeConst.REQUEST_SIZE_TAG, "B");
+      } else {
+         m.remove(PerfCakeConst.REQUEST_SIZE_TAG);
+      }
+
+      if (responseSizeEnabled) {
+         wrapResultByScalableQuantity(m, PerfCakeConst.RESPONSE_SIZE_TAG, "B");
+      } else {
+         m.remove(PerfCakeConst.RESPONSE_SIZE_TAG);
+      }
+
       if (histogramCounter != null) {
          histogramCounter.getHistogramInPercent().forEach((range, value) -> m.set(histogramPrefix + range.toString(), new Quantity<>(value, "%")));
       }
 
       destination.report(m);
+   }
+
+   private void wrapResultByScalableQuantity(final Measurement measurement, final String key, final String unit) {
+      final Long result = (Long) measurement.get(key);
+      if (result != null) {
+         measurement.set(key, new BinaryScalableQuantity(result, unit));
+      }
    }
 
    private void wrapResultByQuantity(final Measurement measurement, final String key, final String unit) {
@@ -357,5 +396,43 @@ public abstract class StatsReporter extends AbstractReporter {
     */
    public void setHistogramPrefix(String histogramPrefix) {
       this.histogramPrefix = histogramPrefix;
+   }
+
+   /**
+    * Is the metric of the request size enabled?
+    *
+    * @return True if and only if the metric of the request size is enabled.
+    */
+   public boolean isRequestSizeEnabled() {
+      return requestSizeEnabled;
+   }
+
+   /**
+    * Enables and disables the metric of the request size.
+    *
+    * @param requestSizeEnabled
+    *       True to enable the metric.
+    */
+   public void setRequestSizeEnabled(final boolean requestSizeEnabled) {
+      this.requestSizeEnabled = requestSizeEnabled;
+   }
+
+   /**
+    * Is the metric of the response size enabled?
+    *
+    * @return True if and only if the metric of the response size is enabled.
+    */
+   public boolean isResponseSizeEnabled() {
+      return responseSizeEnabled;
+   }
+
+   /**
+    * Enables and disables the metric of the response size.
+    *
+    * @param responseSizeEnabled
+    *       True to enable the metric.
+    */
+   public void setResponseSizeEnabled(final boolean responseSizeEnabled) {
+      this.responseSizeEnabled = responseSizeEnabled;
    }
 }

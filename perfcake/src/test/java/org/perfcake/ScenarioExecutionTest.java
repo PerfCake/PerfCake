@@ -22,11 +22,13 @@ package org.perfcake;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
+import org.perfcake.util.Utils;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -62,6 +64,23 @@ public class ScenarioExecutionTest extends TestSetup {
          ScenarioRetractor retractor = new ScenarioRetractor(scenario);
          retractor.getMessageStore().get(0).getMessage().setPayload("fail me please");
          scenario.run();
+
+         tm = System.currentTimeMillis() - tm;
+         Assert.assertTrue(tm < 1000, String.format("The scenario did not fail fast enough. Time needed to fail: %d", tm));
+      } finally {
+         System.setProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false");
+      }
+   }
+
+   @Test
+   public void failFastTestWithExecute() throws Exception {
+      final Properties props = new Properties();
+      props.setProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "true");
+
+      System.out.println(props);
+      try {
+         long tm = System.currentTimeMillis();
+         ScenarioExecution.execute("test-dummy-scenario-fail", props);
 
          tm = System.currentTimeMillis() - tm;
          Assert.assertTrue(tm < 1000, String.format("The scenario did not fail fast enough. Time needed to fail: %d", tm));

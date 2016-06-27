@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:7.0">
+   <run type="iteration" value="100000"/>
+   <generator class="DefaultMessageGenerator" threads="10"/>
+   <sequences>
+      <sequence class="ThreadIdSequence" name="threadId" />
+   </sequences>
+   <sender class="TestSender" />
+   <reporting>
+      <reporter class="ClassifyingReporter">
+         <property name="attribute" value="threadId" />
+         <property name="prefix" value="thread_" />
+         <destination class="DummyDestination">
+            <period type="iteration" value="10000"/>
+         </destination>
+      </reporter>
+   </reporting>
+</scenario>

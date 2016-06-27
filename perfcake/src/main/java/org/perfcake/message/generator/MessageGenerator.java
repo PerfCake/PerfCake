@@ -22,6 +22,7 @@ package org.perfcake.message.generator;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
+import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
@@ -46,6 +47,9 @@ import java.util.List;
  * Each {@link SenderTask} takes a {@link CanalStreet} instance as a communication pipe that is used to notify the parent generator of task completion and or any errors that might
  * have occurred. The {@link CanalStreet} relies on an internal {@link java.util.concurrent.Semaphore} instance that can control the number of {@link SenderTask}s prepared in
  * a queue for execution.
+ *
+ * When there is a separate message channel used to receive messages, a {@link Correlator} is set to match requests and responses. The {@link Correlator} is also
+ * passed to the {@link SenderTask} so it can register sent messages with it.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -150,4 +154,12 @@ public interface MessageGenerator {
     * @return The number of sender tasks in the queue awaiting to be processed.
     */
    long getTasksInQueue();
+
+   /**
+    * Sets a {@link Correlator} to match requests and responses when a separate message channel is used for receiving responses.
+    * Null means that no correlator and no receiver is used.
+    *
+    * @param correlator The correlator to be used to match requests and responses.
+    */
+   void setCorrelator(final Correlator correlator);
 }

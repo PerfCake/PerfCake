@@ -25,13 +25,11 @@ import org.perfcake.TestSetup;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.sender.TestSender;
 import org.perfcake.reporting.Measurement;
-import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.c3chart.C3ChartData;
 import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
-import org.perfcake.util.StringTemplate;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +41,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Random;
@@ -84,7 +81,7 @@ public class ChartDestinationTest extends TestSetup {
 
    @Test
    public void basicTest() throws Exception {
-      final String tempDir = TestSetup.createTempDir("test-chart");
+      final String tempDir = TestSetup.createTempDir("test-chart-basic");
       log.info("Created temp directory for chart: " + tempDir);
 
       final ChartDestination cd = new ChartDestination();
@@ -176,7 +173,7 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".json")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", "perf" + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".html")).toFile().exists());
 
-      final C3ChartData data = new C3ChartData(getBaseName(dir), dir);
+      final C3ChartData data = new C3ChartData(getBaseName(dir, "perf"), dir);
       Assert.assertEquals(data.getData().get(0).size(), 5);
 
       try {
@@ -241,7 +238,7 @@ public class ChartDestinationTest extends TestSetup {
       Assert.assertTrue(dir.resolve(Paths.get("data", correctGroup + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".js")).toFile().exists());
       Assert.assertTrue(dir.resolve(Paths.get("data", correctGroup + System.getProperty(PerfCakeConst.NICE_TIMESTAMP_PROPERTY) + ".html")).toFile().exists());
 
-      final C3ChartData data = new C3ChartData(getBaseName(dir), dir);
+      final C3ChartData data = new C3ChartData(getBaseName(dir, null), dir);
       Assert.assertEquals(data.getData().get(0).size(), 5);
 
       JsonArray array = data.getData().get(0);
@@ -316,7 +313,6 @@ public class ChartDestinationTest extends TestSetup {
       final Random rnd = new Random();
       final Set<String> dynaAttrs = new HashSet<>();
 
-
       for (int i = 1; i < 5; i++) {
          Measurement m = new Measurement(i * 10, System.currentTimeMillis() - base, i);
          m.set(10.3 + rnd.nextDouble());
@@ -357,7 +353,7 @@ public class ChartDestinationTest extends TestSetup {
 
       verifyBasicFiles(tempPath);
 
-      final C3ChartData data = new C3ChartData(getBaseName(tempPath), tempPath);
+      final C3ChartData data = new C3ChartData(getBaseName(tempPath, null), tempPath);
       Assert.assertEquals(data.getData().size(), 10);
 
       JsonArray array = data.getData().get(0);
@@ -371,7 +367,7 @@ public class ChartDestinationTest extends TestSetup {
       }
 
       int notNulls = 0;
-      for (int i = 3; i < array.size(); i++) {
+      for (int i = 5; i < array.size(); i++) {
          if (array.getValue(i) != null) {
             notNulls++;
          }
@@ -404,11 +400,12 @@ public class ChartDestinationTest extends TestSetup {
    /**
     * Derive the chart base name from the path. Works only for directories with a single chart.
     *
-    * @param tempPath Path to the directory with the chart.
+    * @param tempPath
+    *       Path to the directory with the chart.
     * @return The chart's base name.
     */
-   private String getBaseName(final Path tempPath) {
-      String baseName = tempPath.resolve("data").toFile().list()[0];
+   private String getBaseName(final Path tempPath, final String content) {
+      String baseName = tempPath.resolve("data").toFile().list((dir, name) -> content == null || "".equals(content) || name.contains(content))[0];
       baseName = baseName.substring(0, baseName.lastIndexOf("."));
 
       return baseName;

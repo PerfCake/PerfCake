@@ -50,6 +50,12 @@ public class ComplexExecutionTest extends TestSetup {
       scenario.close();
 
       Assert.assertEquals(TestSender.getCounter(), 1);
+
+      final ScenarioRetractor sr = new ScenarioRetractor(scenario);
+      final String scenarioName = sr.getReportManager().getRunInfo().getScenarioName();
+
+      Assert.assertTrue(scenarioName.endsWith("scenarios/test-iteration-scenario.xml"));
+      Assert.assertTrue(scenarioName.startsWith("file:"));
    }
 
    @Test

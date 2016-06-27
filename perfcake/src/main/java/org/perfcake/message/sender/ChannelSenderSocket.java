@@ -29,7 +29,6 @@ import java.net.InetSocketAddress;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.UnresolvedAddressException;
 import java.nio.charset.Charset;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -62,8 +61,8 @@ public class ChannelSenderSocket extends ChannelSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
 
       // Open the Socket channel in non-blocking mode
       socketChannel = SocketChannel.open();
@@ -77,7 +76,7 @@ public class ChannelSenderSocket extends ChannelSender {
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
       if (messageBuffer != null) {
          // write the message into channel
          try {

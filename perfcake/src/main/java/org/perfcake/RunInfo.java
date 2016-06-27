@@ -22,6 +22,7 @@ package org.perfcake;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +33,9 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class RunInfo {
+public class RunInfo implements Serializable {
+
+   private static final long serialVersionUID = 2616572877123413497L;
 
    /**
     * How long is this measurement scheduled to run in milliseconds or iterations.
@@ -57,17 +60,23 @@ public class RunInfo {
    /**
     * Number of threads that is currently used to generate the load.
     */
-   private volatile int threads = 1;
+   private volatile transient int threads = 1;
 
    /**
     * Number of the last iteration.
     */
-   private final AtomicLong iterations = new AtomicLong(0);
+   private final transient AtomicLong iterations = new AtomicLong(0);
 
    /**
     * Tags associated with this measurement run.
     */
-   private final Set<String> tags = new HashSet<>();
+   private final transient Set<String> tags = new HashSet<>();
+
+   /**
+    * The name of the scenario. This can be used in reporting and is filled with scenario file name
+    * by {@link org.perfcake.scenario.ScenarioLoader}.
+    */
+   private String scenarioName = "";
 
    /**
     * Creates a new RunInfo.
@@ -322,5 +331,26 @@ public class RunInfo {
     */
    public void setThreads(final int threads) {
       this.threads = threads;
+   }
+
+   /**
+    * Gets the current scenario name. This can carry any useful information. Gets filled
+    * by {@link org.perfcake.scenario.ScenarioLoader} to the scenario file name.
+    *
+    * @return The scenario name.
+    */
+   public String getScenarioName() {
+      return scenarioName;
+   }
+
+   /**
+    * Sets the current scenario name. This is useful for reporting to refer to the original
+    * scenario file name for example.
+    *
+    * @param scenarioName
+    *       The name of current scenario.
+    */
+   public void setScenarioName(final String scenarioName) {
+      this.scenarioName = scenarioName;
    }
 }

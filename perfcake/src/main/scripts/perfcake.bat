@@ -160,7 +160,7 @@ goto error
 :execPerfCake
 cd "%PERFCAKE_HOME%"
 
-%PERFCAKE_JAVA_EXE% -Dlog4j.configurationFile="file:///%PERFCAKE_HOME%\log4j2.xml" -Djava.ext.dirs="%JAVA_HOME%\lib\ext;%JAVA_HOME%\jre\lib\ext;%PERFCAKE_HOME%\lib\ext" -jar "%PERFCAKE_JAR%" %PERFCAKE_CMD_LINE_ARGS%
+%PERFCAKE_JAVA_EXE% -Dlog4j.configurationFile="file:///%PERFCAKE_HOME%\log4j2.xml" -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Djava.ext.dirs="%JAVA_HOME%\lib\ext;%JAVA_HOME%\jre\lib\ext;%PERFCAKE_HOME%\lib\ext" -jar "%PERFCAKE_JAR%" %PERFCAKE_CMD_LINE_ARGS%
 if ERRORLEVEL 1 goto error
 goto end
 

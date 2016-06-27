@@ -27,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import javax.jms.BytesMessage;
@@ -269,8 +268,8 @@ public class JmsSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final org.perfcake.message.Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final org.perfcake.message.Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
       switch (messageType) {
          case STRING:
             mess = session.createTextMessage((String) message.getPayload());
@@ -288,19 +287,21 @@ public class JmsSender extends AbstractSender {
       for (final String property : propertyNameSet) {
          mess.setStringProperty(property, message.getProperty(property));
       }
+
       // set additional properties
-      if (properties != null) {
-         for (final Map.Entry<String, String> entry : properties.entrySet()) {
-            mess.setStringProperty(entry.getKey(), entry.getValue());
+      if (messageAttributes != null) {
+         for (String prop : messageAttributes.stringPropertyNames()) {
+            mess.setStringProperty(prop, messageAttributes.getProperty(prop));
          }
       }
+
       if (replyToDestination != null) {
          mess.setJMSReplyTo(replyToDestination);
       }
    }
 
    @Override
-   public Serializable doSend(final org.perfcake.message.Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final org.perfcake.message.Message message, final MeasurementUnit measurementUnit) throws Exception {
       if (log.isDebugEnabled()) {
          log.debug("Sending a message: " + message.getPayload().toString());
       }

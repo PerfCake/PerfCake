@@ -25,7 +25,7 @@ package org.perfcake.reporting.reporters.accumulators;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
-public class SlidingWindowAvgAccumulator extends AbstractSlidingWindowAccumulator {
+public class SlidingWindowAvgAccumulator extends AbstractSlidingWindowAccumulator<Double> {
 
    /**
     * Creates a new average accumulator with the sliding window of a given size.

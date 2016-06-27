@@ -19,10 +19,10 @@
  */
 package org.perfcake.reporting.reporters.accumulators;
 
+import java.util.concurrent.atomic.LongAdder;
+
 /**
  * Accumulates the sum of values.
- * Atomic types are not used because both values must be set at the same time.
- * Hence the methods are synchronized.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -31,20 +31,20 @@ public class SumLongAccumulator implements Accumulator<Long> {
    /**
     * Sum of the reported values.
     */
-   private long sum = 0L;
+   private LongAdder sum = new LongAdder();
 
    @Override
-   public synchronized void add(final Long number) {
-      sum = sum + number;
+   public void add(final Long number) {
+      sum.add(number);
    }
 
    @Override
-   public synchronized Long getResult() {
-      return sum;
+   public Long getResult() {
+      return sum.longValue();
    }
 
    @Override
-   public synchronized void reset() {
-      sum = 0L;
+   public void reset() {
+      sum = new LongAdder();
    }
 }

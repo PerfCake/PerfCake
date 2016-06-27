@@ -21,17 +21,11 @@ package org.perfcake.message.sender;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
-import org.perfcake.util.Utils;
+import org.perfcake.util.SslSocketFactoryFactory;
 
-import java.io.InputStream;
-import java.security.KeyStore;
-import java.util.Map;
 import java.util.Properties;
 import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Sends messages via HTTPs protocol.
@@ -48,66 +42,20 @@ public class HttpsSender extends HttpSender {
    private String trustStorePassword;
    private SSLSocketFactory sslFactory;
 
-   /**
-    * Specifies SSL key store directory.
-    */
-   public static final String KEYSTORES_DIR_PROPERTY = "perfcake.keystores.dir";
-
    @Override
    public void doInit(final Properties messageAttributes) throws PerfCakeException {
       super.doInit(messageAttributes);
       try {
-         sslFactory = initKeyStores();
+         sslFactory = SslSocketFactoryFactory.newSslSocketFactory(keyStore, keyStorePassword, trustStore, trustStorePassword);
       } catch (Exception e) {
          throw new PerfCakeException("Cannot load key store.", e);
       }
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
       ((HttpsURLConnection) requestConnection).setSSLSocketFactory(sslFactory);
-   }
-
-   private KeyStore initKeyStore(final String keyStoreLocation, final String keyStorePassword) throws Exception {
-      final KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-      try (InputStream is = Utils.locationToUrl(keyStoreLocation, KEYSTORES_DIR_PROPERTY, Utils.determineDefaultLocation("keystores"), "").openStream()) {
-         keyStore.load(is, keyStorePassword.toCharArray());
-      }
-
-      return keyStore;
-   }
-
-   private SSLSocketFactory initKeyStores() throws Exception {
-      KeyStore keyStore_;
-      KeyStore trustStore_;
-      KeyManagerFactory keyManager = null;
-      TrustManagerFactory trustManager = null;
-
-      if (keyStore != null) {
-         if (keyStorePassword == null) {
-            throw new PerfCakeException("The keyStore password is not set. (Use keyStorePassword property of the HttpsSender to set it!)");
-         } else {
-            keyStore_ = initKeyStore(keyStore, keyStorePassword);
-            keyManager = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManager.init(keyStore_, keyStorePassword.toCharArray());
-         }
-      }
-
-      if (trustStore != null) {
-         if (trustStorePassword == null) {
-            throw new PerfCakeException("The trustStore password is not set. (Use trustStorePassword property of the HttpsSender to set it!)");
-         } else {
-            trustStore_ = initKeyStore(trustStore, trustStorePassword);
-            trustManager = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManager.init(trustStore_);
-         }
-      }
-
-      final SSLContext ctx = SSLContext.getInstance("TLS");
-      ctx.init(keyManager == null ? null : keyManager.getKeyManagers(), trustManager == null ? null : trustManager.getTrustManagers(), null);
-
-      return ctx.getSocketFactory();
    }
 
    /**

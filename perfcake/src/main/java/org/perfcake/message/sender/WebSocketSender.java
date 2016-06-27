@@ -22,6 +22,7 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.Utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +31,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Map;
+import java.nio.ByteBuffer;
 import java.util.Properties;
 import javax.websocket.ClientEndpoint;
 import javax.websocket.CloseReason;
@@ -153,40 +154,38 @@ public class WebSocketSender extends AbstractSender {
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
-      if (remoteEndpointType == RemoteEndpointType.BASIC) {
-         final RemoteEndpoint.Basic basic = session.getBasicRemote();
-         switch (payloadType) {
-            case TEXT:
-               basic.sendText(message.getPayload().toString());
-               break;
-            case BINARY:
-               throw new UnsupportedOperationException("Web socket binary payload is not supported yet.");
-               // basic.sendBinary(null);
-            case PING:
-               throw new UnsupportedOperationException("Web socket ping payload is not supported yet.");
-               // basic.sendPing(null);
-            default:
-               throw new IllegalStateException("Unknown or undefined web socket payload type. Use text, binary or ping.");
-         }
-      } else if (remoteEndpointType == RemoteEndpointType.ASYNC) {
-         final RemoteEndpoint.Async async = session.getAsyncRemote();
-         switch (payloadType) {
-            case TEXT:
-               async.sendText(message.getPayload().toString());
-               break;
-            case BINARY:
-               throw new UnsupportedOperationException("Web socket binary payload is not supported yet.");
-               // async.sendBinary(null);
-            case PING:
-               throw new UnsupportedOperationException("Web socket ping payload is not supported yet.");
-               // async.sendPing(null);
-            default:
-               throw new IllegalStateException("Unknown or undefined web socket payload type. Use text, binary or ping.");
-         }
-      } else {
-         throw new IllegalStateException("Unknown or undefined web socket remote endpoint type. Use either basic or async.");
+   public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
+      RemoteEndpoint endpoint;
+      switch (remoteEndpointType) {
+         default: // to get rid of a compiler warning
+         case BASIC:
+            endpoint = session.getBasicRemote();
+            break;
+         case ASYNC:
+            endpoint = session.getAsyncRemote();
+            break;
       }
+
+      switch (payloadType) {
+         case TEXT:
+            if (endpoint instanceof RemoteEndpoint.Basic) {
+               ((RemoteEndpoint.Basic) endpoint).sendText(message.getPayload().toString());
+            } else {
+               ((RemoteEndpoint.Async) endpoint).sendText(message.getPayload().toString());
+            }
+            break;
+         case BINARY:
+            if (endpoint instanceof RemoteEndpoint.Basic) {
+               ((RemoteEndpoint.Basic) endpoint).sendBinary(ByteBuffer.wrap(message.getPayload().toString().getBytes(Utils.getDefaultEncoding())));
+            } else {
+               ((RemoteEndpoint.Async) endpoint).sendBinary(ByteBuffer.wrap(message.getPayload().toString().getBytes(Utils.getDefaultEncoding())));
+            }
+            break;
+         case PING:
+            endpoint.sendPing(ByteBuffer.wrap(message.getPayload().toString().getBytes(Utils.getDefaultEncoding())));
+            break;
+      }
+
       return null;
    }
 

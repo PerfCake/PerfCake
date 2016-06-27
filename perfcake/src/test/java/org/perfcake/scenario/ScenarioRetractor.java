@@ -20,7 +20,9 @@
 package org.perfcake.scenario;
 
 import org.perfcake.message.MessageTemplate;
+import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.generator.MessageGenerator;
+import org.perfcake.message.receiver.Receiver;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
@@ -102,5 +104,21 @@ public class ScenarioRetractor {
     */
    public List<MessageTemplate> getMessageStore() {
       return scenario.getMessageStore();
+   }
+
+   /**
+    * Gets the {@link Receiver}.
+    * @return The {@link Receiver}.
+    */
+   public Receiver getReceiver() {
+      return scenario.getReceiver();
+   }
+
+   /**
+    * Gets the {@link Correlator}.
+    * @return The {@link Correlator}.
+    */
+   public Correlator getCorrelator() {
+      return scenario.getCorrelator();
    }
 }

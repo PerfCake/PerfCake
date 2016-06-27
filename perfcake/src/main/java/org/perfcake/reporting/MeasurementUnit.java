@@ -24,10 +24,14 @@ import org.perfcake.PerfCakeConst;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * A result of the smallest measurement unit - an iteration.
@@ -151,6 +155,24 @@ public class MeasurementUnit implements Serializable {
     */
    public double getTotalTime() {
       return totalTime;
+   }
+
+   /**
+    * Gets the start time of the measurement in nanoseconds.
+    *
+    * @return The start time of the measurement in nanoseconds.
+    */
+   public long getStartTime() {
+      return startTime;
+   }
+
+   /**
+    * Gets the stop time of the measurement in nanoseconds.
+    *
+    * @return The stop time of the measurement in nanoseconds.
+    */
+   public long getStopTime() {
+      return stopTime;
    }
 
    /**
@@ -309,5 +331,132 @@ public class MeasurementUnit implements Serializable {
             ", measurementResults=" + measurementResults +
             ", timeStarted=" + timeStarted +
             ']';
+   }
+
+   /**
+    * Writes this instance into output stream with a minimum data needed. This serves for easy transfer of serialized Mesurement Units.
+    *
+    * @param oos
+    *       Stream to write the data to.
+    * @throws IOException
+    *       When there was an error writing the data.
+    */
+   public void streamOut(ObjectOutputStream oos) throws IOException {
+      oos.writeLong(iteration);
+      oos.writeLong(startTime);
+      oos.writeLong(stopTime);
+      oos.writeLong(timeStarted);
+      oos.writeLong(enqueueTime);
+      oos.writeDouble(totalTime);
+
+      // write FAILURES_TAG
+      final Long failures = (Long) measurementResults.get(PerfCakeConst.FAILURES_TAG);
+      oos.writeLong(failures == null ? 0 : failures);
+
+      // write THREADS_TAG
+      final Integer threads = (Integer) measurementResults.get(PerfCakeConst.THREADS_TAG);
+      oos.writeInt(threads == null ? 0 : threads);
+
+      // write REQUEST_SIZE_TAG
+      final Long requestSize = (long) measurementResults.get(PerfCakeConst.REQUEST_SIZE_TAG);
+      oos.writeLong(requestSize == null ? 0 : requestSize);
+
+      // write RESPONSE_SIZE_TAG
+      final Long responseSize = (long) measurementResults.get(PerfCakeConst.RESPONSE_SIZE_TAG);
+      oos.writeLong(responseSize == null ? 0 : responseSize);
+
+      // write all results from the map except for FAILURES_TAG and properties under ATTRIBUTES_TAG
+      int size = measurementResults.size() - (measurementResults.get(PerfCakeConst.ATTRIBUTES_TAG) != null ? 1 : 0)
+            - (failures != null ? 1 : 0) - (threads != null ? 1 : 0) - (requestSize != null ? 1 : 0) - (responseSize != null ? 1 : 0);
+      oos.writeInt(size);
+      measurementResults.forEach((key, value) -> {
+         if (!PerfCakeConst.ATTRIBUTES_TAG.equals(key) && !PerfCakeConst.FAILURES_TAG.equals(key) && !PerfCakeConst.THREADS_TAG.equals(key)
+               && !PerfCakeConst.REQUEST_SIZE_TAG.equals(key) && !PerfCakeConst.RESPONSE_SIZE_TAG.equals(key)) {
+            try {
+               oos.writeUTF(key);
+               oos.writeObject(value);
+            } catch (IOException e) {
+               log.warn("Unable to serialize Measurement Unit: ", e);
+            }
+         }
+      });
+
+      // write properties under ATTRIBUTES_TAG
+      final Properties props = (Properties) measurementResults.get(PerfCakeConst.ATTRIBUTES_TAG);
+      if (props == null) {
+         oos.writeLong(0);
+         oos.writeInt(0);
+      } else {
+
+         //write iteration number in the attributes
+         final String iteration = props.getProperty(PerfCakeConst.ITERATION_NUMBER_PROPERTY);
+         oos.writeLong(iteration == null ? 0 : Long.valueOf(iteration));
+
+         // write all remaining attributes
+         oos.writeInt(props.size() - (iteration != null ? 1 : 0));
+         props.forEach((key, value) -> {
+            if (!PerfCakeConst.ITERATION_NUMBER_PROPERTY.equals(key)) {
+               try {
+                  oos.writeUTF((String) key);
+                  oos.writeUTF((String) value);
+               } catch (IOException e) {
+                  log.warn("Unable to serialize Measurement Unit: ", e);
+               }
+            }
+         });
+      }
+
+      // write exception if it is stored
+      oos.writeInt(failure == null ? 0 : 1);
+      if (failure != null) {
+         oos.writeObject(failure);
+      }
+   }
+
+   /**
+    * Reads the minimalistic serialization of Measurement Unit from the input stream.
+    *
+    * @param in
+    *       The stream to read the object data from.
+    * @return The deserialized {@link MeasurementUnit}.
+    * @throws ClassNotFoundException
+    *       When it is not possible to restore an unknown class from the data.
+    * @throws IOException
+    *       When there was an I/O error reading data.
+    */
+   public static MeasurementUnit streamIn(ObjectInputStream in) throws ClassNotFoundException, IOException {
+      final MeasurementUnit mu = new MeasurementUnit(in.readLong());
+      mu.startTime = in.readLong();
+      mu.stopTime = in.readLong();
+      mu.timeStarted = in.readLong();
+      mu.enqueueTime = in.readLong();
+      mu.totalTime = in.readDouble();
+
+      mu.measurementResults.put(PerfCakeConst.FAILURES_TAG, in.readLong());
+      mu.measurementResults.put(PerfCakeConst.THREADS_TAG, in.readInt());
+      mu.measurementResults.put(PerfCakeConst.REQUEST_SIZE_TAG, in.readLong());
+      mu.measurementResults.put(PerfCakeConst.RESPONSE_SIZE_TAG, in.readLong());
+
+      int size = in.readInt();
+      for (int i = 0; i < size; i++) {
+         mu.measurementResults.put(in.readUTF(), in.readObject());
+      }
+
+      final Properties props = new Properties();
+      mu.measurementResults.put(PerfCakeConst.ATTRIBUTES_TAG, props);
+
+      props.setProperty(PerfCakeConst.ITERATION_NUMBER_PROPERTY, String.valueOf(in.readLong()));
+
+      size = in.readInt();
+      for (int i = 0; i < size; i++) {
+         props.setProperty(in.readUTF(), in.readUTF());
+      }
+
+      final int isFailure = in.readInt();
+      if (isFailure > 0) {
+         mu.failure = (Exception) in.readObject();
+      }
+
+      return mu;
    }
 }

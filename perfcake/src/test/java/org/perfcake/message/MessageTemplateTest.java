@@ -52,7 +52,7 @@ public class MessageTemplateTest extends TestSetup {
       final Scenario scenario = sl.load("test-scenario-unfiltered");
       final ScenarioRetractor sr = new ScenarioRetractor(scenario);
       final List<MessageTemplate> messageStore = sr.getMessageStore();
-      final SequenceManager sequenceManager = new SequenceManager();
+      final SequenceManager sequenceManager = sr.getSequenceManager();
       Assert.assertEquals(messageStore.size(), 7);
 
       Assert.assertEquals(System.getProperty("defaultProperty"), "default-property-value");

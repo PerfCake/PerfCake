@@ -45,8 +45,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class ReportManager {
 
+   /**
+    * Logger of the class.
+    */
    private static final Logger log = LogManager.getLogger(ReportManager.class);
 
+   /**
+    * Signaling the time based reporting thread to reset the recorded last reported times and start from scratch.
+    */
    private volatile boolean resetLastTimes = false;
 
    /**
@@ -103,6 +109,15 @@ public class ReportManager {
       for (final Reporter r : reporters) {
          r.setRunInfo(runInfo);
       }
+   }
+
+   /**
+    * Gets {@link RunInfo} associated with this reporter.
+    *
+    * @return The {@link RunInfo} associated with this reporter.
+    */
+   public RunInfo getRunInfo() {
+      return runInfo;
    }
 
    /**
@@ -166,16 +181,17 @@ public class ReportManager {
     * Resets the executor of reporting tasks.
     */
    private void resetReportingTasks() {
-      if (reportingTasks != null) {
-         reportingTasks.shutdownNow();
+      final ThreadPoolExecutor oldTasks = reportingTasks;
+      reportingTasks = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+
+      if (oldTasks != null) {
+         oldTasks.shutdownNow();
          try {
-            reportingTasks.awaitTermination(1, TimeUnit.SECONDS);
+            oldTasks.awaitTermination(5, TimeUnit.SECONDS);
          } catch (InterruptedException ie) {
-            log.info("Could not terminate reporting tasks.");
+            log.info("Could not terminate pre-warmup reporting tasks.");
          }
       }
-
-      reportingTasks = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
    }
 
    /**
@@ -341,12 +357,21 @@ public class ReportManager {
    }
 
    /**
+    * Gets the number of reporting tasks in the queue awaiting to be processed.
+    *
+    * @return The number of reporting tasks in the queue awaiting to be processed.
+    */
+   private long getTasksInQueue() {
+      return reportingTasks.getTaskCount() - reportingTasks.getCompletedTaskCount();
+   }
+
+   /**
     * Shutdowns reporting task thread and waits for the reporting tasks to be finished.
     */
    private void waitForReportingTasks() {
       // in case of time bound execution, we do not want to see any more results
       if (runInfo.getDuration().getPeriodType() == PeriodType.TIME) {
-         int lastTasks = 0, tasks = reportingTasks.getQueue().size();
+         long lastTasks = 0, tasks = getTasksInQueue();
 
          reportingTasks.shutdown();
 
@@ -359,12 +384,12 @@ public class ReportManager {
                // no problem
             }
 
-            tasks = reportingTasks.getQueue().size();
+            tasks = getTasksInQueue();
          }
 
          reportingTasks = null;
       } else {
-         while (reportingTasks.getQueue().size() > 0) {
+         while (getTasksInQueue() > 0) {
             try {
                Thread.sleep(1000);
             } catch (InterruptedException ie) {
