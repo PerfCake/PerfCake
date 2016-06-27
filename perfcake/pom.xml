@@ -53,6 +53,7 @@
       <version.arquillian>1.1.10.Final</version.arquillian>
       <version.wildfly>8.2.0.Final</version.wildfly>
       <version.velocity>1.7</version.velocity>
+      <version.puppycrawl>6.19</version.puppycrawl>
 
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
@@ -520,6 +521,39 @@
             <artifactId>maven-gpg-plugin</artifactId>
             <version>${maven.gpg.plugin.version}</version>
          </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${maven.checkstyle.plugin.version}</version>
+            <executions>
+               <execution>
+                  <id>validate</id>
+                  <phase>validate</phase>
+                  <goals>
+                     <goal>check</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <configLocation>src/site/perfcake-check.xml</configLocation>
+               <encoding>UTF-8</encoding>
+               <consoleOutput>true</consoleOutput>
+               <failsOnError>false</failsOnError>
+               <linkXRef>false</linkXRef>
+               <excludes>org/perfcake/model/*</excludes>
+            </configuration>
+            <dependencies>
+               <dependency>
+                  <groupId>com.puppycrawl.tools</groupId>
+                  <artifactId>checkstyle</artifactId>
+                  <version>${version.puppycrawl}</version>
+               </dependency>
+            </dependencies>
+         </plugin>
+         <plugin>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+            <version>${maven.project.info.reports.plugin.version}</version>
+         </plugin>
       </plugins>
       <pluginManagement>
          <plugins>
@@ -684,6 +718,7 @@
    <reporting>
       <plugins>
          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-project-info-reports-plugin</artifactId>
             <version>${maven.project.info.plugin.version}</version>
             <configuration>
@@ -709,6 +744,33 @@
                   <exclude>org/perfcake/model/**</exclude>
                </excludes>
             </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${maven.checkstyle.plugin.version}</version>
+            <reportSets>
+               <reportSet>
+                  <reports>
+                     <report>checkstyle</report>
+                  </reports>
+               </reportSet>
+            </reportSets>
+            <configuration>
+               <configLocation>src/site/perfcake-check.xml</configLocation>
+               <encoding>UTF-8</encoding>
+               <consoleOutput>true</consoleOutput>
+               <failsOnError>false</failsOnError>
+               <linkXRef>false</linkXRef>
+               <excludes>org/perfcake/model/*</excludes>
+            </configuration>
+            <!--dependencies>
+               <dependency>
+                  <groupId>com.puppycrawl.tools</groupId>
+                  <artifactId>checkstyle</artifactId>
+                  <version>${version.puppycrawl}</version>
+               </dependency>
+            </dependencies-->
          </plugin>
       </plugins>
    </reporting>

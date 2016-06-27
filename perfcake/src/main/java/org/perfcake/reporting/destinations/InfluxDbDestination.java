@@ -27,7 +27,6 @@ import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.SslSocketFactoryFactory;
 import org.perfcake.util.StringUtil;
-import org.perfcake.util.Utils;
 
 import com.google.gson.JsonArray;
 import com.squareup.okhttp.OkHttpClient;
