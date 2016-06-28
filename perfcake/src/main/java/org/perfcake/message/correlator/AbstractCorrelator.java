@@ -22,13 +22,13 @@ package org.perfcake.message.correlator;
 import org.perfcake.message.Message;
 import org.perfcake.message.generator.SenderTask;
 
+import io.vertx.core.MultiMap;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-
-import io.vertx.core.MultiMap;
 
 /**
  * Default implementation of a correlator that provides an easy way to extend it by providing

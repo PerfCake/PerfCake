@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 public class Histogram {
 
    /**
-    * Actual counts of occurrences for given ranges,
+    * Actual counts of occurrences for given ranges.
     */
    private Map<Range, AtomicLong> histogram = new LinkedHashMap<>();
 
@@ -67,7 +67,9 @@ public class Histogram {
    public Histogram(final List<Double> rangeDividers) {
       Collections.sort(rangeDividers);
       final int count = rangeDividers.size();
-      double min, max;
+      double min;
+      double max;
+
       for (int i = 0; i < count; i++) {
          min = rangeDividers.get(i);
 

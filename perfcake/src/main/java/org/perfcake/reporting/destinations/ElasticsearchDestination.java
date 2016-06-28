@@ -31,6 +31,12 @@ import org.perfcake.util.StringUtil;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.searchbox.client.JestClient;
+import io.searchbox.client.JestClientFactory;
+import io.searchbox.client.JestResult;
+import io.searchbox.client.config.HttpClientConfig;
+import io.searchbox.core.Index;
+import io.searchbox.indices.CreateIndex;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -43,13 +49,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.net.ssl.SSLContext;
-
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestClientFactory;
-import io.searchbox.client.JestResult;
-import io.searchbox.client.config.HttpClientConfig;
-import io.searchbox.core.Index;
-import io.searchbox.indices.CreateIndex;
 
 /**
  * Writes the resulting data to Elasticsearch using a simple HTTP REST client.
@@ -65,7 +64,7 @@ public class ElasticsearchDestination implements Destination {
    /**
     * Our logger.
     */
-   private final static Logger log = LogManager.getLogger(ElasticsearchDestination.class);
+   private static final Logger log = LogManager.getLogger(ElasticsearchDestination.class);
 
    /**
     * Comma separated list of Elastisearch servers including protocol and port number.

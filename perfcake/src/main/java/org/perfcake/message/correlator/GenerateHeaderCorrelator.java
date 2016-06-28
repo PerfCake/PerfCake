@@ -21,12 +21,12 @@ package org.perfcake.message.correlator;
 
 import org.perfcake.message.Message;
 
+import io.vertx.core.MultiMap;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
-
-import io.vertx.core.MultiMap;
 
 /**
  * Generates a new random UUID and sets it as a message header. Than expects the same header in the response.
@@ -43,7 +43,7 @@ public class GenerateHeaderCorrelator extends AbstractCorrelator {
    @Override
    public String getRequestCorrelationId(final Message message, final Properties messageAttributes) {
       final String correlationId = UUID.randomUUID().toString();
-      
+
       message.setHeader(CORRELATION_HEADER, correlationId);
       messageAttributes.setProperty(CORRELATION_HEADER, correlationId);
 

@@ -45,5 +45,5 @@ public interface Accumulator<T> {
    /**
     * Resets the accumulator to the default state.
     */
-    void reset();
+   void reset();
 }

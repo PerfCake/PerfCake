@@ -57,6 +57,6 @@ public class WeightedMeanAccumulator implements Accumulator<WeightedValue<Double
    @Override
    public synchronized void reset() {
       sum = 0d;
-      weight = 0l;
+      weight = 0L;
    }
 }

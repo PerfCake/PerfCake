@@ -42,7 +42,7 @@ public class MessageTemplate implements Serializable {
    private final Message message;
 
    /**
-    * How many times the message should be sent in one iteration?
+    * How many times the message should be sent in one iteration.
     */
    private final long multiplicity;
 
@@ -52,7 +52,7 @@ public class MessageTemplate implements Serializable {
    private final List<String> validatorIds;
 
    /**
-    * Does the original message contains anything to be replaced?
+    * True when the original message contains anything to be replaced.
     */
    private final boolean isStringMessage;
 
@@ -62,7 +62,7 @@ public class MessageTemplate implements Serializable {
    private transient StringTemplate template;
 
    /**
-    * Are there any templates in any part of the message including headers and properties?
+    * True when there are any templates in any part of the message including headers and properties.
     */
    private boolean hasTemplates = false;
 

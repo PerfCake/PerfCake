@@ -27,8 +27,9 @@ package org.perfcake.reporting.reporters.accumulators;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class MinAccumulator implements Accumulator<Double> {
+
    /**
-    * Mininum of the reported values
+    * Mininum of the reported values.
     */
    private Double min = Double.POSITIVE_INFINITY;
 

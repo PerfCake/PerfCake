@@ -25,14 +25,14 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 
 /**
- * A structure to keep record of elements for a certain period of time. It supports concurrent access and
- * has amortized time complexity to add and remove element of O(1) (each removal is prepaid while the element is added).
+ * <p>A structure to keep record of elements for a certain period of time. It supports concurrent access and
+ * has amortized time complexity to add and remove element of O(1) (each removal is prepaid while the element is added).</p>
  *
- * The window keeps time order of the elements and although it offers the possibility of providing artificial time, it still
- * needs that the objects are added in a correct time order (older objects first).
+ * <p>The window keeps time order of the elements and although it offers the possibility of providing artificial time, it still
+ * needs that the objects are added in a correct time order (older objects first).</p>
  *
- * The time window is closed on both ends. For example, a sliding window all length 500 at the current time 600 will have both objects
- * for time 100 and 600.
+ * <p>The time window is closed on both ends. For example, a sliding window all length 500 at the current time 600 will have both objects
+ * for time 100 and 600.</p>
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -99,11 +99,11 @@ public class TimeSlidingWindow<E> {
    }
 
    /**
-    * Performs the given action for each element of the sliding window
+    * <p>Performs the given action for each element of the sliding window
     * until all elements have been processed or the action throws an
-    * exception.
+    * exception.</p>
     *
-    * Only the elements in the valid time window are processed. All older elements are garbage collected.
+    * <p>Only the elements in the valid time window are processed. All older elements are garbage collected.</p>
     *
     * @param action
     *       The action to be performed for each element.
@@ -115,13 +115,13 @@ public class TimeSlidingWindow<E> {
    }
 
    /**
-    * Performs the given action for each element of the sliding window until all elements have been processed or the action throws an
-    * exception.
+    * <p>Performs the given action for each element of the sliding window until all elements have been processed or the action throws an
+    * exception.</p>
     *
-    * Only the elements in the valid time window are processed. All older elements are garbage collected.
+    * <p>Only the elements in the valid time window are processed. All older elements are garbage collected.</p>
     *
-    * This action might not return all elements when 1) it was already called with a higher (later) current time, 2) {@link #forEach(Consumer)}
-    * was already called which actually propagated a higher (later) time to this method.
+    * <p>This action might not return all elements when 1) it was already called with a higher (later) current time, 2) {@link #forEach(Consumer)}
+    * was already called which actually propagated a higher (later) time to this method.</p>
     *
     * @param currentTime
     *       Artificial time to control the position of the sliding window.
@@ -131,7 +131,7 @@ public class TimeSlidingWindow<E> {
    public void forEach(final long currentTime, final Consumer<E> action) {
       gc(currentTime);
 
-      for (final TemporalObject<E> te: window) {
+      for (final TemporalObject<E> te : window) {
          if (te.time <= currentTime) {
             action.accept(te.object);
          } else {

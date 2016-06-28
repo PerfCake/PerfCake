@@ -506,13 +506,13 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    /**
-    * Enables/disables garbage collection to be performed each time the memory usage of the
+    * <p>Enables/disables garbage collection to be performed each time the memory usage of the
     * tested system is measured and published.
     * Since the garbage collection is CPU intensive operation be careful to enable it and to how often
     * the memory usage is measured because it will have a significant impact on the measured system and naturally the
-    * measured results too.
+    * measured results too.</p>
     *
-    * It is disabled by default.
+    * <p>It is disabled by default.</p>
     *
     * @param performGcOnMemoryUsage
     *       <code>true</code> to enable the feature. The <code>false</code> otherwise.

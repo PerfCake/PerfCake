@@ -301,7 +301,7 @@ public abstract class AbstractReporter implements Reporter {
    /**
     * Reset reporter to a default state. All results should be forgotten.
     */
-   abstract protected void doReset();
+   protected abstract void doReset();
 
    /**
     * Processes a new {@link org.perfcake.reporting.MeasurementUnit}.
@@ -311,7 +311,7 @@ public abstract class AbstractReporter implements Reporter {
     * @throws ReportingException
     *       When it was not possible to process given {@link org.perfcake.reporting.MeasurementUnit}.
     */
-   abstract protected void doReport(final MeasurementUnit measurementUnit) throws ReportingException;
+   protected abstract void doReport(final MeasurementUnit measurementUnit) throws ReportingException;
 
    @Override
    public final Set<Destination> getDestinations() {

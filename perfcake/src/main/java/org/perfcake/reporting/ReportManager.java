@@ -371,7 +371,8 @@ public class ReportManager {
    private void waitForReportingTasks() {
       // in case of time bound execution, we do not want to see any more results
       if (runInfo.getDuration().getPeriodType() == PeriodType.TIME) {
-         long lastTasks = 0, tasks = getTasksInQueue();
+         long lastTasks = 0;
+         long tasks = getTasksInQueue();
 
          reportingTasks.shutdown();
 

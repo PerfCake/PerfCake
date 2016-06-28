@@ -67,7 +67,7 @@ abstract public class AbstractSender implements MessageSender {
       isTraceEnabled = log.isTraceEnabled();
    }
 
-   abstract public void doInit(final Properties messageAttributes) throws PerfCakeException;
+   public abstract void doInit(final Properties messageAttributes) throws PerfCakeException;
 
    @Override
    public final void close() throws PerfCakeException {
@@ -76,7 +76,7 @@ abstract public class AbstractSender implements MessageSender {
       }
    }
 
-   abstract public void doClose() throws PerfCakeException;
+   public abstract void doClose() throws PerfCakeException;
 
    @Override
    public final Serializable send(final Message message, final MeasurementUnit measurementUnit) throws Exception {
@@ -106,7 +106,7 @@ abstract public class AbstractSender implements MessageSender {
     *       When the sending operation failed.
     * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message, org.perfcake.reporting.MeasurementUnit)
     */
-   abstract public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception;
+   public abstract Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception;
 
    @Override
    public void postSend(final Message message) throws Exception {

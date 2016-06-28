@@ -31,25 +31,25 @@ import org.perfcake.validation.ValidationManager;
 import java.util.List;
 
 /**
- * A definition of contract for all message generators.
+ * <p>A definition of contract for all message generators.</p>
  *
- * A message generator controls how many threads are being used to generate the messages, is responsible for creating and submitting
- * {@link org.perfcake.message.generator.SenderTask SenderTasks} and controls the other components involved in the performance test execution.
+ * <p>A message generator controls how many threads are being used to generate the messages, is responsible for creating and submitting
+ * {@link org.perfcake.message.generator.SenderTask SenderTasks} and controls the other components involved in the performance test execution.</p>
  *
- * A message generator is the most crucial and complicated component of PerfCake and it is highly recommended to reuse one of existing
- * implementations as they already offer mostly wanted features.
+ * <p>A message generator is the most crucial and complicated component of PerfCake and it is highly recommended to reuse one of existing
+ * implementations as they already offer mostly wanted features.</p>
  *
- * The main task of a message generator is to take care of the sending threads, create {@link SenderTask}s as needed and monitor test progress.
+ * <p>The main task of a message generator is to take care of the sending threads, create {@link SenderTask}s as needed and monitor test progress.
  * It is important to properly shutdown the message generation for both time and iteration based test length control. In the case of an iteration based
  * control, a generator must wait for all the messages to be processed. In the case of a time based control, the test stops immediately after the time
- * has elapsed.
+ * has elapsed.</p>
  *
- * Each {@link SenderTask} takes a {@link CanalStreet} instance as a communication pipe that is used to notify the parent generator of task completion and or any errors that might
+ * <p>Each {@link SenderTask} takes a {@link CanalStreet} instance as a communication pipe that is used to notify the parent generator of task completion and or any errors that might
  * have occurred. The {@link CanalStreet} relies on an internal {@link java.util.concurrent.Semaphore} instance that can control the number of {@link SenderTask}s prepared in
- * a queue for execution.
+ * a queue for execution.</p>
  *
- * When there is a separate message channel used to receive messages, a {@link Correlator} is set to match requests and responses. The {@link Correlator} is also
- * passed to the {@link SenderTask} so it can register sent messages with it.
+ * <p>When there is a separate message channel used to receive messages, a {@link Correlator} is set to match requests and responses. The {@link Correlator} is also
+ * passed to the {@link SenderTask} so it can register sent messages with it.</p>
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -159,7 +159,8 @@ public interface MessageGenerator {
     * Sets a {@link Correlator} to match requests and responses when a separate message channel is used for receiving responses.
     * Null means that no correlator and no receiver is used.
     *
-    * @param correlator The correlator to be used to match requests and responses.
+    * @param correlator
+    *       The correlator to be used to match requests and responses.
     */
    void setCorrelator(final Correlator correlator);
 }

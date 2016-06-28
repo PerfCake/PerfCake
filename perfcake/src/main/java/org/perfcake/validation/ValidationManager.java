@@ -67,12 +67,12 @@ public class ValidationManager {
    private boolean finished = true;
 
    /**
-    * Were all messages validated properly so far?
+    * True when all the messages were validated properly so far.
     */
    private boolean allMessagesValid = true;
 
    /**
-    * Is validation enabled?
+    * True when the validation is enabled.
     */
    private boolean enabled = false;
 

@@ -73,18 +73,6 @@ public interface Reporter {
    void registerDestination(final Destination destination, final Period period);
 
    /**
-    * Publishes results to the destination. This method is called only when the results should be published.
-    *
-    * @param periodType
-    *       A period type that caused the invocation of this method.
-    * @param destination
-    *       A destination to which the result should be reported.
-    * @throws ReportingException
-    *       When it was not possible to publish results to the given destination.
-    */
-   void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException;
-
-   /**
     * Registers a destination to receive resulting {@link org.perfcake.reporting.Measurement Measurements} in
     * given periods. It is the goal of Reporter to make sure the
     * results are published to the registered destinations. For an easier development it is advised
@@ -99,6 +87,18 @@ public interface Reporter {
     *       The set of period intervals in which the destination should publish results.
     */
    void registerDestination(final Destination destination, final Set<Period> periods);
+
+   /**
+    * Publishes results to the destination. This method is called only when the results should be published.
+    *
+    * @param periodType
+    *       A period type that caused the invocation of this method.
+    * @param destination
+    *       A destination to which the result should be reported.
+    * @throws ReportingException
+    *       When it was not possible to publish results to the given destination.
+    */
+   void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException;
 
    /**
     * Removes a previously registered Destination. The method removes all occurrences of the destination

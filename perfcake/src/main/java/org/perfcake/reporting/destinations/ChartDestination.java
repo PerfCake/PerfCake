@@ -103,7 +103,7 @@ public class ChartDestination implements Destination {
    private C3ChartHelper helper;
 
    /**
-    * Should we automatically combine previous chart reports with the new one?
+    * True when we will automatically combine previous chart reports with the new one.
     */
    private boolean autoCombine = true;
 

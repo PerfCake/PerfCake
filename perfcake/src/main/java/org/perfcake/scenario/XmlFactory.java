@@ -112,12 +112,12 @@ public class XmlFactory implements ScenarioFactory {
    }
 
    @Override
-   public void init(final URL scenarioURL) throws PerfCakeException {
+   public void init(final URL scenarioUrl) throws PerfCakeException {
       try {
-         prepareModelTwoPass(scenarioURL);
+         prepareModelTwoPass(scenarioUrl);
 
          if (log.isDebugEnabled()) {
-            log.debug(String.format("Loaded scenario definition from '%s'.", scenarioURL.toString()));
+            log.debug(String.format("Loaded scenario definition from '%s'.", scenarioUrl.toString()));
          }
       } catch (final IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
@@ -128,20 +128,20 @@ public class XmlFactory implements ScenarioFactory {
     * Parses the scenario twice, first to read the properties defined in it, second using the new properties directly
     * in the scenario.
     *
-    * @param scenarioURL
+    * @param scenarioUrl
     *       Scenario location URL.
     * @throws PerfCakeException
     *       When it was not possible to parse the scenario.
     * @throws IOException
     *       When it was not possible to read the scenario definition.
     */
-   private void prepareModelTwoPass(final URL scenarioURL) throws PerfCakeException, IOException {
+   private void prepareModelTwoPass(final URL scenarioUrl) throws PerfCakeException, IOException {
       // two-pass parsing to first read the properties specified in the scenario and then use them
-      this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
+      this.scenarioConfig = Utils.readFilteredContent(scenarioUrl);
       this.scenarioModel = parse();
       putScenarioPropertiesToSystem(parseScenarioProperties());
 
-      this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
+      this.scenarioConfig = Utils.readFilteredContent(scenarioUrl);
       this.scenarioModel = parse();
       final Properties scenarioProperties = parseScenarioProperties();
       putScenarioPropertiesToSystem(scenarioProperties);

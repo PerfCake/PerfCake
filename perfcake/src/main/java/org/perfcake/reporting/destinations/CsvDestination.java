@@ -138,7 +138,7 @@ public class CsvDestination implements Destination {
    private boolean dynamicAttributes = false;
 
    /**
-    * Was the warmUp attribute required in expectedFields?
+    * True when the warmUp attribute was required in expectedFields.
     */
    private boolean wasWarmUp = false;
 

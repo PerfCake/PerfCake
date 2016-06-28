@@ -59,7 +59,7 @@ abstract public class AbstractSequence implements Sequence {
       nextValue.set(CompletableFuture.supplyAsync(this::doGetNext));
    }
 
-   abstract public String doGetNext();
+   public abstract String doGetNext();
 
-   abstract public void doReset() throws PerfCakeException;
+   public abstract void doReset() throws PerfCakeException;
 }

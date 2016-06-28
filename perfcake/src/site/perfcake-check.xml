@@ -59,7 +59,6 @@
       <module name="OneStatementPerLine"/>
       <module name="MultipleVariableDeclarations"/>
       <module name="ArrayTypeStyle"/>
-      <module name="MissingSwitchDefault"/>
       <module name="FallThrough"/>
       <module name="UpperEll"/>
       <module name="ModifierOrder"/>
@@ -159,7 +158,9 @@
          <property name="allowSamelineMultipleAnnotations" value="true"/>
       </module>
       <module name="NonEmptyAtclauseDescription"/>
-      <module name="JavadocTagContinuationIndentation"/>
+      <module name="JavadocTagContinuationIndentation">
+         <property name="offset" value="6"/>
+      </module>
       <module name="SummaryJavadoc">
          <property name="forbiddenSummaryFragments" value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )"/>
       </module>

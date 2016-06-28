@@ -22,14 +22,14 @@ package org.perfcake.reporting.destinations.c3chart;
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.Utils;
 
+import io.vertx.core.json.JsonArray;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import io.vertx.core.json.JsonArray;
 
 /**
  * Data of a C3 chart stored in the .js file as a script building an array.
@@ -185,7 +185,8 @@ public class C3ChartData {
    @SuppressWarnings("unchecked")
    C3ChartData combineWith(final C3ChartData otherData) {
       final List<JsonArray> newData = new LinkedList<>();
-      int idx1 = getDataStart(), idx2 = otherData.getDataStart();
+      int idx1 = getDataStart();
+      int idx2 = otherData.getDataStart();
 
       if (idx1 == -1) {
          if (idx2 == -1) {
@@ -253,8 +254,6 @@ public class C3ChartData {
 
    @Override
    public String toString() {
-      return "C3ChartData{" +
-            "data=" + data +
-            '}';
+      return "C3ChartData{" + "data=" + data + '}';
    }
 }

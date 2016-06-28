@@ -86,7 +86,7 @@ public class WarmUpReporter extends AbstractReporter {
    /**
     * The period in milliseconds in which the checking if the tested system is warmed up.
     */
-   private final static long CHECKING_PERIOD = 1000;
+   private static final long CHECKING_PERIOD = 1000;
 
    @Override
    public void start() {
