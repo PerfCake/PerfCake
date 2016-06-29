@@ -197,15 +197,23 @@ public class SenderTask implements Runnable {
                   requestSize = requestSize + (currentMessage.getPayload().toString().length() * multiplicity);
 
                   for (int i = 0; i < multiplicity; i++) {
-                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
+                     if (correlator != null) {
+                        correlator.registerRequest(this, currentMessage, messageAttributes);
+                        sendMessage(sender, currentMessage, messageAttributes, mu);
+                        waitForResponse.acquire();
+                        receivedMessage = new ReceivedMessage(correlatedResponse, messageToSend, currentMessage, messageAttributes);
+                     } else {
+                        receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
+                     }
+
                      if (receivedMessage.getResponse() != null) {
                         responseSize = responseSize + receivedMessage.getResponse().toString().length();
                      }
+
                      if (validationManager.isEnabled()) {
                         validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                      }
                   }
-
                }
             } else {
                receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageAttributes, mu), null, null, messageAttributes);
