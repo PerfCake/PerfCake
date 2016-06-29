@@ -35,7 +35,7 @@ import java.util.Properties;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-abstract public class AbstractSender implements MessageSender {
+public abstract class AbstractSender implements MessageSender {
 
    /**
     * The sender's logger.
@@ -120,10 +120,24 @@ abstract public class AbstractSender implements MessageSender {
       return target.toString();
    }
 
+   /**
+    * Gets the target with placeholders replaced.
+    *
+    * @param properties
+    *       Additional properties to replace placeholders in the target template.
+    * @return The target template with placeholders replaced.
+    */
    public final String getTarget(final Properties properties) {
       return target.toString(properties);
    }
 
+   /**
+    * Gets the target in a safe way to avoid NPE when properties are null.
+    *
+    * @param properties
+    *       Properties to replace placeholders in the target.
+    * @return The target template with placeholders replaced.
+    */
    public final String safeGetTarget(final Properties properties) {
       if (properties == null) {
          return getTarget();

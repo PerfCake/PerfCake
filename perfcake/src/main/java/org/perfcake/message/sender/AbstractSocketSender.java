@@ -41,7 +41,7 @@ import java.util.Properties;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-abstract public class AbstractSocketSender extends AbstractSender {
+public abstract class AbstractSocketSender extends AbstractSender {
 
    /**
     * The host of the socket.
@@ -91,7 +91,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
     * @throws Exception
     *       When it was not possible to open the socket.
     */
-   abstract protected void openSocket() throws Exception;
+   protected abstract void openSocket() throws Exception;
 
    /**
     * Opens the writer to an outbound socket's stream and the reader to read from inbound socket's stream.

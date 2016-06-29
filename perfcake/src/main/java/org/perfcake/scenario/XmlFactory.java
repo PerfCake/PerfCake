@@ -243,7 +243,7 @@ public class XmlFactory implements ScenarioFactory {
     */
    private org.perfcake.model.Scenario parse() throws PerfCakeException {
       try {
-         final Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes(Utils.getDefaultEncoding())));
+         final Source scenarioXml = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes(Utils.getDefaultEncoding())));
          final String schemaFileName = "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd";
          final URL backupUrl = new URL("http://schema.perfcake.org/" + schemaFileName);
 
@@ -264,7 +264,7 @@ public class XmlFactory implements ScenarioFactory {
          final JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
          final Unmarshaller unmarshaller = context.createUnmarshaller();
          unmarshaller.setSchema(schema);
-         return (org.perfcake.model.Scenario) unmarshaller.unmarshal(scenarioXML);
+         return (org.perfcake.model.Scenario) unmarshaller.unmarshal(scenarioXml);
       } catch (final SAXException e) {
          throw new PerfCakeException("Cannot validate scenario configuration. PerfCake installation seems broken. ", e);
       } catch (final JAXBException e) {

@@ -22,10 +22,10 @@ package org.perfcake.message.correlator;
 import org.perfcake.message.Message;
 import org.perfcake.message.generator.SenderTask;
 
+import io.vertx.core.MultiMap;
+
 import java.io.Serializable;
 import java.util.Properties;
-
-import io.vertx.core.MultiMap;
 
 /**
  * Correlates requests with their responses and notifies {@link SenderTask} of receiving the appropriate response to the

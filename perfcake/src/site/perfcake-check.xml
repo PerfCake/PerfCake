@@ -15,6 +15,7 @@
    </module>
 
    <module name="TreeWalker">
+      <module name="FileContentsHolder"/>
       <module name="OuterTypeFilename"/>
       <module name="IllegalTokenText">
          <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
@@ -190,5 +191,11 @@
          <property name="exceptionVariableName" value="expected"/>
       </module>
       <module name="CommentsIndentation"/>
+   </module>
+
+   <module name="SuppressWithNearbyCommentFilter">
+      <property name="commentFormat" value="@checkstyle.ignore\((\w*(\|\w*)*)\) - [-\w\.,:; ]{10,}"/>
+      <property name="checkFormat" value=".*"/>
+      <property name="influenceFormat" value="0"/>
    </module>
 </module>

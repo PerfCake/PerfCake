@@ -62,11 +62,11 @@ public class MqttSender extends AbstractSender {
    @Override
    public void doInit(Properties messageAttributes) throws PerfCakeException {
       try {
-         final URI targetURI = new URI(getTarget());
-         final String protocol = targetURI.getScheme();
-         final String host = targetURI.getHost();
-         final int port = targetURI.getPort();
-         topicName = targetURI.getPath().substring(1);
+         final URI targetUri = new URI(getTarget());
+         final String protocol = targetUri.getScheme();
+         final String host = targetUri.getHost();
+         final int port = targetUri.getPort();
+         topicName = targetUri.getPath().substring(1);
          try {
             final MQTT mqttClient = new MQTT();
             mqttClient.setHost(protocol + "://" + host + ":" + port);
@@ -87,12 +87,12 @@ public class MqttSender extends AbstractSender {
                final String responseHost;
                final Integer responsePort;
                final String responseTopicName;
-               final URI responseTargetURI = new URI(responseTarget);
+               final URI responseTargetUri = new URI(responseTarget);
 
-               if ((responseHost = responseTargetURI.getHost()) != null) {
-                  final String responseProtocol = responseTargetURI.getScheme();
-                  responsePort = responseTargetURI.getPort();
-                  responseTopicName = responseTargetURI.getPath().substring(1);
+               if ((responseHost = responseTargetUri.getHost()) != null) {
+                  final String responseProtocol = responseTargetUri.getScheme();
+                  responsePort = responseTargetUri.getPort();
+                  responseTopicName = responseTargetUri.getPath().substring(1);
 
                   final MQTT mqttResponseClient = new MQTT();
                   mqttResponseClient.setHost(responseProtocol + "://" + responseHost + ":" + responsePort);

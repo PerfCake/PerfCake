@@ -157,7 +157,8 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
          }
       }
 
-      long active = getTasksInQueue(), lastActive = 0;
+      long active = getTasksInQueue();
+      long lastActive = 0;
       while (active > 0 && lastActive != active) { // make sure the threads are finishing
          lastActive = active;
          executorService.awaitTermination(shutdownPeriod, TimeUnit.MILLISECONDS);

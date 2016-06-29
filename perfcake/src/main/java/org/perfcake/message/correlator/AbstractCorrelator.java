@@ -59,7 +59,7 @@ public abstract class AbstractCorrelator implements Correlator {
     *       The request message attributes.
     * @return The correlation id corresponding to this request.
     */
-   abstract public String getRequestCorrelationId(final Message message, final Properties messageAttributes);
+   public abstract String getRequestCorrelationId(final Message message, final Properties messageAttributes);
 
    @Override
    public void registerResponse(final Serializable response, final MultiMap headers) {
@@ -77,5 +77,5 @@ public abstract class AbstractCorrelator implements Correlator {
     *       Headers received with the response. Can be useful for discovering correlation id.
     * @return The list of correlation ids corresponding to this response.
     */
-   abstract public List<String> getResponseCorrelationIds(final Serializable response, final MultiMap headers);
+   public abstract List<String> getResponseCorrelationIds(final Serializable response, final MultiMap headers);
 }

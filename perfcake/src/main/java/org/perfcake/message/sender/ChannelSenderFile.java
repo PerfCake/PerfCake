@@ -39,7 +39,7 @@ import java.util.Properties;
 public class ChannelSenderFile extends ChannelSender {
 
    /**
-    * Sender's fileChannel
+    * Sender's fileChannel.
     */
    private FileChannel fileChannel;
 

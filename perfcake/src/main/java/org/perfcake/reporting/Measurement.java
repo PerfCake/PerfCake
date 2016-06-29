@@ -182,7 +182,7 @@ public class Measurement {
    public String toString() {
       final StringBuilder sb = new StringBuilder();
       sb.append("[");
-      sb.append(Utils.timeToHMS(time));
+      sb.append(Utils.timeToHms(time));
       sb.append("][");
       sb.append(iteration + 1); // first iteration index is 0
       sb.append(" iterations][");

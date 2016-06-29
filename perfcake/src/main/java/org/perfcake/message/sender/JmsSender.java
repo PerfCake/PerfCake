@@ -98,7 +98,7 @@ public class JmsSender extends AbstractSender {
    protected Connection connection;
 
    /**
-    * JMS session
+    * JMS session.
     */
    protected Session session;
 
@@ -321,8 +321,7 @@ public class JmsSender extends AbstractSender {
     *       The user name credential.
     * @param password
     *       The password credential.
-    * @return <code>true</code> if both of the credentials
-    * are set and <code>false</code> if neither of them is set.
+    * @return <code>true</code> if both of the credentials are set and <code>false</code> if neither of them is set.
     * @throws PerfCakeException
     *       If one of the credentials is not set.
     */

@@ -47,7 +47,10 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public abstract class AbstractMessageGenerator implements MessageGenerator {
 
-   private final static Logger log = LogManager.getLogger(AbstractMessageGenerator.class);
+   /**
+    * Our logger.
+    */
+   private static final Logger log = LogManager.getLogger(AbstractMessageGenerator.class);
 
    /**
     * Message sender manager.
@@ -90,7 +93,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
    private int threads = 1;
 
    /**
-    * Should we interrupt the generator if there is an error?
+    * True when we should interrupt generating messages on error.
     */
    private boolean failFast = false;
 
@@ -163,7 +166,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
    /**
     * Verifies that the current configuration of {@link org.perfcake.RunInfo} is supported by the current generator.
     */
-   abstract protected void validateRunInfo();
+   protected abstract void validateRunInfo();
 
    /**
     * Sets the {@link org.perfcake.reporting.ReportManager} to be used for the current performance test execution.

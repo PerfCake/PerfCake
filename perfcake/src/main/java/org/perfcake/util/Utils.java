@@ -368,7 +368,7 @@ public class Utils {
     *       The timestamp in milliseconds.
     * @return The string representing the timestamp in H:MM:SS format.
     */
-   public static String timeToHMS(final long time) {
+   public static String timeToHms(final long time) {
       final long hours = TimeUnit.MILLISECONDS.toHours(time);
       final long minutes = TimeUnit.MILLISECONDS.toMinutes(time - TimeUnit.HOURS.toMillis(hours));
       final long seconds = TimeUnit.MILLISECONDS.toSeconds(time - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes));

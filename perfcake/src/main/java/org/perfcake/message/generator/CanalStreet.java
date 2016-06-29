@@ -42,7 +42,7 @@ public class CanalStreet {
    private Semaphore semaphore;
 
    /**
-    * Should we interrupt the generator if there is an error?
+    * True when we should interrupt message generation on error.
     */
    private final boolean failFast;
 
