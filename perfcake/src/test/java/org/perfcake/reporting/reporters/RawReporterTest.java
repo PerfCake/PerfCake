@@ -78,6 +78,6 @@ public class RawReporterTest extends TestSetup {
 
       // there must be some time information at the end
       final String time = replayLines.get(replayLines.size() - 1).split(";", 2)[0];
-      Assert.assertTrue(time.equals("0:00:02") || time.equals("0:00:03"));
+      Assert.assertTrue(time.equals("0:00:02") || time.equals("0:00:03"), "Time out of margins: " + time + " (expected 0:00:02 or 0:00:03).");
    }
 }

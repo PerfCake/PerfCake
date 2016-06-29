@@ -218,7 +218,7 @@ public final class ValidatorUtil {
     *       The right hand operand of the operation.
     * @return True if and only if the message part meets given criteria.
     */
-   private static boolean validateMessage(final Message message, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {
+   public static boolean validateMessage(final Message message, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {
       return validateData(getMessagePart(message, part, partName), operator, value);
    }
 
