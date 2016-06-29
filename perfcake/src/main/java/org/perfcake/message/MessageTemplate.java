@@ -167,20 +167,25 @@ public class MessageTemplate implements Serializable {
     */
    public Message getFilteredMessage(final Properties properties) {
       if (isStringMessage && hasTemplates) {
-         final Message m = newMessage();
+         final Message newMessage = newMessage();
 
          if (template != null) {
-            m.setPayload(template.toString(properties));
+            newMessage.setPayload(template.toString(properties));
          } else {
-            m.setPayload(message.getPayload());
+            newMessage.setPayload(message.getPayload());
          }
 
-         m.setHeaders(untemplatize(message.getHeaders(), properties));
-         m.setProperties(untemplatize(message.getProperties(), properties));
+         newMessage.setHeaders(untemplatize(message.getHeaders(), properties));
+         newMessage.setProperties(untemplatize(message.getProperties(), properties));
 
-         return m;
+         return newMessage;
       } else {
-         return message;
+         final Message newMessage = newMessage();
+         newMessage.setPayload(message.getPayload());
+         newMessage.setHeaders(new Properties(message.getHeaders()));
+         newMessage.setProperties(new Properties(message.getProperties()));
+
+         return newMessage;
       }
    }
 

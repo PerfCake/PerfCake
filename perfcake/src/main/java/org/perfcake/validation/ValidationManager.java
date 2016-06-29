@@ -124,7 +124,7 @@ public class ValidationManager {
     */
    public void setQueueFile(final File queueFile) throws PerfCakeException {
       if (isFinished()) {
-         validationTasks = new FileQueue<ValidationTask>(queueFile);
+         validationTasks = new FileQueue<>(queueFile);
       } else {
          throw new PerfCakeException("It is not possible to change the file queue while there is a running validation.");
       }
@@ -287,7 +287,7 @@ public class ValidationManager {
    private void logStatistics() {
       final StringBuilder sb = new StringBuilder("=== Validation Statistics ===\n");
       final Score total = statistics.get(OVERALL_STAT_KEY);
-      sb.append("Overall validated ").append(total.getPassed() + total.getFailed()).append(" messages of which ");
+      sb.append("= Overall validated ").append(total.getPassed() + total.getFailed()).append(" messages of which ");
       sb.append(total.getPassed()).append(" passed and ");
       sb.append(total.getFailed()).append(" failed.\n");
 
@@ -296,12 +296,12 @@ public class ValidationManager {
          final Score value = entry.getValue();
 
          if (!OVERALL_STAT_KEY.equals(key)) {
-            sb.append("Thread [").append(key).append("]: Totally validated ").append(value.getFailed() + value.getPassed());
+            sb.append("= Thread [").append(key).append("]: Totally validated ").append(value.getFailed() + value.getPassed());
             sb.append(" messages of which ").append(value.getPassed()).append(" passed and ").append(value.getFailed()).append(" failed.\n");
          }
       }
 
-      sb.append("End of statistics.");
+      sb.append("=== End of statistics. ===");
 
       log.info(sb.toString());
    }

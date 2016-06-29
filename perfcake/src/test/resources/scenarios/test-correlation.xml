@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:7.0">
+   <run type="iteration" value="${perfcake.run.duration:1000}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:10}" />
+   <sequences>
+      <sequence class="PrimitiveNumberSequence" name="id" />
+   </sequences>
+   <sender class="HttpSender">
+      <target>http://localhost:8091</target>
+   </sender>
+   <receiver class="HttpReceiver" threads="10">
+      <correlator class="GenerateHeaderCorrelator"/>
+      <property name="host" value="localhost"/>
+      <property name="port" value="8092"/>
+      <property name="httpResponse" value="Heyda!"/>
+   </receiver>
+   <reporting>
+      <reporter class="IterationsPerSecondReporter">
+         <destination class="ConsoleDestination">
+            <period type="iteration" value="100"/>
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message content="Hello message @{id}">
+         <validatorRef id="valid"/>
+      </message>
+   </messages>
+   <validation>
+      <validator class="ScriptValidator" id="valid">
+         <property name="engine" value="groovy"/>
+         <property name="script" value="return originalMessage.payload.toString().equals(message.payload.toString())"/>
+      </validator>
+   </validation>
+</scenario>

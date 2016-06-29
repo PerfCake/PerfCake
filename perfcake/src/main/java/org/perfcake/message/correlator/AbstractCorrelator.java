@@ -47,7 +47,8 @@ public abstract class AbstractCorrelator implements Correlator {
 
    @Override
    public void registerRequest(final SenderTask senderTask, final Message message, final Properties messageAttributes) {
-      waitingTasks.put(getRequestCorrelationId(message, messageAttributes), senderTask);
+      final String correlationId = getRequestCorrelationId(message, messageAttributes);
+      waitingTasks.put(correlationId, senderTask);
    }
 
    /**
@@ -64,7 +65,8 @@ public abstract class AbstractCorrelator implements Correlator {
    @Override
    public void registerResponse(final Serializable response, final MultiMap headers) {
       getResponseCorrelationIds(response, headers).forEach(correlationId -> {
-         waitingTasks.remove(correlationId).registerResponse(response);
+         final SenderTask senderTask = waitingTasks.remove(correlationId);
+         senderTask.registerResponse(response);
       });
    }
 
