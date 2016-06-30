@@ -24,18 +24,17 @@ import org.perfcake.TestSetup;
 import org.perfcake.message.correlator.GenerateHeaderCorrelator;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
-import org.perfcake.scenario.ScenarioRetractor;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
 import io.vertx.core.http.HttpServer;
+import io.vertx.core.impl.ConcurrentHashSet;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Set;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -49,11 +48,11 @@ public class CorrelationIntegrationTest extends TestSetup {
       final Vertx vertx = Vertx.vertx();
       final HttpServer server = vertx.createHttpServer();
       final Router router = Router.router(vertx);
-      final List<List<String>> results = new ArrayList<>();
+      final Set<Integer> messageNumbers = new ConcurrentHashSet<>();
       final HttpClient client = vertx.createHttpClient();
       router.route("/*").handler(BodyHandler.create());
       router.route("/*").handler((context) -> {
-         results.add(Arrays.asList(context.request().absoluteURI(), context.getBodyAsString()));
+         messageNumbers.add(Integer.valueOf(context.getBodyAsString().split(" ")[2]));
          context.response().setStatusCode(200).end();
 
          client.post(8092, "localhost", "/", responseHandler -> {
@@ -65,15 +64,13 @@ public class CorrelationIntegrationTest extends TestSetup {
 
       final Scenario scenario = ScenarioLoader.load("test-correlation");
 
-      ScenarioRetractor sr = new ScenarioRetractor(scenario);
-      sr.getReportManager();
-
       scenario.init();
       scenario.run();
       scenario.close();
 
       server.close();
 
-      //System.out.println(results);
+      // we should have seen each message number exactly once, so there must be 1000 of them
+      Assert.assertEquals(messageNumbers.size(), 1000);
    }
 }

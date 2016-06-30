@@ -10,8 +10,7 @@
    </sender>
    <receiver class="HttpReceiver" threads="10">
       <correlator class="GenerateHeaderCorrelator"/>
-      <property name="host" value="localhost"/>
-      <property name="port" value="8092"/>
+      <source>localhost:8092</source>
       <property name="httpResponse" value="Heyda!"/>
    </receiver>
    <reporting>

@@ -20,6 +20,7 @@
 package org.perfcake.message.receiver;
 
 import org.perfcake.message.correlator.Correlator;
+import org.perfcake.util.StringTemplate;
 
 /**
  * Default implementation of basic receiver methods. We do not want them as default implementations
@@ -39,6 +40,11 @@ public abstract class AbstractReceiver implements Receiver {
     */
    protected Correlator correlator;
 
+   /**
+    * The source from where to receive the messages.
+    */
+   private StringTemplate source = new StringTemplate("");
+
    @Override
    public void setThreads(final int threadCount) {
       threads = threadCount;
@@ -47,5 +53,16 @@ public abstract class AbstractReceiver implements Receiver {
    @Override
    public void setCorrelator(final Correlator correlator) {
       this.correlator = correlator;
+   }
+
+   @Override
+   public final String getSource() {
+      return source.toString();
+   }
+
+   @Override
+   public final Receiver setSource(final String source) {
+      this.source = new StringTemplate(source);
+      return this;
    }
 }

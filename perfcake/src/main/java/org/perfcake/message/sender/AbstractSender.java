@@ -120,13 +120,7 @@ public abstract class AbstractSender implements MessageSender {
       return target.toString();
    }
 
-   /**
-    * Gets the target with placeholders replaced.
-    *
-    * @param properties
-    *       Additional properties to replace placeholders in the target template.
-    * @return The target template with placeholders replaced.
-    */
+   @Override
    public final String getTarget(final Properties properties) {
       return target.toString(properties);
    }

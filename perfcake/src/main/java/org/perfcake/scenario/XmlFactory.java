@@ -188,6 +188,7 @@ public class XmlFactory implements ScenarioFactory {
             }
 
             final int threads = Integer.parseInt(rec.getThreads());
+            final String source = rec.getSource();
 
             if (log.isDebugEnabled()) {
                log.debug("--- Receiver (" + receiverClass + ") ---");
@@ -199,6 +200,9 @@ public class XmlFactory implements ScenarioFactory {
 
             final Receiver receiver = (Receiver) ObjectFactory.summonInstance(receiverClass, receiverProperties);
             receiver.setThreads(threads);
+            if (source != null) {
+               receiver.setSource(source);
+            }
 
             return receiver;
          } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {

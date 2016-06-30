@@ -109,7 +109,7 @@ public interface MessageSender {
 
    /**
     * Gets the target where to send the messages providing additional properties to replace placeholders in the
-    * tearget template.
+    * target template.
     *
     * @param properties
     *       Additional properties to replace placeholders in the target template.
