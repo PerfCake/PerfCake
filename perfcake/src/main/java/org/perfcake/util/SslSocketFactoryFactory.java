@@ -70,11 +70,11 @@ public class SslSocketFactoryFactory {
    /**
     * Gets a new SSL socket factory configured with the provided key and trust store using TLS protocol.
     *
-    * @param keyStore
+    * @param keyStoreLocation
     *       Key store location.
     * @param keyStorePassword
     *       Key store password.
-    * @param trustStore
+    * @param trustStoreLocation
     *       Trust store location.
     * @param trustStorePassword
     *       Trust store password.
@@ -82,18 +82,18 @@ public class SslSocketFactoryFactory {
     * @throws PerfCakeException
     *       When it was not possible to create the SSL socket factory.
     */
-   public static SSLSocketFactory newSslSocketFactory(final String keyStore, final String keyStorePassword, final String trustStore, final String trustStorePassword) throws PerfCakeException {
-      return newSslSocketFactory(keyStore, keyStorePassword, trustStore, trustStorePassword, "TLS");
+   public static SSLSocketFactory newSslSocketFactory(final String keyStoreLocation, final String keyStorePassword, final String trustStoreLocation, final String trustStorePassword) throws PerfCakeException {
+      return newSslSocketFactory(keyStoreLocation, keyStorePassword, trustStoreLocation, trustStorePassword, "TLS");
    }
 
    /**
     * Gets a new SSL socket factory configured with the provided key and trust store.
     *
-    * @param keyStore
+    * @param keyStoreLocation
     *       Key store location.
     * @param keyStorePassword
     *       Key store password.
-    * @param trustStore
+    * @param trustStoreLocation
     *       Trust store location.
     * @param trustStorePassword
     *       Trust store password.
@@ -103,18 +103,18 @@ public class SslSocketFactoryFactory {
     * @throws PerfCakeException
     *       When it was not possible to create the SSL socket factory.
     */
-   public static SSLSocketFactory newSslSocketFactory(final String keyStore, final String keyStorePassword, final String trustStore, final String trustStorePassword, final String protocol) throws PerfCakeException {
-      return newSslContext(keyStore, keyStorePassword, trustStore, trustStorePassword, protocol).getSocketFactory();
+   public static SSLSocketFactory newSslSocketFactory(final String keyStoreLocation, final String keyStorePassword, final String trustStoreLocation, final String trustStorePassword, final String protocol) throws PerfCakeException {
+      return newSslContext(keyStoreLocation, keyStorePassword, trustStoreLocation, trustStorePassword, protocol).getSocketFactory();
    }
 
    /**
     * Gets a new SSL context configured with the provided key and trust store using TLS protocol.
     *
-    * @param keyStore
+    * @param keyStoreLocation
     *       Key store location.
     * @param keyStorePassword
     *       Key store password.
-    * @param trustStore
+    * @param trustStoreLocation
     *       Trust store location.
     * @param trustStorePassword
     *       Trust store password.
@@ -122,18 +122,18 @@ public class SslSocketFactoryFactory {
     * @throws PerfCakeException
     *       When it was not possible to create the SSL context.
     */
-   public static SSLContext newSslContext(final String keyStore, final String keyStorePassword, final String trustStore, final String trustStorePassword) throws PerfCakeException {
-      return newSslContext(keyStore, keyStorePassword, trustStore, trustStorePassword, "TLS");
+   public static SSLContext newSslContext(final String keyStoreLocation, final String keyStorePassword, final String trustStoreLocation, final String trustStorePassword) throws PerfCakeException {
+      return newSslContext(keyStoreLocation, keyStorePassword, trustStoreLocation, trustStorePassword, "TLS");
    }
 
    /**
     * Gets a new SSL context configured with the provided key and trust store.
     *
-    * @param keyStore
+    * @param keyStoreLocation
     *       Key store location.
     * @param keyStorePassword
     *       Key store password.
-    * @param trustStore
+    * @param trustStoreLocation
     *       Trust store location.
     * @param trustStorePassword
     *       Trust store password.
@@ -143,30 +143,30 @@ public class SslSocketFactoryFactory {
     * @throws PerfCakeException
     *       When it was not possible to create the SSL context.
     */
-   public static SSLContext newSslContext(final String keyStore, final String keyStorePassword, final String trustStore, final String trustStorePassword, final String protocol) throws PerfCakeException {
-      KeyStore keyStore_;
-      KeyStore trustStore_;
+   public static SSLContext newSslContext(final String keyStoreLocation, final String keyStorePassword, final String trustStoreLocation, final String trustStorePassword, final String protocol) throws PerfCakeException {
+      KeyStore keyStore;
+      KeyStore trustStore;
       KeyManagerFactory keyManager = null;
       TrustManagerFactory trustManager = null;
 
       try {
 
-         if (keyStore != null) {
+         if (keyStoreLocation != null) {
             if (keyStorePassword == null) {
                log.warn("Empty keystore password.");
             }
-            keyStore_ = initKeyStore(keyStore, keyStorePassword);
+            keyStore = initKeyStore(keyStoreLocation, keyStorePassword);
             keyManager = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-            keyManager.init(keyStore_, keyStorePassword == null ? null : keyStorePassword.toCharArray());
+            keyManager.init(keyStore, keyStorePassword == null ? null : keyStorePassword.toCharArray());
          }
 
-         if (trustStore != null) {
+         if (trustStoreLocation != null) {
             if (trustStorePassword == null) {
                log.warn("Empty trust store password.");
             }
-            trustStore_ = initKeyStore(trustStore, trustStorePassword);
+            trustStore = initKeyStore(trustStoreLocation, trustStorePassword);
             trustManager = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManager.init(trustStore_);
+            trustManager.init(trustStore);
          }
 
          final SSLContext ctx = SSLContext.getInstance(protocol);

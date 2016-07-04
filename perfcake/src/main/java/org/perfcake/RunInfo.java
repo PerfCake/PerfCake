@@ -60,7 +60,7 @@ public class RunInfo implements Serializable {
    /**
     * Number of threads that is currently used to generate the load.
     */
-   private volatile transient int threads = 1;
+   private transient volatile int threads = 1;
 
    /**
     * Number of the last iteration.

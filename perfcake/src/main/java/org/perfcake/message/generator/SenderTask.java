@@ -36,11 +36,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Executes a single task of sending messages from the message store
@@ -58,6 +58,11 @@ public class SenderTask implements Runnable {
     * Sender task's logger.
     */
    private static final Logger log = LogManager.getLogger(SenderTask.class);
+
+   /**
+    * Limit the number of warning about interrupted response receival at the end of the test.
+    */
+   private static volatile AtomicInteger interruptWarningDisplayed = new AtomicInteger(0);
 
    /**
     * Reference to a message sender manager that is providing the message senders.
@@ -197,15 +202,23 @@ public class SenderTask implements Runnable {
                   requestSize = requestSize + (currentMessage.getPayload().toString().length() * multiplicity);
 
                   for (int i = 0; i < multiplicity; i++) {
-                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
+                     if (correlator != null) {
+                        correlator.registerRequest(this, currentMessage, messageAttributes);
+                        sendMessage(sender, currentMessage, messageAttributes, mu);
+                        waitForResponse.acquire(); // the only line throwing InterruptedException here
+                        receivedMessage = new ReceivedMessage(correlatedResponse, messageToSend, currentMessage, messageAttributes);
+                     } else {
+                        receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
+                     }
+
                      if (receivedMessage.getResponse() != null) {
                         responseSize = responseSize + receivedMessage.getResponse().toString().length();
                      }
+
                      if (validationManager.isEnabled()) {
                         validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                      }
                   }
-
                }
             } else {
                receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageAttributes, mu), null, null, messageAttributes);
@@ -223,7 +236,13 @@ public class SenderTask implements Runnable {
             reportManager.report(mu);
          }
       } catch (final Exception e) {
-         e.printStackTrace();
+         if (e instanceof InterruptedException) { // there is just one line of code that can throw this exception above
+            if (interruptWarningDisplayed.getAndIncrement() == 0) {
+               log.warn("Test execution interrupted while waiting for a response message from a receiver.");
+            }
+         } else {
+            log.error("Error sending message: ", e);
+         }
       } finally {
          canalStreet.acknowledgeSend();
 

@@ -57,6 +57,6 @@ public class WeightedHarmonicMeanAccumulator implements Accumulator<WeightedValu
    @Override
    public synchronized void reset() {
       sum = 0d;
-      weight = 0l;
+      weight = 0L;
    }
 }

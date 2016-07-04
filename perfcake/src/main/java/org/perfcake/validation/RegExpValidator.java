@@ -32,13 +32,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Checks the message payload for the given regular expression.
+ * <p>Checks the message payload for the given regular expression.</p>
  *
- * It is possible to set the {@link java.util.regex.Pattern#compile(String, int)} compile flags using the particular properties.
+ * <p>It is possible to set the {@link java.util.regex.Pattern#compile(String, int)} compile flags using the particular properties.</p>
  *
- * All flags but {@link java.util.regex.Pattern#UNIX_LINES} are supported. That is because
+ * <p>All flags but {@link java.util.regex.Pattern#UNIX_LINES} are supported. That is because
  * {@link org.perfcake.util.StringUtil#trimLines(String)} is used to pre-process the message payload
- * that changes all line breakers to <code>\n</code>.
+ * that changes all line breakers to <code>\n</code>.</p>
  *
  * @author <a href="mailto:lucie.fabrikova@gmail.com">Lucie Fabriková</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>

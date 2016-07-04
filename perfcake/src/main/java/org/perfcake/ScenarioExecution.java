@@ -267,8 +267,8 @@ public class ScenarioExecution {
 
          // Print classpath
          log.trace("Classpath:");
-         final ClassLoader currentCL = ScenarioExecution.class.getClassLoader();
-         final URL[] curls = ((URLClassLoader) currentCL).getURLs();
+         final ClassLoader currentClassLoader = ScenarioExecution.class.getClassLoader();
+         final URL[] curls = ((URLClassLoader) currentClassLoader).getURLs();
 
          for (final URL curl : curls) {
             log.trace("\t" + curl);

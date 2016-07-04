@@ -2,6 +2,7 @@
 <!DOCTYPE htmlEntities [
       <!ENTITY nbsp "&#xa0;">
       ]>
+<!--suppress MavenModelInspection, XmlWrongRootElement -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <parent>
@@ -48,6 +49,7 @@
 
       <version.jacoco>0.7.5.201505241946</version.jacoco>
       <version.velocity>1.7</version.velocity>
+      <version.puppycrawl>6.19</version.puppycrawl>
 
       <java.level>1.7</java.level>
    </properties>
@@ -210,6 +212,35 @@
             <artifactId>maven-gpg-plugin</artifactId>
             <version>${maven.gpg.plugin.version}</version>
          </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${maven.checkstyle.plugin.version}</version>
+            <executions>
+               <execution>
+                  <id>validate</id>
+                  <phase>validate</phase>
+                  <goals>
+                     <goal>check</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <configLocation>../perfcake/src/site/perfcake-check.xml</configLocation>
+               <encoding>UTF-8</encoding>
+               <consoleOutput>true</consoleOutput>
+               <failsOnError>false</failsOnError>
+               <linkXRef>false</linkXRef>
+               <excludes>org/perfcake/model/*</excludes>
+            </configuration>
+            <dependencies>
+               <dependency>
+                  <groupId>com.puppycrawl.tools</groupId>
+                  <artifactId>checkstyle</artifactId>
+                  <version>${version.puppycrawl}</version>
+               </dependency>
+            </dependencies>
+         </plugin>
       </plugins>
       <pluginManagement>
          <plugins>
@@ -354,7 +385,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-project-info-reports-plugin</artifactId>
-            <version>${maven.project.info.reports.plugin}</version>
+            <version>${maven.project.info.reports.plugin.version}</version>
             <configuration>
                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
             </configuration>
@@ -368,6 +399,26 @@
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>${version.jacoco}</version>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${maven.checkstyle.plugin.version}</version>
+            <reportSets>
+               <reportSet>
+                  <reports>
+                     <report>checkstyle</report>
+                  </reports>
+               </reportSet>
+            </reportSets>
+            <configuration>
+               <configLocation>../perfcake/src/site/perfcake-check.xml</configLocation>
+               <encoding>UTF-8</encoding>
+               <consoleOutput>true</consoleOutput>
+               <failsOnError>false</failsOnError>
+               <linkXRef>false</linkXRef>
+               <excludes>org/perfcake/model/*</excludes>
+            </configuration>
          </plugin>
       </plugins>
    </reporting>

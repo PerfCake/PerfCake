@@ -52,7 +52,7 @@ public class TimerBenchmark {
     * Measures system timer resolution.
     **/
    public static void measureTimerResolution() {
-      final long results[] = new long[CYCLES];
+      final long results[] = new long[CYCLES]; // @checkstyle.ignore(ArrayTypeStyle) - A bug in checkstyle.
 
       log.info("Benchmarking system timer resolution...");
 

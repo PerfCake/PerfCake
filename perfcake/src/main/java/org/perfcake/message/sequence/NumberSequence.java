@@ -45,12 +45,12 @@ public class NumberSequence implements Sequence {
    private long step = 1;
 
    /**
-    * Current sequence value;
+    * Current sequence value.
     */
    private long value = 0;
 
    /**
-    * Should we start from the beginning after reaching the last number in the sequence?
+    * True when we should cycle over from the beginning when we reached the end.
     */
    private boolean cycle = true;
 

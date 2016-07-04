@@ -26,6 +26,8 @@ import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.Utils;
 
+import io.vertx.core.json.Json;
+import io.vertx.core.json.JsonArray;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -39,9 +41,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
-
-import io.vertx.core.json.Json;
-import io.vertx.core.json.JsonArray;
 
 /**
  * Representation of all data files needed to write a chart to the disk. Also handles directory creation and copies basic html files and their dependencies.
@@ -228,8 +227,7 @@ public class C3ChartDataFile {
     *
     * @param measurement
     *       The current measurement.
-    * @return The line representing the data in measurement specified by the attributes list of this chart, or null when there was some of
-    * the attributes missing.
+    * @return The line representing the data in measurement specified by the attributes list of this chart, or null when there was some of the attributes missing.
     */
    private String getResultLine(final Measurement measurement) {
       final StringBuilder sb = new StringBuilder();

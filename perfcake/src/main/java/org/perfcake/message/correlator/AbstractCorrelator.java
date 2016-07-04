@@ -22,13 +22,13 @@ package org.perfcake.message.correlator;
 import org.perfcake.message.Message;
 import org.perfcake.message.generator.SenderTask;
 
+import io.vertx.core.MultiMap;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-
-import io.vertx.core.MultiMap;
 
 /**
  * Default implementation of a correlator that provides an easy way to extend it by providing
@@ -47,7 +47,8 @@ public abstract class AbstractCorrelator implements Correlator {
 
    @Override
    public void registerRequest(final SenderTask senderTask, final Message message, final Properties messageAttributes) {
-      waitingTasks.put(getRequestCorrelationId(message, messageAttributes), senderTask);
+      final String correlationId = getRequestCorrelationId(message, messageAttributes);
+      waitingTasks.put(correlationId, senderTask);
    }
 
    /**
@@ -59,12 +60,13 @@ public abstract class AbstractCorrelator implements Correlator {
     *       The request message attributes.
     * @return The correlation id corresponding to this request.
     */
-   abstract public String getRequestCorrelationId(final Message message, final Properties messageAttributes);
+   public abstract String getRequestCorrelationId(final Message message, final Properties messageAttributes);
 
    @Override
    public void registerResponse(final Serializable response, final MultiMap headers) {
       getResponseCorrelationIds(response, headers).forEach(correlationId -> {
-         waitingTasks.remove(correlationId).registerResponse(response);
+         final SenderTask senderTask = waitingTasks.remove(correlationId);
+         senderTask.registerResponse(response);
       });
    }
 
@@ -77,5 +79,5 @@ public abstract class AbstractCorrelator implements Correlator {
     *       Headers received with the response. Can be useful for discovering correlation id.
     * @return The list of correlation ids corresponding to this response.
     */
-   abstract public List<String> getResponseCorrelationIds(final Serializable response, final MultiMap headers);
+   public abstract List<String> getResponseCorrelationIds(final Serializable response, final MultiMap headers);
 }

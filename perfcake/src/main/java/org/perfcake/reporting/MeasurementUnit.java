@@ -186,8 +186,8 @@ public class MeasurementUnit implements Serializable {
       }
 
       if (stopTime - startTime == 0) {
-         log.warn("Zero time measured! PerfCake is probably running on a machine where the internal timer does not provide enough resolution (e.g. a virtual machine). " +
-               "Please refer to the Troubleshooting section in the User Guide.\nCurrent measurement unit: " + this.toString());
+         log.warn("Zero time measured! PerfCake is probably running on a machine where the internal timer does not provide enough resolution (e.g. a virtual machine). "
+               + "Please refer to the Troubleshooting section in the User Guide.\nCurrent measurement unit: " + this.toString());
       }
 
       return (stopTime - startTime) / 1_000_000d;
@@ -272,11 +272,10 @@ public class MeasurementUnit implements Serializable {
    @Override
    public int hashCode() {
       int result;
-      long temp;
       result = (int) (iteration ^ (iteration >>> 32));
       result = 31 * result + (int) (startTime ^ (startTime >>> 32));
       result = 31 * result + (int) (stopTime ^ (stopTime >>> 32));
-      temp = Double.doubleToLongBits(totalTime);
+      long temp = Double.doubleToLongBits(totalTime);
       result = 31 * result + (int) (temp ^ (temp >>> 32));
       result = 31 * result + measurementResults.hashCode();
       result = 31 * result + (int) (timeStarted ^ (timeStarted >>> 32));
@@ -322,15 +321,15 @@ public class MeasurementUnit implements Serializable {
 
    @Override
    public String toString() {
-      return "MeasurementUnit [" +
-            "iteration=" + iteration +
-            ", enqueueTime=" + enqueueTime +
-            ", startTime=" + startTime +
-            ", stopTime=" + stopTime +
-            ", totalTime=" + totalTime +
-            ", measurementResults=" + measurementResults +
-            ", timeStarted=" + timeStarted +
-            ']';
+      return "MeasurementUnit ["
+            + "iteration=" + iteration
+            + ", enqueueTime=" + enqueueTime
+            + ", startTime=" + startTime
+            + ", stopTime=" + stopTime
+            + ", totalTime=" + totalTime
+            + ", measurementResults=" + measurementResults
+            + ", timeStarted=" + timeStarted
+            + ']';
    }
 
    /**

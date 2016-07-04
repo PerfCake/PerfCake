@@ -223,17 +223,17 @@ public class ObjectFactory {
             log.info("Recognized plugin library " + f.getName());
          }
 
-         final URL[] pluginURLs = new URL[plugins.length];
+         final URL[] pluginUrls = new URL[plugins.length];
          for (int i = 0; i < plugins.length; i++) {
             try {
-               pluginURLs[i] = plugins[i].toURI().toURL();
+               pluginUrls[i] = plugins[i].toURI().toURL();
             } catch (final MalformedURLException e) {
                log.warn(String.format("Cannot resolve path to plugin '%s', skipping this file", plugins[i]));
             }
          }
 
          AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
-            pluginClassLoader = new URLClassLoader(pluginURLs, currentClassLoader);
+            pluginClassLoader = new URLClassLoader(pluginUrls, currentClassLoader);
             return null;
          });
       }

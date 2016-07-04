@@ -2,6 +2,7 @@
 <!DOCTYPE htmlEntities [
       <!ENTITY nbsp "&#xa0;">
       ]>
+<!--suppress MavenModelInspection, XmlWrongRootElement -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
@@ -92,11 +93,12 @@
       <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
       <maven.jar.plugin.version>2.4</maven.jar.plugin.version>
       <maven.site.plugin.version>3.4</maven.site.plugin.version>
+      <maven.checkstyle.plugin.version>2.17</maven.checkstyle.plugin.version>
       <maven.compiler.plugin.version>3.2</maven.compiler.plugin.version>
       <maven.license.plugin.version>1.5</maven.license.plugin.version>
       <maven.release.plugin.version>2.4.1</maven.release.plugin.version>
       <maven.findbugs.plugin.version>3.0.0</maven.findbugs.plugin.version>
-      <maven.project.info.plugin.version>2.7</maven.project.info.plugin.version>
+      <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
       <maven.exec.plugin.version>1.2</maven.exec.plugin.version>
       <maven.source.plugin.version>2.4</maven.source.plugin.version>
       <maven.javadoc.plugin.version>2.10.1</maven.javadoc.plugin.version>
@@ -159,6 +161,10 @@
                   <pushChanges>false</pushChanges>
                   <localCheckout>true</localCheckout>
                </configuration>
+            </plugin>
+            <plugin>
+               <artifactId>maven-project-info-reports-plugin</artifactId>
+               <version>${maven.project.info.reports.plugin.version}</version>
             </plugin>
          </plugins>
       </pluginManagement>

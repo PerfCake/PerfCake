@@ -29,11 +29,11 @@ import java.util.Locale;
 public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
 
    /**
-    * The base power for the quantity value.
+    * <p>The base power for the quantity value.</p>
     *
-    * For example in case of decimal numbers, when we want to insert 123 ms, we don't have to re-compute the value to the base unit power
+    * <p>For example in case of decimal numbers, when we want to insert 123 ms, we don't have to re-compute the value to the base unit power
     * (and pass it as <code>0.123 s</code>. With the base power we can pass the number value as is <code>123</code> and pass it with
-    * the base power of <code>-1</code>.
+    * the base power of <code>-1</code>.</p>
     */
    private int basePower = 0;
 
@@ -50,11 +50,11 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
    }
 
    /**
-    * Creates a new scalable quantity with the specified base power.
+    * <p>Creates a new scalable quantity with the specified base power.</p>
     *
-    * For example in case of decimal numbers, when we want to insert 123 ms, we don't have to re-compute the value to the base unit power
+    * <p>For example in case of decimal numbers, when we want to insert 123 ms, we don't have to re-compute the value to the base unit power
     * (and pass it as <code>0.123 s</code>. With the base power we can pass the number value as is <code>123</code> and pass it with
-    * the base power of <code>-1</code>.
+    * the base power of <code>-1</code>.</p>
     *
     * @param number
     *       The value.
@@ -72,9 +72,9 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
    }
 
    /**
-    * Gets a scale factor of the quantity.
+    * <p>Gets a scale factor of the quantity.</p>
     *
-    * For example the decimal numbers have scale factor for prefixes with the value of 1000.
+    * <p>For example the decimal numbers have scale factor for prefixes with the value of 1000.</p>
     *
     * @return A scalefactor for the current quantity.
     **/
@@ -105,11 +105,11 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
    protected abstract int getMaxPower();
 
    /**
-    * Gets the base power for the quantity value.
+    * <p>Gets the base power for the quantity value.</p>
     *
-    * For example in case of decimal numbers, when we want to insert 123 ms, we don't have to re-compute the value to the base unit power
+    * <p>For example in case of decimal numbers, when we want to insert 123 ms, we don't have to re-compute the value to the base unit power
     * (and pass it as <code>0.123 s</code>. With the base power we can pass the number value as is <code>123</code> and pass it with
-    * the base power of <code>-1</code>.
+    * the base power of <code>-1</code>.</p>
     *
     * @return The base power value.
     */
@@ -118,11 +118,11 @@ public abstract class ScalableQuantity<N extends Number> extends Quantity<N> {
    }
 
    /**
-    * Gets a unit prefix for the current value of the quantity.
+    * <p>Gets a unit prefix for the current value of the quantity.</p>
     *
-    * For example in the case of decimal numbers the scale prefix for the value of 1,000
+    * <p>For example in the case of decimal numbers the scale prefix for the value of 1,000
     * would be <code>k</code> or for the value of 1,000,000 would be <code>M</code> which needs
-    * to be passed as 1 and 2 respectively. The result is the prefix for the number of 10^(power * 3).
+    * to be passed as 1 and 2 respectively. The result is the prefix for the number of 10^(power * 3).</p>
     *
     * @param power
     *       Scale power of the base quantity I.e. 10^(power * 3) for decimal numbers.

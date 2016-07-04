@@ -42,7 +42,7 @@ public class MessageTemplate implements Serializable {
    private final Message message;
 
    /**
-    * How many times the message should be sent in one iteration?
+    * How many times the message should be sent in one iteration.
     */
    private final long multiplicity;
 
@@ -52,7 +52,7 @@ public class MessageTemplate implements Serializable {
    private final List<String> validatorIds;
 
    /**
-    * Does the original message contains anything to be replaced?
+    * True when the original message contains anything to be replaced.
     */
    private final boolean isStringMessage;
 
@@ -62,7 +62,7 @@ public class MessageTemplate implements Serializable {
    private transient StringTemplate template;
 
    /**
-    * Are there any templates in any part of the message including headers and properties?
+    * True when there are any templates in any part of the message including headers and properties.
     */
    private boolean hasTemplates = false;
 
@@ -167,20 +167,25 @@ public class MessageTemplate implements Serializable {
     */
    public Message getFilteredMessage(final Properties properties) {
       if (isStringMessage && hasTemplates) {
-         final Message m = newMessage();
+         final Message newMessage = newMessage();
 
          if (template != null) {
-            m.setPayload(template.toString(properties));
+            newMessage.setPayload(template.toString(properties));
          } else {
-            m.setPayload(message.getPayload());
+            newMessage.setPayload(message.getPayload());
          }
 
-         m.setHeaders(untemplatize(message.getHeaders(), properties));
-         m.setProperties(untemplatize(message.getProperties(), properties));
+         newMessage.setHeaders(untemplatize(message.getHeaders(), properties));
+         newMessage.setProperties(untemplatize(message.getProperties(), properties));
 
-         return m;
+         return newMessage;
       } else {
-         return message;
+         final Message newMessage = newMessage();
+         newMessage.setPayload(message.getPayload());
+         newMessage.setHeaders(new Properties(message.getHeaders()));
+         newMessage.setProperties(new Properties(message.getProperties()));
+
+         return newMessage;
       }
    }
 

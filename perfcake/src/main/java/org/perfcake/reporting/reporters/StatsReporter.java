@@ -40,11 +40,11 @@ import org.perfcake.reporting.reporters.accumulators.SlidingWindowSumLongAccumul
 import org.perfcake.reporting.reporters.accumulators.SumLongAccumulator;
 
 /**
- * Reports the minimal, maximal and average value from the beginning
+ * <p>Reports the minimal, maximal and average value from the beginning
  * of the measuring to the moment when the results are published including. The actual value about what
- * the statistics are gathered is computed as a result of the {@link #computeResult(MeasurementUnit)} method.
+ * the statistics are gathered is computed as a result of the {@link #computeResult(MeasurementUnit)} method.</p>
  *
- * The default value of the reporter is a current value at the moment of publishing.
+ * <p>The default value of the reporter is a current value at the moment of publishing.</p>
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
@@ -66,12 +66,12 @@ public abstract class StatsReporter extends AbstractReporter {
    private boolean averageEnabled = true;
 
    /**
-    * Is the reporting of request size enabled?
+    * True when request size reporting is enabled.
     */
    private boolean requestSizeEnabled = true;
 
    /**
-    * Is the reporting of response size enabled?
+    * True when response size reporting is enabled.
     */
    private boolean responseSizeEnabled = true;
 
@@ -333,10 +333,10 @@ public abstract class StatsReporter extends AbstractReporter {
    }
 
    /**
-    * Sets the size of the sliding window.
+    * <p>Sets the size of the sliding window.</p>
     *
-    * If the size is equal to {@link Integer#MAX_VALUE} (which is the default value), then it means the
-    * sliding window is not used at all and the statistics are taken from the whole run.
+    * <p>If the size is equal to {@link Integer#MAX_VALUE} (which is the default value), then it means the
+    * sliding window is not used at all and the statistics are taken from the whole run.</p>
     *
     * @param windowSize
     *       The sliding window size.

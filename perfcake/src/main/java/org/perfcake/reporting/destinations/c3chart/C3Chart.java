@@ -90,7 +90,7 @@ public class C3Chart {
    private String group;
 
    /**
-    * Was this chart created as a combination of another charts?
+    * True when this chart was created as a combination of another charts.
     */
    private boolean combined = false;
 
@@ -302,14 +302,13 @@ public class C3Chart {
 
    @Override
    public String toString() {
-      return "C3Chart{" +
-            "baseName='" + baseName + '\'' +
-            ", name='" + name + '\'' +
-            ", xAxis='" + xAxis + '\'' +
-            ", yAxis='" + yAxis + '\'' +
-            ", xAxisType=" + xAxisType +
-            ", attributes=" + attributes +
-            ", group='" + group + '\'' +
-            '}';
+      return "C3Chart{"
+            + "baseName='" + baseName + '\''
+            + ", name='" + name + '\''
+            + ", xAxis='" + xAxis + '\''
+            + ", yAxis='" + yAxis + '\''
+            + ", xAxisType=" + xAxisType
+            + ", attributes=" + attributes
+            + ", group='" + group + "'}";
    }
 }

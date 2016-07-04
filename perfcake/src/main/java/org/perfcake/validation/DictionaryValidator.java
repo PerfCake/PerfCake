@@ -71,7 +71,7 @@ public class DictionaryValidator implements MessageValidator {
    private String dictionaryIndex = "index";
 
    /**
-    * Is the record mode active?
+    * True when the the record mode active.
     */
    private boolean record = false;
 

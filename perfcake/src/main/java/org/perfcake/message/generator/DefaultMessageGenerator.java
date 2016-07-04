@@ -59,9 +59,9 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    /**
     * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
     * If the same amount of threads keeps running for this period, they are forcefully stopped.
-    * The unit of this value is milliseconds. The default value is 1000ms.
+    * The unit of this value is milliseconds. The default value is 5000ms.
     */
-   protected long shutdownPeriod = 1000;
+   protected long shutdownPeriod = 5000;
 
    /**
     * The size of internal queue of prepared sender tasks. The default value is 1000 tasks.
@@ -151,13 +151,14 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       executorService.shutdown();
 
       if (shutdownPeriod == -1) {
-         shutdownPeriod = 5 * runInfo.getRunTime() * runInfo.getThreads() / runInfo.getIteration();
+         shutdownPeriod = Math.max(5000, 5 * runInfo.getRunTime() * runInfo.getThreads() / runInfo.getIteration());
          if (log.isInfoEnabled()) {
             log.info(String.format("Shut-down period auto-tuned to " + shutdownPeriod + " ms."));
          }
       }
 
-      long active = getTasksInQueue(), lastActive = 0;
+      long active = getTasksInQueue();
+      long lastActive = 0;
       while (active > 0 && lastActive != active) { // make sure the threads are finishing
          lastActive = active;
          executorService.awaitTermination(shutdownPeriod, TimeUnit.MILLISECONDS);

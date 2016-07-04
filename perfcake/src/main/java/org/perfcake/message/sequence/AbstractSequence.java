@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-abstract public class AbstractSequence implements Sequence {
+public abstract class AbstractSequence implements Sequence {
 
    private AtomicReference<CompletableFuture<String>> nextValue = new AtomicReference<>();
 
@@ -59,7 +59,7 @@ abstract public class AbstractSequence implements Sequence {
       nextValue.set(CompletableFuture.supplyAsync(this::doGetNext));
    }
 
-   abstract public String doGetNext();
+   public abstract String doGetNext();
 
-   abstract public void doReset() throws PerfCakeException;
+   public abstract void doReset() throws PerfCakeException;
 }

@@ -23,13 +23,12 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.scenario.dsl.ScenarioDelegate;
 import org.perfcake.util.Utils;
 
+import groovy.lang.Binding;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
-
-import groovy.lang.Binding;
 
 /**
  * Loads the scenario from a DSL script.
@@ -61,12 +60,12 @@ public class DslFactory implements ScenarioFactory {
    }
 
    @Override
-   public void init(final URL scenarioURL) throws PerfCakeException {
+   public void init(final URL scenarioUrl) throws PerfCakeException {
       try {
-         this.scenarioDefinition = Utils.readFilteredContent(scenarioURL);
+         this.scenarioDefinition = Utils.readFilteredContent(scenarioUrl);
 
          if (log.isDebugEnabled()) {
-            log.debug(String.format("Loaded scenario definition from '%s'.", scenarioURL.toString()));
+            log.debug(String.format("Loaded scenario definition from '%s'.", scenarioUrl.toString()));
          }
       } catch (final IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);

@@ -22,6 +22,8 @@ package org.perfcake.message.receiver;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.correlator.Correlator;
 
+import java.util.Properties;
+
 /**
  * Represents a receiver for receiving messages from a separate message channel.
  * All received messages are passed to the correlator which notifies the correct {@link org.perfcake.message.generator.SenderTask}.
@@ -55,4 +57,20 @@ public interface Receiver {
     * Stops all the receiver threads.
     */
    void stop();
+
+   /**
+    * Gets the source from where to receive the messages.
+    *
+    * @return The current source (typically an URI).
+    */
+   String getSource();
+
+   /**
+    * Sets the source from where to receive the messages.
+    *
+    * @param source
+    *       The source to be set.
+    * @return Instance of this for fluent API.
+    */
+   Receiver setSource(final String source);
 }

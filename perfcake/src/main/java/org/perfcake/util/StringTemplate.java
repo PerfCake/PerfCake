@@ -66,7 +66,7 @@ public class StringTemplate {
    private int patternSize;
 
    /**
-    * Were there any placeholders in the template?
+    * True when there were any placeholders in the template.
     */
    private boolean hasPlaceholders = false;
 

@@ -33,7 +33,7 @@ import java.util.Properties;
  * @author <a href="mailto:domin.hanak@gmail.com">Dominik Hanák</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-abstract public class ChannelSender extends AbstractSender {
+public abstract class ChannelSender extends AbstractSender {
 
    /**
     * Buffer for writing to and reading from NIO channel.

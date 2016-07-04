@@ -138,7 +138,7 @@ public class CsvDestination implements Destination {
    private boolean dynamicAttributes = false;
 
    /**
-    * Was the warmUp attribute required in expectedFields?
+    * True when the warmUp attribute was required in expectedFields.
     */
    private boolean wasWarmUp = false;
 
@@ -299,7 +299,7 @@ public class CsvDestination implements Destination {
       final Map<String, Object> results = measurement.getAll();
       final StringBuilder sb = new StringBuilder();
 
-      sb.append(Utils.timeToHMS(measurement.getTime()));
+      sb.append(Utils.timeToHms(measurement.getTime()));
       sb.append(delimiter);
       sb.append(measurement.getIteration() + 1);
 

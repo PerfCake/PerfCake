@@ -27,7 +27,6 @@ import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.SslSocketFactoryFactory;
 import org.perfcake.util.StringUtil;
-import org.perfcake.util.Utils;
 
 import com.google.gson.JsonArray;
 import com.squareup.okhttp.OkHttpClient;
@@ -36,12 +35,11 @@ import org.apache.logging.log4j.Logger;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
+import retrofit.client.OkClient;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLSocketFactory;
-
-import retrofit.client.OkClient;
 
 /**
  * Writes the resulting data to InfluxDb using a simple HTTP REST client.

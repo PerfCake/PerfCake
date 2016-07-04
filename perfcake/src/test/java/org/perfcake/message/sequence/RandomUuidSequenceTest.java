@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,36 +17,22 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake.reporting.reporters.accumulators;
+package org.perfcake.message.sequence;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 /**
- * Accumulates the minimum of double values.
- * Atomic types are not used because both values must be set at the same time. Hence the methods are synchronized.
- *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
- * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
-public class MinAccumulator implements Accumulator<Double> {
+public class RandomUuidSequenceTest {
 
-   /**
-    * Mininum of the reported values.
-    */
-   private Double min = Double.POSITIVE_INFINITY;
+   @Test
+   public void basicTest() {
+      Sequence s = new RandomUuidSequence();
 
-   @Override
-   public synchronized void add(final Double value) {
-      if (value < min) {
-         min = value;
-      }
+      Assert.assertNotEquals(s.getNext(), s.getNext());
+      Assert.assertEquals(s.getNext().length(), 8 * 4 + 4);
    }
 
-   @Override
-   public synchronized Double getResult() {
-      return min;
-   }
-
-   @Override
-   public synchronized void reset() {
-      min = Double.POSITIVE_INFINITY;
-   }
 }

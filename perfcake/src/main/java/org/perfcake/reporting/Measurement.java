@@ -148,6 +148,17 @@ public class Measurement {
    }
 
    /**
+    * Puts the default result in the result map. The default value is placed in the result map
+    * under {@link org.perfcake.reporting.Measurement#DEFAULT_RESULT} key.
+    *
+    * @param result
+    *       The default result value.
+    */
+   public void set(final Object result) {
+      results.put(DEFAULT_RESULT, result);
+   }
+
+   /**
     * Removes the result stored under the given <code>name</code> from the results map.
     *
     * @param name
@@ -167,22 +178,11 @@ public class Measurement {
       results.putAll(newResults);
    }
 
-   /**
-    * Puts the default result in the result map. The default value is placed in the result map
-    * under {@link org.perfcake.reporting.Measurement#DEFAULT_RESULT} key.
-    *
-    * @param result
-    *       The default result value.
-    */
-   public void set(final Object result) {
-      results.put(DEFAULT_RESULT, result);
-   }
-
    @Override
    public String toString() {
       final StringBuilder sb = new StringBuilder();
       sb.append("[");
-      sb.append(Utils.timeToHMS(time));
+      sb.append(Utils.timeToHms(time));
       sb.append("][");
       sb.append(iteration + 1); // first iteration index is 0
       sb.append(" iterations][");

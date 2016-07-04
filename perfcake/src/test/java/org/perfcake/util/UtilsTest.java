@@ -63,11 +63,11 @@ public class UtilsTest extends TestSetup {
    public void testTimeToHMS() {
 
       final long test1 = (12 * 3600 + 12 * 60 + 12) * 1000;
-      Assert.assertEquals(Utils.timeToHMS(test1), "12:12:12");
+      Assert.assertEquals(Utils.timeToHms(test1), "12:12:12");
       final long test2 = (121 * 3600 + 12 * 60 + 12) * 1000;
-      Assert.assertEquals(Utils.timeToHMS(test2), "121:12:12");
+      Assert.assertEquals(Utils.timeToHms(test2), "121:12:12");
       final long test3 = (1 * 3600 + 12 * 60 + 12) * 1000;
-      Assert.assertEquals(Utils.timeToHMS(test3), "1:12:12");
+      Assert.assertEquals(Utils.timeToHms(test3), "1:12:12");
    }
 
    @Test

@@ -188,6 +188,11 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
    }
 
    @Override
+   public boolean remove(final Object o) {
+      throw new UnsupportedOperationException();
+   }
+
+   @Override
    public T poll() {
       try {
          synchronized (this) {
@@ -252,11 +257,6 @@ public class FileQueue<T extends Serializable> implements Queue<T> {
 
    @Override
    public <U> U[] toArray(final U[] a) {
-      throw new UnsupportedOperationException();
-   }
-
-   @Override
-   public boolean remove(final Object o) {
       throw new UnsupportedOperationException();
    }
 

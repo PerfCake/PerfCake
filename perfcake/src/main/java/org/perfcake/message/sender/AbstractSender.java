@@ -35,7 +35,7 @@ import java.util.Properties;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-abstract public class AbstractSender implements MessageSender {
+public abstract class AbstractSender implements MessageSender {
 
    /**
     * The sender's logger.
@@ -67,7 +67,7 @@ abstract public class AbstractSender implements MessageSender {
       isTraceEnabled = log.isTraceEnabled();
    }
 
-   abstract public void doInit(final Properties messageAttributes) throws PerfCakeException;
+   public abstract void doInit(final Properties messageAttributes) throws PerfCakeException;
 
    @Override
    public final void close() throws PerfCakeException {
@@ -76,7 +76,7 @@ abstract public class AbstractSender implements MessageSender {
       }
    }
 
-   abstract public void doClose() throws PerfCakeException;
+   public abstract void doClose() throws PerfCakeException;
 
    @Override
    public final Serializable send(final Message message, final MeasurementUnit measurementUnit) throws Exception {
@@ -106,7 +106,7 @@ abstract public class AbstractSender implements MessageSender {
     *       When the sending operation failed.
     * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message, org.perfcake.reporting.MeasurementUnit)
     */
-   abstract public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception;
+   public abstract Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception;
 
    @Override
    public void postSend(final Message message) throws Exception {
@@ -120,10 +120,18 @@ abstract public class AbstractSender implements MessageSender {
       return target.toString();
    }
 
+   @Override
    public final String getTarget(final Properties properties) {
       return target.toString(properties);
    }
 
+   /**
+    * Gets the target in a safe way to avoid NPE when properties are null.
+    *
+    * @param properties
+    *       Properties to replace placeholders in the target.
+    * @return The target template with placeholders replaced.
+    */
    public final String safeGetTarget(final Properties properties) {
       if (properties == null) {
          return getTarget();

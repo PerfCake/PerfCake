@@ -36,23 +36,23 @@ import org.apache.logging.log4j.Logger;
 import java.util.Locale;
 
 /**
- * Reports response time in milliseconds using <a href="https://github.com/HdrHistogram/HdrHistogram">HDR Histogram</a> that can
- * computationally correct the Coordinated omission problem.
+ * <p>Reports response time in milliseconds using <a href="https://github.com/HdrHistogram/HdrHistogram">HDR Histogram</a> that can
+ * computationally correct the Coordinated omission problem.</p>
  *
- * The following paragraphs are based on <a href="https://github.com/HdrHistogram/HdrHistogram/blob/master/README.md">the HDR Histogram documentation</a>.
+ * <p>The following paragraphs are based on <a href="https://github.com/HdrHistogram/HdrHistogram/blob/master/README.md">the HDR Histogram documentation</a>.</p>
  *
- * This reporter depends on the features introduced by HDR Histogram to correct the coordinated omission.
+ * <p>This reporter depends on the features introduced by HDR Histogram to correct the coordinated omission.
  * To compensate for the loss of sampled values when a recorded value is larger than the expected,
  * interval between value samples, HDR Histogram will auto-generate an additional series of decreasingly-smaller value records.
  * The values go down to the {@link #expectedValue} in case of the {@link Correction#USER} correction mode, or down to the average response time in
- * case of the {@link Correction#AUTO} correction mode.
+ * case of the {@link Correction#AUTO} correction mode.</p>
  *
- * The reporter could be configured to track the counts of observed response times in milliseconds between 0 and 3,600,000
+ * <p>The reporter could be configured to track the counts of observed response times in milliseconds between 0 and 3,600,000
  * ({@link #maxExpectedValue}) while maintaining a value precision of 3 ({@link #precision}) significant digits across that range.
  * Value quantization within the range will thus be no larger than 1/1,000th (or 0.1%) of any value. This example reporter could be used to track
  * and analyze the counts of observed response times ranging between 1 millisecond and 1 hour in magnitude, while maintaining a value resolution
  * of 1 millisecond (or better) up to one second, and a resolution of 1 second (or better) up to 1,000 seconds.
- * At its maximum tracked value (1 hour), it would still maintain a resolution of 3.6 seconds (or better).
+ * At its maximum tracked value (1 hour), it would still maintain a resolution of 3.6 seconds (or better).</p>
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */

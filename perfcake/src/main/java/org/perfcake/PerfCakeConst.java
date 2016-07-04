@@ -207,7 +207,7 @@ public final class PerfCakeConst {
    public static final int ERR_SCENARIO_EXECUTION = 4;
 
    /**
-    * Exit code when there were validation errors;
+    * Exit code when there were validation errors.
     */
    public static final int ERR_VALIDATION = 5;
 

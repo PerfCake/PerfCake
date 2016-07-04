@@ -41,16 +41,6 @@ public class HttpReceiver extends AbstractReceiver {
    private HttpServer server;
 
    /**
-    * Port where to receive responses.
-    */
-   private int port = 8088;
-
-   /**
-    * Host to bind to.
-    */
-   private String host = null;
-
-   /**
     * HTTP status code to return to the client. Defaults to 200.
     */
    private int httpStatusCode = 200;
@@ -67,6 +57,17 @@ public class HttpReceiver extends AbstractReceiver {
 
    @Override
    public void start() throws PerfCakeException {
+      String[] urlParts;
+      if (getSource().length() == 0) {
+         urlParts = new String[] { "8088" };
+      } else {
+         urlParts = getSource().split(":");
+      }
+
+      if (urlParts.length < 1 || urlParts.length > 2) {
+         throw new PerfCakeException("Source has wrong format, expected [<host>:]<port> but found " + getSource());
+      }
+
       VertxOptions vertxOptions = new VertxOptions().setWorkerPoolSize(threads);
       Vertx vertx = Vertx.vertx(vertxOptions);
       server = vertx.createHttpServer();
@@ -88,54 +89,16 @@ public class HttpReceiver extends AbstractReceiver {
          }
       });
 
-      if (host == null) {
-         new Thread(() -> server.requestHandler(router::accept).listen(port)).start();
+      if (urlParts.length == 1) {
+         new Thread(() -> server.requestHandler(router::accept).listen(Integer.valueOf(urlParts[0]))).start();
       } else {
-         new Thread(() -> server.requestHandler(router::accept).listen(port, host)).start();
+         new Thread(() -> server.requestHandler(router::accept).listen(Integer.valueOf(urlParts[1]), urlParts[0])).start();
       }
    }
 
    @Override
    public void stop() {
       server.close();
-   }
-
-   /**
-    * Gets the port number where to listen for response messages.
-    *
-    * @return The port number where to listen for response messages.
-    */
-   public int getPort() {
-      return port;
-   }
-
-   /**
-    * Sets the port number where to listen for response messages.
-    *
-    * @param port
-    *       The port number where to listen for response messages.
-    */
-   public void setPort(final int port) {
-      this.port = port;
-   }
-
-   /**
-    * Gets the host where to listen for response messages. Null value means 0.0.0.0.
-    *
-    * @return The host where to listen for response messages.
-    */
-   public String getHost() {
-      return host;
-   }
-
-   /**
-    * Sets the host where to listen for response messages. Null value means 0.0.0.0.
-    *
-    * @param host
-    *       The host where to listen for response messages.
-    */
-   public void setHost(final String host) {
-      this.host = host;
    }
 
    /**

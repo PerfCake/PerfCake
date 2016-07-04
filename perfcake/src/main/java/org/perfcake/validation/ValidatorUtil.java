@@ -95,9 +95,14 @@ public final class ValidatorUtil {
       BODY,
 
       /**
-       * Message body part.
+       * Message property.
        */
-      BODY_PART, PROPERTY, ATTACHMENT, HEADER_MESSAGE_ID, HEADER_TO, HEADER_FROM, HEADER_REPLY_TO, HEADER_FAULT_TO, HEADER_RELATES_TO, HEADER_ACTION
+      PROPERTY,
+
+      /**
+       * Message header.
+       */
+      HEADER
    }
 
    /**
@@ -144,8 +149,7 @@ public final class ValidatorUtil {
     *       Operator for validation.
     * @param value
     *       Valid value of validated message part.
-    * @return A boolean value indicating, if validation of all messages passed
-    * (<code>true</code>) or not (<code>false</code>).
+    * @return A boolean value indicating, if validation of all messages passed (<code>true</code>) or not (<code>false</code>).
     */
    public static boolean validateMessages(final List<Message> list, final int from, final int to, final ValidatorUtil.MessagePart part, final String partValue, final ValidatorUtil.Operator operator, final String value) {
       final int count = list.size();
@@ -184,8 +188,7 @@ public final class ValidatorUtil {
     *       Operator for validation.
     * @param value
     *       Valid value of validated message part.
-    * @return A boolean value indicating, if validation of the message passed
-    * (<code>true</code>) or not (<code>false</code>).
+    * @return A boolean value indicating, if validation of the message passed (<code>true</code>) or not (<code>false</code>).
     */
    public static boolean validateMessage(final List<Message> list, final int number, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {
       final int count = list.size();
@@ -200,31 +203,44 @@ public final class ValidatorUtil {
       }
    }
 
-   // TODO check all the cases, do they make sense?
+   /**
+    * Validates message's part using the specified operator and operand.
+    *
+    * @param message
+    *       The message to validate.
+    * @param part
+    *       The part of the message to validate.
+    * @param partName
+    *       The name of the message part.
+    * @param operator
+    *       The operator to use.
+    * @param value
+    *       The right hand operand of the operation.
+    * @return True if and only if the message part meets given criteria.
+    */
+   public static boolean validateMessage(final Message message, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {
+      return validateData(getMessagePart(message, part, partName), operator, value);
+   }
+
+   /**
+    * Gets a particular message part. This is a utility method to use in the rules.
+    *
+    * @param message
+    *       The message to get the part from.
+    * @param part
+    *       The part to obtain.
+    * @param partName
+    *       The name of the part to obtain.
+    * @return The part content or null if it does not exist.
+    */
    public static Object getMessagePart(final org.perfcake.message.Message message, final ValidatorUtil.MessagePart part, final String partName) {
       switch (part) {
          case BODY:
             return message.getPayload();
          case PROPERTY:
             return message.getProperty(partName);
-         case HEADER_FROM:
-            return message.getHeader("from");
-         case HEADER_TO:
-            return message.getHeader("to");
-         case HEADER_REPLY_TO:
-            return message.getHeader("replyTo");
-         case HEADER_FAULT_TO:
-            return message.getHeader("faultTo");
-         case HEADER_RELATES_TO:
-            return message.getHeader("relatesTo");
-         case HEADER_ACTION:
-            return message.getHeader("action");
-         case ATTACHMENT:
-            return null;
-         case BODY_PART:
-            return null;
-         case HEADER_MESSAGE_ID:
-            return message.getHeader("messageId");
+         case HEADER:
+            return message.getHeader(partName);
       }
 
       if (log.isErrorEnabled()) {
@@ -234,6 +250,17 @@ public final class ValidatorUtil {
       return null;
    }
 
+   /**
+    * Validates the given part of the message using specified operator and operand.
+    *
+    * @param str
+    *       The part to validate.
+    * @param operator
+    *       The operator to use.
+    * @param value
+    *       The right hand operand of the operation.
+    * @return True if and only if the part meets given criteria.
+    */
    private static boolean validatePart(final String str, final ValidatorUtil.Operator operator, final String value) {
       if (str == null) {
          return false;
@@ -261,6 +288,13 @@ public final class ValidatorUtil {
       return false;
    }
 
+   /**
+    * Obtains string data from an object in the best possible way.
+    *
+    * @param data
+    *       The data to convert to a string.
+    * @return The string representation of the data.
+    */
    private static String getStringData(final Object data) {
       if (data == null) {
          return null;
@@ -277,17 +311,20 @@ public final class ValidatorUtil {
       }
    }
 
+   /**
+    * Validates the given data from the message using specified operator and operand.
+    *
+    * @param data
+    *       The part to validate.
+    * @param operator
+    *       The operator to use.
+    * @param value
+    *       The right hand operand of the operation.
+    * @return True if and only if the data meet given criteria.
+    */
    private static boolean validateData(final Object data, final ValidatorUtil.Operator operator, final String value) {
       final String str = getStringData(data);
       return validatePart(str, operator, value);
-   }
-
-   public static boolean validateMessage(final Message message, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {
-      return validateData(getMessagePart(message, part, partName), operator, value);
-   }
-
-   public static boolean validateMessageInverse(final Message message, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value) {
-      return !validateMessage(message, part, partName, operator, value);
    }
 
    /**
@@ -308,8 +345,7 @@ public final class ValidatorUtil {
     *       Type of message occurrence in the <code>list</code>.
     * @param treshold
     *       Treshold for the <code>occurrence</code> metrics.
-    * @return A boolean value indicating, if validation of the message passed
-    * (<code>true</code>) or not (<code>false</code>) with actual <code>occurrence</code>.
+    * @return A boolean value indicating, if validation of the message passed (<code>true</code>) or not (<code>false</code>) with actual <code>occurrence</code>.
     */
    public static boolean validateMessageOccurance(final List<Message> list, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value, final Occurrence occurrence, final int treshold) {
       switch (occurrence) {
@@ -353,8 +389,7 @@ public final class ValidatorUtil {
     *       Type of message occurrence in the <code>list</code>.
     * @param treshold
     *       Treshold for the <code>occurrence</code> metrics.
-    * @return A boolean value indicating, if validation of the message passed
-    * (<code>true</code>) or not (<code>false</code>) with actual <code>occurrence</code>.
+    * @return A boolean value indicating, if validation of the message passed (<code>true</code>) or not (<code>false</code>) with actual <code>occurrence</code>.
     */
    public static boolean validateMessageOccuranceOnInterval(final List<Message> list, final int from, final int to, final ValidatorUtil.MessagePart part, final String partName, final ValidatorUtil.Operator operator, final String value, final Occurrence occurrence, final int treshold) {
       final int count = list.size();

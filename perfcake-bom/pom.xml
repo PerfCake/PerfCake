@@ -52,7 +52,7 @@
       <maven.clean.plugin.version>2.5</maven.clean.plugin.version>
       <maven.release.plugin.version>2.4.1</maven.release.plugin.version>
       <maven.gpg.plugin.version>1.5</maven.gpg.plugin.version>
-      <maven.project.info.reports.plugin>2.9</maven.project.info.reports.plugin>
+      <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
       <maven.assembly.plugin.version>2.5.3</maven.assembly.plugin.version>
 
       <version.californium>1.0.4</version.californium>
@@ -439,6 +439,10 @@
             <configuration>
                <skipAssembly>true</skipAssembly>
             </configuration>
+         </plugin>
+         <plugin>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+            <version>${maven.project.info.reports.plugin.version}</version>
          </plugin>
       </plugins>
    </build>

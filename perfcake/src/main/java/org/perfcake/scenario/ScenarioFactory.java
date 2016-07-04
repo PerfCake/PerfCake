@@ -45,12 +45,12 @@ public interface ScenarioFactory {
    /**
     * Initializes all resources needed to prepare the scenario object. All I/O operations should happen here.
     *
-    * @param scenarioURL
+    * @param scenarioUrl
     *       Location of the scenario file.
     * @throws PerfCakeException
     *       When it was not possible to parse the scenario.
     */
-   void init(final URL scenarioURL) throws PerfCakeException;
+   void init(final URL scenarioUrl) throws PerfCakeException;
 
    /**
     * Constructs the scenario based on previously loaded data.
