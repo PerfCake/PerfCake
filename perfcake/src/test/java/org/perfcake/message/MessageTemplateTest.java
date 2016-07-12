@@ -105,7 +105,7 @@ public class MessageTemplateTest extends TestSetup {
       Assert.assertEquals(m2.getPayload(), runtimeName + "null");
       Assert.assertEquals(m2.getHeader("runtime"), runtimeName + "null");
       Assert.assertEquals(m2.getProperty("name"), runtimeName + "null");
-      Assert.assertTrue(m2 == t.getFilteredMessage(p)); // we should be getting the same instance
+      Assert.assertTrue(m2 != t.getFilteredMessage(p)); // we always get a different instance to be able to set headers properly
    }
 
    @Test

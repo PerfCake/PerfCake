@@ -27,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -67,11 +68,6 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     * The size of internal queue of prepared sender tasks. The default value is 1000 tasks.
     */
    protected int senderTaskQueueSize = 1000;
-
-   /**
-    * Controls the maximal number of threads running in parallel.
-    */
-   protected Semaphore semaphore;
 
    /**
     * Gets the shutdown period.
@@ -133,8 +129,8 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     *       When it was not possible to place another task because the queue was empty.
     */
    protected boolean prepareTask() throws InterruptedException {
-      if (semaphore.tryAcquire(monitoringPeriod, TimeUnit.MILLISECONDS)) {
-         executorService.submit(newSenderTask(semaphore));
+      if (executorService.getQueue().remainingCapacity() > 0) {
+         executorService.submit(newSenderTask());
          return true;
       }
 
@@ -202,8 +198,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    @Override
    public void generate() throws Exception {
       log.info("Starting to generate...");
-      semaphore = new Semaphore(senderTaskQueueSize);
-      executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(getThreads(), new DaemonThreadFactory());
+      executorService = new ThreadPoolExecutor(getThreads(), getThreads(), 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(getSenderTaskQueueSize()), new DaemonThreadFactory());
       runInfo.setThreads(getThreads());
       setStartTime();
 
