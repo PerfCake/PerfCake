@@ -44,9 +44,8 @@ import java.util.List;
  * control, a generator must wait for all the messages to be processed. In the case of a time based control, the test stops immediately after the time
  * has elapsed.</p>
  *
- * <p>Each {@link SenderTask} takes a {@link CanalStreet} instance as a communication pipe that is used to notify the parent generator of task completion and or any errors that might
- * have occurred. The {@link CanalStreet} relies on an internal {@link java.util.concurrent.Semaphore} instance that can control the number of {@link SenderTask}s prepared in
- * a queue for execution.</p>
+ * <p>Each {@link SenderTask} takes a {@link MessageGenerator} instance to be able to notify the parent generator of any errors that might
+ * have occurred.</p>
  *
  * <p>When there is a separate message channel used to receive messages, a {@link Correlator} is set to match requests and responses. The {@link Correlator} is also
  * passed to the {@link SenderTask} so it can register sent messages with it.</p>
@@ -163,4 +162,11 @@ public interface MessageGenerator {
     *       The correlator to be used to match requests and responses.
     */
    void setCorrelator(final Correlator correlator);
+
+   /**
+    * Tells whether we should interrupt the generator immediately after a first error occurred.
+    *
+    * @return True if and only if we are supposed to fail fast. Can be set by <code>perfcake.fail.fast</code> system property.
+    */
+   boolean isFailFast();
 }

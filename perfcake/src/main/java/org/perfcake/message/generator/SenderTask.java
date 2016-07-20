@@ -90,9 +90,9 @@ public class SenderTask implements Runnable {
    private SequenceManager sequenceManager;
 
    /**
-    * Controls the amount of prepared tasks in a buffer.
+    * Message generator that created this sender task.
     */
-   private final CanalStreet canalStreet;
+   private final MessageGenerator messageGenerator;
 
    /**
     * The time when the task was enqueued.
@@ -122,11 +122,23 @@ public class SenderTask implements Runnable {
     * To obtain a new instance of a sender task properly initialized call
     * {@link org.perfcake.message.generator.AbstractMessageGenerator#newSenderTask(java.util.concurrent.Semaphore)}.
     *
-    * @param canalStreet
-    *       The communication channel between this sender task instance and a generator.
+    * @param messageGenerator
+    *       The message generator that created this sender task.
     */
-   protected SenderTask(final CanalStreet canalStreet) {
-      this.canalStreet = canalStreet;
+   protected SenderTask(final MessageGenerator messageGenerator) {
+      this.messageGenerator = messageGenerator;
+   }
+
+   /**
+    * Reports an exception from a sender when the generator is supposed to fail fast. This terminates test execution.
+    *
+    * @param e
+    *       The error from the sender to be reported.
+    */
+   private void reportSenderError(final Exception e) {
+      if (messageGenerator.isFailFast()) {
+         messageGenerator.interrupt(e);
+      }
    }
 
    private Serializable sendMessage(final MessageSender sender, final Message message, final Properties messageAttributes, final MeasurementUnit mu) {
@@ -136,7 +148,7 @@ public class SenderTask implements Runnable {
          if (log.isErrorEnabled()) {
             log.error("Unable to initialize sending of a message: ", e);
          }
-         canalStreet.senderError(e);
+         reportSenderError(e);
       }
 
       mu.startMeasure();
@@ -149,7 +161,7 @@ public class SenderTask implements Runnable {
          if (log.isErrorEnabled()) {
             log.error("Unable to send a message: ", e);
          }
-         canalStreet.senderError(e);
+         reportSenderError(e);
       }
       mu.stopMeasure();
 
@@ -159,7 +171,7 @@ public class SenderTask implements Runnable {
          if (log.isErrorEnabled()) {
             log.error("Unable to finish sending of a message: ", e);
          }
-         canalStreet.senderError(e);
+         reportSenderError(e);
       }
 
       return result;
@@ -244,8 +256,6 @@ public class SenderTask implements Runnable {
             log.error("Error sending message: ", e);
          }
       } finally {
-         canalStreet.acknowledgeSend();
-
          if (sender != null) {
             senderManager.releaseSender(sender);
          }

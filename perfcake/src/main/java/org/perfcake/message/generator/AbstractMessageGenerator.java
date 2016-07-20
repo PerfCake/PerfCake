@@ -133,12 +133,10 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     * Gets a new instance of a {@link org.perfcake.message.generator.SenderTask}.
     * The provided semaphore can be used to control parallel execution of sender tasks in multiple threads.
     *
-    * @param semaphore
-    *       Semaphore that will be released upon completion of the sender task. Can be null.
     * @return A sender task ready to work on another iteration.
     */
-   protected SenderTask newSenderTask(final Semaphore semaphore) {
-      final SenderTask task = new SenderTask(new CanalStreet(this, semaphore, isFailFast()));
+   protected SenderTask newSenderTask() {
+      final SenderTask task = new SenderTask(this);
 
       task.setMessageStore(messageStore);
       task.setReportManager(reportManager);
@@ -280,11 +278,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
       return executorService.getTaskCount() - executorService.getCompletedTaskCount();
    }
 
-   /**
-    * Should we interrupt the generator if there is an error?
-    *
-    * @return True if and only if we are supposed to fail fast. Can be set by <code>perfcake.fail.fast</code> system property.
-    */
+   @Override
    public boolean isFailFast() {
       return failFast;
    }
