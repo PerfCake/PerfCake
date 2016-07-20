@@ -29,9 +29,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Semaphore;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Generates maximal load using a variable number of threads.
@@ -146,8 +146,7 @@ public class RampUpDownGenerator extends DefaultMessageGenerator {
    @Override
    public void generate() throws Exception {
       log.info("Starting to generate...");
-      semaphore = new Semaphore(senderTaskQueueSize);
-      executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(preThreadCount);
+      executorService = new ThreadPoolExecutor(preThreadCount, preThreadCount, 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(getSenderTaskQueueSize()), new DaemonThreadFactory());
       currentPhase = Phase.PRE;
       boolean phaseChanged = true;
       setThreads(preThreadCount);
