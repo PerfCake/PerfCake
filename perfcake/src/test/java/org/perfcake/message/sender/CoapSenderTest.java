@@ -126,8 +126,8 @@ public class CoapSenderTest {
    private String _sendMessage(final MessageSender sender, final Message message, final Map<String, String> additionalProperties, final Properties messageAttributes) throws Exception {
       String response;
       sender.init();
-      sender.preSend(message, additionalProperties, messageAttributes);
-      response = (String) sender.send(message, additionalProperties, null);
+      sender.preSend(message, messageAttributes);
+      response = (String) sender.send(message, null);
       sender.postSend(message);
       sender.close();
       return response;

@@ -28,7 +28,6 @@ import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -40,8 +39,6 @@ public class CoapSender extends AbstractSender {
 
    private CoapClient client;
    private CoapResponse coapResponse;
-
-   private boolean isResponseExpected = false;
 
    private enum CoapMethod {
       GET, POST, PUT, DELETE
@@ -58,6 +55,14 @@ public class CoapSender extends AbstractSender {
    @Override
    public void doInit(Properties messageAttributes) throws PerfCakeException {
       client = new CoapClient(safeGetTarget(messageAttributes));
+      switch (requestType) {
+         case CON:
+            client.useCONs();
+            break;
+         case NON:
+            client.useNONs();
+            break;
+      }
    }
 
    @Override
