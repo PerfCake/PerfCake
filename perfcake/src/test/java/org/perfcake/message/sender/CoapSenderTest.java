@@ -24,6 +24,7 @@ import org.perfcake.util.ObjectFactory;
 
 import org.eclipse.californium.core.CoapResource;
 import org.eclipse.californium.core.CoapServer;
+import org.eclipse.californium.core.coap.CoAP;
 import org.eclipse.californium.core.server.resources.CoapExchange;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
@@ -34,7 +35,7 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- * Tests {@link MqttSender}.
+ * Tests {@link CoapSender}.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
@@ -44,6 +45,7 @@ public class CoapSenderTest {
    private static final String MESSAGE = "Test message";
    private static final String RESPONSE_GET = "GET:";
    private static final String RESPONSE_POST = "POST:" + MESSAGE;
+   private static final String RESPONSE_POST_ACK = "POST:ACK:" + MESSAGE;
    private static final String RESPONSE_PUT = "PUT:" + MESSAGE;
    private static final String RESPONSE_DELETE = "DELETE:";
 
@@ -53,6 +55,7 @@ public class CoapSenderTest {
    public void prepareCoapServer() {
       coapServer = new CoapServer();
       coapServer.add(new MyResource("test-resource"));
+      coapServer.add(new OnlyPostResource("test-resource-only-post"));
       coapServer.start();
    }
 
@@ -69,11 +72,11 @@ public class CoapSenderTest {
    }
 
    @Test
-   public void testCoapSenderCons() {
+   public void testCoapSenderConfirmableRequests() {
       final Properties senderProperties = new Properties();
       senderProperties.setProperty("target", "coap://127.0.0.1:5683/test-resource");
-      senderProperties.setProperty("requestType", "CON");
-      _testSender(senderProperties, RESPONSE_POST);
+      senderProperties.setProperty("requestType", "confirmable");
+      _testSender(senderProperties, RESPONSE_POST_ACK);
    }
 
    @Test
@@ -106,6 +109,38 @@ public class CoapSenderTest {
       senderProperties.setProperty("target", "coap://127.0.0.1:5683/test-resource");
       senderProperties.setProperty("method", "DELETE");
       _testSender(senderProperties, RESPONSE_DELETE);
+   }
+
+   @Test
+   public void testCoapSenderOnlyPostGet() {
+      final Properties senderProperties = new Properties();
+      senderProperties.setProperty("target", "coap://127.0.0.1:5683/test-resource-only-post");
+      senderProperties.setProperty("method", "GET");
+      _testSender(senderProperties, "");
+   }
+
+   @Test
+   public void testCoapSenderOnlyPostPost() {
+      final Properties senderProperties = new Properties();
+      senderProperties.setProperty("target", "coap://127.0.0.1:5683/test-resource-only-post");
+      senderProperties.setProperty("method", "POST");
+      _testSender(senderProperties, RESPONSE_POST);
+   }
+
+   @Test
+   public void testCoapSenderOnlyPostDelete() {
+      final Properties senderProperties = new Properties();
+      senderProperties.setProperty("target", "coap://127.0.0.1:5683/test-resource-only-post");
+      senderProperties.setProperty("method", "DELETE");
+      _testSender(senderProperties, "");
+   }
+
+   @Test
+   public void testCoapSenderOnlyPostPut() {
+      final Properties senderProperties = new Properties();
+      senderProperties.setProperty("target", "coap://127.0.0.1:5683/test-resource-only-post");
+      senderProperties.setProperty("method", "PUT");
+      _testSender(senderProperties, "");
    }
 
    private void _testSender(final Properties senderProperties, final String expectedResponse) {
@@ -145,7 +180,14 @@ public class CoapSenderTest {
 
       @Override
       public void handlePOST(final CoapExchange exchange) {
-         exchange.respond("POST:" + exchange.getRequestText());
+         final StringBuffer response = new StringBuffer();
+         response.append("POST:");
+         if (exchange.advanced().getRequest().getType().equals(CoAP.Type.CON)) {
+            response.append("ACK:");
+            exchange.advanced().getRequest().setAcknowledged(true);
+         }
+         response.append(exchange.getRequestText());
+         exchange.respond(response.toString());
       }
 
       @Override
@@ -156,6 +198,17 @@ public class CoapSenderTest {
       @Override
       public void handleDELETE(final CoapExchange exchange) {
          exchange.respond("DELETE:");
+      }
+   }
+
+   private class OnlyPostResource extends CoapResource {
+      public OnlyPostResource(final String name) {
+         super(name);
+      }
+
+      @Override
+      public void handlePOST(final CoapExchange exchange) {
+         exchange.respond("POST:" + exchange.getRequestText());
       }
    }
 }

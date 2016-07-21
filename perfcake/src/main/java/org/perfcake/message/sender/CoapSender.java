@@ -23,6 +23,8 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
@@ -37,29 +39,62 @@ import java.util.Properties;
  */
 public class CoapSender extends AbstractSender {
 
+   /**
+    * The sender's logger.
+    */
+   private static final Logger log = LogManager.getLogger(CoapSender.class);
+
+   /**
+    * CoAP Java API client.
+    */
    private CoapClient client;
+
+   /**
+    * CoAP response.
+    */
    private CoapResponse coapResponse;
 
+   /**
+    * CoAP request method.
+    */
    private enum CoapMethod {
       GET, POST, PUT, DELETE
    }
 
+   /**
+    * CoAP request type.
+    */
    private enum CoapRequestType {
-      NON, CON
+      /**
+       * Non-confirmable request.
+       */
+      NON_CONFIRMABLE,
+
+      /**
+       * Confirmable request.
+       */
+      CONFIRMABLE
    }
 
    // Properties
-   private CoapRequestType requestType = CoapRequestType.NON;
+   /**
+    * CoAP request type that the sender will use.
+    */
+   private CoapRequestType requestType = CoapRequestType.NON_CONFIRMABLE;
+
+   /**
+    * CoAP request method that the sender will use.
+    */
    private CoapMethod method = CoapMethod.POST;
 
    @Override
    public void doInit(Properties messageAttributes) throws PerfCakeException {
       client = new CoapClient(safeGetTarget(messageAttributes));
       switch (requestType) {
-         case CON:
+         case CONFIRMABLE:
             client.useCONs();
             break;
-         case NON:
+         case NON_CONFIRMABLE:
             client.useNONs();
             break;
       }
@@ -86,7 +121,6 @@ public class CoapSender extends AbstractSender {
             coapResponse = client.delete();
             break;
       }
-
       return coapResponse.getResponseText();
    }
 
@@ -101,19 +135,43 @@ public class CoapSender extends AbstractSender {
       // nop
    }
 
+   /**
+    * Returns the method that the CoAP will use to send the requests.
+    *
+    * @return The method's name.
+    */
    public CoapMethod getMethod() {
       return method;
    }
 
+   /**
+    * Sets the CoAP method.        One of GET, POST, DELETE and PUT is supported.
+    *
+    * @param method
+    *       The CoAP request method.
+    * @return The instance of this for a fluent API.
+    */
    public CoapSender setMethod(final CoapMethod method) {
       this.method = method;
       return this;
    }
 
+   /**
+    * Returns the method that the CoAP will use to send the requests.
+    *
+    * @return The method's name.
+    */
    public CoapRequestType getRequestType() {
       return requestType;
    }
 
+   /**
+    * Sets the CoAP request type. Confirmable or Non-confirmable requests are supported.
+    *
+    * @param requestType
+    *       The type of CoAP request.
+    * @return The instance of this for a fluent API.
+    */
    public CoapSender setRequestType(final CoapRequestType requestType) {
       this.requestType = requestType;
       return this;
