@@ -201,10 +201,10 @@ public class Utils {
     *       When it was not possible to read the content.
     */
    public static String readFilteredContent(final URL url) throws IOException {
-      try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
-         return filterProperties(scanner.useDelimiter("\\Z").next());
-      } catch (final NoSuchElementException nsee) {
-         throw new IOException("The content of " + url + " is empty.");
+      try {
+         return filterProperties(new String(Files.readAllBytes(Paths.get(url.toURI())), getDefaultEncoding()));
+      } catch (URISyntaxException e) {
+         throw new IOException("Invalid URL: " + url, e);
       }
    }
 
@@ -221,7 +221,7 @@ public class Utils {
       List<String> results = new ArrayList<>();
 
       try (InputStream is = url.openStream();
-            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+            InputStreamReader isr = new InputStreamReader(is, getDefaultEncoding());
             BufferedReader br = new BufferedReader(isr)) {
 
          String line;
