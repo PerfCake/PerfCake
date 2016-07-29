@@ -32,6 +32,7 @@ import java.util.Properties;
  * original request. This is done based on a correlation id that is extracted from both request and response.
  * Upon a successful match, {@link SenderTask#registerResponse(Serializable)} is called.
  * For performance reasons, all interface methods should be implemented thread safe without locking and or synchronization.
+ * All implementations should make sure that they do not keep eating up the memory and clean their data structures regularly.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
