@@ -22,7 +22,12 @@ package org.perfcake.message.sender;
 import static org.testng.Assert.*;
 
 import org.perfcake.PerfCakeException;
+import org.perfcake.TestSetup;
+import org.perfcake.scenario.Scenario;
+import org.perfcake.scenario.ScenarioLoader;
+import org.perfcake.scenario.ScenarioRetractor;
 
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.HashMap;
@@ -33,6 +38,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 /**
  * Tests {@link org.perfcake.message.sender.MessageSenderManager}.
@@ -40,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 @Test(groups = { "unit" })
-public class MessageSenderManagerTest {
+public class MessageSenderManagerTest extends TestSetup {
 
    private static final int SENDER_COUNT = 100;
    private static final String SENDER_CLASS_NAME = TestSender.class.getName();
@@ -111,6 +117,24 @@ public class MessageSenderManagerTest {
          }
       }
       msm.close();
+   }
+
+   @Test
+   public void threadLocalUsageTest() throws PerfCakeException {
+      final Scenario scenario = ScenarioLoader.load("test-class");
+
+      scenario.init();
+      scenario.run();
+      scenario.close();
+
+      final ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+      Map<String, Integer> counters = ((TestSender) retractor.getMessageSenderManager().acquireSender()).getLocalCounters();
+      int i = counters.values().stream().collect(Collectors.summingInt(it -> it));
+
+      // if all the threads used the same variable, we would end up with the same number for each thread
+      // let's see that this is not the case
+      Assert.assertEquals(counters.size(), 10);
+      Assert.assertTrue(i > 9000); // we are not perfect in storing the results, the are concurrent overwrites
    }
 
    private static class SenderTask implements Runnable {

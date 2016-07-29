@@ -31,7 +31,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
@@ -52,6 +54,16 @@ public class TestSender extends AbstractSender {
     * Iteration counter (how many times the doSend method has been called).
     */
    private static AtomicLong counter = new AtomicLong(0);
+
+   /**
+    * Test the usage of thread locals.
+    */
+   private ThreadLocal<Integer> localCounter = new ThreadLocal<>();
+
+   /**
+    * Copy of thread local variables to see that this works properly.
+    */
+   private static transient Map<String, Integer> localCounterValues = new ConcurrentHashMap<>();
 
    /**
     * The delay duration to simulate a asynchronous waiting.
@@ -122,6 +134,13 @@ public class TestSender extends AbstractSender {
          log.debug("Dummy counter: " + count);
       }
 
+      if (localCounter.get() == null) {
+         localCounter.set(1);
+      } else {
+         localCounter.set(localCounter.get() + 1);
+      }
+      localCounterValues.put(Thread.currentThread().getName(), localCounter.get());
+
       if (delay > 0) {
          final long sleepStart = System.currentTimeMillis();
          try {
@@ -183,6 +202,15 @@ public class TestSender extends AbstractSender {
     */
    public void setRecording(final boolean recording) {
       this.recording = recording;
+   }
+
+   /**
+    * Gets the thread local counter values.
+    *
+    * @return The thread local counter values.
+    */
+   public Map<String, Integer> getLocalCounters() {
+      return localCounterValues;
    }
 
    /**
