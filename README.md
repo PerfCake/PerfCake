@@ -26,7 +26,7 @@ The development branch name is `devel`.
 Bug reporting
 -------------
 
-Please report all bugs related to core source code, documentation,,
+Please report all bugs related to core source code, documentation,
 demos, and web pages to the issues of this repository. Only some of other
 repositories have dedicated issue tracker that has a different release schedule
 (this is always specified in README.md).
