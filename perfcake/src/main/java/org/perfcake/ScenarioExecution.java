@@ -70,16 +70,6 @@ public class ScenarioExecution {
    private Scenario scenario;
 
    /**
-    * Skips timer benchmark when set to true.
-    */
-   private boolean skipTimerBenchmark = false;
-
-   /**
-    * Raw file with results to be replayed.
-    */
-   private String rawFile = null;
-
-   /**
     * Parses command line arguments and creates this class to take care of the Scenario execution.
     *
     * @param args
@@ -105,7 +95,7 @@ public class ScenarioExecution {
       // Print system properties
       se.printTraceInformation();
 
-      if (se.rawFile == null) {
+      if (Utils.getProperty(PerfCakeConst.REPLAY_PROPERTY) == null) {
          se.executeScenario();
       } else {
          se.replayScenario();
@@ -228,11 +218,7 @@ public class ScenarioExecution {
       }
 
       if (commandLine.hasOption(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT)) {
-         skipTimerBenchmark = true;
-      }
-
-      if (commandLine.hasOption(PerfCakeConst.REPLAY_OPT)) {
-         rawFile = commandLine.getOptionValue(PerfCakeConst.REPLAY_OPT);
+         System.setProperty(PerfCakeConst.SKIP_TIMER_BENCHMARK_PROPERTY, "true");
       }
 
       parseParameter(PerfCakeConst.SCENARIOS_DIR_OPT, PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"));
@@ -240,6 +226,7 @@ public class ScenarioExecution {
       parseParameter(PerfCakeConst.PLUGINS_DIR_OPT, PerfCakeConst.PLUGINS_DIR_PROPERTY, Utils.DEFAULT_PLUGINS_DIR.getAbsolutePath());
       parseParameter(PerfCakeConst.PROPERTIES_FILE_OPT, PerfCakeConst.PROPERTIES_FILE_PROPERTY, null);
       parseParameter(PerfCakeConst.LOGGING_LEVEL_OPT, PerfCakeConst.LOGGING_LEVEL_PROPERTY, null);
+      parseParameter(PerfCakeConst.REPLAY_OPT, PerfCakeConst.REPLAY_PROPERTY, null);
       if (Utils.getProperty(PerfCakeConst.LOGGING_LEVEL_PROPERTY, null) != null) {
          Utils.setLoggingLevel(Level.toLevel(Utils.getProperty(PerfCakeConst.LOGGING_LEVEL_PROPERTY), Level.INFO));
       }
@@ -294,7 +281,7 @@ public class ScenarioExecution {
     * Executes the loaded scenario.
     */
    private void executeScenario() {
-      if (!skipTimerBenchmark) {
+      if (Utils.getProperty(PerfCakeConst.SKIP_TIMER_BENCHMARK_PROPERTY) == null) {
          TimerBenchmark.measureTimerResolution();
       }
 
@@ -333,6 +320,8 @@ public class ScenarioExecution {
     * Replays the previously recorded raw results.
     */
    private void replayScenario() {
+      final String rawFile = Utils.getProperty(PerfCakeConst.REPLAY_PROPERTY);
+
       log.info("Replaying raw results recorded in {}.", rawFile);
 
       try (final ReplayResults replay = new ReplayResults(scenario, rawFile)) {

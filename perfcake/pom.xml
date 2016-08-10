@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE htmlEntities [
-<!ENTITY nbsp "&#xa0;">
-]>
+      <!ENTITY nbsp "&#xa0;">
+      ]>
 <!--suppress MavenModelInspection, XmlWrongRootElement -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
@@ -609,7 +609,7 @@
                      <argument>-Dlog4j.configurationFile=file://${basedir}/src/main/resources/log4j2.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath />
+                     <classpath/>
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
@@ -660,57 +660,6 @@
                <version>${maven.gpg.plugin.version}</version>
                <configuration>
                   <useAgent>true</useAgent>
-               </configuration>
-            </plugin>
-            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
-            <plugin>
-               <groupId>org.eclipse.m2e</groupId>
-               <artifactId>lifecycle-mapping</artifactId>
-               <version>1.0.0</version>
-               <configuration>
-                  <lifecycleMappingMetadata>
-                     <pluginExecutions>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.jacoco</groupId>
-                              <artifactId>jacoco-maven-plugin</artifactId>
-                              <versionRange>[0.7.6.201602180812,)</versionRange>
-                              <goals>
-                                 <goal>prepare-agent</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <ignore />
-                           </action>
-                        </pluginExecution>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.apache.maven.plugins</groupId>
-                              <artifactId>maven-dependency-plugin</artifactId>
-                              <versionRange>[1.0.0,)</versionRange>
-                              <goals>
-                                 <goal>unpack</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <execute />
-                           </action>
-                        </pluginExecution>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.codehaus.mojo</groupId>
-                              <artifactId>xml-maven-plugin</artifactId>
-                              <versionRange>[1.0.0,)</versionRange>
-                              <goals>
-                                 <goal>transform</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <execute />
-                           </action>
-                        </pluginExecution>
-                     </pluginExecutions>
-                  </lifecycleMappingMetadata>
                </configuration>
             </plugin>
             <plugin>
@@ -886,6 +835,71 @@
                   </configuration>
                </plugin>
             </plugins>
+         </build>
+      </profile>
+      <profile>
+         <id>only-eclipse</id>
+         <activation>
+            <property>
+               <name>m2e.version</name>
+            </property>
+         </activation>
+         <build>
+            <pluginManagement>
+               <plugins>
+                  <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+                  <plugin>
+                     <groupId>org.eclipse.m2e</groupId>
+                     <artifactId>lifecycle-mapping</artifactId>
+                     <version>1.0.0</version>
+                     <configuration>
+                        <lifecycleMappingMetadata>
+                           <pluginExecutions>
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.jacoco</groupId>
+                                    <artifactId>jacoco-maven-plugin</artifactId>
+                                    <versionRange>[0.7.6.201602180812,)</versionRange>
+                                    <goals>
+                                       <goal>prepare-agent</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <ignore/>
+                                 </action>
+                              </pluginExecution>
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.apache.maven.plugins</groupId>
+                                    <artifactId>maven-dependency-plugin</artifactId>
+                                    <versionRange>[1.0.0,)</versionRange>
+                                    <goals>
+                                       <goal>unpack</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <execute/>
+                                 </action>
+                              </pluginExecution>
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.codehaus.mojo</groupId>
+                                    <artifactId>xml-maven-plugin</artifactId>
+                                    <versionRange>[1.0.0,)</versionRange>
+                                    <goals>
+                                       <goal>transform</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <execute/>
+                                 </action>
+                              </pluginExecution>
+                           </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                     </configuration>
+                  </plugin>
+               </plugins>
+            </pluginManagement>
          </build>
       </profile>
    </profiles>

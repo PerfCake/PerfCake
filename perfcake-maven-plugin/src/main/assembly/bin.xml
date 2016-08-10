@@ -1,5 +1,5 @@
 <assembly>
-   <id>bin-agent</id>
+   <id>bin-maven-plugin</id>
    <formats>
       <format>tar.gz</format>
       <format>tar.bz2</format>
@@ -28,32 +28,6 @@
          <excludes>
             <exclude>*javadoc.jar</exclude>
          </excludes>
-         <fileMode>0644</fileMode>
-      </fileSet>
-      <fileSet>
-         <directory>${basedir}/lib/ext</directory>
-         <outputDirectory>lib/ext</outputDirectory>
-         <includes>
-            <include>*.jar</include>
-            <include>README*</include>
-         </includes>
-         <fileMode>0644</fileMode>
-      </fileSet>
-      <fileSet>
-         <directory>${basedir}/lib/plugins</directory>
-         <outputDirectory>lib/plugins</outputDirectory>
-         <includes>
-            <include>*.jar</include>
-            <include>README*</include>
-         </includes>
-         <fileMode>0644</fileMode>
-      </fileSet>
-      <fileSet>
-         <directory>${basedir}/src/main/resources</directory>
-         <outputDirectory/>
-         <includes>
-            <include>log4j2.xml</include>
-         </includes>
          <fileMode>0644</fileMode>
       </fileSet>
       <fileSet>
