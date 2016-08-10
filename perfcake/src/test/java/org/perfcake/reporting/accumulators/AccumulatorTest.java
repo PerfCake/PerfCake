@@ -1,6 +1,10 @@
 package org.perfcake.reporting.accumulators;
 
+import org.perfcake.reporting.reporters.accumulators.Accumulator;
+import org.perfcake.reporting.reporters.accumulators.AvgAccumulator;
 import org.perfcake.reporting.reporters.accumulators.HarmonicMeanAccumulator;
+import org.perfcake.reporting.reporters.accumulators.MaxAccumulator;
+import org.perfcake.reporting.reporters.accumulators.MinAccumulator;
 import org.perfcake.reporting.reporters.accumulators.TimeSlidingWindowAvgAccumulator;
 import org.perfcake.reporting.reporters.accumulators.TimeSlidingWindowHarmonicMeanAccumulator;
 import org.perfcake.reporting.reporters.accumulators.TimeSlidingWindowMaxAccumulator;
@@ -14,21 +18,51 @@ import org.testng.annotations.Test;
  */
 public class AccumulatorTest {
    @Test
-   public void testHarmonicMeanAccumulator() throws Exception {
-      final HarmonicMeanAccumulator accumulator = new HarmonicMeanAccumulator();
+   public void testMaxAccumulator() throws Exception {
+      final Accumulator accumulator = new MaxAccumulator();
 
       for (int i = 1; i <= 5; i++) {
-         accumulator.add(new Double(i));
+         accumulator.add((double) i);
+      }
+      Assert.assertEquals(accumulator.getResult(), 5.0);
+   }
+
+   @Test
+   public void testMinAccumulator() throws Exception {
+      final Accumulator accumulator = new MinAccumulator();
+
+      for (int i = 1; i <= 5; i++) {
+         accumulator.add((double) i);
+      }
+      Assert.assertEquals(accumulator.getResult(), 1.0);
+   }
+
+   @Test
+   public void testAvgAccumulator() throws Exception {
+      final Accumulator accumulator = new AvgAccumulator();
+
+      for (int i = 1; i <= 5; i++) {
+         accumulator.add((double) i);
+      }
+      Assert.assertEquals(accumulator.getResult(), (1.0 + 2.0 + 3.0 + 4.0 + 5.0) / 5.0);
+   }
+
+   @Test
+   public void testHarmonicMeanAccumulator() throws Exception {
+      final Accumulator accumulator = new HarmonicMeanAccumulator();
+
+      for (int i = 1; i <= 5; i++) {
+         accumulator.add((double) i);
       }
       Assert.assertEquals(accumulator.getResult(), 5.0 / (1.0 + 1.0 / 2.0 + 1.0 / 3.0 + 1.0 / 4.0 + 1.0 / 5.0));
    }
 
    @Test
    public void testTimeSlidingWindowMaxAccumulator() throws Exception {
-      final TimeSlidingWindowMaxAccumulator accumulator = new TimeSlidingWindowMaxAccumulator(6000);
+      final Accumulator accumulator = new TimeSlidingWindowMaxAccumulator(6000);
 
       for (int i = 5; i > 0; i--) {
-         accumulator.add(new Double(i));
+         accumulator.add((double) i);
          Thread.sleep(1000);
       }
       Assert.assertEquals(accumulator.getResult(), 5.0);
@@ -40,10 +74,10 @@ public class AccumulatorTest {
 
    @Test
    public void testTimeSlidingWindowMinAccumulator() throws Exception {
-      final TimeSlidingWindowMinAccumulator accumulator = new TimeSlidingWindowMinAccumulator(6000);
+      final Accumulator accumulator = new TimeSlidingWindowMinAccumulator(6000);
 
       for (int i = 1; i <= 5; i++) {
-         accumulator.add(new Double(i));
+         accumulator.add((double) i);
          Thread.sleep(1000);
       }
       Assert.assertEquals(accumulator.getResult(), 1.0);
@@ -55,10 +89,10 @@ public class AccumulatorTest {
 
    @Test
    public void testTimeSlidingWindowAvgAccumulator() throws Exception {
-      final TimeSlidingWindowAvgAccumulator accumulator = new TimeSlidingWindowAvgAccumulator(6000);
+      final Accumulator accumulator = new TimeSlidingWindowAvgAccumulator(6000);
 
       for (int i = 1; i <= 5; i++) {
-         accumulator.add(new Double(i));
+         accumulator.add((double) i);
          Thread.sleep(1000);
       }
       Assert.assertEquals(accumulator.getResult(), 3.0);
@@ -70,7 +104,7 @@ public class AccumulatorTest {
 
    @Test
    public void testTimeSlidingWindowHarmonicMeanAccumulator() throws Exception {
-      final TimeSlidingWindowHarmonicMeanAccumulator accumulator = new TimeSlidingWindowHarmonicMeanAccumulator(6000);
+      final Accumulator accumulator = new TimeSlidingWindowHarmonicMeanAccumulator(6000);
 
       for (int i = 1; i <= 5; i++) {
          accumulator.add((double) i);
