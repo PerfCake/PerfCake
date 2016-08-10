@@ -79,7 +79,7 @@ public class TimeSlidingWindow<E> {
    }
 
    /**
-    * Adds an object to the sliding without with an information about artificial time. The object cannot be older than the one added previously
+    * Adds an object to the sliding window with an information about artificial time. The object cannot be older than the one added previously
     * (the structure needs to keep time order of elements).
     *
     * @param object
@@ -96,6 +96,18 @@ public class TimeSlidingWindow<E> {
          }
          c.add(new TemporalObject<>(object, time));
       }
+   }
+
+   /**
+    * Removes all elements from the sliding window
+    */
+   public void clear() {
+      window.clear();
+   }
+
+   public long size() {
+      gc();
+      return window.size();
    }
 
    /**
