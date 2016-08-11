@@ -38,6 +38,10 @@ import org.perfcake.reporting.reporters.accumulators.SlidingWindowMaxAccumulator
 import org.perfcake.reporting.reporters.accumulators.SlidingWindowMinAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SlidingWindowSumLongAccumulator;
 import org.perfcake.reporting.reporters.accumulators.SumLongAccumulator;
+import org.perfcake.reporting.reporters.accumulators.TimeSlidingWindowAvgAccumulator;
+import org.perfcake.reporting.reporters.accumulators.TimeSlidingWindowMaxAccumulator;
+import org.perfcake.reporting.reporters.accumulators.TimeSlidingWindowMinAccumulator;
+import org.perfcake.reporting.reporters.accumulators.TimeSlidingWindowSumLongAccumulator;
 
 /**
  * <p>Reports the minimal, maximal and average value from the beginning
@@ -79,6 +83,27 @@ public abstract class StatsReporter extends AbstractReporter {
     * A property that specifies a window size with the default value of {@link Integer#MAX_VALUE}.
     */
    private int windowSize = Integer.MAX_VALUE;
+
+   /**
+    * The type of the window, either the number of iterations or a time duration.
+    */
+   private WindowType windowType = WindowType.ITERATION;
+
+   /**
+    * The type of the window, either the number of iterations or a time duration.
+    */
+   public enum WindowType {
+
+      /**
+       * A window of the number of latest iterations.
+       */
+      ITERATION,
+
+      /**
+       * A window of a given time period.
+       */
+      TIME
+   }
 
    /**
     * A comma separated list of values where the histogram is split to individual ranges.
@@ -133,19 +158,38 @@ public abstract class StatsReporter extends AbstractReporter {
     */
    @SuppressWarnings("rawtypes")
    protected Accumulator getWindowedAccumulator(final String key) {
-      switch (key) {
-         case MAXIMUM:
-            return new SlidingWindowMaxAccumulator(windowSize);
-         case MINIMUM:
-            return new SlidingWindowMinAccumulator(windowSize);
-         case Measurement.DEFAULT_RESULT:
-            return new LastValueAccumulator();
-         case PerfCakeConst.REQUEST_SIZE_TAG:
-         case PerfCakeConst.RESPONSE_SIZE_TAG:
-            return new SlidingWindowSumLongAccumulator(windowSize);
-         case AVERAGE:
+      switch (windowType) {
+         case TIME:
+            switch (key) {
+               case MAXIMUM:
+                  return new TimeSlidingWindowMaxAccumulator(windowSize);
+               case MINIMUM:
+                  return new TimeSlidingWindowMinAccumulator(windowSize);
+               case Measurement.DEFAULT_RESULT:
+                  return new LastValueAccumulator();
+               case PerfCakeConst.REQUEST_SIZE_TAG:
+               case PerfCakeConst.RESPONSE_SIZE_TAG:
+                  return new TimeSlidingWindowSumLongAccumulator(windowSize);
+               case AVERAGE:
+               default:
+                  return new TimeSlidingWindowAvgAccumulator(windowSize);
+            }
+         case ITERATION:
          default:
-            return new SlidingWindowAvgAccumulator(windowSize);
+            switch (key) {
+               case MAXIMUM:
+                  return new SlidingWindowMaxAccumulator(windowSize);
+               case MINIMUM:
+                  return new SlidingWindowMinAccumulator(windowSize);
+               case Measurement.DEFAULT_RESULT:
+                  return new LastValueAccumulator();
+               case PerfCakeConst.REQUEST_SIZE_TAG:
+               case PerfCakeConst.RESPONSE_SIZE_TAG:
+                  return new SlidingWindowSumLongAccumulator(windowSize);
+               case AVERAGE:
+               default:
+                  return new SlidingWindowAvgAccumulator(windowSize);
+            }
       }
    }
 
@@ -434,5 +478,26 @@ public abstract class StatsReporter extends AbstractReporter {
     */
    public void setResponseSizeEnabled(final boolean responseSizeEnabled) {
       this.responseSizeEnabled = responseSizeEnabled;
+   }
+
+   /**
+    * Returns the type of the window.
+    *
+    * @return The window type.
+    */
+   public WindowType getWindowType() {
+      return windowType;
+   }
+
+   /**
+    * Sets the type of the window.
+    *
+    * @param windowType
+    *       Either ITERATION or TIME is supported.
+    * @return The instance of this for a fluent API.
+    */
+   public StatsReporter setWindowType(final WindowType windowType) {
+      this.windowType = windowType;
+      return this;
    }
 }
