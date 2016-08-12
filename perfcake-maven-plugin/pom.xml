@@ -83,6 +83,16 @@
          <groupId>org.eclipse.aether</groupId>
          <artifactId>aether-util</artifactId>
       </dependency>
+      <dependency>
+         <groupId>org.apache.maven.plugin-testing</groupId>
+         <artifactId>maven-plugin-testing-harness</artifactId>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.testng</groupId>
+         <artifactId>testng</artifactId>
+         <scope>test</scope>
+      </dependency>
    </dependencies>
    <build>
       <plugins>
