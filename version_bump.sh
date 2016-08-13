@@ -10,6 +10,16 @@ function bumpPerfCake {
 		sed -i -e "s/urn:perfcake:scenario:$VERSION\.0/urn:perfcake:scenario:$NEXT.0/g" $f
 	done
 
+	for f in $(find perfcake-maven-plugin/src/test/resources -name '*xml'); do 
+		echo "Updating file $f..."
+		sed -i -e "s/urn:perfcake:scenario:$VERSION\.0/urn:perfcake:scenario:$NEXT.0/g" $f
+	done
+
+	for f in $(find perfcake-maven-plugin/src/test/resources -name '*pom.xml'); do 
+		echo "Updating file $f..."
+		sed -i -e "s/<perfcake\.version>$VERSION\../<perfcake.version>$NEXT.0/g" $f
+	done
+
 	echo "Updating file perfcake/src/main/java/org/perfcake/PerfCakeConst.java..."
 	sed -i -e "s/VERSION = \"$VERSION\../VERSION = \"$NEXT.0/" perfcake/src/main/java/org/perfcake/PerfCakeConst.java
 

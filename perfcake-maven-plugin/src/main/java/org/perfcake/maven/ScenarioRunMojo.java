@@ -20,7 +20,6 @@
 package org.perfcake.maven;
 
 import org.perfcake.PerfCakeConst;
-import org.perfcake.maven.utils.MavenUtils;
 
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
@@ -33,13 +32,9 @@ import org.apache.maven.project.MavenProject;
 import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.RepositorySystemSession;
 import org.eclipse.aether.repository.RemoteRepository;
-import org.eclipse.aether.resolution.ArtifactResolutionException;
 
 import java.io.File;
 import java.lang.reflect.Method;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.Properties;
 
@@ -76,23 +71,11 @@ public class ScenarioRunMojo extends AbstractMojo {
    @Parameter(alias = "log-level")
    private String logLevel = "";
 
-   @Parameter(alias = "perfcake-version")
-   private String perfCakeVersion;
-
    @Parameter(alias = "use-test-resources")
    private Boolean useTestResources = true;
 
-   @Parameter(defaultValue = "${project.remoteProjectRepositories}", readonly = true)
-   private List<RemoteRepository> remoteRepos;
-
-   @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
-   private RepositorySystemSession repoSession;
-
    @Parameter(defaultValue = "${project}", readonly = true)
    private MavenProject project;
-
-   @Component
-   private RepositorySystem repoSystem;
 
    @Override
    public void execute() throws MojoExecutionException {
@@ -112,18 +95,8 @@ public class ScenarioRunMojo extends AbstractMojo {
          perfCakeProperties.setProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY, propertiesFile);
       }
 
-      File perfCakeJar = null;
-      if (perfCakeVersion != null) { //if the version is not set, don't resolve anything and don't print out warning
-         try {
-            perfCakeJar = MavenUtils.getArtifactJarFile(repoSystem, remoteRepos, repoSession, PERFCAKE_MAVEN_COORD + perfCakeVersion, getLog());
-         } catch (ArtifactResolutionException e) {
-            getLog().warn("Cannot resolve PerfCake " + PERFCAKE_MAVEN_COORD + perfCakeVersion + ", using default one on the class path");
-         }
-      }
-
-      ClassLoader perfCakeClassLoader = getPerfCakeClassLoader(perfCakeJar);
       try {
-         Class<?> se = perfCakeClassLoader.loadClass("org.perfcake.ScenarioExecution");
+         Class<?> se = getClass().getClassLoader().loadClass("org.perfcake.ScenarioExecution");
          Method main = se.getMethod("execute", String[].class);
          Object[] argsArray = { scenario, perfCakeProperties };
          getLog().info("PerfCake Maven Plugin: Running scenario " + scenario);
@@ -168,24 +141,5 @@ public class ScenarioRunMojo extends AbstractMojo {
          defResPath = defResList.get(0).getDirectory();
       }
       return defResPath;
-   }
-
-   private ClassLoader getPerfCakeClassLoader(File perfCakeJar) throws MojoExecutionException {
-      ClassLoader currentClassLoader = this.getClass().getClassLoader();
-      if (perfCakeJar == null) {
-         return currentClassLoader;
-      }
-
-      URL[] urls = ((URLClassLoader) currentClassLoader).getURLs();
-      URL[] urlsPerfFirst = new URL[urls.length + 1];
-      try {
-         urlsPerfFirst[0] = perfCakeJar.toURI().toURL();
-      } catch (MalformedURLException e) {
-         throw new MojoExecutionException(e.getMessage(), e);
-      }
-
-      System.arraycopy(urls, 0, urlsPerfFirst, 1, urls.length);
-
-      return new URLClassLoader(urlsPerfFirst, currentClassLoader);
    }
 }

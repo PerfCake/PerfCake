@@ -18,13 +18,9 @@ that appropriate directories (`scenarios`, `messages`, `plugins`) are in `src/te
 `src/main/resources/perfcake` by configuring `use-test-resources` to `false`. If any of these directories does not
 exists, plugin will use `src/test/resources` (or `src/main/resources`) as a fallback value for missing parameter.
 
-You can also specify PerfCake version which should be used for scenario execution. It can be set up by adding
-`<perfcake-version>` element into plugin configuration.
-Appropriate PerfCake jar file is obtained via Maven, so you can use any PerfCake version which is available in your Maven repository.
-If the version is not specified or appropriate artifact cannot be resolved, PerfCake on the class path is used - if not changed by 
-other set up, there should be PerfCake which this plugin depends on.
-
 PerfCake logging level can be configured with `<log-level>` tag and additional properties file can be specified by `<properties-file>`.
+
+The PerfCake version used with the plugin is always the same as plugin version. Both jar files are released together.
 
 Example configuration
 ---
