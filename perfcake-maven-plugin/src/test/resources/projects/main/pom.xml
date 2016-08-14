@@ -51,6 +51,7 @@
             <version>${perfcake.version}</version>
             <configuration>
                <scenario>scenario</scenario>
+               <use-test-resources>false</use-test-resources>
             </configuration>
             <executions>
                <execution>

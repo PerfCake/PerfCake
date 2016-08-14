@@ -20,6 +20,9 @@ exists, plugin will use `src/test/resources` (or `src/main/resources`) as a fall
 
 PerfCake logging level can be configured with `<log-level>` tag and additional properties file can be specified by `<properties-file>`.
 
+The PerfCake Maven plugin requires log4j2 configuration file for PerfCake to report properly. By default it assumes
+the file to be located in project root and named log4j2.xml. This can be changed by the `<log4j2-config>` tag.
+
 The PerfCake version used with the plugin is always the same as plugin version. Both jar files are released together.
 
 Example configuration

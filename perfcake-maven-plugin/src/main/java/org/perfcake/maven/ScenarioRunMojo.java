@@ -66,11 +66,24 @@ public class ScenarioRunMojo extends AbstractMojo {
    @Parameter(alias = "log-level")
    private String logLevel = "";
 
+   @Parameter(alias = "log4j2-config")
+   private String log4j2Config = "log4j2.xml";
+
    @Parameter(alias = "use-test-resources")
    private Boolean useTestResources = true;
 
-   @Parameter(defaultValue = "${project}", readonly = true)
+   @Parameter(defaultValue = "${project}", readonly = true, required = true)
    private MavenProject project;
+
+   /**
+    * This is for testing purposes from Maven which cannot inject project.
+    */
+   String resourcesPath = null;
+
+   /**
+    * This is for testing purposes from Maven which cannot inject project.
+    */
+   String testResourcesPath = null;
 
    @Override
    public void execute() throws MojoExecutionException {
@@ -90,7 +103,7 @@ public class ScenarioRunMojo extends AbstractMojo {
          perfCakeProperties.setProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY, propertiesFile);
       }
 
-      System.setProperty("log4j.configurationFile", "log4j2.xml");
+      System.setProperty("log4j.configurationFile", log4j2Config);
 
       try {
          Class<?> se = getClass().getClassLoader().loadClass("org.perfcake.ScenarioExecution");
@@ -104,6 +117,9 @@ public class ScenarioRunMojo extends AbstractMojo {
       }
    }
 
+   /**
+    * Initializes default directories based on plugin configuration.
+    */
    private void initDefaults() {
       String resPath = getDefaultResourcePath();
 
@@ -126,12 +142,23 @@ public class ScenarioRunMojo extends AbstractMojo {
       }
    }
 
+   /**
+    * Gets the default path with resources.
+    *
+    * @return The default path with resources.
+    */
    private String getDefaultResourcePath() {
       String defResPath = null;
       List<Resource> defResList;
       if (useTestResources) {
+         if (testResourcesPath != null) { // this is for testing purposes
+            return testResourcesPath;
+         }
          defResList = project.getBuild().getTestResources();
       } else {
+         if (resourcesPath != null) { // this is for testing purposes
+            return resourcesPath;
+         }
          defResList = project.getBuild().getResources();
       }
       if (!defResList.isEmpty() && defResList.get(0) != null) {
