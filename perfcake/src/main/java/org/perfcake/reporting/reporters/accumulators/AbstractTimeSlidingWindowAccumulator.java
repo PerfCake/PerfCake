@@ -21,8 +21,11 @@ package org.perfcake.reporting.reporters.accumulators;
 
 import org.perfcake.common.TimeSlidingWindow;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 /**
- * Accumulates a value over a set of recently reported values in a sliding window.
+ * Accumulates a value over a set of recently reported values in a time sliding window.
  * The sliding window is a time period in milliseconds.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -30,43 +33,45 @@ import org.perfcake.common.TimeSlidingWindow;
  */
 public abstract class AbstractTimeSlidingWindowAccumulator<T, A extends Accumulator<T>> implements Accumulator<T> {
 
+   /**
+    * Logger of this class.
+    */
+   private static final Logger log = LogManager.getLogger(AbstractTimeSlidingWindowAccumulator.class);
+
+   /**
+    * Sliding time window to record values of the given time period.
+    */
    protected final TimeSlidingWindow<T> window;
-   protected A accum;
+
+   /**
+    * Underlying accumulator class to calculate the result from values in the time window.
+    */
+   protected final Class<A> accumulatorClass;
 
    /**
     * Creates a new accumulator with the sliding window of a given time period.
     *
     * @param windowSize
     *       Size of the sliding window.
+    * @param accumulatorClass
+    *       Type of the underlying accumulator that is encapsulated in the sliding time window.
     */
-   public AbstractTimeSlidingWindowAccumulator(final int windowSize, final Class<A> accumClass) {
+   public AbstractTimeSlidingWindowAccumulator(final int windowSize, final Class<A> accumulatorClass) {
       window = new TimeSlidingWindow<>(windowSize);
-      try {
-         this.accum = accumClass.newInstance();
-      } catch (InstantiationException e) {
-         e.printStackTrace();
-      } catch (IllegalAccessException e) {
-         e.printStackTrace();
-      }
+      this.accumulatorClass = accumulatorClass;
    }
 
    @Override
    public T getResult() {
-      accum.reset();
-      synchronized (window) {
-         window.forEach(value -> {
-            accum.add(value);
-         });
-      }
-      return accum.getResult();
-   }
+      final A accumulator = getNewAccumulator();
 
-   //   /**
-   //    * Is used to attach a real accumulator that will do the actuall accumulation over the values in the given time window.
-   //    *
-   //    * @return The actual accumulator.
-   //    **/
-   //   protected abstract Accumulator<T> getRealAccumulator();
+      if (accumulator != null) {
+         window.forEach(accumulator::add);
+         return accumulator.getResult();
+      } else {
+         return null;
+      }
+   }
 
    @SuppressWarnings("unchecked")
    @Override
@@ -77,5 +82,20 @@ public abstract class AbstractTimeSlidingWindowAccumulator<T, A extends Accumula
    @Override
    public void reset() {
       window.clear();
+   }
+
+   /**
+    * Gets a new accumulator instance.
+    *
+    * @return A new accumulator instance.
+    */
+   private A getNewAccumulator() {
+      try {
+         return accumulatorClass.newInstance();
+      } catch (InstantiationException | IllegalAccessException e) {
+         log.error("Unable to initialize the underlying accumulator: ", e);
+      }
+
+      return null;
    }
 }

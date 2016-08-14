@@ -23,8 +23,6 @@ import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.californium.core.CoapClient;
 import org.eclipse.californium.core.CoapResponse;
 import org.eclipse.californium.core.coap.MediaTypeRegistry;
@@ -38,11 +36,6 @@ import java.util.Properties;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 public class CoapSender extends AbstractSender {
-
-   /**
-    * The sender's logger.
-    */
-   private static final Logger log = LogManager.getLogger(CoapSender.class);
 
    /**
     * CoAP Java API client.
@@ -125,14 +118,8 @@ public class CoapSender extends AbstractSender {
    }
 
    @Override
-   public void postSend(final Message message) throws Exception {
-      super.postSend(message);
-      //nop
-   }
-
-   @Override
    public void doClose() throws PerfCakeException {
-      // nop
+      client.shutdown();
    }
 
    /**
