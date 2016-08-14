@@ -1,14 +1,4 @@
 #!/bin/bash
-if [ -z ${CODE_VERSION+x} ]; then 
-	read -e -p "Enter PerfCake code version (e.g. 7.1-SNAPSHOT): " CODE_VERSION
-fi
-if [ -z ${XSD_VERSION+x} ]; then 
-	read -e -p "Enter PerfCake XSD version (e.g. 7.0): " XSD_VERSION
-fi
-if [ -z ${GIT_VERSION+x} ]; then 
-	read -e -p "Enter PerfCake Git tag version without prefix (e.g. 7.1): " GIT_VERSION
-fi
-
 function updatePerfCakeVersion {
 
 	echo "Changing scenario XSD version..."
@@ -51,6 +41,18 @@ function updatePerfCakeVersion {
 
 	echo "Successfully finished!"
 }
+
+echo "===[ PerfCake source version update utility ]==="
+
+if [ -z ${CODE_VERSION+x} ]; then 
+	read -e -p "Enter PerfCake code version (e.g. 7.1-SNAPSHOT): " CODE_VERSION
+fi
+if [ -z ${XSD_VERSION+x} ]; then 
+	read -e -p "Enter PerfCake XSD version (e.g. 7.0): " XSD_VERSION
+fi
+if [ -z ${GIT_VERSION+x} ]; then 
+	read -e -p "Enter PerfCake Git tag version without prefix (e.g. 7.1): " GIT_VERSION
+fi
 
 echo "Setting the following version numbers:"
 echo "Code version:    $CODE_VERSION"
