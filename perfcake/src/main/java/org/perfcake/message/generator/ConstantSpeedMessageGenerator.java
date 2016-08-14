@@ -100,6 +100,7 @@ public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
    public void setSpeed(final int speed) {
       this.speed = speed;
       buffer = new long[speed];
+      pointer = 0;
 
       for (int i = 0; i < speed; i++) {
          buffer[i] = 0;

@@ -43,11 +43,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
-    * Shutdown log message.
-    */
-   private static final String SHUTDOWN_LOG = "Shutting down execution...";
-
-   /**
     * The generator's logger.
     */
    private static final Logger log = LogManager.getLogger(DefaultMessageGenerator.class);
@@ -149,7 +144,7 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
       if (shutdownPeriod == -1) {
          shutdownPeriod = Math.max(5000, 5 * runInfo.getRunTime() * runInfo.getThreads() / runInfo.getIteration());
          if (log.isInfoEnabled()) {
-            log.info(String.format("Shut-down period auto-tuned to " + shutdownPeriod + " ms."));
+            log.info(String.format("Shutdown period auto-tuned to " + shutdownPeriod + " ms."));
          }
       }
 
