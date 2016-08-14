@@ -40,14 +40,15 @@
       <dependency>
          <groupId>org.perfcake</groupId>
          <artifactId>perfcake</artifactId>
+         <scope>test</scope>
       </dependency>
    </dependencies>
    <build>
       <plugins>
          <plugin>
-            <groupId>org.perfcake.maven</groupId>
+            <groupId>org.perfcake</groupId>
             <artifactId>perfcake-maven-plugin</artifactId>
-            <version>${perfcake.version}</version>
+            <version>7.0-SNAPSHOT</version>
             <configuration>
                <scenario>scenario</scenario>
             </configuration>

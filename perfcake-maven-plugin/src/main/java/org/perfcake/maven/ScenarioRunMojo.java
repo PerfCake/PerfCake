@@ -24,14 +24,10 @@ import org.perfcake.PerfCakeConst;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import org.eclipse.aether.RepositorySystem;
-import org.eclipse.aether.RepositorySystemSession;
-import org.eclipse.aether.repository.RemoteRepository;
 
 import java.io.File;
 import java.lang.reflect.Method;
@@ -47,7 +43,6 @@ import java.util.Properties;
 @Mojo(name = "scenario-run", defaultPhase = LifecyclePhase.INTEGRATION_TEST)
 public class ScenarioRunMojo extends AbstractMojo {
 
-   private static final String PERFCAKE_MAVEN_COORD = "org.perfcake:perfcake:";
    private static final String PERFCAKE_DIR = "perfcake";
    private static final String DEFAULT_SCENARIOS_DIR = PERFCAKE_DIR + File.separator + "scenarios";
    private static final String DEFAULT_MESSAGES_DIR = PERFCAKE_DIR + File.separator + "messages";
@@ -95,9 +90,11 @@ public class ScenarioRunMojo extends AbstractMojo {
          perfCakeProperties.setProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY, propertiesFile);
       }
 
+      System.setProperty("log4j.configurationFile", "log4j2.xml");
+
       try {
          Class<?> se = getClass().getClassLoader().loadClass("org.perfcake.ScenarioExecution");
-         Method main = se.getMethod("execute", String[].class);
+         Method main = se.getMethod("execute", String.class, Properties.class);
          Object[] argsArray = { scenario, perfCakeProperties };
          getLog().info("PerfCake Maven Plugin: Running scenario " + scenario);
          main.invoke(null, argsArray);

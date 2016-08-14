@@ -126,6 +126,8 @@ public class ScenarioExecution {
          System.setProperty(k.toString(), v.toString());
       });
 
+      Utils.initTimeStamps();
+
       final Scenario scenario = ScenarioLoader.load(scenarioFile);
       scenario.init();
       scenario.run();
