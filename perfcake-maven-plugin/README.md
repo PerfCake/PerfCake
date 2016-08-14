@@ -29,15 +29,29 @@ Example configuration
 ---
 
 ```xml
+   <properties>
+      <perfcake.version>7.0</perfcake.version>
+      ...
+   </properties>
+   ...
+   <dependencies>
+      <dependency>
+         <groupId>org.perfcake</groupId>
+         <artifactId>perfcake</artifactId>
+         <version>${perfcake.version}</version>
+         <scope>test</scope>
+      </dependency>
+      ...
+   </dependencies>
   <build>
     <plugins>
       <plugin>
         <groupId>org.perfcake.maven</groupId>
         <artifactId>perfcake-maven-plugin</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>${perfcake.version}</version>
         <configuration>
           <scenario>my_perfcake_scenario</scenario>
-          <perfcake-version>7.0</perfcake-version>
+          <log4j2-config>src/test/resources/log4j2.xml</log4j2-config>
         </configuration>
         <executions>
           <execution>
@@ -48,6 +62,7 @@ Example configuration
           </execution>
         </executions>
       </plugin>
+      ...
     </plugins>
   </build>
 ```

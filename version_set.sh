@@ -37,7 +37,7 @@ function updatePerfCakeVersion {
 	sed -i -e "1,10s/<version>.*<\/version>/<version>$CODE_VERSION<\/version>/" perfcake-bom/pom.xml
 
 	echo "Updating perfcake-maven-plugin/README.md..."
-	sed -i -e "s/<version>.*<\/version>/<version>$GIT_VERSION<\/version>/" perfcake-maven-plugin/README.md
+	sed -i -e "s/<perfcake\.version>.*<\/perfcake\.version>/<perfcake.version>$GIT_VERSION<\/perfcake.version>/" perfcake-maven-plugin/README.md
 
 	echo "Successfully finished!"
 }
