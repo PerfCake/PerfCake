@@ -20,6 +20,7 @@
 package org.perfcake.validation;
 
 import org.perfcake.message.Message;
+import org.perfcake.util.Utils;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -80,7 +81,7 @@ public class ScriptValidator implements MessageValidator {
          if (script != null) {
             compiledScript = ((Compilable) engine).compile(script);
          } else if (scriptFile != null) {
-            try (Reader fr = new BufferedReader(new InputStreamReader(new FileInputStream(new File(scriptFile)), StandardCharsets.UTF_8))) {
+            try (Reader fr = new BufferedReader(new InputStreamReader(new FileInputStream(new File(scriptFile)), Utils.getDefaultEncoding()))) {
                compiledScript = ((Compilable) engine).compile(fr);
             } catch (final IOException e) {
                throw new ValidationException("Error loading script file: ", e);
