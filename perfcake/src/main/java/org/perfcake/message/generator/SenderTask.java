@@ -20,6 +20,7 @@
 package org.perfcake.message.generator;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.ReceivedMessage;
@@ -233,9 +234,20 @@ public class SenderTask implements Runnable {
                   }
                }
             } else {
-               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageAttributes, mu), null, null, messageAttributes);
-               if (validationManager.isEnabled()) {
-                  validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
+               if (correlator != null) {
+                  final String error = "Receiver and Correlator cannot be used without a message definition. There is no information to compute and store the correlation ID. At least, define a message with an empty content.";
+                  log.error(error);
+                  reportSenderError(new PerfCakeException(error));
+               } else {
+                  receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageAttributes, mu), null, null, messageAttributes);
+
+                  if (receivedMessage.getResponse() != null) {
+                     responseSize = responseSize + receivedMessage.getResponse().toString().length();
+                  }
+
+                  if (validationManager.isEnabled()) {
+                     validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
+                  }
                }
             }
 
