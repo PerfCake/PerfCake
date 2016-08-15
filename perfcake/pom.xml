@@ -185,6 +185,12 @@
          <artifactId>californium-core</artifactId>
       </dependency>
 
+      <!-- Camel -->
+      <dependency>
+         <groupId>org.apache.camel</groupId>
+         <artifactId>camel-core</artifactId>
+      </dependency>
+
       <!-- Commons -->
       <dependency>
          <groupId>org.apache.commons</groupId>
@@ -229,7 +235,7 @@
       </dependency>
       <dependency>
          <groupId>org.apache.camel</groupId>
-         <artifactId>camel-core</artifactId>
+         <artifactId>camel-http</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>

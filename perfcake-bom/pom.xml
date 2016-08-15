@@ -307,9 +307,14 @@
          </dependency>
          <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core</artifactId>
+            <artifactId>camel-http</artifactId>
             <version>${version.camel}</version>
             <scope>test</scope>
+         </dependency>
+         <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+            <version>${version.camel}</version>
          </dependency>
          <dependency>
             <groupId>org.apache.camel</groupId>

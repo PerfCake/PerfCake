@@ -65,7 +65,7 @@ public class JdbcSenderTest {
       }
 
       @Override
-      public Layout getLayout() {
+      public Layout<? extends Serializable> getLayout() {
          return null;
       }
 
@@ -217,7 +217,7 @@ public class JdbcSenderTest {
       sender.postSend(message);
       sender.close();
 
-      Assert.assertEquals((Integer) response, Integer.valueOf(3));
+      Assert.assertEquals(response, 3);
 
       final InOrder order = inOrder(c, s);
       order.verify(c).createStatement();

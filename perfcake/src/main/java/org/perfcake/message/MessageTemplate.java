@@ -182,8 +182,8 @@ public class MessageTemplate implements Serializable {
       } else {
          final Message newMessage = newMessage();
          newMessage.setPayload(message.getPayload());
-         newMessage.setHeaders(new Properties(message.getHeaders()));
-         newMessage.setProperties(new Properties(message.getProperties()));
+         newMessage.setHeaders((Properties) message.getHeaders().clone());
+         newMessage.setProperties((Properties) message.getProperties().clone());
 
          return newMessage;
       }
