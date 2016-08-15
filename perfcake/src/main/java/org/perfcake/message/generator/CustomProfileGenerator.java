@@ -24,12 +24,20 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.message.generator.profile.Profile;
 import org.perfcake.message.generator.profile.ProfileRequest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Generates the messages according to provided custom profile.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
+
+   /**
+    * The generator's logger.
+    */
+   private static final Logger log = LogManager.getLogger(CustomProfileGenerator.class);
 
    /**
     * The class name of the profile.
@@ -59,10 +67,27 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
    /**
     * Last speed when we did the reconfiguration.
     */
-   private long lastSpeed = -1;
+   private int lastSpeed = -1;
+
+   /**
+    * Last number of threads when we did the reconfiguration.
+    */
+   private int lastThreads = -1;
+
+   /**
+    * Cached value of log.isDebugEnabled().
+    */
+   private boolean isDebug = false;
 
    @Override
    public void generate() throws Exception {
+      isDebug = log.isDebugEnabled();
+      setSpeed(getSpeed()); // initializes internal structures
+
+      if (!profileClass.contains(".")) {
+         profileClass = "org.perfcake.message.generator.profile." + profileClass;
+      }
+
       profile = (Profile) Class.forName(profileClass).newInstance();
       profile.init(profileSource);
       profile.setAutoReplay(autoReplay);
@@ -78,7 +103,13 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
          reconfigure(profile.getProfile(getCurrentPeriod()));
       }
 
-      return super.prepareTask();
+      final boolean result = super.prepareTask();
+
+      if (isDebug && result) {
+         log.debug("Prepared task! Executor service active threads: " + executorService.getActiveCount() + ", queue length: " + executorService.getQueue().size());
+      }
+
+      return result;
    }
 
    /**
@@ -88,11 +119,23 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
     *       The latest profile request.
     */
    private void reconfigure(final ProfileRequest request) {
-      executorService.setCorePoolSize(request.getThreads());
+      if (isDebug) {
+         log.debug("New profile request: " + request + ". Previous values: " + new ProfileRequest(lastThreads, lastSpeed).toString() +
+               ". Executor service active threads: " + executorService.getActiveCount() + ", queue length: " + executorService.getQueue().size());
+      }
 
-      if (lastSpeed != request.getSpeed()) {
-         lastSpeed = request.getSpeed();
-         setSpeed(request.getSpeed());
+      if (request != null) {
+         if (lastThreads != request.getThreads()) {
+            lastThreads = request.getThreads();
+            setThreads(request.getThreads());
+            executorService.setCorePoolSize(request.getThreads());
+            executorService.setMaximumPoolSize(request.getThreads());
+         }
+
+         if (lastSpeed != request.getSpeed()) {
+            lastSpeed = request.getSpeed();
+            setSpeed(request.getSpeed());
+         }
       }
    }
 

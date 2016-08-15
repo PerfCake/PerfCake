@@ -66,4 +66,12 @@ public final class ProfileRequest {
    public int getSpeed() {
       return speed;
    }
+
+   @Override
+   public String toString() {
+      return "ProfileRequest{" +
+            "threads=" + threads +
+            ", speed=" + speed +
+            '}';
+   }
 }

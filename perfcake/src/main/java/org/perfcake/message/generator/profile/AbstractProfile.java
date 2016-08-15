@@ -22,6 +22,7 @@ package org.perfcake.message.generator.profile;
 import org.perfcake.PerfCakeException;
 import org.perfcake.common.Period;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -82,6 +83,8 @@ public abstract class AbstractProfile implements Profile {
 
    @Override
    public ProfileRequest getProfile(final Period period) {
-      return requests.floorEntry(autoReplay ? (period.getPeriod() % maxEntry) : period.getPeriod()).getValue();
+      Map.Entry<Long, ProfileRequest> entry = requests.floorEntry(autoReplay ? (period.getPeriod() % maxEntry) : period.getPeriod());
+
+      return entry != null ? entry.getValue() : requests.firstEntry().getValue();
    }
 }
