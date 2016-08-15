@@ -74,14 +74,8 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
     */
    private int lastThreads = -1;
 
-   /**
-    * Cached value of log.isDebugEnabled().
-    */
-   private boolean isDebug = false;
-
    @Override
    public void generate() throws Exception {
-      isDebug = log.isDebugEnabled();
       setSpeed(getSpeed()); // initializes internal structures
 
       if (!profileClass.contains(".")) {
@@ -103,13 +97,7 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
          reconfigure(profile.getProfile(getCurrentPeriod()));
       }
 
-      final boolean result = super.prepareTask();
-
-      if (isDebug && result) {
-         log.debug("Prepared task! Executor service active threads: " + executorService.getActiveCount() + ", queue length: " + executorService.getQueue().size());
-      }
-
-      return result;
+      return super.prepareTask();
    }
 
    /**
@@ -119,11 +107,6 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
     *       The latest profile request.
     */
    private void reconfigure(final ProfileRequest request) {
-      if (isDebug) {
-         log.debug("New profile request: " + request + ". Previous values: " + new ProfileRequest(lastThreads, lastSpeed).toString() +
-               ". Executor service active threads: " + executorService.getActiveCount() + ", queue length: " + executorService.getQueue().size());
-      }
-
       if (request != null) {
          if (lastThreads != request.getThreads()) {
             lastThreads = request.getThreads();
