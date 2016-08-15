@@ -48,7 +48,8 @@ public interface Profile {
    void setAutoReplay(final boolean autoReplay);
 
    /**
-    * Gets the messages generation profile for the given time period.
+    * Gets the messages generation profile for the given time period. It must always return the correct value, despite the order of requests to the method.
+    * The period specifies the type of time information (either an iteration number or milliseconds since test start) and time.
     *
     * @param period
     *       The current performance test progress.

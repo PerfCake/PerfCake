@@ -74,7 +74,7 @@ public abstract class AbstractProfile implements Profile {
     * @throws PerfCakeException
     *       When it was not possible to initialize the profile.
     */
-   abstract protected void doLoadProfile(final String profileSource) throws PerfCakeException;
+   protected abstract void doLoadProfile(final String profileSource) throws PerfCakeException;
 
    @Override
    public void setAutoReplay(final boolean autoReplay) {

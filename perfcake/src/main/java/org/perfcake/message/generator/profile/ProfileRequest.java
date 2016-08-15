@@ -69,9 +69,9 @@ public final class ProfileRequest {
 
    @Override
    public String toString() {
-      return "ProfileRequest{" +
-            "threads=" + threads +
-            ", speed=" + speed +
-            '}';
+      return "ProfileRequest{"
+            + "threads=" + threads
+            + ", speed=" + speed
+            + '}';
    }
 }

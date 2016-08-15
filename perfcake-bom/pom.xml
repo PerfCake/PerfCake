@@ -50,7 +50,7 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
       <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
-      <maven.release.plugin.version>3.0.1</maven.release.plugin.version>
+      <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
       <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
       <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
       <maven.assembly.plugin.version>2.6</maven.assembly.plugin.version>

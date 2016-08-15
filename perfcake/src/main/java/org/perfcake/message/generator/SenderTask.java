@@ -121,7 +121,7 @@ public class SenderTask implements Runnable {
     * There is a communication channel established that allows and requires the sender task to report the task completion and any possible error.
     * The visibility of this constructor is limited as it is not intended for normal use.
     * To obtain a new instance of a sender task properly initialized call
-    * {@link org.perfcake.message.generator.AbstractMessageGenerator#newSenderTask(java.util.concurrent.Semaphore)}.
+    * {@link AbstractMessageGenerator#newSenderTask()}.
     *
     * @param messageGenerator
     *       The message generator that created this sender task.
@@ -266,6 +266,7 @@ public class SenderTask implements Runnable {
             }
          } else {
             log.error("Error sending message: ", e);
+            reportSenderError(e);
          }
       } finally {
          if (sender != null) {

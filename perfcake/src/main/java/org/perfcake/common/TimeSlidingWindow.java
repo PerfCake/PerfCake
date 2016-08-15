@@ -99,7 +99,7 @@ public class TimeSlidingWindow<E> {
    }
 
    /**
-    * Removes all elements from the sliding window
+    * Removes all elements from the sliding window.
     */
    public void clear() {
       window.clear();
