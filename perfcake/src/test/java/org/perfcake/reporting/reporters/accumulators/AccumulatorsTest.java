@@ -24,6 +24,7 @@ import org.testng.Reporter;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -155,79 +156,33 @@ public class AccumulatorsTest {
       Assert.assertEquals((long) mlva.getResult(), Long.MAX_VALUE);
    }
 
-   @Test
-   public void timeSlidingWindowMaxAccumulatorTest() throws Exception {
-      final Accumulator accumulator = new TimeSlidingWindowMaxAccumulator(6000);
-
-      for (int i = 5; i > 0; i--) {
-         accumulator.add((double) i);
-         Thread.sleep(1000);
-      }
-      Assert.assertEquals(accumulator.getResult(), 5.0);
-      Thread.sleep(2500);
-      Assert.assertEquals(accumulator.getResult(), 3.0);
-      Thread.sleep(1000);
-      Assert.assertEquals(accumulator.getResult(), 2.0);
+   @DataProvider(name = "timeSlidingWindowAccumulatorsTest")
+   public Object[][] createDataForTimeSlidingWindowAccumulatorsTest() {
+      return new Object[][] {
+            { TimeSlidingWindowMaxAccumulator.class, 5.0, 3.0, 2.0, new Object[] { 5.0, 4.0, 3.0, 2.0, 1.0 } },
+            { TimeSlidingWindowMinAccumulator.class, 1.0, 3.0, 4.0, new Object[] { 1.0, 2.0, 3.0, 4.0, 5.0 } },
+            { TimeSlidingWindowAvgAccumulator.class, 3.0, 4.0, 4.5, new Object[] { 1.0, 2.0, 3.0, 4.0, 5.0 } },
+            { TimeSlidingWindowHarmonicMeanAccumulator.class, 5.0 / (1.0 + 1.0 / 2.0 + 1.0 / 3.0 + 1.0 / 4.0 + 1.0 / 5.0), 3.0 / (1.0 / 3.0 + 1.0 / 4.0 + 1.0 / 5.0), 2.0 / (1.0 / 4.0 + 1.0 / 5.0), new Object[] { 1.0, 2.0, 3.0, 4.0, 5.0 } },
+            { TimeSlidingWindowSumAccumulator.class, 15.0, 12.0, 9.0, new Object[] { 1.0, 2.0, 3.0, 4.0, 5.0 } },
+            { TimeSlidingWindowSumLongAccumulator.class, 15L, 12L, 9L, new Object[] { 1L, 2L, 3L, 4L, 5L } }
+      };
    }
 
-   @Test
-   public void timeSlidingWindowMinAccumulatorTest() throws Exception {
-      final Accumulator accumulator = new TimeSlidingWindowMinAccumulator(6000);
+   @Test(dataProvider = "timeSlidingWindowAccumulatorsTest")
+   public void timeSlidingWindowAccumulatorTest(final Class<Accumulator> accumulatorClass, final Object oneTickResult, final Object twoTicksResult, final Object finalTickResult, Object[] values) throws Exception {
+      final Constructor<Accumulator> constr = accumulatorClass.getDeclaredConstructor(int.class);
+      final Accumulator accumulator = constr.newInstance(600);
 
-      for (int i = 1; i <= 5; i++) {
-         accumulator.add((double) i);
-         Thread.sleep(1000);
+      for (int i = 0; i < values.length; i++) {
+         Thread.sleep(10);
+         accumulator.add(values[i]);
+         Thread.sleep(90);
       }
-      Assert.assertEquals(accumulator.getResult(), 1.0);
-      Thread.sleep(2500);
-      Assert.assertEquals(accumulator.getResult(), 3.0);
-      Thread.sleep(1000);
-      Assert.assertEquals(accumulator.getResult(), 4.0);
-   }
-
-   @Test
-   public void timeSlidingWindowAvgAccumulatorTest() throws Exception {
-      final Accumulator accumulator = new TimeSlidingWindowAvgAccumulator(6000);
-
-      for (int i = 1; i <= 5; i++) {
-         accumulator.add((double) i);
-         Thread.sleep(1000);
-      }
-      Assert.assertEquals(accumulator.getResult(), 3.0);
-      Thread.sleep(2500);
-      Assert.assertEquals(accumulator.getResult(), 4.0);
-      Thread.sleep(1000);
-      Assert.assertEquals(accumulator.getResult(), 4.5);
-   }
-
-   @Test
-   public void timeSlidingWindowHarmonicMeanAccumulatorTest() throws Exception {
-      final Accumulator accumulator = new TimeSlidingWindowHarmonicMeanAccumulator(6000);
-
-      for (int i = 1; i <= 5; i++) {
-         accumulator.add((double) i);
-         Thread.sleep(1000);
-      }
-      Assert.assertEquals(accumulator.getResult(), 5.0 / (1.0 + 1.0 / 2.0 + 1.0 / 3.0 + 1.0 / 4.0 + 1.0 / 5.0));
-      Thread.sleep(2500);
-      Assert.assertEquals(accumulator.getResult(), 3.0 / (1.0 / 3.0 + 1.0 / 4.0 + 1.0 / 5.0));
-      Thread.sleep(1000);
-      Assert.assertEquals(accumulator.getResult(), 2.0 / (1.0 / 4.0 + 1.0 / 5.0));
-   }
-
-   @Test
-   public void timeSlidingWindowSumAccumulatorTest() throws Exception {
-      final Accumulator accumulator = new TimeSlidingWindowSumAccumulator(6000);
-
-      for (int i = 1; i <= 5; i++) {
-         accumulator.add((double) i);
-         Thread.sleep(1000);
-      }
-      Assert.assertEquals(accumulator.getResult(), 15.0);
-      Thread.sleep(2500);
-      Assert.assertEquals(accumulator.getResult(), 12.0);
-      Thread.sleep(1000);
-      Assert.assertEquals(accumulator.getResult(), 9.0);
+      Assert.assertEquals(accumulator.getResult(), oneTickResult);
+      Thread.sleep(250);
+      Assert.assertEquals(accumulator.getResult(), twoTicksResult);
+      Thread.sleep(100);
+      Assert.assertEquals(accumulator.getResult(), finalTickResult);
    }
 
    @DataProvider(name = "accumulatorsTest")
