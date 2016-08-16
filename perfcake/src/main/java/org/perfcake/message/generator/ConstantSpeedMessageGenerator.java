@@ -66,6 +66,10 @@ public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
 
    @Override
    protected boolean prepareTask() throws InterruptedException {
+      if (speed == -1) {
+         return super.prepareTask();
+      }
+
       long currentTime = System.currentTimeMillis();
 
       // the size of the buffer = speed, so the smallest time should be around one second old
@@ -99,13 +103,16 @@ public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
     */
    public void setSpeed(final int speed) {
       this.speed = speed;
-      buffer = new long[speed];
-      pointer = 0;
 
-      for (int i = 0; i < speed; i++) {
-         buffer[i] = 0;
+      if (speed > 0) { // -1 = unlimited speed
+         buffer = new long[speed];
+         pointer = 0;
+
+         for (int i = 0; i < speed; i++) {
+            buffer[i] = 0;
+         }
+
+         breakDuration = 1000 / speed; // will be 0 for speed > 1000
       }
-
-      breakDuration = 1000 / speed; // will be 0 for speed > 1000
    }
 }
