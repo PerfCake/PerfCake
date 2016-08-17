@@ -375,7 +375,7 @@ public class XmlFactory implements ScenarioFactory {
 
          if (sequences != null) {
             for (org.perfcake.model.Scenario.Sequences.Sequence seq : sequences.getSequence()) {
-               final String sequenceId = seq.getName();
+               final String sequenceId = seq.getId();
                String sequenceClass = seq.getClazz();
                final Properties sequenceProperties = getPropertiesFromList(seq.getProperty());
 

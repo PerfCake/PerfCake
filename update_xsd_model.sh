@@ -4,10 +4,10 @@ function updateModel {
 	cd tmp
 	xjc -p org.perfcake.model ../perfcake/src/main/resources/schemas/perfcake-scenario-${XSD_VERSION}.xsd
 	for i in org/perfcake/model/*; do
-		echo $i
+		cat ../license-header.txt $i > ../perfcake/src/main/java/$i
 	done
 	cd ..
-	#rm -rf tmp
+	rm -rf tmp
 }
 
 echo "===[ Update XSD model classes ]==="
