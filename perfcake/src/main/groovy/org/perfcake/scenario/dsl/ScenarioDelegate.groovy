@@ -266,7 +266,7 @@ class DslScenario extends PropertiesBacked {
 
       if (sequences) {
          sequences.each {
-            builder.putSequence(it.name, it.buildSequence())
+            builder.putSequence(it.id, it.buildSequence())
          }
       }
 
@@ -372,18 +372,18 @@ class Sequences {
 
 class Sequence extends ObjectWithClassName {
 
-   def name
+   def id
 
    Sequence(def className) {
       super(className)
    }
 
    String toString() {
-      "Sequence: {name: ${name}, ${super.toString()}}"
+      "Sequence: {id: ${id}, ${super.toString()}}"
    }
 
-   def name(def name) {
-      this.name = name
+   def id(def id) {
+      this.id = id
       this
    }
 

@@ -19,11 +19,7 @@
  */
 package org.perfcake.message.sequence;
 
-import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,8 +32,6 @@ import java.util.Properties;
  */
 public class SequenceManager {
 
-   private static final Logger log = LogManager.getLogger(SequenceManager.class);
-
    /**
     * Registry of sequences.
     */
@@ -46,15 +40,15 @@ public class SequenceManager {
    /**
     * Registers a new sequence in the registry.
     *
-    * @param name
-    *       Sequence name.
+    * @param id
+    *       Sequence id.
     * @param sequence
     *       Sequence instance.
     * @throws PerfCakeException
     *       When it was not possible to properly initialize the newly added sequence.
     */
-   public void addSequence(final String name, final Sequence sequence) throws PerfCakeException {
-      sequences.put(name, sequence);
+   public void addSequence(final String id, final Sequence sequence) throws PerfCakeException {
+      sequences.put(id, sequence);
       sequence.reset();
    }
 

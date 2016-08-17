@@ -199,16 +199,16 @@ public class ScenarioBuilder {
    /**
     * Registers a new sequence under the given property name.
     *
-    * @param sequenceName
-    *       The name of the sequence (the name of the placeholder).
+    * @param sequenceId
+    *       The id of the sequence (the name of the placeholder).
     * @param sequence
     *       The new sequence to be registered.
     * @return Instance of this for fluent API.
     * @throws PerfCakeException
     *       When it was not possible to properly initialize the newly added sequence.
     */
-   public ScenarioBuilder putSequence(final String sequenceName, final Sequence sequence) throws PerfCakeException {
-      scenario.getSequenceManager().addSequence(sequenceName, sequence);
+   public ScenarioBuilder putSequence(final String sequenceId, final Sequence sequence) throws PerfCakeException {
+      scenario.getSequenceManager().addSequence(sequenceId, sequence);
       return this;
    }
 

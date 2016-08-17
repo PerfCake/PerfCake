@@ -375,7 +375,7 @@ public class XmlFactory implements ScenarioFactory {
 
          if (sequences != null) {
             for (org.perfcake.model.Scenario.Sequences.Sequence seq : sequences.getSequence()) {
-               final String sequenceName = seq.getName();
+               final String sequenceId = seq.getName();
                String sequenceClass = seq.getClazz();
                final Properties sequenceProperties = getPropertiesFromList(seq.getProperty());
 
@@ -384,13 +384,13 @@ public class XmlFactory implements ScenarioFactory {
                }
 
                if (log.isDebugEnabled()) {
-                  log.debug("--- Sequence (" + sequenceName + ":" + sequenceClass + ") ---");
+                  log.debug("--- Sequence (" + sequenceId + ":" + sequenceClass + ") ---");
                }
 
                Utils.logProperties(log, Level.DEBUG, sequenceProperties, "   ");
 
                final Sequence sequence = (Sequence) ObjectFactory.summonInstance(sequenceClass, sequenceProperties);
-               sequenceManager.addSequence(sequenceName, sequence);
+               sequenceManager.addSequence(sequenceId, sequence);
             }
          }
       } catch (ReflectiveOperationException e) {
