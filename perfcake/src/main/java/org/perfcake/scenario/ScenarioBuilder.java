@@ -151,6 +151,9 @@ public class ScenarioBuilder {
     */
    public ScenarioBuilder setCorrelator(final Correlator c) {
       scenario.setCorrelator(c);
+      if (scenario.getReceiver() != null) {
+         scenario.getReceiver().setCorrelator(c);
+      }
       return this;
    }
 

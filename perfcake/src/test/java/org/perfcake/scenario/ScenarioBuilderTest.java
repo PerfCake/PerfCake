@@ -26,8 +26,12 @@ import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
+import org.perfcake.message.correlator.Correlator;
+import org.perfcake.message.correlator.GenerateHeaderCorrelator;
 import org.perfcake.message.generator.DefaultMessageGenerator;
 import org.perfcake.message.generator.MessageGenerator;
+import org.perfcake.message.receiver.HttpReceiver;
+import org.perfcake.message.receiver.Receiver;
 import org.perfcake.message.sender.HttpSender;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sequence.PrimitiveNumberSequence;
@@ -66,6 +70,10 @@ public class ScenarioBuilderTest {
 
       final MessageSender sender = new HttpSender().setMethod(HttpSender.Method.POST).setTarget("http://httpbin.org/post");
 
+      final Correlator correlator = new GenerateHeaderCorrelator();
+
+      final Receiver receiver = new HttpReceiver().setSource("localhost:8282").setThreads(10);
+
       final Sequence sequence = new PrimitiveNumberSequence();
 
       final Destination destination = new ConsoleDestination();
@@ -74,6 +82,7 @@ public class ScenarioBuilderTest {
       reporter.registerDestination(destination, new Period(PeriodType.TIME, 1000));
 
       final ScenarioBuilder builder = new ScenarioBuilder(runInfo, generator, sender);
+      builder.setReceiver(receiver).setCorrelator(correlator);
       builder.putMessageValidator("regExp", validator).addMessage(messageTemplate).
             putSequence("intSeq", sequence).addReporter(reporter);
 
@@ -99,6 +108,10 @@ public class ScenarioBuilderTest {
       retractor.getMessageSenderManager().releaseSender(tmpSender);
 
       Assert.assertEquals(retractor.getSequenceManager().getSnapshot().getProperty("intSeq"), "1");
+
+      Assert.assertTrue(retractor.getReceiver() instanceof HttpReceiver);
+      Assert.assertEquals(retractor.getReceiver().getSource(), "localhost:8282");
+      Assert.assertTrue(retractor.getCorrelator() instanceof GenerateHeaderCorrelator);
 
       Assert.assertEquals(retractor.getReportManager().getReporters().size(), 1);
       Reporter tmpReporter = retractor.getReportManager().getReporters().iterator().next();

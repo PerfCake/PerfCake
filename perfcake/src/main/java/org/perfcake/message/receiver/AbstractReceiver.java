@@ -46,13 +46,15 @@ public abstract class AbstractReceiver implements Receiver {
    private StringTemplate source = new StringTemplate("");
 
    @Override
-   public void setThreads(final int threadCount) {
+   public final Receiver setThreads(final int threadCount) {
       threads = threadCount;
+      return this;
    }
 
    @Override
-   public void setCorrelator(final Correlator correlator) {
+   public final Receiver setCorrelator(final Correlator correlator) {
       this.correlator = correlator;
+      return this;
    }
 
    @Override

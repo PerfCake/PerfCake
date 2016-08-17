@@ -22,8 +22,6 @@ package org.perfcake.message.receiver;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.correlator.Correlator;
 
-import java.util.Properties;
-
 /**
  * Represents a receiver for receiving messages from a separate message channel.
  * All received messages are passed to the correlator which notifies the correct {@link org.perfcake.message.generator.SenderTask}.
@@ -37,19 +35,27 @@ public interface Receiver {
 
    /**
     * Sets the number of threads that will be receiving responses.
-    * @param threadCount The number of threads that will be receiving responses.
+    *
+    * @param threadCount
+    *       The number of threads that will be receiving responses.
+    * @return Instance of this for fluent API.
     */
-   void setThreads(final int threadCount);
+   Receiver setThreads(final int threadCount);
 
    /**
     * Sets the correlator that will be handling the responses.
-    * @param correlator The correlator that will be handling the responses.
+    *
+    * @param correlator
+    *       The correlator that will be handling the responses.
+    * @return Instance of this for fluent API.
     */
-   void setCorrelator(final Correlator correlator);
+   Receiver setCorrelator(final Correlator correlator);
 
    /**
     * Starts all receiver threads.
-    * @throws PerfCakeException When it was not possible to start all threads.
+    *
+    * @throws PerfCakeException
+    *       When it was not possible to start all threads.
     */
    void start() throws PerfCakeException;
 
