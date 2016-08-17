@@ -3,7 +3,7 @@
    <run type="iteration" value="100"/>
    <generator class="DefaultMessageGenerator" threads="10"/>
    <sequences>
-      <sequence name="mid" class="PrimitiveNumberSequence"/>
+      <sequence id="mid" class="PrimitiveNumberSequence"/>
    </sequences>
    <sender class="ScriptSender">
       <target>${perfcake.messages.dir}/../script-sender.groovy</target>
