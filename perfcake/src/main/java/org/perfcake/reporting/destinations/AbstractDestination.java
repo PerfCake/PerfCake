@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,29 +19,32 @@
  */
 package org.perfcake.reporting.destinations;
 
-import org.perfcake.reporting.Measurement;
-import org.perfcake.reporting.ReportingException;
+import org.perfcake.reporting.reporters.Reporter;
 
 /**
- * Appends a {@link org.perfcake.reporting.Measurement} to standard output.
+ * Common ancestor simplifying Destination development. Just stores the parent reporter for later use.
  *
- * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class ConsoleDestination extends AbstractDestination {
+public abstract class AbstractDestination implements Destination {
+
+   private Reporter parentReporter;
 
    @Override
-   public void open() {
-      // nop
+   public void open(final Reporter parentReporter) {
+      this.parentReporter = parentReporter;
    }
 
-   @Override
-   public void close() {
-      // nop
-   }
+   /**
+    * Opens the destination for reporting.
+    */
+   public abstract void open();
 
-   @Override
-   public void report(final Measurement measurement) throws ReportingException {
-      System.out.println(measurement.toString());
+   /**
+    * Gets the parent reporter that opened this destination.
+    * @return The parent reporter that opened this destination.
+    */
+   public Reporter getParentReporter() {
+      return parentReporter;
    }
 }

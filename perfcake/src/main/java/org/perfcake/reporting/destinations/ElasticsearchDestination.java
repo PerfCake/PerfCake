@@ -59,7 +59,7 @@ import javax.net.ssl.SSLContext;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class ElasticsearchDestination implements Destination {
+public class ElasticsearchDestination extends AbstractDestination {
 
    /**
     * Our logger.

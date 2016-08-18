@@ -328,7 +328,7 @@ public abstract class AbstractReporter implements Reporter {
 
          reset();
 
-         getDestinations().forEach(org.perfcake.reporting.destinations.Destination::open);
+         getDestinations().forEach(d -> d.open(this));
       }
    }
 

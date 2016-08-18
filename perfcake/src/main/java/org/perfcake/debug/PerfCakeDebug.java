@@ -25,8 +25,10 @@ import static com.netflix.servo.annotations.DataSourceType.INFORMATIONAL;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.Utils;
+import org.perfcake.validation.MessageValidator;
 
 import com.netflix.servo.annotations.Monitor;
+import com.netflix.servo.monitor.Counter;
 import com.netflix.servo.monitor.Monitors;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
@@ -39,8 +41,10 @@ import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.LongAdder;
 
 /**
  * JMX based debug agent providing information about the running performance test.
@@ -65,11 +69,43 @@ public class PerfCakeDebug {
    @Monitor(name = "GeneratorClass", type = INFORMATIONAL)
    private AtomicReference<String> messageGeneratorClass = new AtomicReference<>("");
 
+   @Monitor(name = "SenderClass", type = INFORMATIONAL)
+   private AtomicReference<String> messageSenderClass = new AtomicReference<>("");
+
+   @Monitor(name = "ReceiverClass", type = INFORMATIONAL)
+   private AtomicReference<String> receiverClass = new AtomicReference<>("");
+
+   @Monitor(name = "CorrelatorClass", type = INFORMATIONAL)
+   private AtomicReference<String> correlatorClass = new AtomicReference<>("");
+
+   @Monitor(name = "SequenceClasses", type = INFORMATIONAL)
+   private Map<String, String> sequenceClasses = new ConcurrentHashMap<>();
+
+   @Monitor(name = "ValidatorClasses", type = INFORMATIONAL)
+   private Map<String, String> validatorClasses = new ConcurrentHashMap<>();
+
    /**
     * How many sender tasks were created so far.
     */
    @Monitor(name = "GeneratedSenderTasks", type = COUNTER)
-   private AtomicInteger generatedSenderTasks = new AtomicInteger(0);
+   private LongAdder generatedSenderTasks = new LongAdder();
+
+   @Monitor(name = "SentMessages", type = COUNTER)
+   private LongAdder sentMessages = new LongAdder();
+
+   @Monitor(name = "CorrelatedMessages", type = COUNTER)
+   private LongAdder correlatedMessages = new LongAdder();
+
+   @Monitor(name = "SequenceSnapshots", type = COUNTER)
+   private LongAdder sequenceSnapshots = new LongAdder();
+
+   private Map<String, Counter> resultsReported = new ConcurrentHashMap<>();
+
+   private Map<String, Counter> resultsWritten = new ConcurrentHashMap<>();
+
+   private Map<String, Counter> validationResults = new ConcurrentHashMap<>();
+
+   private Map<MessageValidator, String> validatorIds = new ConcurrentHashMap<>();
 
    /**
     * Initializes and installs the agent.
@@ -124,12 +160,86 @@ public class PerfCakeDebug {
       }
    }
 
+   public static void reportSenderName(final String senderClassName) {
+      if (INSTANCE != null) {
+         INSTANCE.messageSenderClass.set(senderClassName);
+      }
+   }
+
+   public static void reportReceiverName(final String receiverClassName) {
+      if (INSTANCE != null) {
+         INSTANCE.receiverClass.set(receiverClassName);
+      }
+   }
+
+   public static void reportCorrelatorName(final String correlatorClassName) {
+      if (INSTANCE != null) {
+         INSTANCE.correlatorClass.set(correlatorClassName);
+      }
+   }
+
+   public static void reportSequenceName(final String sequenceId, final String sequenceClassName) {
+      if (INSTANCE != null) {
+         INSTANCE.sequenceClasses.put(sequenceId, sequenceClassName);
+      }
+   }
+
+   public static void reportValidatorName(final String validatorId, final MessageValidator validator) {
+      if (INSTANCE != null) {
+         INSTANCE.validatorClasses.put(validatorId, validator.getClass().getCanonicalName());
+         INSTANCE.validatorIds.put(validator, validatorId);
+      }
+   }
+
    /**
     * Reports a new instance of a sender task was created.
     */
    public static void reportNewSenderTask() {
       if (INSTANCE != null) {
-         INSTANCE.generatedSenderTasks.incrementAndGet();
+         INSTANCE.generatedSenderTasks.increment();
+      }
+   }
+
+   public static void reportSentMessages() {
+      if (INSTANCE != null) {
+         INSTANCE.sentMessages.increment();
+      }
+   }
+
+   public static void reportCorrelatedMessages() {
+      if (INSTANCE != null) {
+         INSTANCE.correlatedMessages.increment();
+      }
+   }
+
+   public static void reportSequenceSnapshots() {
+      if (INSTANCE != null) {
+         INSTANCE.sequenceSnapshots.increment();
+      }
+   }
+
+   public static void reportReporterUsage(final String reporterClassName) {
+      if (INSTANCE != null) {
+         INSTANCE.resultsReported.putIfAbsent(reporterClassName, Monitors.newCounter("Reporting." + reporterClassName)).increment();
+      }
+   }
+
+   public static void reportResultWritten(final String reporterClassName, final String destinationClassName) {
+      if (INSTANCE != null) {
+         INSTANCE.resultsWritten.putIfAbsent(reporterClassName + "." + destinationClassName, Monitors.newCounter("Reporting." + reporterClassName + "." + destinationClassName)).increment();
+      }
+   }
+
+   public static void reportValidationResult(final MessageValidator validator, final boolean valid) {
+      if (INSTANCE != null) {
+         final String id = INSTANCE.validatorIds.get(validator);
+         if (id != null) {
+            INSTANCE.validationResults.putIfAbsent(id, Monitors.newCounter("Validation." + id)).increment();
+            final Counter validCounter = INSTANCE.validationResults.putIfAbsent(id, Monitors.newCounter("Validation." + id + ".passed"));
+            if (valid) {
+               validCounter.increment();
+            }
+         }
       }
    }
 

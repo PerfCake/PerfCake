@@ -49,7 +49,7 @@ import javax.net.ssl.SSLSocketFactory;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class InfluxDbDestination implements Destination {
+public class InfluxDbDestination extends AbstractDestination {
 
    private static final Logger log = LogManager.getLogger(InfluxDbDestination.class);
 

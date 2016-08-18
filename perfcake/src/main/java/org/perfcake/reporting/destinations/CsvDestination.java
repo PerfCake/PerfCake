@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class CsvDestination implements Destination {
+public class CsvDestination extends AbstractDestination {
 
    /**
     * Logger.
