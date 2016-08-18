@@ -289,16 +289,6 @@
             <version>${version.byteman}</version>
          </dependency>
          <dependency>
-            <groupId>org.jboss.byteman</groupId>
-            <artifactId>byteman-install</artifactId>
-            <version>${version.byteman}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.jboss.byteman</groupId>
-            <artifactId>byteman-submit</artifactId>
-            <version>${version.byteman}</version>
-         </dependency>
-         <dependency>
             <groupId>com.netflix.servo</groupId>
             <artifactId>servo-core</artifactId>
             <version>${version.servo}</version>

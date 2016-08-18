@@ -1,0 +1,18 @@
+RULE setGeneratorName
+INTERFACE ^org.perfcake.message.generator.MessageGenerator
+METHOD init
+IF true
+AT ENTRY
+DO
+  System.out.println("Generator used: " + $0.getClass().getCanonicalName());
+  org.perfcake.debug.PerfCakeDebug.reportGeneratorName($0.getClass().getCanonicalName());
+ENDRULE
+
+RULE reportNewSenderTask
+CLASS org.perfcake.message.generator.SenderTask
+METHOD <init>
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportNewSenderTask();
+ENDRULE

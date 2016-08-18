@@ -23,19 +23,22 @@ import static com.netflix.servo.annotations.DataSourceType.COUNTER;
 import static com.netflix.servo.annotations.DataSourceType.INFORMATIONAL;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.PerfCakeException;
 import org.perfcake.util.Utils;
 
 import com.netflix.servo.annotations.Monitor;
 import com.netflix.servo.monitor.Monitors;
+import com.sun.tools.attach.VirtualMachine;
+import com.sun.tools.attach.VirtualMachineDescriptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jboss.byteman.agent.install.Install;
-import org.jboss.byteman.agent.install.VMInfo;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -60,7 +63,7 @@ public class PerfCakeDebug {
     * Class name of the generator used.
     */
    @Monitor(name = "GeneratorClass", type = INFORMATIONAL)
-   private AtomicReference<String> messageGeneratorClass = new AtomicReference<String>("");
+   private AtomicReference<String> messageGeneratorClass = new AtomicReference<>("");
 
    /**
     * How many sender tasks were created so far.
@@ -76,10 +79,17 @@ public class PerfCakeDebug {
 
       final String pid = getPid();
       try {
-         Install.install(pid, true, false, "", 0, new String[] { "org.jboss.byteman.compileToBytecode=true" });
+         final Class clazz = Class.forName("org.jboss.byteman.agent.Main");
+         final VirtualMachine vm = VirtualMachine.attach(pid);
+
+         vm.loadAgent(Paths.get(clazz.getProtectionDomain().getCodeSource().getLocation().toURI()).toString(), "listener:false,script:" + saveTmpBytemanRules());
       } catch (Exception e) {
          log.error("Unable to install debug agent, debugging information will not be available: ", e);
          return;
+      } catch (NoClassDefFoundError ncdfe) {
+         log.error("Unable to install debug agent. Make sure you have tools.jar in your JDK installation or copy it to $PERFCAKE_HOME/lib/ext. Debugging information will not be available: ", ncdfe);
+         return;
+
       }
 
       Monitors.registerObject(Utils.getProperty(PerfCakeConst.DEBUG_AGENT_NAME_PROPERTY, PerfCakeConst.DEBUG_AGENT_DEFAULT_NAME), this);
@@ -87,6 +97,7 @@ public class PerfCakeDebug {
 
    /**
     * Gets the agent instance.
+    *
     * @return The agent instance. Can be null when the agent was not initialized.
     */
    public static PerfCakeDebug getInstance() {
@@ -102,7 +113,9 @@ public class PerfCakeDebug {
 
    /**
     * Reports the message generator class name.
-    * @param generatorClassName The message generator class name.
+    *
+    * @param generatorClassName
+    *       The message generator class name.
     */
    public static void reportGeneratorName(final String generatorClassName) {
       if (INSTANCE != null) {
@@ -116,6 +129,25 @@ public class PerfCakeDebug {
    public static void reportNewSenderTask() {
       if (INSTANCE != null) {
          INSTANCE.generatedSenderTasks.incrementAndGet();
+      }
+   }
+
+   /**
+    * Copies the Byteman rules for the debug agent to a temporary location.
+    *
+    * @return The temporary location of the Byteman rules.
+    * @throws PerfCakeException
+    *       When it was not possible to copy the file.
+    */
+   private static String saveTmpBytemanRules() throws PerfCakeException {
+      try {
+         final File tmpFile = File.createTempFile("perfCakeAgent", ".btm");
+         tmpFile.deleteOnExit();
+         Utils.copyTemplateFromResource("/debug/perfCakeAgent.btm", Paths.get(tmpFile.toURI()), null);
+
+         return tmpFile.getAbsolutePath();
+      } catch (IOException ioe) {
+         throw new PerfCakeException("Unable to create debug agent rules file: ", ioe);
       }
    }
 
@@ -180,12 +212,12 @@ public class PerfCakeDebug {
          String prop = "org.jboss.byteman.contrib.bmunit.agent.unique";
          String unique = Long.toHexString(System.currentTimeMillis());
          System.setProperty(prop, unique);
-         VMInfo[] vmInfo = Install.availableVMs();
-         for (int i = 0; i < vmInfo.length; i++) {
-            String nextId = vmInfo[i].getId();
-            String value = Install.getSystemProperty(nextId, prop);
+
+         final List<VirtualMachineDescriptor> vmds = VirtualMachine.list();
+         for (VirtualMachineDescriptor vmd : vmds) {
+            String value = getProperty(vmd.id(), prop);
             if (unique.equals(value)) {
-               id = nextId;
+               id = vmd.id();
                break;
             }
          }
@@ -199,7 +231,7 @@ public class PerfCakeDebug {
                try {
                   Integer.parseInt(id);
                   // well, it's a number so now check it identifies the current VM
-                  String value = Install.getSystemProperty(id, prop);
+                  String value = getProperty(id, prop);
                   if (!unique.equals(value)) {
                      // nope, not the right process
                      id = null;
@@ -214,4 +246,32 @@ public class PerfCakeDebug {
 
       return id;
    }
+
+   /**
+    * Gets system property from the JVM with the given PID.
+    *
+    * @param id
+    *       The JVM PID.
+    * @param property
+    *       The property name to obtain.
+    * @return The property value or null in case of any error or when the property was not available.
+    */
+   private static String getProperty(String id, String property) {
+      VirtualMachine vm = null;
+      try {
+         vm = VirtualMachine.attach(id);
+         return (String) vm.getSystemProperties().get(property);
+      } catch (NoClassDefFoundError | Exception e) {
+         return null;
+      } finally {
+         if (vm != null) {
+            try {
+               vm.detach();
+            } catch (IOException e) {
+               // ignore;
+            }
+         }
+      }
+   }
+
 }

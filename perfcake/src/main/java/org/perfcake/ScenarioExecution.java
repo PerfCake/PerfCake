@@ -89,9 +89,9 @@ public class ScenarioExecution {
     *       Command line arguments.
     */
    public static void main(final String[] args) {
-      final ScenarioExecution se = new ScenarioExecution(args);
-
       log.info(String.format("=== Welcome to PerfCake %s ===", PerfCakeConst.VERSION));
+
+      final ScenarioExecution se = new ScenarioExecution(args);
 
       // Print system properties
       se.printTraceInformation();
