@@ -92,6 +92,7 @@ public class PerfCakeDebug {
 
       }
 
+      System.setProperty("com.netflix.servo.DefaultMonitorRegistry.registryName", "org.perfcake");
       Monitors.registerObject(Utils.getProperty(PerfCakeConst.DEBUG_AGENT_NAME_PROPERTY, PerfCakeConst.DEBUG_AGENT_DEFAULT_NAME), this);
    }
 
