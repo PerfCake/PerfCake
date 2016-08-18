@@ -78,6 +78,7 @@ public class ScenarioExecution {
    private ScenarioExecution(final String[] args) {
       Utils.initTimeStamps();
       parseCommandLine(args);
+      Utils.initDebugAgent();
       loadScenario();
    }
 
@@ -127,6 +128,7 @@ public class ScenarioExecution {
       });
 
       Utils.initTimeStamps();
+      Utils.initDebugAgent();
 
       final Scenario scenario = ScenarioLoader.load(scenarioFile);
       scenario.init();
@@ -198,6 +200,8 @@ public class ScenarioExecution {
       options.addOption(Option.builder("pf").longOpt(PerfCakeConst.PROPERTIES_FILE_OPT).desc("custom system properties file").hasArg().argName("PROPERTIES_FILE").build());
       options.addOption(Option.builder("log").longOpt(PerfCakeConst.LOGGING_LEVEL_OPT).desc("logging level").hasArg().argName("LOG_LEVEL").build());
       options.addOption(Option.builder("r").longOpt(PerfCakeConst.REPLAY_OPT).desc("raw file to be replayed").hasArg().argName("RAW_FILE").build());
+      options.addOption(Option.builder("d").longOpt(PerfCakeConst.DEBUG_OPT).desc("start debug JMX agent for external monitoring").build());
+      options.addOption(Option.builder("dn").longOpt(PerfCakeConst.DEBUG_AGENT_NAME_OPT).desc("debug agent name in the JMX tree").hasArg().argName("AGENT_NAME").build());
       options.addOption(Option.builder("skip").longOpt(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT).desc("skip system timer benchmark").build());
       options.addOption(Option.builder("D").argName("property=value").numberOfArgs(2).valueSeparator().desc("system properties").build());
 
@@ -223,12 +227,17 @@ public class ScenarioExecution {
          System.setProperty(PerfCakeConst.SKIP_TIMER_BENCHMARK_PROPERTY, "true");
       }
 
+      if (commandLine.hasOption(PerfCakeConst.DEBUG_OPT)) {
+         System.setProperty(PerfCakeConst.DEBUG_PROPERTY, "true");
+      }
+
       parseParameter(PerfCakeConst.SCENARIOS_DIR_OPT, PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"));
       parseParameter(PerfCakeConst.MESSAGES_DIR_OPT, PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.determineDefaultLocation("messages"));
       parseParameter(PerfCakeConst.PLUGINS_DIR_OPT, PerfCakeConst.PLUGINS_DIR_PROPERTY, Utils.DEFAULT_PLUGINS_DIR.getAbsolutePath());
       parseParameter(PerfCakeConst.PROPERTIES_FILE_OPT, PerfCakeConst.PROPERTIES_FILE_PROPERTY, null);
       parseParameter(PerfCakeConst.LOGGING_LEVEL_OPT, PerfCakeConst.LOGGING_LEVEL_PROPERTY, null);
       parseParameter(PerfCakeConst.REPLAY_OPT, PerfCakeConst.REPLAY_PROPERTY, null);
+      parseParameter(PerfCakeConst.DEBUG_AGENT_NAME_OPT, PerfCakeConst.DEBUG_AGENT_NAME_PROPERTY, PerfCakeConst.DEBUG_AGENT_DEFAULT_NAME);
       if (Utils.getProperty(PerfCakeConst.LOGGING_LEVEL_PROPERTY, null) != null) {
          Utils.setLoggingLevel(Level.toLevel(Utils.getProperty(PerfCakeConst.LOGGING_LEVEL_PROPERTY), Level.INFO));
       }

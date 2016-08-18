@@ -227,6 +227,24 @@
          <artifactId>HdrHistogram</artifactId>
       </dependency>
 
+      <!-- Debugging information publishing -->
+      <dependency>
+         <groupId>org.jboss.byteman</groupId>
+         <artifactId>byteman</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.byteman</groupId>
+         <artifactId>byteman-install</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.byteman</groupId>
+         <artifactId>byteman-submit</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.netflix.servo</groupId>
+         <artifactId>servo-core</artifactId>
+      </dependency>
+
       <!-- Camel tests -->
       <dependency>
          <groupId>org.apache.camel</groupId>
