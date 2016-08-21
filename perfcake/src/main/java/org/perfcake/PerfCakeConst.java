@@ -39,7 +39,12 @@ public final class PerfCakeConst {
    /**
     * Help on PerfCake command line usage.
     */
-   public static final String USAGE_HELP = "ScenarioExecution -s <SCENARIO> [-sd <SCENARIOS_DIR>] [-md <MESSAGES_DIR>] [-D<property=value>]*";
+   public static final String USAGE_HELP = "ScenarioExecution -s <SCENARIO> [options] [-D<property=value>]*";
+
+   /**
+    * PerfCake welcome greeting.
+    */
+   public static final String WELCOME = "=== Welcome to PerfCake %s ===";
 
    /**
     * Name of the message header that stores the number of the current iteration.
@@ -120,6 +125,11 @@ public final class PerfCakeConst {
     * Name of the system property to cause immediate scenario termination when there is an exception thrown by a sender.
     */
    public static final String FAIL_FAST_PROPERTY = "perfcake.fail.fast";
+
+   /**
+    * Name of the CLI argument to print help.
+    */
+   public static final String HELP_OPT = "help";
 
    /**
     * Name of the CLI argument to specify scenario name.
@@ -255,6 +265,11 @@ public final class PerfCakeConst {
     * Error while trying to replay scenario.
     */
    public static final int ERR_SCENARIO_REPLAY = 7;
+
+   /**
+    * Error while trying to replay scenario.
+    */
+   public static final int ERR_PRINT_HELP = 8;
 
    /**
     * There should be no instance of a utility class.

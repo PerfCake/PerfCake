@@ -57,6 +57,9 @@ import java.util.stream.Collectors;
 @edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "DM_EXIT", justification = "This class is allowed to terminate the JVM.")
 public class ScenarioExecution {
 
+   /**
+    * Logger.
+    */
    private static final Logger log = LogManager.getLogger(ScenarioExecution.class);
 
    /**
@@ -78,6 +81,10 @@ public class ScenarioExecution {
    private ScenarioExecution(final String[] args) {
       Utils.initTimeStamps();
       parseCommandLine(args);
+
+      // now it is safe to greet the user
+      log.info(String.format(PerfCakeConst.WELCOME, PerfCakeConst.VERSION));
+
       Utils.initDebugAgent();
       loadScenario();
    }
@@ -89,8 +96,6 @@ public class ScenarioExecution {
     *       Command line arguments.
     */
    public static void main(final String[] args) {
-      log.info(String.format("=== Welcome to PerfCake %s ===", PerfCakeConst.VERSION));
-
       final ScenarioExecution se = new ScenarioExecution(args);
 
       // Print system properties
@@ -135,9 +140,7 @@ public class ScenarioExecution {
       scenario.run();
       scenario.close();
 
-      backup.forEach((k, v) -> {
-         System.setProperty(k.toString(), v.toString());
-      });
+      backup.forEach((k, v) -> System.setProperty(k.toString(), v.toString()));
    }
 
    /**
@@ -193,6 +196,7 @@ public class ScenarioExecution {
       final HelpFormatter formatter = new HelpFormatter();
       final Options options = new Options();
 
+      options.addOption(Option.builder("h").longOpt(PerfCakeConst.HELP_OPT).desc("prints help/usage").build());
       options.addOption(Option.builder("s").longOpt(PerfCakeConst.SCENARIO_OPT).desc("scenario to be executed").hasArg().argName("SCENARIO").build());
       options.addOption(Option.builder("sd").longOpt(PerfCakeConst.SCENARIOS_DIR_OPT).desc("directory for scenarios").hasArg().argName("SCENARIOS_DIR").build());
       options.addOption(Option.builder("md").longOpt(PerfCakeConst.MESSAGES_DIR_OPT).desc("directory for messages").hasArg().argName("MESSAGES_DIR").build());
@@ -212,6 +216,13 @@ public class ScenarioExecution {
          log.fatal("Cannot parse application parameters: ", pe);
          formatter.printHelp(PerfCakeConst.USAGE_HELP, options);
          System.exit(PerfCakeConst.ERR_PARAMETERS);
+         return;
+      }
+
+      if (commandLine.hasOption(PerfCakeConst.HELP_OPT)) {
+         System.out.println(String.format(PerfCakeConst.WELCOME, PerfCakeConst.VERSION));
+         formatter.printHelp(PerfCakeConst.USAGE_HELP, options);
+         System.exit(PerfCakeConst.ERR_PRINT_HELP);
          return;
       }
 
