@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class ChartDestination implements Destination {
+public class ChartDestination extends AbstractDestination {
 
    /**
     * A logger for this class.

@@ -17,31 +17,38 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake.reporting.destinations;
+package org.perfcake.message.correlator;
 
-import org.perfcake.reporting.Measurement;
-import org.perfcake.reporting.ReportingException;
+import org.perfcake.message.Message;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
+
+import io.vertx.core.MultiMap;
 
 /**
- * Appends a {@link org.perfcake.reporting.Measurement} to standard output.
+ * Test correlator that does not care about the messages and simply returns and incrementing number.
  *
- * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class ConsoleDestination extends AbstractDestination {
+public class DummyCorrelator extends AbstractCorrelator {
+
+   private AtomicLong counter = new AtomicLong(0);
 
    @Override
-   public void open() {
-      // nop
+   public String getRequestCorrelationId(final Message message, final Properties messageAttributes) {
+      return String.valueOf(counter.getAndIncrement());
    }
 
    @Override
-   public void close() {
-      // nop
+   public List<String> getResponseCorrelationIds(final Serializable response, final MultiMap headers) {
+      return Collections.singletonList(response.toString());
    }
 
-   @Override
-   public void report(final Measurement measurement) throws ReportingException {
-      System.out.println(measurement.toString());
+   public long getCounter() {
+      return counter.get();
    }
 }

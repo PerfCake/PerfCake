@@ -227,6 +227,16 @@
          <artifactId>HdrHistogram</artifactId>
       </dependency>
 
+      <!-- Debugging information publishing -->
+      <dependency>
+         <groupId>org.jboss.byteman</groupId>
+         <artifactId>byteman</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.netflix.servo</groupId>
+         <artifactId>servo-core</artifactId>
+      </dependency>
+
       <!-- Camel tests -->
       <dependency>
          <groupId>org.apache.camel</groupId>
@@ -842,6 +852,29 @@
                </plugin>
             </plugins>
          </build>
+      </profile>
+      <profile>
+         <!--Only use this dependency if a tools.jar file exists in the JDK's lib directory-->
+         <id>toosjar-profile</id>
+         <activation>
+            <file>
+               <exists>${java.home}/../lib/tools.jar</exists>
+            </file>
+         </activation>
+         <properties>
+            <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+         </properties>
+         <dependencies>
+            <dependency>
+               <!--Need tools.jar in compilation classpath. JDK 1.7 no longer has it there by default: -->
+               <groupId>com.sun</groupId>
+               <artifactId>tools</artifactId>
+               <!-- version number is irrelevant since we exclude this from the dependencies plugin: -->
+               <version>99.9.9</version>
+               <scope>system</scope>
+               <systemPath>${java.home}/../lib/tools.jar</systemPath>
+            </dependency>
+         </dependencies>
       </profile>
       <profile>
          <id>only-eclipse</id>

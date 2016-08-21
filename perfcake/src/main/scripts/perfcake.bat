@@ -158,9 +158,16 @@ echo ERROR: could not find PerfCake jar file (%PERFCAKE_HOME%\lib\perfcake*.jar)
 goto error
 
 :execPerfCake
+@REM Check for debug parameter to add tools.jar -- will be removed in JDK 9
+set PERFCAKE_DEBUG=""
+for %%i in (%*) do (
+  if %%i=="-d" set PERFCAKE_DEBUG=";%JAVA_HOME%\lib"
+  if %%i=="--debug" set PERFCAKE_DEBUG=";%JAVA_HOME%\lib"
+)
+
 cd "%PERFCAKE_HOME%"
 
-%PERFCAKE_JAVA_EXE% -Dlog4j.configurationFile="file:///%PERFCAKE_HOME%\log4j2.xml" -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Djava.ext.dirs="%JAVA_HOME%\lib\ext;%JAVA_HOME%\jre\lib\ext;%PERFCAKE_HOME%\lib\ext" -jar "%PERFCAKE_JAR%" %PERFCAKE_CMD_LINE_ARGS%
+%PERFCAKE_JAVA_EXE% -Dlog4j.configurationFile="file:///%PERFCAKE_HOME%\log4j2.xml" -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager -Djava.ext.dirs="%JAVA_HOME%\lib\ext;%JAVA_HOME%\jre\lib\ext;%PERFCAKE_HOME%\lib\ext%PERFCAKE_DEBUG%" -jar "%PERFCAKE_JAR%" %PERFCAKE_CMD_LINE_ARGS%
 if ERRORLEVEL 1 goto error
 goto end
 

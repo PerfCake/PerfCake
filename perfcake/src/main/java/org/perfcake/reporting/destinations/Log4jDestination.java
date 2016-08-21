@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class Log4jDestination implements Destination {
+public class Log4jDestination extends AbstractDestination {
 
    private static final Logger log = LogManager.getLogger(Log4jDestination.class);
 

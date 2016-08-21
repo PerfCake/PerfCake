@@ -107,6 +107,16 @@ public final class PerfCakeConst {
    public static final String REPLAY_PROPERTY = "perfcake.replay";
 
    /**
+    * Name of the system property that stores the debug agent activation state.
+    */
+   public static final String DEBUG_PROPERTY = "perfcake.debug";
+
+   /**
+    * Name of the system property that stores the debug agent name.
+    */
+   public static final String DEBUG_AGENT_NAME_PROPERTY = "perfcake.debug.name";
+
+   /**
     * Name of the system property to cause immediate scenario termination when there is an exception thrown by a sender.
     */
    public static final String FAIL_FAST_PROPERTY = "perfcake.fail.fast";
@@ -150,6 +160,21 @@ public final class PerfCakeConst {
     * Name of the cli argument to start raw recording replay.
     */
    public static final String REPLAY_OPT = "replay";
+
+   /**
+    * Name of the cli argument to start debugging agent.
+    */
+   public static final String DEBUG_OPT = "debug";
+
+   /**
+    * Name of the cli argument to start debugging agent name.
+    */
+   public static final String DEBUG_AGENT_NAME_OPT = "debug-name";
+
+   /**
+    * Default name of the debug agent.
+    */
+   public static final String DEBUG_AGENT_DEFAULT_NAME = "perfcake-1";
 
    /**
     * Result name indicating whether the scenario.

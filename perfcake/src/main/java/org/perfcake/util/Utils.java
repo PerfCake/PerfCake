@@ -22,6 +22,7 @@ package org.perfcake.util;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.common.TimestampedRecord;
+import org.perfcake.debug.PerfCakeDebug;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
@@ -31,6 +32,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.plugins.convert.TypeConverters;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -588,4 +590,12 @@ public class Utils {
       }
    }
 
+   /**
+    * Initializes the debug agent when configured.
+    */
+   public static void initDebugAgent() {
+      if (Boolean.parseBoolean(System.getProperty(PerfCakeConst.DEBUG_PROPERTY))) {
+         PerfCakeDebug.initialize();
+      }
+   }
 }

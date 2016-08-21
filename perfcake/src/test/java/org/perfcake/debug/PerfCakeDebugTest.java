@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,31 +17,31 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake.reporting.destinations;
+package org.perfcake.debug;
 
-import org.perfcake.reporting.Measurement;
-import org.perfcake.reporting.ReportingException;
+import org.perfcake.PerfCakeConst;
+import org.perfcake.PerfCakeException;
+import org.perfcake.ScenarioExecution;
+import org.perfcake.TestSetup;
+
+import org.testng.annotations.Test;
+
+import java.util.Properties;
 
 /**
- * Appends a {@link org.perfcake.reporting.Measurement} to standard output.
- *
- * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class ConsoleDestination extends AbstractDestination {
+public class PerfCakeDebugTest extends TestSetup {
 
-   @Override
-   public void open() {
-      // nop
+   @Test
+   public void runAgent() throws PerfCakeException {
+      final Properties props = new Properties();
+      props.setProperty(PerfCakeConst.DEBUG_PROPERTY, "true");
+      props.setProperty("perfcake.test.duration", "100000");
+      //props.setProperty("org.jboss.byteman.verbose", "true");
+      //props.setProperty("org.jboss.byteman.debug", "true");
+      props.setProperty("org.jboss.byteman.compileToBytecode", "true");
+      ScenarioExecution.execute("test-debug-agent", props);
    }
 
-   @Override
-   public void close() {
-      // nop
-   }
-
-   @Override
-   public void report(final Measurement measurement) throws ReportingException {
-      System.out.println(measurement.toString());
-   }
 }

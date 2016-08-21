@@ -21,6 +21,7 @@ package org.perfcake.reporting.destinations;
 
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
+import org.perfcake.reporting.reporters.Reporter;
 
 import java.io.Closeable;
 
@@ -37,8 +38,11 @@ public interface Destination extends Closeable {
 
    /**
     * Opens the destination for reporting.
+    *
+    * @param parentReporter
+    *       Reporter opening the destination.
     */
-   void open();
+   void open(final Reporter parentReporter);
 
    /**
     * Closes the destination. No other value should be reported after that.

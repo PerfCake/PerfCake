@@ -77,6 +77,8 @@
       <version.hdrhistogram>2.1.8</version.hdrhistogram>
       <version.vertx>3.2.0</version.vertx>
       <version.guava>19.0</version.guava>
+      <version.byteman>3.0.6</version.byteman>
+      <version.servo>0.12.10</version.servo>
 
       <version.maven.plugin.api>3.3.9</version.maven.plugin.api>
       <version.maven.core>3.3.9</version.maven.core>
@@ -278,6 +280,18 @@
             <groupId>org.hdrhistogram</groupId>
             <artifactId>HdrHistogram</artifactId>
             <version>${version.hdrhistogram}</version>
+         </dependency>
+
+         <!-- Debugging information publishing -->
+         <dependency>
+            <groupId>org.jboss.byteman</groupId>
+            <artifactId>byteman</artifactId>
+            <version>${version.byteman}</version>
+         </dependency>
+         <dependency>
+            <groupId>com.netflix.servo</groupId>
+            <artifactId>servo-core</artifactId>
+            <version>${version.servo}</version>
          </dependency>
 
          <!-- Maven plugin -->
