@@ -55,7 +55,7 @@ public class DummyReceiver extends AbstractReceiver implements Runnable {
                correlator.registerResponse(String.valueOf(l++), null);
             } else {
                try {
-                  Thread.sleep(100);
+                  Thread.sleep(10);
                } catch (InterruptedException e) {
                   // we don't care
                }

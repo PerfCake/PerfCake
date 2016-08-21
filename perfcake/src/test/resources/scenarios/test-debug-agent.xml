@@ -12,12 +12,12 @@
    </sender>
    <receiver class="DummyReceiver" threads="1">
       <correlator class="DummyCorrelator"/>
-      <property name="messagesToConfirm" value="1000000"/>
+      <property name="messagesToConfirm" value="${perfcake.test.duration:1000000}"/>
    </receiver>
    <reporting>
       <reporter class="IterationsPerSecondReporter">
          <destination class="ConsoleDestination">
-            <period type="time" value="1000"/>
+            <period type="iteration" value="500"/>
          </destination>
       </reporter>
    </reporting>
