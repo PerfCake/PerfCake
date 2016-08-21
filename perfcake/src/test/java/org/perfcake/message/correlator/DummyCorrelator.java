@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,31 +17,38 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake.debug;
+package org.perfcake.message.correlator;
 
-import org.perfcake.PerfCakeConst;
-import org.perfcake.PerfCakeException;
-import org.perfcake.ScenarioExecution;
-import org.perfcake.TestSetup;
+import org.perfcake.message.Message;
 
-import org.testng.annotations.Test;
-
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicLong;
+
+import io.vertx.core.MultiMap;
 
 /**
+ * Test correlator that does not care about the messages and simply returns and incrementing number.
+ *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class PerfCakeDebugTest extends TestSetup {
+public class DummyCorrelator extends AbstractCorrelator {
 
-   @Test
-   public void runAgent() throws PerfCakeException {
-      final Properties props = new Properties();
-      props.setProperty(PerfCakeConst.DEBUG_PROPERTY, "true");
-      props.setProperty("perfcake.test.duration", "100000");
-      //props.setProperty("org.jboss.byteman.verbose", "true");
-      //props.setProperty("org.jboss.byteman.debug", "true");
-      props.setProperty("org.jboss.byteman.compileToBytecode", "true");
-      ScenarioExecution.execute("test-debug-agent", props);
+   private AtomicLong counter = new AtomicLong(0);
+
+   @Override
+   public String getRequestCorrelationId(final Message message, final Properties messageAttributes) {
+      return String.valueOf(counter.getAndIncrement());
    }
 
+   @Override
+   public List<String> getResponseCorrelationIds(final Serializable response, final MultiMap headers) {
+      return Collections.singletonList(response.toString());
+   }
+
+   public long getCounter() {
+      return counter.get();
+   }
 }

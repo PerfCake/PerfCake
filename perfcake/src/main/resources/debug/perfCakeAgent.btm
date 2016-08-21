@@ -4,8 +4,7 @@ METHOD init
 IF true
 AT ENTRY
 DO
-  System.out.println("Generator used: " + $0.getClass().getCanonicalName());
-  org.perfcake.debug.PerfCakeDebug.reportGeneratorName($0.getClass().getCanonicalName());
+  org.perfcake.debug.PerfCakeDebug.reportGeneratorName($0);
 ENDRULE
 
 RULE reportNewSenderTask
@@ -15,4 +14,112 @@ IF true
 AT ENTRY
 DO
   org.perfcake.debug.PerfCakeDebug.reportNewSenderTask();
+ENDRULE
+
+RULE reportSenderName
+CLASS org.perfcake.message.sender.MessageSenderManager
+METHOD init
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportSenderName($0.getSenderClass());
+ENDRULE
+
+RULE reportSentMessage
+INTERFACE ^org.perfcake.message.sender.MessageSender
+METHOD send
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportSentMessage();
+ENDRULE
+
+RULE reportSequenceName
+CLASS org.perfcake.message.sequence.SequenceManager
+METHOD addSequence
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportSequenceName($1, $2);
+ENDRULE
+
+RULE reportSequenceSnapshot
+CLASS org.perfcake.message.sequence.SequenceManager
+METHOD getSnapshot
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportSequenceSnapshot();
+ENDRULE
+
+RULE reportReceiverName
+INTERFACE ^org.perfcake.message.receiver.Receiver
+METHOD start
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportReceiverName($0);
+ENDRULE
+
+RULE reportCorrelatorName
+INTERFACE ^org.perfcake.message.receiver.Receiver
+METHOD setCorrelator
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportCorrelatorName($1);
+ENDRULE
+
+RULE reportCorrelatedMessage
+INTERFACE ^org.perfcake.message.correlator.Correlator
+METHOD registerResponse
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportCorrelatedMessage();
+ENDRULE
+
+RULE reportReporterUsage
+INTERFACE ^org.perfcake.reporting.reporters.Reporter
+METHOD report
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportReporterUsage($0);
+ENDRULE
+
+RULE reportParentReporter
+INTERFACE ^org.perfcake.reporting.destinations.Destination
+METHOD open
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportParentReporter($0, $1);
+ENDRULE
+
+RULE reportResultWritten
+INTERFACE ^org.perfcake.reporting.destinations.Destination
+METHOD report
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportResultWritten($0);
+ENDRULE
+
+RULE reportValidatorName
+CLASS org.perfcake.validation.ValidationManager
+METHOD addValidator
+IF true
+AT ENTRY
+DO
+  org.perfcake.debug.PerfCakeDebug.reportValidatorName($1, $2);
+ENDRULE
+
+RULE reportValidationResult
+INTERFACE ^org.perfcake.validation.MessageValidator
+METHOD isValid
+IF true
+AT EXIT
+DO
+  org.perfcake.debug.PerfCakeDebug.reportValidationResult($0, $!);
 ENDRULE

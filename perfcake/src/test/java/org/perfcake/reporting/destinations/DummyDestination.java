@@ -37,7 +37,7 @@ import java.util.List;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class DummyDestination implements Destination {
+public class DummyDestination extends AbstractDestination {
 
    /**
     * Interface for inserting a test assert into the report method of this destination.

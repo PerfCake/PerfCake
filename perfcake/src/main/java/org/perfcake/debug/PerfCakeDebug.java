@@ -19,17 +19,23 @@
  */
 package org.perfcake.debug;
 
-import static com.netflix.servo.annotations.DataSourceType.COUNTER;
-import static com.netflix.servo.annotations.DataSourceType.INFORMATIONAL;
-
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
+import org.perfcake.message.correlator.Correlator;
+import org.perfcake.message.generator.MessageGenerator;
+import org.perfcake.message.receiver.Receiver;
+import org.perfcake.message.sequence.Sequence;
+import org.perfcake.reporting.destinations.Destination;
+import org.perfcake.reporting.reporters.Reporter;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 
-import com.netflix.servo.annotations.Monitor;
+import com.netflix.servo.DefaultMonitorRegistry;
+import com.netflix.servo.monitor.BasicCounter;
+import com.netflix.servo.monitor.BasicInformational;
 import com.netflix.servo.monitor.Counter;
-import com.netflix.servo.monitor.Monitors;
+import com.netflix.servo.monitor.Informational;
+import com.netflix.servo.monitor.MonitorConfig;
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 import org.apache.logging.log4j.LogManager;
@@ -43,8 +49,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.concurrent.atomic.LongAdder;
 
 /**
  * JMX based debug agent providing information about the running performance test.
@@ -64,47 +68,85 @@ public class PerfCakeDebug {
    private static PerfCakeDebug INSTANCE;
 
    /**
+    * Name of the debug agent. Determines the property key in JMX. Defaults to perfcake-1. Important when multiple instances were running.
+    */
+   private static String AGENT_NAME = Utils.getProperty(PerfCakeConst.DEBUG_AGENT_NAME_PROPERTY, PerfCakeConst.DEBUG_AGENT_DEFAULT_NAME);
+
+   /**
     * Class name of the generator used.
     */
-   @Monitor(name = "GeneratorClass", type = INFORMATIONAL)
-   private AtomicReference<String> messageGeneratorClass = new AtomicReference<>("");
+   private Informational messageGeneratorClass;
 
-   @Monitor(name = "SenderClass", type = INFORMATIONAL)
-   private AtomicReference<String> messageSenderClass = new AtomicReference<>("");
+   /**
+    * Class name of the sender used.
+    */
+   private Informational messageSenderClass;
 
-   @Monitor(name = "ReceiverClass", type = INFORMATIONAL)
-   private AtomicReference<String> receiverClass = new AtomicReference<>("");
+   /**
+    * Class name of the receiver used.
+    */
+   private Informational receiverClass;
 
-   @Monitor(name = "CorrelatorClass", type = INFORMATIONAL)
-   private AtomicReference<String> correlatorClass = new AtomicReference<>("");
+   /**
+    * Class name of the correlator used.
+    */
+   private Informational correlatorClass;
 
-   @Monitor(name = "SequenceClasses", type = INFORMATIONAL)
-   private Map<String, String> sequenceClasses = new ConcurrentHashMap<>();
+   /**
+    * Class names of the sequences used.
+    */
+   private Map<String, Informational> sequenceClasses = new ConcurrentHashMap<>();
 
-   @Monitor(name = "ValidatorClasses", type = INFORMATIONAL)
-   private Map<String, String> validatorClasses = new ConcurrentHashMap<>();
+   /**
+    * Class names of the validators used.
+    */
+   private Map<String, Informational> validatorClasses = new ConcurrentHashMap<>();
 
    /**
     * How many sender tasks were created so far.
     */
-   @Monitor(name = "GeneratedSenderTasks", type = COUNTER)
-   private LongAdder generatedSenderTasks = new LongAdder();
+   private Counter generatedSenderTasks = newCounter("GeneratedSenderTasks");
 
-   @Monitor(name = "SentMessages", type = COUNTER)
-   private LongAdder sentMessages = new LongAdder();
+   /**
+    * Number of sent messages.
+    */
+   private Counter sentMessages = newCounter("SentMessages");
 
-   @Monitor(name = "CorrelatedMessages", type = COUNTER)
-   private LongAdder correlatedMessages = new LongAdder();
+   /**
+    * Number of received messages
+    */
+   private Counter correlatedMessages = newCounter("CorrelatedMessages");
 
-   @Monitor(name = "SequenceSnapshots", type = COUNTER)
-   private LongAdder sequenceSnapshots = new LongAdder();
+   /**
+    * Number of sequence snapshots taken
+    */
+   private Counter sequenceSnapshots = newCounter("SequenceSnapshots");
 
+   /**
+    * Internal reference of parent reportes of individual destinations for later reporting.
+    */
+   private Map<Destination, String> parentReporters = new ConcurrentHashMap<>();
+
+   /**
+    * Number of measurement units passed to individual reporter for accumulation.
+    * The key is the reporter class name.
+    */
    private Map<String, Counter> resultsReported = new ConcurrentHashMap<>();
 
+   /**
+    * Number of results published to individual destinations.
+    * The key is in the format of &lt;reporter class name&gt;.&lt;destination class name&gt;.
+    */
    private Map<String, Counter> resultsWritten = new ConcurrentHashMap<>();
 
+   /**
+    * Number of validated messages. The key is validator id.
+    */
    private Map<String, Counter> validationResults = new ConcurrentHashMap<>();
 
+   /**
+    * Internal map of validators and their ids for later reporting.
+    */
    private Map<MessageValidator, String> validatorIds = new ConcurrentHashMap<>();
 
    /**
@@ -121,15 +163,9 @@ public class PerfCakeDebug {
          vm.loadAgent(Paths.get(clazz.getProtectionDomain().getCodeSource().getLocation().toURI()).toString(), "listener:false,script:" + saveTmpBytemanRules());
       } catch (Exception e) {
          log.error("Unable to install debug agent, debugging information will not be available: ", e);
-         return;
       } catch (NoClassDefFoundError ncdfe) {
          log.error("Unable to install debug agent. Make sure you have tools.jar in your JDK installation or copy it to $PERFCAKE_HOME/lib/ext. Debugging information will not be available: ", ncdfe);
-         return;
-
       }
-
-      System.setProperty("com.netflix.servo.DefaultMonitorRegistry.registryName", "org.perfcake");
-      Monitors.registerObject(Utils.getProperty(PerfCakeConst.DEBUG_AGENT_NAME_PROPERTY, PerfCakeConst.DEBUG_AGENT_DEFAULT_NAME), this);
    }
 
    /**
@@ -145,48 +181,98 @@ public class PerfCakeDebug {
     * Initializes the debug agent.
     */
    public static synchronized void initialize() {
+      System.setProperty("org.jboss.byteman.compileToBytecode", "true");
+      System.setProperty("com.netflix.servo.DefaultMonitorRegistry.registryName", "org.perfcake");
+
       new PerfCakeDebug();
    }
 
    /**
     * Reports the message generator class name.
     *
-    * @param generatorClassName
-    *       The message generator class name.
+    * @param generator
+    *       The message generator instance.
     */
-   public static void reportGeneratorName(final String generatorClassName) {
+   public static void reportGeneratorName(final MessageGenerator generator) {
       if (INSTANCE != null) {
-         INSTANCE.messageGeneratorClass.set(generatorClassName);
+         if (INSTANCE.messageGeneratorClass == null) {
+            final String generatorClassName = generator.getClass().getCanonicalName();
+            INSTANCE.messageGeneratorClass = newInformational(generatorClassName, "GeneratorClassName");
+         }
       }
    }
 
+   /**
+    * Reports the sender class name.
+    *
+    * @param senderClassName
+    *       The sender class name.
+    */
    public static void reportSenderName(final String senderClassName) {
       if (INSTANCE != null) {
-         INSTANCE.messageSenderClass.set(senderClassName);
+         if (INSTANCE.messageSenderClass == null) {
+            INSTANCE.messageSenderClass = newInformational(senderClassName, "SenderClassName");
+         }
       }
    }
 
-   public static void reportReceiverName(final String receiverClassName) {
+   /**
+    * Reports the receiver class name.
+    *
+    * @param receiver
+    *       The receiver instance.
+    */
+   public static void reportReceiverName(final Receiver receiver) {
       if (INSTANCE != null) {
-         INSTANCE.receiverClass.set(receiverClassName);
+         if (INSTANCE.receiverClass == null) {
+            final String receiverClassName = receiver.getClass().getCanonicalName();
+            INSTANCE.receiverClass = newInformational(receiverClassName, "ReceiverClassName");
+         }
       }
    }
 
-   public static void reportCorrelatorName(final String correlatorClassName) {
+   /**
+    * Reports the correlator class name.
+    *
+    * @param correlator
+    *       The correlator instance.
+    */
+   public static void reportCorrelatorName(final Correlator correlator) {
       if (INSTANCE != null) {
-         INSTANCE.correlatorClass.set(correlatorClassName);
+         if (INSTANCE.correlatorClass == null) {
+            final String correlatorClassName = correlator.getClass().getCanonicalName();
+            INSTANCE.correlatorClass = newInformational(correlatorClassName, "CorrelatorClassName");
+         }
       }
    }
 
-   public static void reportSequenceName(final String sequenceId, final String sequenceClassName) {
+   /**
+    * Reports the sequence class name.
+    *
+    * @param sequenceId
+    *       The sequence id.
+    * @param sequence
+    *       The sequence instance.
+    */
+   public static void reportSequenceName(final String sequenceId, final Sequence sequence) {
       if (INSTANCE != null) {
-         INSTANCE.sequenceClasses.put(sequenceId, sequenceClassName);
+         final String sequenceClassName = sequence.getClass().getCanonicalName();
+         INSTANCE.sequenceClasses.computeIfAbsent(sequenceId, k -> newInformational(sequenceClassName, "Sequences", sequenceId));
       }
    }
 
+   /**
+    * Reports validator class name.
+    *
+    * @param validatorId
+    *       The validator id.
+    * @param validator
+    *       The validator instance.
+    */
    public static void reportValidatorName(final String validatorId, final MessageValidator validator) {
       if (INSTANCE != null) {
-         INSTANCE.validatorClasses.put(validatorId, validator.getClass().getCanonicalName());
+         final String validatorClassName = validator.getClass().getCanonicalName();
+         INSTANCE.validatorClasses.computeIfAbsent(validatorId, k -> newInformational(validatorClassName, "Validation", validatorId));
          INSTANCE.validatorIds.put(validator, validatorId);
       }
    }
@@ -200,44 +286,93 @@ public class PerfCakeDebug {
       }
    }
 
-   public static void reportSentMessages() {
+   /**
+    * Reports sending of a message.
+    */
+   public static void reportSentMessage() {
       if (INSTANCE != null) {
          INSTANCE.sentMessages.increment();
       }
    }
 
-   public static void reportCorrelatedMessages() {
+   /**
+    * Reports a received message.
+    */
+   public static void reportCorrelatedMessage() {
       if (INSTANCE != null) {
          INSTANCE.correlatedMessages.increment();
       }
    }
 
-   public static void reportSequenceSnapshots() {
+   /**
+    * Reports a sequences snapshot has been taken.
+    */
+   public static void reportSequenceSnapshot() {
       if (INSTANCE != null) {
          INSTANCE.sequenceSnapshots.increment();
       }
    }
 
-   public static void reportReporterUsage(final String reporterClassName) {
+   /**
+    * Reports a measurement unit was sent to report for accumulation.
+    *
+    * @param reporter
+    *       The reporter instance.
+    */
+   public static void reportReporterUsage(final Reporter reporter) {
       if (INSTANCE != null) {
-         INSTANCE.resultsReported.putIfAbsent(reporterClassName, Monitors.newCounter("Reporting." + reporterClassName)).increment();
+         final String reporterClassName = reporter.getClass().getCanonicalName();
+         INSTANCE.resultsReported.computeIfAbsent(reporterClassName, key -> newCounter("Reporting", reporterClassName)).increment();
       }
    }
 
-   public static void reportResultWritten(final String reporterClassName, final String destinationClassName) {
+   /**
+    * Reports the destination's parent reporter for later matching.
+    *
+    * @param destination
+    *       The destination instance.
+    * @param reporter
+    *       The reporter instance.
+    */
+   public static void reportParentReporter(final Destination destination, final Reporter reporter) {
       if (INSTANCE != null) {
-         INSTANCE.resultsWritten.putIfAbsent(reporterClassName + "." + destinationClassName, Monitors.newCounter("Reporting." + reporterClassName + "." + destinationClassName)).increment();
+         INSTANCE.parentReporters.putIfAbsent(destination, reporter.getClass().getCanonicalName());
       }
    }
 
+   /**
+    * Reports a result written to a destination.
+    *
+    * @param destination
+    *       The destination instance.
+    */
+   public static void reportResultWritten(final Destination destination) {
+      if (INSTANCE != null) {
+         final String reporterClassName = INSTANCE.parentReporters.getOrDefault(destination, "UNKNOWN");
+         final String destinationClassName = destination.getClass().getCanonicalName();
+         INSTANCE.resultsWritten.computeIfAbsent(reporterClassName + "." + destinationClassName, k -> newCounter("Reporting", reporterClassName, destinationClassName)).increment();
+      }
+   }
+
+   /**
+    * Reports a validation result.
+    *
+    * @param validator
+    *       The validator instance.
+    * @param valid
+    *       The result of the validation.
+    */
    public static void reportValidationResult(final MessageValidator validator, final boolean valid) {
       if (INSTANCE != null) {
          final String id = INSTANCE.validatorIds.get(validator);
          if (id != null) {
-            INSTANCE.validationResults.putIfAbsent(id, Monitors.newCounter("Validation." + id)).increment();
-            final Counter validCounter = INSTANCE.validationResults.putIfAbsent(id, Monitors.newCounter("Validation." + id + ".passed"));
+            INSTANCE.validationResults.computeIfAbsent(id, key -> newCounter("Validation", id)).increment();
+            final Counter invalidCounter = INSTANCE.validationResults.computeIfAbsent(id + ".failed", key -> newCounter("Validation", id, "failed"));
+            final Counter validCounter = INSTANCE.validationResults.computeIfAbsent(id + ".passed", key -> newCounter("Validation", id, "passed"));
             if (valid) {
                validCounter.increment();
+            } else {
+               invalidCounter.increment();
             }
          }
       }
@@ -385,4 +520,55 @@ public class PerfCakeDebug {
       }
    }
 
+   /**
+    * Creates and registers new JMX counter.
+    *
+    * @param name
+    *       Name of the counter.
+    * @param categories
+    *       Other categories under which the counter should be placed in the JMX tree.
+    * @return The newly created counter.
+    */
+   private static Counter newCounter(final String name, final String... categories) {
+      final Counter counter = new BasicCounter(getMonitorConfig(name, categories));
+      DefaultMonitorRegistry.getInstance().register(counter);
+
+      return counter;
+   }
+
+   /**
+    * Creates and registers new JMX information record.
+    *
+    * @param name
+    *       Name of the record.
+    * @param categories
+    *       Other categories under which the record should be placed in the JMX tree.
+    * @return The newly created information record.
+    */
+   private static Informational newInformational(final String value, final String name, final String... categories) {
+      final BasicInformational informational = new BasicInformational(getMonitorConfig(name, categories));
+      informational.setValue(value);
+      DefaultMonitorRegistry.getInstance().register(informational);
+
+      return informational;
+   }
+
+   /**
+    * Creates a new JMX monitor configuration for counters and information records.
+    *
+    * @param name
+    *       Name of the monitor.
+    * @param categories
+    *       Categories in which the monitor should be placed in the JMX tree.
+    * @return The monitor configuration.
+    */
+   private static MonitorConfig getMonitorConfig(final String name, final String... categories) {
+      final MonitorConfig.Builder config = MonitorConfig.builder(name).withTag("class", AGENT_NAME);
+      if (categories.length > 0) {
+         for (int i = 0; i < categories.length; i++) {
+            config.withTag("category" + (i + 1), categories[i]);
+         }
+      }
+      return config.build();
+   }
 }
