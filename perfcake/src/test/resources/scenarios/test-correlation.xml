@@ -3,7 +3,7 @@
    <run type="iteration" value="${perfcake.run.duration:1000}"/>
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:10}" />
    <sequences>
-      <sequence class="PrimitiveNumberSequence" name="id" />
+      <sequence class="PrimitiveNumberSequence" id="id" />
    </sequences>
    <sender class="HttpSender">
       <target>http://localhost:8091</target>

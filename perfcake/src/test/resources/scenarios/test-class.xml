@@ -3,7 +3,7 @@
    <run type="iteration" value="100000"/>
    <generator class="DefaultMessageGenerator" threads="10"/>
    <sequences>
-      <sequence class="ThreadIdSequence" name="threadId" />
+      <sequence class="ThreadIdSequence" id="threadId" />
    </sequences>
    <sender class="TestSender" />
    <reporting>
