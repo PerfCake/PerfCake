@@ -33,7 +33,7 @@ import java.util.Properties;
  */
 public class PerfCakeDebugTest extends TestSetup {
 
-   @Test
+   @Test(enabled = false)
    public void runAgent() throws PerfCakeException {
       final Properties props = new Properties();
       props.setProperty(PerfCakeConst.DEBUG_PROPERTY, "true");
