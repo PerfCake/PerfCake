@@ -26,6 +26,8 @@ import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -36,6 +38,8 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 @Test(groups = "integration")
 public class CustomProfileGeneratorTest extends TestSetup {
+
+   private static final Logger log = LogManager.getLogger(CustomProfileGeneratorTest.class);
 
    @Test
    public void testCustomProfileThreads() throws PerfCakeException, InterruptedException {
@@ -50,13 +54,15 @@ public class CustomProfileGeneratorTest extends TestSetup {
       int[] noSonnerThan = new int[] { 0, 250, 500, 750, 900 };
       int pointer = 0;
 
-      while (runInfo.getIteration() == -1) {
+      while (runInfo.getIteration() == -1 && t.isAlive()) {
          Thread.sleep(10);
       }
 
+      Assert.assertTrue(t.isAlive(), "Scenario thread terminated unexpectedly.");
+
       final ThreadPoolExecutor executor = ((CustomProfileGenerator) retractor.getGenerator()).executorService;
 
-      while (runInfo.isRunning() && pointer < threadsWanted.length) {
+      while (runInfo.isRunning() && pointer < threadsWanted.length && t.isAlive()) {
          if (runInfo.getIteration() > noSonnerThan[pointer] && executor.getActiveCount() == threadsWanted[pointer]) {
             pointer++;
          }
@@ -81,13 +87,15 @@ public class CustomProfileGeneratorTest extends TestSetup {
       int[] noSonnerThan = new int[] { 0, 250, 500, 750 };
       int pointer = 0;
 
-      while (runInfo.getIteration() == -1) {
+      while (runInfo.getIteration() == -1 && t.isAlive()) {
          Thread.sleep(10);
       }
 
+      Assert.assertTrue(t.isAlive(), "Scenario thread terminated unexpectedly.");
+
       final CustomProfileGenerator generator = (CustomProfileGenerator) retractor.getGenerator();
 
-      while (runInfo.isRunning() && pointer < speedWanted.length) {
+      while (runInfo.isRunning() && pointer < speedWanted.length && t.isAlive()) {
          if (runInfo.getIteration() > noSonnerThan[pointer] && generator.getSpeed() == speedWanted[pointer]) {
             pointer++;
          }
@@ -107,7 +115,7 @@ public class CustomProfileGeneratorTest extends TestSetup {
             scenario.run();
             scenario.close();
          } catch (PerfCakeException e) {
-            Assert.fail(e.toString());
+            log.error("Could not run scenario: ", e);
          }
       });
       t.start();
