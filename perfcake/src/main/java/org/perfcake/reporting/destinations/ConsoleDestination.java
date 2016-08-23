@@ -174,8 +174,7 @@ public class ConsoleDestination extends AbstractDestination {
    }
 
    /**
-    * Sets the foreground color code. Can be an empty string to turn this feature off, a single number 0-7,
-    * or three numbers between 0-255 separated by comma representing r, g, b channels.
+    * Sets the foreground color code. Can be an empty string to turn this feature off, or a single number 0-15 (0 - 7 for basic colors, 8 - 15 for brighter/bold colors).
     *
     * @param foreground
     *       The foreground color code.
@@ -194,8 +193,7 @@ public class ConsoleDestination extends AbstractDestination {
    }
 
    /**
-    * Sets the background color code. Can be an empty string to turn this feature off, a single number 0-7,
-    * or three numbers between 0-255 separated by comma representing r, g, b channels.
+    * Sets the background color code. Can be an empty string to turn this feature off, or a single number 0-7.
     *
     * @param background
     *       The background color code.
