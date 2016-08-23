@@ -20,6 +20,7 @@
 package org.perfcake.validation;
 
 import org.perfcake.message.Message;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -63,6 +64,7 @@ public class DictionaryValidator implements MessageValidator {
    /**
     * The directory where the dictionary is/will be store.
     */
+   @MandatoryProperty
    private String dictionaryDirectory;
 
    /**

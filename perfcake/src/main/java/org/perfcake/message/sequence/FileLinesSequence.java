@@ -21,6 +21,7 @@ package org.perfcake.message.sequence;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.Utils;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,6 +48,7 @@ public class FileLinesSequence implements Sequence {
    /**
     * The location of the file to read from.
     */
+   @MandatoryProperty
    private String fileUrl;
 
    /**

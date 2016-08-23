@@ -23,6 +23,7 @@ import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.generator.profile.Profile;
 import org.perfcake.message.generator.profile.ProfileRequest;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,6 +43,7 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
    /**
     * The class name of the profile.
     */
+   @MandatoryProperty
    private String profileClass;
 
    /**

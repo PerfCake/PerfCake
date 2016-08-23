@@ -27,6 +27,7 @@ import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.SslSocketFactoryFactory;
 import org.perfcake.util.StringUtil;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import com.google.gson.JsonArray;
 import com.squareup.okhttp.OkHttpClient;
@@ -56,6 +57,7 @@ public class InfluxDbDestination extends AbstractDestination {
    /**
     * InfluxDb server including protocol and port number. Supports SSL.
     */
+   @MandatoryProperty
    private String serverUrl = "";
 
    /**
@@ -76,11 +78,13 @@ public class InfluxDbDestination extends AbstractDestination {
    /**
     * InfluxDb user name.
     */
+   @MandatoryProperty
    private String userName = "admin";
 
    /**
     * InfluxDb password.
     */
+   @MandatoryProperty
    private String password = "admin";
 
    /**

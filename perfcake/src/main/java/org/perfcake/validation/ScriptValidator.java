@@ -21,6 +21,7 @@ package org.perfcake.validation;
 
 import org.perfcake.message.Message;
 import org.perfcake.util.Utils;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,6 +55,7 @@ public class ScriptValidator implements MessageValidator {
    /**
     * The name of the Java Script Engine.
     */
+   @MandatoryProperty
    private String engine;
 
    /**

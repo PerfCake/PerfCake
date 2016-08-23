@@ -25,6 +25,7 @@ import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destinations.Destination;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import java.util.Map;
 import java.util.Properties;
@@ -41,6 +42,7 @@ public class ClassifyingReporter extends AbstractReporter {
    /**
     * Message attribute the values of which should be classified and counted.
     */
+   @MandatoryProperty
    private String attribute = null;
 
    /**

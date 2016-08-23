@@ -7,7 +7,7 @@
       <reporter class="IterationsPerSecondReporter">
          <destination class="ElasticsearchDestination">
             <period type="iteration" value="5"/>
-            <property name="serverUri" value="http://localhost:9292" />
+            <property name="serverUrl" value="http://localhost:9292" />
             <property name="index" value="perfcake" />
             <property name="tags" value="tag1,tag2" />
             <property name="timeout" value="5000" />

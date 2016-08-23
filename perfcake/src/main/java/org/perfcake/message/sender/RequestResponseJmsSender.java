@@ -21,7 +21,9 @@ package org.perfcake.message.sender;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.StringTemplate;
 import org.perfcake.util.Utils;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -84,7 +86,8 @@ public class RequestResponseJmsSender extends JmsSender {
    /**
     * Where to read the responses from.
     */
-   private String responseTarget = "";
+   @MandatoryProperty
+   private StringTemplate responseTarget = null;
 
    /**
     * Timeout for receiving the response in ms for a single attempt.
@@ -150,12 +153,13 @@ public class RequestResponseJmsSender extends JmsSender {
    public void doInit(final Properties messageAttributes) throws PerfCakeException {
       super.doInit(messageAttributes);
       try {
-         if (responseTarget == null || responseTarget.equals("")) {
+         if (responseTarget == null || responseTarget.toString().equals("")) {
             throw new PerfCakeException("responseTarget property is not defined in the scenario or is empty");
          } else {
             initResponseConnection();
 
-            final Destination responseDestination = (Destination) responseCtx.lookup(responseTarget);
+            final String safeResponseTarget = messageAttributes == null ? responseTarget.toString() : responseTarget.toString(messageAttributes);
+            final Destination responseDestination = (Destination) responseCtx.lookup(safeResponseTarget);
 
             if (transacted && !autoAck) {
                log.warn("AutoAck setting is ignored with a transacted session. Creating a transacted session.");
@@ -365,7 +369,7 @@ public class RequestResponseJmsSender extends JmsSender {
     * @return The name of the response destination.
     */
    public String getResponseTarget() {
-      return responseTarget;
+      return responseTarget.toString();
    }
 
    /**
@@ -376,7 +380,7 @@ public class RequestResponseJmsSender extends JmsSender {
     * @return Instance of this for fluent API.
     */
    public RequestResponseJmsSender setResponseTarget(final String responseTarget) {
-      this.responseTarget = responseTarget;
+      this.responseTarget = new StringTemplate(responseTarget);
       return this;
    }
 

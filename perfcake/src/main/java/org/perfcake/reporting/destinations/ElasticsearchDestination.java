@@ -27,6 +27,7 @@ import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.util.SslSocketFactoryFactory;
 import org.perfcake.util.StringUtil;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonArray;
@@ -69,7 +70,8 @@ public class ElasticsearchDestination extends AbstractDestination {
    /**
     * Comma separated list of Elastisearch servers including protocol and port number.
     */
-   private String serverUri;
+   @MandatoryProperty
+   private String serverUrl;
 
    /**
     * Elasticsearch index name.
@@ -163,7 +165,7 @@ public class ElasticsearchDestination extends AbstractDestination {
          log.warn("Unable to initialize SSL socket factory: ", e);
       }
 
-      final List<String> serverUris = Arrays.asList(serverUri.split(",")).stream().map(StringUtil::trim).collect(Collectors.toList());
+      final List<String> serverUris = Arrays.asList(serverUrl.split(",")).stream().map(StringUtil::trim).collect(Collectors.toList());
       final HttpClientConfig.Builder builder = new HttpClientConfig.Builder(serverUris);
 
       if (sslContext != null) {
@@ -272,19 +274,19 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @return The comma separated list of Elasticsearch servers including protocol and port number.
     */
-   public String getServerUri() {
-      return serverUri;
+   public String getServerUrl() {
+      return serverUrl;
    }
 
    /**
     * Sets the comma separated list of Elasticsearch servers including protocol and port number.
     *
-    * @param serverUri
+    * @param serverUrl
     *       The comma separated list of Elasticsearch servers including protocol and port number.
     * @return Instance of this to support fluent API.
     */
-   public ElasticsearchDestination setServerUri(final String serverUri) {
-      this.serverUri = serverUri;
+   public ElasticsearchDestination setServerUrl(final String serverUrl) {
+      this.serverUrl = serverUrl;
       return this;
    }
 
