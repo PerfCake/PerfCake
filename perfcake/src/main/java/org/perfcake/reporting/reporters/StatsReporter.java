@@ -418,9 +418,11 @@ public abstract class StatsReporter extends AbstractReporter {
     *
     * @param histogram
     *       The string specifying where the histogram should be split.
+    * @return Instance of this to support fluent API.
     */
-   public void setHistogram(String histogram) {
+   public StatsReporter setHistogram(String histogram) {
       this.histogram = histogram;
+      return this;
    }
 
    /**
@@ -437,9 +439,11 @@ public abstract class StatsReporter extends AbstractReporter {
     *
     * @param histogramPrefix
     *       The string prefix used in the result map for histogram entries.
+    * @return Instance of this to support fluent API.
     */
-   public void setHistogramPrefix(String histogramPrefix) {
+   public StatsReporter setHistogramPrefix(String histogramPrefix) {
       this.histogramPrefix = histogramPrefix;
+      return this;
    }
 
    /**
@@ -456,9 +460,11 @@ public abstract class StatsReporter extends AbstractReporter {
     *
     * @param requestSizeEnabled
     *       True to enable the metric.
+    * @return Instance of this to support fluent API.
     */
-   public void setRequestSizeEnabled(final boolean requestSizeEnabled) {
+   public StatsReporter setRequestSizeEnabled(final boolean requestSizeEnabled) {
       this.requestSizeEnabled = requestSizeEnabled;
+      return this;
    }
 
    /**
@@ -475,9 +481,11 @@ public abstract class StatsReporter extends AbstractReporter {
     *
     * @param responseSizeEnabled
     *       True to enable the metric.
+    * @return Instance of this to support fluent API.
     */
-   public void setResponseSizeEnabled(final boolean responseSizeEnabled) {
+   public StatsReporter setResponseSizeEnabled(final boolean responseSizeEnabled) {
       this.responseSizeEnabled = responseSizeEnabled;
+      return this;
    }
 
    /**

@@ -125,7 +125,7 @@ public class InfluxDbDestination extends AbstractDestination {
 
    @Override
    public void open() {
-      Arrays.asList(tags.split(",")).stream().map(StringUtil::trim).forEach(tagsArray::add);
+      Arrays.stream(tags.split(",")).map(StringUtil::trim).forEach(tagsArray::add);
 
       try {
          if ((keyStore != null && !"".equals(keyStore)) || (trustStore != null && !"".equals(trustStore))) {
@@ -201,9 +201,11 @@ public class InfluxDbDestination extends AbstractDestination {
     *
     * @param serverUrl
     *       InfluxDb server including protocol and port number.
+    * @return Instance of this to support fluent API.
     */
-   public void setServerUrl(final String serverUrl) {
+   public InfluxDbDestination setServerUrl(final String serverUrl) {
       this.serverUrl = serverUrl;
+      return this;
    }
 
    /**
@@ -220,9 +222,11 @@ public class InfluxDbDestination extends AbstractDestination {
     *
     * @param database
     *       The name of InfluxDb database.
+    * @return Instance of this to support fluent API.
     */
-   public void setDatabase(final String database) {
+   public InfluxDbDestination setDatabase(final String database) {
       this.database = database;
+      return this;
    }
 
    /**
@@ -239,9 +243,11 @@ public class InfluxDbDestination extends AbstractDestination {
     *
     * @param createDatabase
     *       True if and only if the database should be created when connected to InfluxDb.
+    * @return Instance of this to support fluent API.
     */
-   public void setCreateDatabase(final boolean createDatabase) {
+   public InfluxDbDestination setCreateDatabase(final boolean createDatabase) {
       this.createDatabase = createDatabase;
+      return this;
    }
 
    /**
@@ -258,9 +264,11 @@ public class InfluxDbDestination extends AbstractDestination {
     *
     * @param measurement
     *       The name of the measurement in InfluxDb, serves as a database table.
+    * @return Instance of this to support fluent API.
     */
-   public void setMeasurement(final String measurement) {
+   public InfluxDbDestination setMeasurement(final String measurement) {
       this.measurement = measurement;
+      return this;
    }
 
    /**
@@ -277,9 +285,11 @@ public class InfluxDbDestination extends AbstractDestination {
     *
     * @param userName
     *       The name of InfluxDb user.
+    * @return Instance of this to support fluent API.
     */
-   public void setUserName(final String userName) {
+   public InfluxDbDestination setUserName(final String userName) {
       this.userName = userName;
+      return this;
    }
 
    /**
@@ -296,9 +306,11 @@ public class InfluxDbDestination extends AbstractDestination {
     *
     * @param password
     *       The InfluxDb user password.
+    * @return Instance of this to support fluent API.
     */
-   public void setPassword(final String password) {
+   public InfluxDbDestination setPassword(final String password) {
       this.password = password;
+      return this;
    }
 
    /**
@@ -315,9 +327,11 @@ public class InfluxDbDestination extends AbstractDestination {
     *
     * @param tags
     *       The comma separated list of tags to be added to results.
+    * @return Instance of this to support fluent API.
     */
-   public void setTags(final String tags) {
+   public InfluxDbDestination setTags(final String tags) {
       this.tags = tags;
+      return this;
    }
 
    /**
@@ -334,9 +348,11 @@ public class InfluxDbDestination extends AbstractDestination {
     *
     * @param keyStore
     *       The SSL key store location.
+    * @return Instance of this to support fluent API.
     */
-   public void setKeyStore(final String keyStore) {
+   public InfluxDbDestination setKeyStore(final String keyStore) {
       this.keyStore = keyStore;
+      return this;
    }
 
    /**
@@ -353,9 +369,11 @@ public class InfluxDbDestination extends AbstractDestination {
     *
     * @param keyStorePassword
     *       The SSL key store password.
+    * @return Instance of this to support fluent API.
     */
-   public void setKeyStorePassword(final String keyStorePassword) {
+   public InfluxDbDestination setKeyStorePassword(final String keyStorePassword) {
       this.keyStorePassword = keyStorePassword;
+      return this;
    }
 
    /**
@@ -372,9 +390,11 @@ public class InfluxDbDestination extends AbstractDestination {
     *
     * @param trustStore
     *       The SSL trust store location.
+    * @return Instance of this to support fluent API.
     */
-   public void setTrustStore(final String trustStore) {
+   public InfluxDbDestination setTrustStore(final String trustStore) {
       this.trustStore = trustStore;
+      return this;
    }
 
    /**
@@ -391,8 +411,10 @@ public class InfluxDbDestination extends AbstractDestination {
     *
     * @param trustStorePassword
     *       The SSL trust store password.
+    * @return Instance of this to support fluent API.
     */
-   public void setTrustStorePassword(final String trustStorePassword) {
+   public InfluxDbDestination setTrustStorePassword(final String trustStorePassword) {
       this.trustStorePassword = trustStorePassword;
+      return this;
    }
 }

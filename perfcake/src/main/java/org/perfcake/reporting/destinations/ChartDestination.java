@@ -188,9 +188,11 @@ public class ChartDestination extends AbstractDestination {
     *
     * @param outputDir
     *       The output directory location.
+    * @return Instance of this to support fluent API.
     */
-   public void setOutputDir(final String outputDir) {
+   public ChartDestination setOutputDir(final String outputDir) {
       this.outputPath = Paths.get(outputDir);
+      return this;
    }
 
    /**
@@ -216,9 +218,11 @@ public class ChartDestination extends AbstractDestination {
     *
     * @param name
     *       The name of the chart.
+    * @return Instance of this to support fluent API.
     */
-   public void setName(final String name) {
+   public ChartDestination setName(final String name) {
       this.name = name;
+      return this;
    }
 
    /**
@@ -235,8 +239,9 @@ public class ChartDestination extends AbstractDestination {
     *
     * @param group
     *       The group of the chart.
+    * @return Instance of this to support fluent API.
     */
-   public void setGroup(final String group) {
+   public ChartDestination setGroup(final String group) {
       if ("".equals(group)) {
          this.group = "default";
          log.warn("Empty group name, renaming to: default");
@@ -260,14 +265,29 @@ public class ChartDestination extends AbstractDestination {
       } else {
          this.group = group;
       }
+
+      return this;
    }
 
+   /**
+    * Gets the height of the resulting chart in pixels.
+    *
+    * @return The height of the resulting chart in pixels.
+    */
    public int getChartHeight() {
       return chartHeight;
    }
 
-   public void setChartHeight(final int chartHeight) {
+   /**
+    * Sets the height of the resulting chart in pixels.
+    *
+    * @param chartHeight
+    *       The height of the resulting chart in pixels.
+    * @return The height of the resulting chart in pixels.
+    */
+   public ChartDestination setChartHeight(final int chartHeight) {
       this.chartHeight = chartHeight;
+      return this;
    }
 
    /**
@@ -293,9 +313,11 @@ public class ChartDestination extends AbstractDestination {
     *
     * @param yAxis
     *       The legend of the Y axis of the chart.
+    * @return Instance of this to support fluent API.
     */
-   public void setyAxis(final String yAxis) {
+   public ChartDestination setyAxis(final String yAxis) {
       this.yAxis = yAxis;
+      return this;
    }
 
    /**
@@ -303,9 +325,11 @@ public class ChartDestination extends AbstractDestination {
     *
     * @param yAxis
     *       The legend of the Y axis of the chart.
+    * @return Instance of this to support fluent API.
     */
-   public void setYAxis(final String yAxis) {
+   public ChartDestination setYAxis(final String yAxis) {
       this.yAxis = yAxis;
+      return this;
    }
 
    /**
@@ -331,9 +355,11 @@ public class ChartDestination extends AbstractDestination {
     *
     * @param xAxis
     *       The legend of the X axis of the chart.
+    * @return Instance of this to support fluent API.
     */
-   public void setxAxis(final String xAxis) {
+   public ChartDestination setxAxis(final String xAxis) {
       this.xAxis = xAxis;
+      return this;
    }
 
    /**
@@ -341,9 +367,11 @@ public class ChartDestination extends AbstractDestination {
     *
     * @param xAxis
     *       The legend of the X axis of the chart.
+    * @return Instance of this to support fluent API.
     */
-   public void setXAxis(final String xAxis) {
+   public ChartDestination setXAxis(final String xAxis) {
       this.xAxis = xAxis;
+      return this;
    }
 
    /**
@@ -360,9 +388,11 @@ public class ChartDestination extends AbstractDestination {
     *
     * @param xAxisType
     *       The type of the X axis.
+    * @return Instance of this to support fluent API.
     */
-   public void setxAxisType(final PeriodType xAxisType) {
+   public ChartDestination setxAxisType(final PeriodType xAxisType) {
       this.xAxisType = xAxisType;
+      return this;
    }
 
    /**
@@ -379,9 +409,11 @@ public class ChartDestination extends AbstractDestination {
     *
     * @param attributes
     *       The attributes separated by comma.
+    * @return Instance of this to support fluent API.
     */
-   public void setAttributes(final String attributes) {
+   public ChartDestination setAttributes(final String attributes) {
       this.attributes = new ArrayList<>(Arrays.asList(attributes.split("\\s*,\\s*")));
+      return this;
    }
 
    /**
@@ -407,9 +439,11 @@ public class ChartDestination extends AbstractDestination {
     *
     * @param autoCombine
     *       True to turn the feature on, false to turn it off. Default is true/on.
+    * @return Instance of this to support fluent API.
     */
-   public void setAutoCombine(final boolean autoCombine) {
+   public ChartDestination setAutoCombine(final boolean autoCombine) {
       this.autoCombine = autoCombine;
+      return this;
    }
 
 }

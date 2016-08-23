@@ -495,13 +495,16 @@ public class CsvDestination extends AbstractDestination {
     *
     * @param expectedAttributes
     *       The exppected attributes separated by comma.
+    * @return Instance of this to support fluent API.
     */
-   public void setExpectedAttributes(final String expectedAttributes) {
+   public CsvDestination setExpectedAttributes(final String expectedAttributes) {
       if (expectedAttributes == null || "".equals(expectedAttributes)) {
          this.expectedAttributes = new ArrayList<>();
       } else {
          this.expectedAttributes = new ArrayList<>(Arrays.asList(expectedAttributes.split("\\s*,\\s*")));
       }
+
+      return this;
    }
 
    /**

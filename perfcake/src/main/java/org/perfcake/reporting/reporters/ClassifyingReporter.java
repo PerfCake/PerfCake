@@ -92,9 +92,11 @@ public class ClassifyingReporter extends AbstractReporter {
     *
     * @param attribute
     *       The name of the attribute the values of which are classified and counted.
+    * @return Instance of this to support fluent API.
     */
-   public void setAttribute(final String attribute) {
+   public ClassifyingReporter setAttribute(final String attribute) {
       this.attribute = attribute;
+      return this;
    }
 
    /**
@@ -111,8 +113,10 @@ public class ClassifyingReporter extends AbstractReporter {
     *
     * @param prefix
     *       The prefix of the result keys for each value class.
+    * @return Instance of this to support fluent API.
     */
-   public void setPrefix(final String prefix) {
+   public ClassifyingReporter setPrefix(final String prefix) {
       this.prefix = prefix;
+      return this;
    }
 }

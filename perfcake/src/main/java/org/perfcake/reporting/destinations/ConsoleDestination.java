@@ -178,9 +178,11 @@ public class ConsoleDestination extends AbstractDestination {
     *
     * @param foreground
     *       The foreground color code.
+    * @return Instance of this to support fluent API.
     */
-   public void setForeground(final String foreground) {
+   public ConsoleDestination setForeground(final String foreground) {
       this.foreground = foreground;
+      return this;
    }
 
    /**
@@ -197,9 +199,11 @@ public class ConsoleDestination extends AbstractDestination {
     *
     * @param background
     *       The background color code.
+    * @return Instance of this to support fluent API.
     */
-   public void setBackground(final String background) {
+   public ConsoleDestination setBackground(final String background) {
       this.background = background;
+      return this;
    }
 
    /**
@@ -216,8 +220,10 @@ public class ConsoleDestination extends AbstractDestination {
     *
     * @param prefix
     *       The prefix of the console output.
+    * @return Instance of this to support fluent API.
     */
-   public void setPrefix(final String prefix) {
+   public ConsoleDestination setPrefix(final String prefix) {
       this.prefix = prefix;
+      return this;
    }
 }

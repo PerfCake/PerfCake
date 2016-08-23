@@ -197,14 +197,17 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
     *
     * @param precision
     *       The number of significant digits that are recognized by this reporter.
+    * @return Instance of this to support fluent API.
     */
-   public void setPrecision(final int precision) {
+   public ResponseTimeHistogramReporter setPrecision(final int precision) {
       if (precision < 0 || precision > 5) {
          log.warn(String.format("Wrong level of precision set (%d). Keeping the original value (%d).", precision, this.precision));
       } else {
          this.precision = precision;
          initRecorder();
       }
+
+      return this;
    }
 
    /**
@@ -229,9 +232,11 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
     *
     * @param correctionMode
     *       The expectedValue mode to be used.
+    * @return Instance of this to support fluent API.
     */
-   public void setCorrectionMode(final Correction correctionMode) {
+   public ResponseTimeHistogramReporter setCorrectionMode(final Correction correctionMode) {
       this.correctionMode = correctionMode;
+      return this;
    }
 
    /**
@@ -248,9 +253,11 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
     *
     * @param expectedValue
     *       The expectedValue value.
+    * @return Instance of this to support fluent API.
     */
-   public void setExpectedValue(final long expectedValue) {
+   public ResponseTimeHistogramReporter setExpectedValue(final long expectedValue) {
       this.expectedValue = expectedValue;
+      return this;
    }
 
    /**
@@ -267,9 +274,11 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
     *
     * @param prefix
     *       The percentile value prefix.
+    * @return Instance of this to support fluent API.
     */
-   public void setPrefix(final String prefix) {
+   public ResponseTimeHistogramReporter setPrefix(final String prefix) {
       this.prefix = prefix;
+      return this;
    }
 
    /**
@@ -288,13 +297,16 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
     *
     * @param detail
     *       The detail level.
+    * @return Instance of this to support fluent API.
     */
-   public void setDetail(final int detail) {
+   public ResponseTimeHistogramReporter setDetail(final int detail) {
       if (detail < 1) {
          log.warn(String.format("Wrong level of detail set (%d). Keeping the original value (%d).", detail, this.detail));
       } else {
          this.detail = detail;
       }
+
+      return this;
    }
 
    /**
@@ -314,9 +326,11 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
     *
     * @param maxExpectedValue
     *       The maximal expected value. -1 to turn this optimization off. -1 is the default value.
+    * @return Instance of this to support fluent API.
     */
-   public void setMaxExpectedValue(final long maxExpectedValue) {
+   public ResponseTimeHistogramReporter setMaxExpectedValue(final long maxExpectedValue) {
       this.maxExpectedValue = maxExpectedValue;
       initRecorder();
+      return this;
    }
 }

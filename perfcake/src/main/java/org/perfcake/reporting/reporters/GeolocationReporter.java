@@ -116,9 +116,11 @@ public class GeolocationReporter extends AbstractReporter {
     *
     * @param serviceUrl
     *       The URL of the service used to obtain the location.
+    * @return Instance of this to support fluent API.
     */
-   public void setServiceUrl(final String serviceUrl) {
+   public GeolocationReporter setServiceUrl(final String serviceUrl) {
       this.serviceUrl = serviceUrl;
+      return this;
    }
 
    /**

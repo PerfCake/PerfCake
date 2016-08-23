@@ -170,7 +170,7 @@ public class ElasticsearchDestination extends AbstractDestination {
          builder.sslSocketFactory(new SSLConnectionSocketFactory(sslContext));
       }
 
-      Arrays.asList(tags.split(",")).stream().map(StringUtil::trim).forEach(tagsArray::add);
+      Arrays.stream(tags.split(",")).map(StringUtil::trim).forEach(tagsArray::add);
 
       builder.multiThreaded(true);
 
@@ -281,9 +281,11 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param serverUri
     *       The comma separated list of Elasticsearch servers including protocol and port number.
+    * @return Instance of this to support fluent API.
     */
-   public void setServerUri(final String serverUri) {
+   public ElasticsearchDestination setServerUri(final String serverUri) {
       this.serverUri = serverUri;
+      return this;
    }
 
    /**
@@ -300,9 +302,11 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param index
     *       The Elasticsearch index name.
+    * @return Instance of this to support fluent API.
     */
-   public void setIndex(final String index) {
+   public ElasticsearchDestination setIndex(final String index) {
       this.index = index;
+      return this;
    }
 
    /**
@@ -319,9 +323,11 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param type
     *       the Elasticsearch type name.
+    * @return Instance of this to support fluent API.
     */
-   public void setType(final String type) {
+   public ElasticsearchDestination setType(final String type) {
       this.type = type;
+      return this;
    }
 
    /**
@@ -338,9 +344,11 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param tags
     *       The comma separated list of tags to be added to results.
+    * @return Instance of this to support fluent API.
     */
-   public void setTags(final String tags) {
+   public ElasticsearchDestination setTags(final String tags) {
       this.tags = tags;
+      return this;
    }
 
    /**
@@ -357,9 +365,11 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param userName
     *       The Elasticsearch user name.
+    * @return Instance of this to support fluent API.
     */
-   public void setUserName(final String userName) {
+   public ElasticsearchDestination setUserName(final String userName) {
       this.userName = userName;
+      return this;
    }
 
    /**
@@ -376,9 +386,11 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param password
     *       The Elasticsearch password.
+    * @return Instance of this to support fluent API.
     */
-   public void setPassword(final String password) {
+   public ElasticsearchDestination setPassword(final String password) {
       this.password = password;
+      return this;
    }
 
    /**
@@ -397,9 +409,11 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param configureMapping
     *       True if the mapping should be configured prior to writing.
+    * @return Instance of this to support fluent API.
     */
-   public void setConfigureMapping(final boolean configureMapping) {
+   public ElasticsearchDestination setConfigureMapping(final boolean configureMapping) {
       this.configureMapping = configureMapping;
+      return this;
    }
 
    /**
@@ -416,9 +430,11 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param timeout
     *       The Elasticsearch client timeout.
+    * @return Instance of this to support fluent API.
     */
-   public void setTimeout(final int timeout) {
+   public ElasticsearchDestination setTimeout(final int timeout) {
       this.timeout = timeout;
+      return this;
    }
 
    /**
@@ -435,9 +451,11 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param keyStore
     *       The SSL key store location.
+    * @return Instance of this to support fluent API.
     */
-   public void setKeyStore(final String keyStore) {
+   public ElasticsearchDestination setKeyStore(final String keyStore) {
       this.keyStore = keyStore;
+      return this;
    }
 
    /**
@@ -454,9 +472,11 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param keyStorePassword
     *       The SSL key store password.
+    * @return Instance of this to support fluent API.
     */
-   public void setKeyStorePassword(final String keyStorePassword) {
+   public ElasticsearchDestination setKeyStorePassword(final String keyStorePassword) {
       this.keyStorePassword = keyStorePassword;
+      return this;
    }
 
    /**
@@ -473,9 +493,11 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param trustStore
     *       The SSL trust store location.
+    * @return Instance of this to support fluent API.
     */
-   public void setTrustStore(final String trustStore) {
+   public ElasticsearchDestination setTrustStore(final String trustStore) {
       this.trustStore = trustStore;
+      return this;
    }
 
    /**
@@ -492,8 +514,10 @@ public class ElasticsearchDestination extends AbstractDestination {
     *
     * @param trustStorePassword
     *       The SSL trust store password.
+    * @return Instance of this to support fluent API.
     */
-   public void setTrustStorePassword(final String trustStorePassword) {
+   public ElasticsearchDestination setTrustStorePassword(final String trustStorePassword) {
       this.trustStorePassword = trustStorePassword;
+      return this;
    }
 }

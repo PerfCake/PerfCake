@@ -119,8 +119,10 @@ public class RawReporter extends AbstractReporter {
     *
     * @param outputFile
     *       The name of the output file where to write the results.
+    * @return Instance of this to support fluent API.
     */
-   public void setOutputFile(final String outputFile) {
+   public RawReporter setOutputFile(final String outputFile) {
       this.outputFile = outputFile;
+      return this;
    }
 }
