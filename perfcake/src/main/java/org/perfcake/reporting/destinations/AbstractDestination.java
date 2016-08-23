@@ -33,6 +33,7 @@ public abstract class AbstractDestination implements Destination {
    @Override
    public void open(final Reporter parentReporter) {
       this.parentReporter = parentReporter;
+      open();
    }
 
    /**
