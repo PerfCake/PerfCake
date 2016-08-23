@@ -21,6 +21,8 @@ package org.perfcake.message.sequence;
 
 import org.perfcake.PerfCakeException;
 
+import java.util.Properties;
+
 /**
  * Simple sequence of numbers.
  * Can go in both directions, can specify boundaries and a step.
@@ -55,7 +57,7 @@ public class NumberSequence implements Sequence {
    private boolean cycle = true;
 
    @Override
-   public synchronized String getNext() {
+   public final synchronized void publishNext(final String sequenceId, final Properties values) {
       final long res = value;
       final boolean internalCycle = isCycle();
 
@@ -96,7 +98,7 @@ public class NumberSequence implements Sequence {
 
       }
 
-      return Long.toString(res);
+      values.setProperty(sequenceId, Long.toString(res));
    }
 
    @Override

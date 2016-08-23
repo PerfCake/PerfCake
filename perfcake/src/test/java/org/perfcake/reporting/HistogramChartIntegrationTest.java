@@ -74,8 +74,8 @@ public class HistogramChartIntegrationTest extends TestSetup {
             "attributes", attributesRequired, "autoCombine", "false", "chartHeight", "1000", "outputDir", dir);
 
       final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, 10000));
-      final Reporter r = (Reporter) ObjectFactory.summonInstance("org.perfcake.reporting.reporters.ResponseTimeHistogramReporter", reporterProperties);
-      final Destination d = (Destination) ObjectFactory.summonInstance("org.perfcake.reporting.destinations.ChartDestination", destinationProperties);
+      final Reporter r = (Reporter) ObjectFactory.summonInstance("org.perfcake.reporting.reporter.ResponseTimeHistogramReporter", reporterProperties);
+      final Destination d = (Destination) ObjectFactory.summonInstance("org.perfcake.reporting.destination.ChartDestination", destinationProperties);
       final Random rnd = new Random();
 
       r.setRunInfo(ri);

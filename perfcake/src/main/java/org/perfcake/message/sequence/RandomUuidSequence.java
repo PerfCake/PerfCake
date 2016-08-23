@@ -21,7 +21,7 @@ package org.perfcake.message.sequence;
 
 import org.perfcake.PerfCakeException;
 
-import java.util.Random;
+import java.util.Properties;
 import java.util.UUID;
 
 /**
@@ -32,8 +32,8 @@ import java.util.UUID;
 public class RandomUuidSequence implements Sequence {
 
    @Override
-   public String getNext() {
-      return UUID.randomUUID().toString();
+   public final void publishNext(final String sequenceId, final Properties values) {
+      values.setProperty(sequenceId, UUID.randomUUID().toString());
    }
 
    @Override

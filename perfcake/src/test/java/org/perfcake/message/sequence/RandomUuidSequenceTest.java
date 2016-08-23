@@ -22,17 +22,24 @@ package org.perfcake.message.sequence;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Properties;
+
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = "unit")
 public class RandomUuidSequenceTest {
 
    @Test
    public void basicTest() {
       Sequence s = new RandomUuidSequence();
 
-      Assert.assertNotEquals(s.getNext(), s.getNext());
-      Assert.assertEquals(s.getNext().length(), 8 * 4 + 4);
+      final Properties props = new Properties();
+      s.publishNext("v1", props);
+      s.publishNext("v2", props);
+
+      Assert.assertNotEquals(props.getProperty("v1"), props.getProperty("v2"));
+      Assert.assertEquals(props.getProperty("v1").length(), 8 * 4 + 4);
    }
 
 }

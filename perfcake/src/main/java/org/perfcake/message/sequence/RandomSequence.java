@@ -21,6 +21,7 @@ package org.perfcake.message.sequence;
 
 import org.perfcake.PerfCakeException;
 
+import java.util.Properties;
 import java.util.Random;
 
 /**
@@ -46,8 +47,8 @@ public class RandomSequence implements Sequence {
    private Random rnd = new Random();
 
    @Override
-   public String getNext() {
-      return String.valueOf(rnd.nextInt(max - min) + min);
+   public final void publishNext(final String sequenceId, final Properties values) {
+      values.setProperty(sequenceId, String.valueOf(rnd.nextInt(max - min) + min));
    }
 
    @Override

@@ -177,7 +177,7 @@ public class ResponseTimeHistogramTest {
       final ReportManager rm = new ReportManager();
       final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, 1000));
 
-      final Reporter r = (Reporter) ObjectFactory.summonInstance("org.perfcake.reporting.reporters.ResponseTimeHistogramReporter", props);
+      final Reporter r = (Reporter) ObjectFactory.summonInstance("org.perfcake.reporting.reporter.ResponseTimeHistogramReporter", props);
       final DummyDestination d = new DummyDestination();
 
       rm.setRunInfo(ri);

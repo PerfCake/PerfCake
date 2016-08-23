@@ -284,8 +284,8 @@ public class ReporterContractTest {
          mu.stopMeasure();
          mu.appendResult("avg", (double) i - 1); // AvgAccumulator should be used
          mu.appendResult("it", String.valueOf(i)); // LastValueAccumulator should be used
-         // 15 is the tolerance according to Puškvorec's constant
-         Assert.assertTrue(mu.getTotalTime() < 15.0 && mu.getTotalTime() >= 10.0, "Measurement run for 10ms, so the value should not be much different. Current value was: " + mu.getTotalTime());
+         // 25 is the tolerance according to Puškvorec's constant
+         Assert.assertTrue(mu.getTotalTime() < 25.0 && mu.getTotalTime() >= 10.0, "Measurement run for 10ms, so the value should not be much different. Current value was: " + mu.getTotalTime());
          rm.report(mu);
       }
       Assert.assertEquals(mu.getIteration(), 99);

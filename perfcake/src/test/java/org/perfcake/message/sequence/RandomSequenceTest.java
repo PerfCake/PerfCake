@@ -24,9 +24,12 @@ import org.perfcake.PerfCakeException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Properties;
+
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = "unit")
 public class RandomSequenceTest {
 
    @Test
@@ -37,8 +40,10 @@ public class RandomSequenceTest {
       seq.setMin(10);
       seq.setMax(384);
 
+      final Properties props = new Properties();
       for (int i = 0; i < 65535; i++) {
-         int r = Integer.valueOf(seq.getNext());
+         seq.publishNext("v1", props);
+         int r = Integer.valueOf(props.getProperty("v1"));
          min = Math.min(min, r);
          max = Math.max(max, r);
       }

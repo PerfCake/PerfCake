@@ -22,6 +22,7 @@ package org.perfcake.message.sequence;
 import org.perfcake.PerfCakeException;
 
 import java.util.ConcurrentModificationException;
+import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,16 +40,15 @@ public abstract class AbstractSequence implements Sequence {
 
    @Override
    @SuppressWarnings("unchecked")
-   public final String getNext() {
+   public final void publishNext(final String sequenceId, final Properties values) {
       // cannot use get and set as this could break the order of values (the task added later can be computed sooner)
       final CompletableFuture<String> previousValue = nextValue.get();
       try {
          final String result = previousValue.get();
          nextValue.set(CompletableFuture.supplyAsync(this::doGetNext));
-
-         return result;
+         values.setProperty(sequenceId, result);
       } catch (InterruptedException | ConcurrentModificationException | ExecutionException e) {
-         return doGetNext(); // fallback to the original sequence
+         values.setProperty(sequenceId, doGetNext()); // fallback to the original sequence
       }
    }
 

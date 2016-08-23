@@ -29,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Every single line in a given input file specifies a value of this sequence.
@@ -63,13 +64,13 @@ public class FileLinesSequence implements Sequence {
    private final Integer[] iterator = new Integer[] { 0 };
 
    @Override
-   public String getNext() {
+   public final void publishNext(final String sequenceId, final Properties values) {
       synchronized (iterator) {
          if (iterator[0] >= lines.length) {
             iterator[0] = 0;
          }
 
-         return lines[iterator[0]++];
+         values.setProperty(sequenceId, lines[iterator[0]++]);
       }
    }
 

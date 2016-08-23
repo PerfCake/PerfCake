@@ -25,6 +25,8 @@ import org.perfcake.util.Utils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Properties;
+
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -40,11 +42,17 @@ public class FileLinesSequenceTest extends TestSetup {
       fls.setFileUrl(fileUrl);
       fls.reset();
 
-      Assert.assertEquals(fls.getNext(), "AAA");
-      Assert.assertEquals(fls.getNext(), "");
-      Assert.assertEquals(fls.getNext(), "bb");
-      Assert.assertEquals(fls.getNext(), "c");
-      Assert.assertEquals(fls.getNext(), "AAA");
+      final Properties props = new Properties();
+      fls.publishNext("v1", props);
+      Assert.assertEquals(props.getProperty("v1"), "AAA");
+      fls.publishNext("v1", props);
+      Assert.assertEquals(props.getProperty("v1"), "");
+      fls.publishNext("v1", props);
+      Assert.assertEquals(props.getProperty("v1"), "bb");
+      fls.publishNext("v1", props);
+      Assert.assertEquals(props.getProperty("v1"), "c");
+      fls.publishNext("v1", props);
+      Assert.assertEquals(props.getProperty("v1"), "AAA");
    }
 
 }

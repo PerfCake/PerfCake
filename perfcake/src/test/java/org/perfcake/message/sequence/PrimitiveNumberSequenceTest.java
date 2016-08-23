@@ -24,9 +24,12 @@ import org.perfcake.PerfCakeException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Properties;
+
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = "unit")
 public class PrimitiveNumberSequenceTest {
 
    @Test
@@ -34,9 +37,13 @@ public class PrimitiveNumberSequenceTest {
       final Sequence s = new PrimitiveNumberSequence();
       s.reset();
 
-      Assert.assertEquals(s.getNext(), "0");
-      Assert.assertEquals(s.getNext(), "1");
-      Assert.assertEquals(s.getNext(), "2");
+      final Properties props = new Properties();
+      s.publishNext("v1", props);
+      Assert.assertEquals(props.getProperty("v1"), "0");
+      s.publishNext("v1", props);
+      Assert.assertEquals(props.getProperty("v1"), "1");
+      s.publishNext("v1", props);
+      Assert.assertEquals(props.getProperty("v1"), "2");
    }
 
 }

@@ -21,6 +21,9 @@ package org.perfcake.message.sequence;
 
 import org.perfcake.PerfCakeException;
 
+import java.util.Map;
+import java.util.Properties;
+
 /**
  * Represents an automatically generated sequence of values.
  * The resulting values can be used in the message body.
@@ -30,11 +33,12 @@ import org.perfcake.PerfCakeException;
 public interface Sequence {
 
    /**
-    * Gets the next value in this sequence. Must be thread safe. It is called once per message.
+    * Asks the sequence to publish its next value(s) to the provided map. The map can be considered thread safe.
     *
-    * @return The next value in this sequence.
+    * @param sequenceId Id of the sequence instance.
+    * @param values The properties to provide the next value(s) to.
     */
-   String getNext();
+   void publishNext(final String sequenceId, final Properties values);
 
    /**
     * Resets the sequence.

@@ -24,6 +24,13 @@ import org.perfcake.PerfCakeException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Keeps a registry of existing sequences.
@@ -53,15 +60,16 @@ public class SequenceManager {
    }
 
    /**
-    * Gets a snapshot of current next values of all sequences in the registry using {@link Sequence#getNext()}.
+    * Gets a snapshot of current next values of all sequences in the registry using {@link Sequence#publishNext(String, Properties)}.
     *
     * @return Snapshot of the values as properties in the form sequence name -&gt; sequence next value.
     */
    public Properties getSnapshot() {
       final Properties snapshot = new Properties();
 
-      sequences.forEach((k, v) -> snapshot.put(k, v.getNext()));
+      sequences.forEach((k, v) -> v.publishNext(k, snapshot));
 
       return snapshot;
    }
+
 }

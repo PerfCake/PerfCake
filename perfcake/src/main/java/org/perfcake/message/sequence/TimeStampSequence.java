@@ -19,6 +19,9 @@
  */
 package org.perfcake.message.sequence;
 
+import java.util.Map;
+import java.util.Properties;
+
 /**
  * Sequence that returns current timestamp.
  *
@@ -27,7 +30,7 @@ package org.perfcake.message.sequence;
 public class TimeStampSequence implements Sequence {
 
    @Override
-   public String getNext() {
-      return Long.toString(System.currentTimeMillis());
+   public final void publishNext(final String sequenceId, final Properties values) {
+      values.setProperty(sequenceId, Long.toString(System.currentTimeMillis()));
    }
 }

@@ -22,11 +22,13 @@ package org.perfcake.message.sequence;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
+@Test(groups = "unit")
 public class AbstractSequenceTest {
 
    @Test
@@ -34,9 +36,13 @@ public class AbstractSequenceTest {
       final Sequence s1 = new PrimitiveIntSeq();
       s1.reset();
 
-      Assert.assertEquals(s1.getNext(), "0");
-      Assert.assertEquals(s1.getNext(), "1");
-      Assert.assertEquals(s1.getNext(), "2");
+      final Properties props = new Properties();
+      s1.publishNext("v1", props);
+      Assert.assertEquals(props.getProperty("v1"), "0");
+      s1.publishNext("v1", props);
+      Assert.assertEquals(props.getProperty("v1"), "1");
+      s1.publishNext("v1", props);
+      Assert.assertEquals(props.getProperty("v1"), "2");
    }
 
    private static class PrimitiveIntSeq extends AbstractSequence {
