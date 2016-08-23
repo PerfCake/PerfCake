@@ -69,15 +69,15 @@ public class ConsoleDestinationTest {
       Assert.assertEquals(introField.get(destination), "");
       Assert.assertEquals(outroField.get(destination), "");
 
-      destination.setForeground("125,126,127");
-      destination.setBackground("25,26,27");
+      destination.setForeground("8");
+      destination.setBackground("2");
       destination.open();
       destination.report(sample);
-      Assert.assertEquals(introField.get(destination), "\u001B[38;2;125;126;127m\u001B[48;2;25;26;27m");
+      Assert.assertEquals(introField.get(destination), "\u001B[30;1m\u001B[42m");
       Assert.assertEquals(outroField.get(destination), "\u001B[0m");
 
-      destination.setForeground("125a,126,127");
-      destination.setBackground("25,26b,27");
+      destination.setForeground("16");
+      destination.setBackground("abd");
       destination.open();
       destination.report(sample);
       Assert.assertEquals(introField.get(destination), "");

@@ -83,11 +83,11 @@ public class ConsoleDestination extends AbstractDestination {
     * Gets ANSI code for foreground color.
     *
     * @param color
-    *       The foreground color in range 0 - 7.
+    *       The foreground color in range 0 - 15.
     * @return The ANSI code for foreground color.
     */
    private static String getAnsiFgColor(final int color) {
-      return CSI + (30 + color) + "m";
+      return CSI + (30 + (color % 8)) + (color > 7 ? ";1" : "") + "m";
    }
 
    /**
@@ -102,69 +102,25 @@ public class ConsoleDestination extends AbstractDestination {
    }
 
    /**
-    * Gets extended ANSI code for foreground color.
-    *
-    * @param r
-    *       Red color value in range 0 - 255.
-    * @param g
-    *       Green color value in range 0 - 255.
-    * @param b
-    *       Blue color value in range 0 - 255.
-    * @return The extended ANSI code for foreground color.
-    */
-   private static String getAnsiExtendedFgColor(final int r, final int g, final int b) {
-      return CSI + "38;2;" + r + ";" + g + ";" + b + "m";
-   }
-
-   /**
-    * Gets extended ANSI code for background color.
-    *
-    * @param r
-    *       Red color value in range 0 - 255.
-    * @param g
-    *       Green color value in range 0 - 255.
-    * @param b
-    *       Blue color value in range 0 - 255.
-    * @return The extended ANSI code for background color.
-    */
-   private static String getAnsiExtendedBgColor(final int r, final int g, final int b) {
-      return CSI + "48;2;" + r + ";" + g + ";" + b + "m";
-   }
-
-   /**
-    * Parses color configuration. Returns either a single number in range 0 - 7, or three numbers in range 0 - 255.
+    * Parses color configuration. Returns either a single number in range 0 - 15, or -1 if the color was wrong.
     *
     * @param color
     *       The color configuration string.
-    * @return Individual parts of color configuration. <code>null</code> when the input did not matche the supported formats.
+    * @return Individual parts of color configuration. <code>-1</code> when the input did not match the supported formats.
     */
-   private static int[] parseColor(final String color) {
-      final LongAdder fails = new LongAdder();
-      int[] colors = Arrays.stream(color.split(",")).mapToInt(s -> {
-         try {
-            return Integer.valueOf(StringUtil.trim(s));
-         } catch (NumberFormatException e) {
-            fails.increment(); // count failures
-            return -1;
-         }
-      }).toArray();
+   private static int parseColor(final String color) {
+      int colorNo = -1;
 
-      if (fails.longValue() == 0) { // no failures so far
-         if (colors.length == 1) { // we have a single color, check for correct value and return it
-            if (colors[0] >= 0 && colors[0] <= 7) {
-               return colors;
-            }
-         } else if (colors.length == 3) { // we have r,g,b, check their values
-            for (int i = 0; i < 3; i++) {
-               if (colors[i] > 255 || colors[i] < 0) { // if we are out of range, return null
-                  return null;
-               }
-            }
-            return colors; // the check has passed, return colors
+      try {
+         colorNo = Integer.valueOf(StringUtil.trim(color));
+         if (colorNo > 15 || colorNo < 0) {
+            colorNo = -1;
          }
+      } catch (NumberFormatException e) {
+         // nop
       }
 
-      return null; // there were failures, get out of here
+      return colorNo;
    }
 
    @Override
@@ -172,26 +128,18 @@ public class ConsoleDestination extends AbstractDestination {
       intro = "";
 
       if (background != null && !"".equals(background)) {
-         final int[] colors = parseColor(background);
-         if (colors != null) {
-            if (colors.length == 1) {
-               intro = getAnsiBgColor(colors[0]) + intro;
-            } else if (colors.length == 3) {
-               intro = getAnsiExtendedBgColor(colors[0], colors[1], colors[2]) + intro;
-            }
+         final int color = parseColor(background);
+         if (color != -1) {
+            intro = getAnsiBgColor(color) + intro;
          } else {
             log.warn("Unable to parse background color '{}'", background);
          }
       }
 
       if (foreground != null && !"".equals(foreground)) {
-         final int[] colors = parseColor(foreground);
-         if (colors != null) {
-            if (colors.length == 1) {
-               intro = getAnsiFgColor(colors[0]) + intro;
-            } else if (colors.length == 3) {
-               intro = getAnsiExtendedFgColor(colors[0], colors[1], colors[2]) + intro;
-            }
+         final int color = parseColor(foreground);
+         if (color != -1) {
+            intro = getAnsiFgColor(color) + intro;
          } else {
             log.warn("Unable to parse foreground color '{}'", foreground);
          }
