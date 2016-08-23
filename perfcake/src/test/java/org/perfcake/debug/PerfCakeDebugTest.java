@@ -84,8 +84,8 @@ public class PerfCakeDebugTest extends TestSetup {
       Assert.assertEquals(agentResults.get("i:name=Sequences,category1=seq.number"), "org.perfcake.message.sequence.PrimitiveNumberSequence");
       Assert.assertEquals(agentResults.get("c:name=Validation,category1=validator1,category2=failed"), "0");
 
-      Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=Reporting,category1=org.perfcake.reporting.reporters.IterationsPerSecondReporter,category2=org.perfcake.reporting.destinations.ConsoleDestination")) > 0);
-      Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=Reporting,category1=org.perfcake.reporting.reporters.IterationsPerSecondReporter")) > 0);
+      Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=Reporting,category1=org.perfcake.reporting.reporter.IterationsPerSecondReporter,category2=org.perfcake.reporting.destination.ConsoleDestination")) > 0);
+      Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=Reporting,category1=org.perfcake.reporting.reporter.IterationsPerSecondReporter")) > 0);
       Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=Validation,category1=validator1,category2=passed")) > 0);
       Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=SentMessages")) > 0);
       Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=CorrelatedMessages")) > 0);

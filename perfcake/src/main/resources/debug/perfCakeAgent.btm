@@ -80,7 +80,7 @@ DO
 ENDRULE
 
 RULE reportReporterUsage
-INTERFACE ^org.perfcake.reporting.reporters.Reporter
+INTERFACE ^org.perfcake.reporting.reporter.Reporter
 METHOD report
 IF true
 AT ENTRY
@@ -89,7 +89,7 @@ DO
 ENDRULE
 
 RULE reportParentReporter
-INTERFACE ^org.perfcake.reporting.destinations.Destination
+INTERFACE ^org.perfcake.reporting.destination.Destination
 METHOD open
 IF true
 AT ENTRY
@@ -98,7 +98,7 @@ DO
 ENDRULE
 
 RULE reportResultWritten
-INTERFACE ^org.perfcake.reporting.destinations.Destination
+INTERFACE ^org.perfcake.reporting.destination.Destination
 METHOD report
 IF true
 AT ENTRY

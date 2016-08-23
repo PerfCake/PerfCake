@@ -43,18 +43,18 @@ public class CsvProfileTest extends TestSetup {
 
       request = profile.getProfile(new Period(PeriodType.ITERATION, 0));
       Assert.assertEquals(request.getThreads(), 10);
-      Assert.assertEquals(request.getSpeed(), 100);
+      Assert.assertEquals(request.getSpeed(), 100.0);
 
       request = profile.getProfile(new Period(PeriodType.ITERATION, 100));
       Assert.assertEquals(request.getThreads(), 10);
-      Assert.assertEquals(request.getSpeed(), 100);
+      Assert.assertEquals(request.getSpeed(), 100.0);
 
       request = profile.getProfile(new Period(PeriodType.ITERATION, 250));
       Assert.assertEquals(request.getThreads(), 10);
-      Assert.assertEquals(request.getSpeed(), 200);
+      Assert.assertEquals(request.getSpeed(), 200.0);
 
       request = profile.getProfile(new Period(PeriodType.ITERATION, 500));
       Assert.assertEquals(request.getThreads(), 10);
-      Assert.assertEquals(request.getSpeed(), 100);
+      Assert.assertEquals(request.getSpeed(), 100.0);
    }
 }

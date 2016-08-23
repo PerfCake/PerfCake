@@ -26,7 +26,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Appends the measurements to Log4j to category org.perfcake.reporting.destinations.Log4jDestination.
+ * Appends the measurements to Log4j to category org.perfcake.reporting.destination.Log4jDestination.
  * Make appropriate configurations to customize its output. You can configure a separate appender only for this category for instance.
  * Logging level can be set via the level attribute.
  *
