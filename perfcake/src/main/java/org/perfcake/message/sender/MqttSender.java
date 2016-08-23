@@ -22,6 +22,7 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.reporting.MeasurementUnit;
+import org.perfcake.util.StringTemplate;
 import org.perfcake.util.Utils;
 
 import org.fusesource.mqtt.client.BlockingConnection;
@@ -35,34 +36,77 @@ import java.net.URISyntaxException;
 import java.util.Properties;
 
 /**
- * MQTT sender.
+ * Sends messages to an MQTT endpoint using Fusesource MQTT client.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class MqttSender extends AbstractSender {
 
+   /**
+    * MQTT connection.
+    */
    private BlockingConnection mqttConnection;
 
+   /**
+    * Name of topic where to send messages.
+    */
    private String topicName = null;
 
+   /**
+    * MQTT response.
+    */
    private org.fusesource.mqtt.client.Message mqttResponse = null;
+
+   /**
+    * True if and only if we should wait for response.
+    */
    private boolean isResponseExpected = false;
+
+   /**
+    * MQTT connection for sending responses.
+    */
    private BlockingConnection mqttResponseConnection = null;
 
-   // Properties
+   /**
+    * Required quality of service.
+    */
    private String qos = QoS.EXACTLY_ONCE.name();
+
+   /**
+    * MQTT server user name.
+    */
    private String userName = null;
+
+   /**
+    * MQTT server password.
+    */
    private String password = null;
 
-   private String responseTarget = null;
+   /**
+    * Where to read the response from.
+    */
+   private StringTemplate responseTarget = null;
+
+   /**
+    * Response quality of service.
+    */
    private String responseQos = qos;
+
+   /**
+    * Response server user name.
+    */
    private String responseUserName = null;
+
+   /**
+    * Response server password.
+    */
    private String responsePassword = null;
 
    @Override
    public void doInit(Properties messageAttributes) throws PerfCakeException {
       try {
-         final URI targetUri = new URI(getTarget());
+         final URI targetUri = new URI(safeGetTarget(messageAttributes));
          final String protocol = targetUri.getScheme();
          final String host = targetUri.getHost();
          final int port = targetUri.getPort();
@@ -87,7 +131,8 @@ public class MqttSender extends AbstractSender {
                final String responseHost;
                final Integer responsePort;
                final String responseTopicName;
-               final URI responseTargetUri = new URI(responseTarget);
+               final String safeResponseTarget = messageAttributes == null ? responseTarget.toString() : responseTarget.toString(messageAttributes);
+               final URI responseTargetUri = new URI(safeResponseTarget);
 
                if ((responseHost = responseTargetUri.getHost()) != null) {
                   final String responseProtocol = responseTargetUri.getScheme();
@@ -108,7 +153,7 @@ public class MqttSender extends AbstractSender {
                   mqttResponseConnection = mqttResponseClient.blockingConnection();
                   mqttResponseConnection.connect();
                } else {
-                  responseTopicName = responseTarget;
+                  responseTopicName = safeResponseTarget;
                   mqttResponseConnection = mqttConnection;
                }
                final Topic[] responseTopic = { new Topic(responseTopicName, QoS.valueOf(responseQos)) };
@@ -165,59 +210,129 @@ public class MqttSender extends AbstractSender {
       }
    }
 
+   /**
+    * Gets the required response quality of service.
+    * @return The required response quality of service.
+    */
    public String getResponseQos() {
       return responseQos;
    }
 
-   public void setResponseQos(final String responseQos) {
+   /**
+    * Sets the required response quality of service.
+    * @param responseQos The required response quality of service.
+    * @return Instance of this to support fluent API.
+    */
+   public MqttSender setResponseQos(final String responseQos) {
       this.responseQos = responseQos;
+      return this;
    }
 
+   /**
+    * Gets where to read the response from.
+    * @return Where to read the response from.
+    */
    public String getResponseTarget() {
-      return responseTarget;
+      return responseTarget.toString();
    }
 
-   public void setResponseTarget(final String responseTarget) {
-      this.responseTarget = responseTarget;
+   /**
+    * Sets where to read the response from.
+    * @param responseTarget Where to read the response from.
+    * @return Instance of this to support fluent API.
+    */
+   public MqttSender setResponseTarget(final String responseTarget) {
+      this.responseTarget = new StringTemplate(responseTarget);
+      return this;
    }
 
+   /**
+    * Gets the required quality of service.
+    * @return The required quality of service.
+    */
    public String getQos() {
       return qos;
    }
 
-   public void setQos(final String qos) {
+   /**
+    * Sets the required quality of service.
+    * @param qos The required quality of service.
+    * @return Instance of this to support fluent API.
+    */
+   public MqttSender setQos(final String qos) {
       this.qos = qos;
+      return this;
    }
 
+   /**
+    * Gets the MQTT server user name.
+    * @return the MQTT server user name.
+    */
    public String getUserName() {
       return userName;
    }
 
-   public void setUserName(final String userName) {
+   /**
+    * Sets the MQTT server user name.
+    * @param userName The MQTT server user name.
+    * @return Instance of this to support fluent API.
+    */
+   public MqttSender setUserName(final String userName) {
       this.userName = userName;
+      return this;
    }
 
+   /**
+    * Gets the MQTT server password.
+    * @return The MQTT server password.
+    */
    public String getPassword() {
       return password;
    }
 
-   public void setPassword(final String password) {
+   /**
+    * Sets the MQTT server password.
+    * @param password The MQTT server password.
+    * @return Instance of this to support fluent API.
+    */
+   public MqttSender setPassword(final String password) {
       this.password = password;
+      return this;
    }
 
+   /**
+    * Gets the response server user name.
+    * @return The response server user name.
+    */
    public String getResponseUserName() {
       return responseUserName;
    }
 
-   public void setResponseUserName(final String responseUserName) {
+   /**
+    * Sets the tesponse server user name.
+    * @param responseUserName The response server user name.
+    * @return Instance of this to support fluent API.
+    */
+   public MqttSender setResponseUserName(final String responseUserName) {
       this.responseUserName = responseUserName;
+      return this;
    }
 
+   /**
+    * Gets the response server password.
+    * @return The response server password.
+    */
    public String getResponsePassword() {
       return responsePassword;
    }
 
-   public void setResponsePassword(final String responsePassword) {
+   /**
+    * Sets the response server password.
+    * @param responsePassword The response server password.
+    * @return Instance of this to support fluent API.
+    */
+   public MqttSender setResponsePassword(final String responsePassword) {
       this.responsePassword = responsePassword;
+      return this;
    }
 }

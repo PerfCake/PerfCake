@@ -118,9 +118,11 @@ public class NumberSequence implements Sequence {
     *
     * @param start
     *       The beginning of the sequence.
+    * @return Instance of this to support fluent API.
     */
-   public void setStart(final long start) {
+   public NumberSequence setStart(final long start) {
       this.start = start;
+      return this;
    }
 
    /**
@@ -138,9 +140,11 @@ public class NumberSequence implements Sequence {
     *
     * @param end
     *       The last value in the sequence.
+    * @return Instance of this to support fluent API.
     */
-   public void setEnd(final long end) {
+   public NumberSequence setEnd(final long end) {
       this.end = end;
+      return this;
    }
 
    /**
@@ -157,8 +161,9 @@ public class NumberSequence implements Sequence {
     *
     * @param step
     *       The step size.
+    * @return Instance of this to support fluent API.
     */
-   public void setStep(final long step) {
+   public NumberSequence setStep(final long step) {
       if (step < 0 && end == Long.MIN_VALUE) {
          end = Long.MAX_VALUE;
       } else if (step > 0 && end == Long.MAX_VALUE) {
@@ -166,6 +171,7 @@ public class NumberSequence implements Sequence {
       }
 
       this.step = step;
+      return this;
    }
 
    /**
@@ -182,8 +188,10 @@ public class NumberSequence implements Sequence {
     *
     * @param cycle
     *       True to allow the sequence to cycle around.
+    * @return Instance of this to support fluent API.
     */
-   public void setCycle(final boolean cycle) {
+   public NumberSequence setCycle(final boolean cycle) {
       this.cycle = cycle;
+      return this;
    }
 }

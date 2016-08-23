@@ -69,9 +69,11 @@ public class RandomSequence implements Sequence {
     *
     * @param min
     *       The minimal number in the sequence.
+    * @return Instance of this to support fluent API.
     */
-   public void setMin(final int min) {
+   public RandomSequence setMin(final int min) {
       this.min = min;
+      return this;
    }
 
    /**
@@ -88,8 +90,10 @@ public class RandomSequence implements Sequence {
     *
     * @param max
     *       The maximal number in the sequence.
+    * @return Instance of this to support fluent API.
     */
-   public void setMax(final int max) {
+   public RandomSequence setMax(final int max) {
       this.max = max;
+      return this;
    }
 }

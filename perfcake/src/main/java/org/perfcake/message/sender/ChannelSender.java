@@ -99,9 +99,11 @@ public abstract class ChannelSender extends AbstractSender {
     *
     * @param awaitResponse
     *       True to make the sender to wait for a response.
+    * @return Instance of this to support fluent API.
     */
-   public void setAwaitResponse(final boolean awaitResponse) {
+   public ChannelSender setAwaitResponse(final boolean awaitResponse) {
       this.awaitResponse = awaitResponse;
+      return this;
    }
 
    /**
@@ -118,8 +120,10 @@ public abstract class ChannelSender extends AbstractSender {
     *
     * @param maxResponseSize
     *       The desired maximum response size.
+    * @return Instance of this to support fluent API.
     */
-   public void setMaxResponseSize(final int maxResponseSize) {
+   public ChannelSender setMaxResponseSize(final int maxResponseSize) {
       this.maxResponseSize = maxResponseSize;
+      return this;
    }
 }

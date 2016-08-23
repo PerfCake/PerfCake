@@ -82,9 +82,11 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     *
     * @param shutdownPeriod
     *       The new shutdown period.
+    * @return Instance of this to support fluent API.
     */
-   public void setShutdownPeriod(final long shutdownPeriod) {
+   public DefaultMessageGenerator setShutdownPeriod(final long shutdownPeriod) {
       this.shutdownPeriod = shutdownPeriod;
+      return this;
    }
 
    @Override

@@ -164,8 +164,10 @@ public abstract class AbstractSender implements MessageSender {
     *
     * @param keepConnection
     *       True when the connection should be kept open.
+    * @return Instance of this to support fluent API.
     */
-   public void setKeepConnection(final boolean keepConnection) {
+   public AbstractSender setKeepConnection(final boolean keepConnection) {
       this.keepConnection = keepConnection;
+      return this;
    }
 }

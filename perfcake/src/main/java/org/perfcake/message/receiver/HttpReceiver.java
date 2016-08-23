@@ -115,9 +115,11 @@ public class HttpReceiver extends AbstractReceiver {
     *
     * @param httpStatusCode
     *       The HTTP status code to return to the client.
+    * @return Instance of this to support fluent API.
     */
-   public void setHttpStatusCode(final int httpStatusCode) {
+   public HttpReceiver setHttpStatusCode(final int httpStatusCode) {
       this.httpStatusCode = httpStatusCode;
+      return this;
    }
 
    /**
@@ -134,9 +136,11 @@ public class HttpReceiver extends AbstractReceiver {
     *
     * @param httpStatusMessage
     *       The HTTP status message to return to the client.
+    * @return Instance of this to support fluent API.
     */
-   public void setHttpStatusMessage(final String httpStatusMessage) {
+   public HttpReceiver setHttpStatusMessage(final String httpStatusMessage) {
       this.httpStatusMessage = httpStatusMessage;
+      return this;
    }
 
    /**
@@ -153,8 +157,10 @@ public class HttpReceiver extends AbstractReceiver {
     *
     * @param httpResponse
     *       The HTTP response to return to the client.
+    * @return Instance of this to support fluent API.
     */
-   public void setHttpResponse(final String httpResponse) {
+   public HttpReceiver setHttpResponse(final String httpResponse) {
       this.httpResponse = httpResponse;
+      return this;
    }
 }

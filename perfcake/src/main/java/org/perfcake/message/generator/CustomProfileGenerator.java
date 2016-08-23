@@ -149,9 +149,11 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
     *
     * @param profileClass
     *       The class name of the profile.
+    * @return Instance of this to support fluent API.
     */
-   public void setProfileClass(final String profileClass) {
+   public CustomProfileGenerator setProfileClass(final String profileClass) {
       this.profileClass = profileClass;
+      return this;
    }
 
    /**
@@ -168,9 +170,11 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
     *
     * @param profileSource
     *       Where to read the profile data from.
+    * @return Instance of this to support fluent API.
     */
-   public void setProfileSource(final String profileSource) {
+   public CustomProfileGenerator setProfileSource(final String profileSource) {
       this.profileSource = profileSource;
+      return this;
    }
 
    /**
@@ -187,8 +191,10 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
     *
     * @param autoReplay
     *       True if and only if we should start from the beginning.
+    * @return Instance of this to support fluent API.
     */
-   public void setAutoReplay(final boolean autoReplay) {
+   public CustomProfileGenerator setAutoReplay(final boolean autoReplay) {
       this.autoReplay = autoReplay;
+      return this;
    }
 }

@@ -83,11 +83,24 @@ public class FileLinesSequence implements Sequence {
       }
    }
 
+   /**
+    * Gets the file from where to read lines representing the sequence values.
+    *
+    * @return The file from where to read lines representing the sequence values.
+    */
    public String getFileUrl() {
       return fileUrl;
    }
 
-   public void setFileUrl(final String fileUrl) {
+   /**
+    * Sets the file from where to read lines representing the sequence values.
+    *
+    * @param fileUrl
+    *       The file from where to read lines representing the sequence values.
+    * @return Instance of this to support fluent API.
+    */
+   public FileLinesSequence setFileUrl(final String fileUrl) {
       this.fileUrl = fileUrl;
+      return this;
    }
 }

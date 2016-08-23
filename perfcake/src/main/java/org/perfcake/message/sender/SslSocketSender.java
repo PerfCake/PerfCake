@@ -94,9 +94,11 @@ public class SslSocketSender extends AbstractSocketSender {
     *
     * @param keyStore
     *       The SSL key store location.
+    * @return Instance of this to support fluent API.
     */
-   public void setKeyStore(final String keyStore) {
+   public SslSocketSender setKeyStore(final String keyStore) {
       this.keyStore = keyStore;
+      return this;
    }
 
    /**
@@ -113,9 +115,11 @@ public class SslSocketSender extends AbstractSocketSender {
     *
     * @param keyStorePassword
     *       The SSL key store password.
+    * @return Instance of this to support fluent API.
     */
-   public void setKeyStorePassword(final String keyStorePassword) {
+   public SslSocketSender setKeyStorePassword(final String keyStorePassword) {
       this.keyStorePassword = keyStorePassword;
+      return this;
    }
 
    /**
@@ -132,9 +136,11 @@ public class SslSocketSender extends AbstractSocketSender {
     *
     * @param trustStore
     *       The SSL trust store location.
+    * @return Instance of this to support fluent API.
     */
-   public void setTrustStore(final String trustStore) {
+   public SslSocketSender setTrustStore(final String trustStore) {
       this.trustStore = trustStore;
+      return this;
    }
 
    /**
@@ -151,8 +157,10 @@ public class SslSocketSender extends AbstractSocketSender {
     *
     * @param trustStorePassword
     *       The SSL trust store password.
+    * @return Instance of this to support fluent API.
     */
-   public void setTrustStorePassword(final String trustStorePassword) {
+   public SslSocketSender setTrustStorePassword(final String trustStorePassword) {
       this.trustStorePassword = trustStorePassword;
+      return this;
    }
 }
