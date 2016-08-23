@@ -32,7 +32,7 @@ public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
    /**
     * The desired constant speed in messages per second.
     */
-   private int speed = 5000;
+   private double speed = 5000;
 
    /**
     * Buffer of recent times when a task was added. Its size is equal to the speed, so the smallest
@@ -52,7 +52,7 @@ public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
    private int breakDuration;
 
    private long getSmallest() {
-      return buffer[(pointer + 1) % speed];
+      return buffer[(pointer + 1) % (int) Math.round(Math.ceil(speed))];
    }
 
    private long getLast() {
@@ -60,8 +60,41 @@ public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
    }
 
    private void addTime(final long time) {
-      pointer = (pointer + 1) % speed;
+      pointer = (pointer + 1) % (int) Math.round(Math.ceil(speed));
       buffer[pointer] = time;
+   }
+
+   /**
+    * Gets the desired constant speed in messages per second.
+    *
+    * @return The speed.
+    */
+   public double getSpeed() {
+      return speed;
+   }
+
+   /**
+    * Sets the desired constant speed in messages per second.
+    *
+    * @param speed
+    *       The speed in messages per second.
+    * @return Instance of this for fluent API.
+    */
+   public ConstantSpeedMessageGenerator setSpeed(final double speed) {
+      this.speed = speed;
+
+      if (speed > 0) { // -1 = unlimited speed
+         buffer = new long[(int) Math.round(Math.ceil(speed))];
+         pointer = 0;
+
+         for (int i = 0; i < (int) Math.round(Math.ceil(speed)); i++) {
+            buffer[i] = 0;
+         }
+
+         breakDuration = (int) Math.round(1000 / speed); // will be 0 for speed > 1000
+      }
+
+      return this;
    }
 
    @Override
@@ -84,35 +117,5 @@ public class ConstantSpeedMessageGenerator extends DefaultMessageGenerator {
       }
 
       return false;
-   }
-
-   /**
-    * Gets the desired constant speed in messages per second.
-    *
-    * @return The speed.
-    */
-   public int getSpeed() {
-      return speed;
-   }
-
-   /**
-    * Sets the desired constant speed in messages per second.
-    *
-    * @param speed
-    *       The speed in messages per second.
-    */
-   public void setSpeed(final int speed) {
-      this.speed = speed;
-
-      if (speed > 0) { // -1 = unlimited speed
-         buffer = new long[speed];
-         pointer = 0;
-
-         for (int i = 0; i < speed; i++) {
-            buffer[i] = 0;
-         }
-
-         breakDuration = 1000 / speed; // will be 0 for speed > 1000
-      }
    }
 }

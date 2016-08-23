@@ -50,7 +50,7 @@ public class CustomProfileGeneratorTest extends TestSetup {
       final ScenarioRetractor retractor = new ScenarioRetractor(scenario);
       final RunInfo runInfo = retractor.getReportManager().getRunInfo();
 
-      int[] threadsWanted = new int[] { 10, 20, 30, 15, 10 };
+      double[] threadsWanted = new double[] { 10, 20, 30, 15, 10 };
       int[] noSonnerThan = new int[] { 0, 250, 500, 750, 900 };
       int pointer = 0;
 
@@ -83,7 +83,7 @@ public class CustomProfileGeneratorTest extends TestSetup {
       final ScenarioRetractor retractor = new ScenarioRetractor(scenario);
       final RunInfo runInfo = retractor.getReportManager().getRunInfo();
 
-      int[] speedWanted = new int[] { 100, 200, 100, 200 };
+      double[] speedWanted = new double[] { 100, 200, 100, 200 };
       int[] noSonnerThan = new int[] { 0, 250, 500, 750 };
       int pointer = 0;
 
@@ -97,6 +97,39 @@ public class CustomProfileGeneratorTest extends TestSetup {
 
       while (runInfo.isRunning() && pointer < speedWanted.length && t.isAlive()) {
          if (runInfo.getIteration() > noSonnerThan[pointer] && generator.getSpeed() == speedWanted[pointer]) {
+            pointer++;
+         }
+         Thread.sleep(10);
+      }
+
+      t.join();
+
+      Assert.assertEquals(pointer, speedWanted.length);
+   }
+
+   @Test
+   public void testCustomProfileSlow() throws PerfCakeException, InterruptedException {
+      System.setProperty("test.name", "slow");
+      final Scenario scenario = ScenarioLoader.load("test-profile-slow");
+      final Thread t = getScenarioThread(scenario);
+
+      final ScenarioRetractor retractor = new ScenarioRetractor(scenario);
+      final RunInfo runInfo = retractor.getReportManager().getRunInfo();
+
+      double[] speedWanted = new double[] { 0.5, 0.5 };
+      int[] noSonnerThan = new int[] { 0, 500 };
+      int pointer = 0;
+
+      while (runInfo.getIteration() == -1 && t.isAlive()) {
+         Thread.sleep(10);
+      }
+
+      Assert.assertTrue(t.isAlive(), "Scenario thread terminated unexpectedly.");
+
+      final CustomProfileGenerator generator = (CustomProfileGenerator) retractor.getGenerator();
+
+      while (runInfo.isRunning() && pointer < speedWanted.length && t.isAlive()) {
+         if (runInfo.getRunTime() > noSonnerThan[pointer] && generator.getSpeed() == speedWanted[pointer]) {
             pointer++;
          }
          Thread.sleep(10);

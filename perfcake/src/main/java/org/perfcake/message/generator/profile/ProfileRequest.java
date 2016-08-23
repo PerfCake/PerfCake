@@ -34,7 +34,7 @@ public final class ProfileRequest {
    /**
     * The requested speed of sending messages in messages per second.
     */
-   private final int speed;
+   private final double speed;
 
    /**
     * Creates an immutable instance of the message generation profile.
@@ -44,7 +44,7 @@ public final class ProfileRequest {
     * @param speed
     *       The requested speed of sending messages in messages per second.
     */
-   public ProfileRequest(final int threads, final int speed) {
+   public ProfileRequest(final int threads, final double speed) {
       this.threads = threads;
       this.speed = speed;
    }
@@ -63,7 +63,7 @@ public final class ProfileRequest {
     *
     * @return The requested speed of sending messages in messages per second.
     */
-   public int getSpeed() {
+   public double getSpeed() {
       return speed;
    }
 

@@ -174,9 +174,9 @@ public class AccumulatorsTest {
       final Accumulator accumulator = constr.newInstance(600);
 
       for (int i = 0; i < values.length; i++) {
-         Thread.sleep(10);
+         Thread.sleep(50);
          accumulator.add(values[i]);
-         Thread.sleep(90);
+         Thread.sleep(50);
       }
       Assert.assertEquals(accumulator.getResult(), oneTickResult);
       Thread.sleep(250);

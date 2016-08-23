@@ -67,7 +67,7 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
    /**
     * Last speed when we did the reconfiguration.
     */
-   private int lastSpeed = -1;
+   private double lastSpeed = -1;
 
    /**
     * Last number of threads when we did the reconfiguration.

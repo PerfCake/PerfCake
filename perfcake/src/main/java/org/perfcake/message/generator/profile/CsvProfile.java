@@ -49,7 +49,7 @@ public class CsvProfile extends AbstractProfile {
                errors.append("Invalid format of CSV file (too many entries) ").append(profileSource).append(" on line ").append(lineNumber.intValue()).append(".\n");
             } else {
                try {
-                  addRequestEntry(Long.parseLong(items[0]), new ProfileRequest(Integer.parseInt(items[1]), Integer.parseInt(items[2])));
+                  addRequestEntry(Long.parseLong(items[0]), new ProfileRequest(Integer.parseInt(items[1]), Double.parseDouble(items[2])));
                } catch (NumberFormatException nfe) {
                   errors.append("Invalid format of CSV file (not a number) ").append(profileSource).append(" on line ").append(lineNumber.intValue()).append(".\n");
                }

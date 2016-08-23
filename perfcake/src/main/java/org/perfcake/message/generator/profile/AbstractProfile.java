@@ -83,7 +83,7 @@ public abstract class AbstractProfile implements Profile {
 
    @Override
    public ProfileRequest getProfile(final Period period) {
-      Map.Entry<Long, ProfileRequest> entry = requests.floorEntry(autoReplay ? (period.getPeriod() % maxEntry) : period.getPeriod());
+      Map.Entry<Long, ProfileRequest> entry = requests.floorEntry(autoReplay && maxEntry != 0 ? (period.getPeriod() % maxEntry) : period.getPeriod());
 
       return entry != null ? entry.getValue() : requests.firstEntry().getValue();
    }
