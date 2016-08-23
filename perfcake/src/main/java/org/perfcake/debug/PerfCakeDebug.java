@@ -25,8 +25,8 @@ import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.receiver.Receiver;
 import org.perfcake.message.sequence.Sequence;
-import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.destination.Destination;
+import org.perfcake.reporting.reporter.Reporter;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 

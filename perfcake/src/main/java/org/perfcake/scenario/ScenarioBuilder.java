@@ -30,7 +30,7 @@ import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.Sequence;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.reporter.Reporter;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;

@@ -36,8 +36,8 @@ public interface ScenarioFactory {
    String DEFAULT_GENERATOR_PACKAGE = "org.perfcake.message.generator";
    String DEFAULT_SEQUENCE_PACKAGE = "org.perfcake.message.sequence";
    String DEFAULT_SENDER_PACKAGE = "org.perfcake.message.sender";
-   String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporters";
-   String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destinations";
+   String DEFAULT_REPORTER_PACKAGE = "org.perfcake.reporting.reporter";
+   String DEFAULT_DESTINATION_PACKAGE = "org.perfcake.reporting.destination";
    String DEFAULT_VALIDATION_PACKAGE = "org.perfcake.validation";
    String DEFAULT_CORRELATOR_PACKAGE = "org.perfcake.message.correlator";
    String DEFAULT_RECEIVER_PACKAGE = "org.perfcake.message.receiver";

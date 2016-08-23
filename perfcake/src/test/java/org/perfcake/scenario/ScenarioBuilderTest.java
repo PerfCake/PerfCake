@@ -36,10 +36,10 @@ import org.perfcake.message.sender.HttpSender;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sequence.PrimitiveNumberSequence;
 import org.perfcake.message.sequence.Sequence;
-import org.perfcake.reporting.destinations.ConsoleDestination;
-import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.IterationsPerSecondReporter;
-import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.destination.ConsoleDestination;
+import org.perfcake.reporting.destination.Destination;
+import org.perfcake.reporting.reporter.IterationsPerSecondReporter;
+import org.perfcake.reporting.reporter.Reporter;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.RegExpValidator;
 

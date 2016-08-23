@@ -26,11 +26,11 @@ import org.perfcake.TestSetup;
 import org.perfcake.TestUtil;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
-import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.destinations.c3chart.C3ChartData;
-import org.perfcake.reporting.destinations.c3chart.C3ChartDataFile;
-import org.perfcake.reporting.destinations.c3chart.C3ChartFactory;
-import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.destination.Destination;
+import org.perfcake.reporting.destination.c3chart.C3ChartData;
+import org.perfcake.reporting.destination.c3chart.C3ChartDataFile;
+import org.perfcake.reporting.destination.c3chart.C3ChartFactory;
+import org.perfcake.reporting.reporter.Reporter;
 import org.perfcake.util.ObjectFactory;
 
 import org.apache.commons.io.FileUtils;

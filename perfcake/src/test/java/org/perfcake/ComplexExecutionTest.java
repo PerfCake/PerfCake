@@ -20,9 +20,9 @@
 package org.perfcake;
 
 import org.perfcake.message.sender.TestSender;
-import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.destinations.DummyDestination;
-import org.perfcake.reporting.reporters.DummyReporter;
+import org.perfcake.reporting.destination.Destination;
+import org.perfcake.reporting.destination.DummyDestination;
+import org.perfcake.reporting.reporter.DummyReporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;

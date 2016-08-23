@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Measurement is a product of {@link org.perfcake.reporting.reporters.Reporter}.
+ * Measurement is a product of {@link org.perfcake.reporting.reporter.Reporter}.
  * It is typically a combination of multiple {@link MeasurementUnit Measuremen Units}.
- * The way they are combined is the matter of a particular {@link org.perfcake.reporting.reporters.Reporter}
+ * The way they are combined is the matter of a particular {@link org.perfcake.reporting.reporter.Reporter}
  * implementation.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>

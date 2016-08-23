@@ -22,8 +22,8 @@ package org.perfcake.reporting;
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.PeriodType;
-import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.destination.Destination;
+import org.perfcake.reporting.reporter.Reporter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -174,7 +174,7 @@ public class ReportManager {
 
       runInfo.reset();
       resetLastTimes = true;
-      reporters.forEach(org.perfcake.reporting.reporters.Reporter::reset);
+      reporters.forEach(org.perfcake.reporting.reporter.Reporter::reset);
    }
 
    /**
@@ -195,7 +195,7 @@ public class ReportManager {
    }
 
    /**
-    * Registers a new {@link org.perfcake.reporting.reporters.Reporter}.
+    * Registers a new {@link org.perfcake.reporting.reporter.Reporter}.
     *
     * @param reporter
     *       A reporter to be registered.
@@ -211,7 +211,7 @@ public class ReportManager {
    }
 
    /**
-    * Removes a registered {@link org.perfcake.reporting.reporters.Reporter}.
+    * Removes a registered {@link org.perfcake.reporting.reporter.Reporter}.
     *
     * @param reporter
     *       A reporter to unregistered.
@@ -247,7 +247,7 @@ public class ReportManager {
 
       runInfo.start(); // runInfo must be started first, otherwise the time monitoring thread in AbstractReporter dies immediately
 
-      reporters.forEach(org.perfcake.reporting.reporters.Reporter::start);
+      reporters.forEach(org.perfcake.reporting.reporter.Reporter::start);
 
       periodicThread = new Thread(() -> {
          long now;
@@ -348,7 +348,7 @@ public class ReportManager {
 
       reportFinalTimeResults();
 
-      reporters.forEach(org.perfcake.reporting.reporters.Reporter::stop);
+      reporters.forEach(org.perfcake.reporting.reporter.Reporter::stop);
 
       if (periodicThread != null) {
          periodicThread.interrupt();

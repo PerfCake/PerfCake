@@ -29,11 +29,11 @@ import org.perfcake.message.generator.AbstractMessageGenerator;
 import org.perfcake.message.generator.DefaultMessageGenerator;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.TestSender;
-import org.perfcake.reporting.destinations.CsvDestination;
-import org.perfcake.reporting.reporters.Reporter;
-import org.perfcake.reporting.reporters.ResponseTimeStatsReporter;
-import org.perfcake.reporting.reporters.ThroughputStatsReporter;
-import org.perfcake.reporting.reporters.WarmUpReporter;
+import org.perfcake.reporting.destination.CsvDestination;
+import org.perfcake.reporting.reporter.Reporter;
+import org.perfcake.reporting.reporter.ResponseTimeStatsReporter;
+import org.perfcake.reporting.reporter.ThroughputStatsReporter;
+import org.perfcake.reporting.reporter.WarmUpReporter;
 import org.perfcake.util.Utils;
 
 import org.testng.Assert;

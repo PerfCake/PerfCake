@@ -516,7 +516,7 @@ class Reporter extends ObjectWithClassName {
       d
    }
 
-   org.perfcake.reporting.reporters.Reporter buildReporter() {
+   org.perfcake.reporting.reporter.Reporter buildReporter() {
       def props = new Properties()
       props.putAll(properties)
       def r = ObjectFactory.summonInstance(className.contains('.') ?: ScenarioFactory.DEFAULT_REPORTER_PACKAGE + '.' + className, props)
@@ -581,7 +581,7 @@ class Destination extends ObjectWithClassName {
       this
    }
 
-   org.perfcake.reporting.destinations.Destination buildDestination() {
+   org.perfcake.reporting.destination.Destination buildDestination() {
       def props = new Properties()
       props.putAll(properties)
       ObjectFactory.summonInstance(className.contains('.') ?: ScenarioFactory.DEFAULT_DESTINATION_PACKAGE + '.' + className, props)

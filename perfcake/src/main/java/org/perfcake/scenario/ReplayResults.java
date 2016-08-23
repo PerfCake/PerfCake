@@ -24,9 +24,9 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
 import org.perfcake.reporting.ReportingException;
-import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.RawReporter;
-import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.destination.Destination;
+import org.perfcake.reporting.reporter.RawReporter;
+import org.perfcake.reporting.reporter.Reporter;
 import org.perfcake.util.Utils;
 
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 /**
- * Replays the results previously recorded with {@link org.perfcake.reporting.reporters.RawReporter}. The same
+ * Replays the results previously recorded with {@link org.perfcake.reporting.reporter.RawReporter}. The same
  * scenario should be used, and its reporting section will be used to configure reporters and destinations.
  * Then the normal reporting operation is emulated to achieve repeatable results.
  *
