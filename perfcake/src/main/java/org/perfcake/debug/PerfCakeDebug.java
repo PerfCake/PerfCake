@@ -113,12 +113,12 @@ public class PerfCakeDebug {
    private Counter sentMessages = newCounter("SentMessages");
 
    /**
-    * Number of received messages
+    * Number of received messages.
     */
    private Counter correlatedMessages = newCounter("CorrelatedMessages");
 
    /**
-    * Number of sequence snapshots taken
+    * Number of sequence snapshots taken.
     */
    private Counter sequenceSnapshots = newCounter("SequenceSnapshots");
 
