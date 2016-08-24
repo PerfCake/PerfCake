@@ -115,7 +115,8 @@ public class HistogramChartIntegrationTest extends TestSetup {
       // expect Threads_warmUp
       Assert.assertEquals(c3desc.getChart().getAttributes().contains("Threads_" + PerfCakeConst.WARM_UP_TAG), hasThreadsAttribute && hasWarmUp);
       // expect correct number of records depending on whether warmUp was recorded
-      Assert.assertEquals(c3data.getData().size(), records);
+      // we can be tolerant as on slow running systems, we might get more or less records
+      Assert.assertTrue(c3data.getData().size() >= records - 2 && c3data.getData().size() <= records + 2);
 
       FileUtils.deleteDirectory(new File(dir));
    }
