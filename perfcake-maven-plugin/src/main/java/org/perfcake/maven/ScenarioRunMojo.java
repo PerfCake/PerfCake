@@ -99,6 +99,12 @@ public class ScenarioRunMojo extends AbstractMojo {
       perfCakeProperties.setProperty(PerfCakeConst.PLUGINS_DIR_PROPERTY, pluginsDir);
       perfCakeProperties.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, scenariosDir);
 
+      if (getLog().isDebugEnabled()) {
+         getLog().debug("Using scenariosDir=" + scenariosDir);
+         getLog().debug("Using messagesDir=" + messagesDir);
+         getLog().debug("Using pluginsDir=" + pluginsDir);
+      }
+
       if (propertiesFile != null && !"".equals(propertiesFile)) {
          perfCakeProperties.setProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY, propertiesFile);
       }

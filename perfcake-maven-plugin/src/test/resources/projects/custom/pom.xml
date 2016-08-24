@@ -51,8 +51,8 @@
             <version>${perfcake.version}</version>
             <configuration>
                <scenario>scenario</scenario>
-               <scenarios-dir>perfcake-maven-plugin/src/test/resources/projects/custom/src/test/resources/perfcake/scenarios_custom</scenarios-dir>
-               <messages-dir>perfcake-maven-plugin/src/test/resources/projects/custom/src/test/resources/perfcake/messages_custom</messages-dir>
+               <scenarios-dir>src/test/resources/projects/custom/src/test/resources/perfcake/scenarios_custom</scenarios-dir>
+               <messages-dir>src/test/resources/projects/custom/src/test/resources/perfcake/messages_custom</messages-dir>
             </configuration>
             <executions>
                <execution>

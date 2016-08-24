@@ -83,12 +83,8 @@ public class ScenarioRunMojoTest extends AbstractMojoTestCase {
    }
 
    private void test() throws IOException {
-      assertTrue(new File("perfcake-maven-plugin.log").exists());
       assertTrue(new File("perfcake-maven-plugin.csv").exists());
-      assertTrue(Files.size(Paths.get("perfcake-maven-plugin.log")) > 0);
       assertTrue(Files.size(Paths.get("perfcake-maven-plugin.csv")) > 0);
-
-      Files.deleteIfExists(Paths.get("perfcake-maven-plugin.log"));
       Files.deleteIfExists(Paths.get("perfcake-maven-plugin.csv"));
    }
 }
