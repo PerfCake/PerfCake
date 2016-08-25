@@ -143,9 +143,9 @@ public class WarmUpReporter extends AbstractReporter {
                   warmed = true;
                }
                if (maximalWarmUpCount > -1 && !warmed &&
-                     ((maximalWarmUpType == PeriodType.ITERATION && maximalWarmUpCount > getMaxIteration()) ||
-                           (maximalWarmUpType == PeriodType.TIME && maximalWarmUpCount > runInfo.getRunTime()) ||
-                           (maximalWarmUpType == PeriodType.PERCENTAGE && maximalWarmUpCount > runInfo.getPercentage()))) {
+                     ((maximalWarmUpType == PeriodType.ITERATION && maximalWarmUpCount < getMaxIteration()) ||
+                           (maximalWarmUpType == PeriodType.TIME && maximalWarmUpCount < runInfo.getRunTime()) ||
+                           (maximalWarmUpType == PeriodType.PERCENTAGE && maximalWarmUpCount < runInfo.getPercentage()))) {
                   log.warn("The system did not warm-up until the maximal tolerance (" + maximalWarmUpType + ": " + maximalWarmUpCount + "). Terminating the test.");
                   reportManager.stop();
                }
