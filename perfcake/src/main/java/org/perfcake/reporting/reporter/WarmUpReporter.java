@@ -41,6 +41,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * </p>
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
+ * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class WarmUpReporter extends AbstractReporter {
 
@@ -73,6 +74,17 @@ public class WarmUpReporter extends AbstractReporter {
     * The flag indicating whether the tested system is considered warmed up.
     */
    private boolean warmed = false;
+
+   /**
+    * The unit in which we measure the maximal warm-up count. Can be iteration, time, or percentage.
+    */
+   private PeriodType maximalWarmUpType = PeriodType.ITERATION;
+
+   /**
+    * Maximal tolerance of waiting for the end of the warm-up phase. If we run out of this time/iteration count (determined by {@link #maximalWarmUpType},
+    * we simply break the test and do not waste more time. {@code -1} means that the check is disabled.
+    */
+   private long maximalWarmUpCount = -1;
 
    /**
     * The index number of the checking period in which the current run is.
@@ -129,6 +141,13 @@ public class WarmUpReporter extends AbstractReporter {
                   reportManager.reset();
                   runInfo.removeTag(PerfCakeConst.WARM_UP_TAG);
                   warmed = true;
+               }
+               if (maximalWarmUpCount > -1 && !warmed &&
+                     ((maximalWarmUpType == PeriodType.ITERATION && maximalWarmUpCount > getMaxIteration()) ||
+                           (maximalWarmUpType == PeriodType.TIME && maximalWarmUpCount > runInfo.getRunTime()) ||
+                           (maximalWarmUpType == PeriodType.PERCENTAGE && maximalWarmUpCount > runInfo.getPercentage()))) {
+                  log.warn("The system did not warm-up until the maximal tolerance (" + maximalWarmUpType + ": " + maximalWarmUpCount + "). Terminating the test.");
+                  reportManager.stop();
                }
             }
             lastThroughput.add(currentThroughput);
@@ -222,6 +241,50 @@ public class WarmUpReporter extends AbstractReporter {
     */
    public WarmUpReporter setAbsoluteThreshold(final double absoluteThreshold) {
       this.absoluteThreshold = absoluteThreshold;
+      return this;
+   }
+
+   /**
+    * Gets the unit in which we measure the maximal warm-up count. Can be iteration, time, or percentage.
+    *
+    * @return The unit in which we measure the maximal warm-up count.
+    */
+   public PeriodType getMaximalWarmUpType() {
+      return maximalWarmUpType;
+   }
+
+   /**
+    * Sets the unit in which we measure the maximal warm-up count. Can be iteration, time, or percentage.
+    *
+    * @param maximalWarmUpType
+    *       The unit in which we measure the maximal warm-up count.
+    * @return Instance of this to support fluent API.
+    */
+   public WarmUpReporter setMaximalWarmUpType(final PeriodType maximalWarmUpType) {
+      this.maximalWarmUpType = maximalWarmUpType;
+      return this;
+   }
+
+   /**
+    * Gets the maximal tolerance of waiting for the end of the warm-up phase. If we run out of this time/iteration count (determined by {@link #maximalWarmUpType},
+    * we simply break the test and do not waste more time. {@code -1} means that the check is disabled.
+    *
+    * @return The maximal tolerance of waiting for the end of the warm-up phase.
+    */
+   public long getMaximalWarmUpCount() {
+      return maximalWarmUpCount;
+   }
+
+   /**
+    * Sets the maximal tolerance of waiting for the end of the warm-up phase. If we run out of this time/iteration count (determined by {@link #maximalWarmUpType},
+    * we simply break the test and do not waste more time. {@code -1} means that the check is disabled.
+    *
+    * @param maximalWarmUpCount
+    *       The maximal tolerance of waiting for the end of the warm-up phase.
+    * @return Instance of this to support fluent API.
+    */
+   public WarmUpReporter setMaximalWarmUpCount(final long maximalWarmUpCount) {
+      this.maximalWarmUpCount = maximalWarmUpCount;
       return this;
    }
 }
