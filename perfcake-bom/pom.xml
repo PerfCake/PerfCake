@@ -94,7 +94,7 @@
       <version.arquillian>1.1.11.Final</version.arquillian>
       <version.wildfly>8.2.1.Final</version.wildfly>
       <version.javassist>3.20.0-GA</version.javassist>
-      <version.amq>5.13.0</version.amq>
+      <version.amq>5.14.0</version.amq>
       <version.arquillian-jacoco>1.0.0.Alpha8</version.arquillian-jacoco>
       <version.hornetq>2.4.7.Final</version.hornetq>
       <version.mockito>1.10.19</version.mockito>
