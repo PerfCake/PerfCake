@@ -54,6 +54,7 @@
       <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
       <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
       <maven.assembly.plugin.version>2.6</maven.assembly.plugin.version>
+      <maven.versioneye>3.5.1</maven.versioneye>
 
       <version.californium>1.0.4</version.californium>
       <version.camel>2.16.1</version.camel>
@@ -461,6 +462,18 @@
       </dependencies>
    </dependencyManagement>
    <build>
+      <pluginManagement>
+         <plugins>
+            <plugin>
+               <groupId>com.versioneye</groupId>
+               <artifactId>versioneye-maven-plugin</artifactId>
+               <version>${maven.versioneye}</version>
+               <configuration>
+                  <apiKey>14c410c455f0ba1c83da</apiKey>
+               </configuration>
+            </plugin>
+         </plugins>
+      </pluginManagement>
       <plugins>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>

@@ -108,6 +108,7 @@
       <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
       <maven.pit.version>0.33</maven.pit.version>
       <maven.plugin.plugin>3.4</maven.plugin.plugin>
+      <maven.versioneye>3.5.1</maven.versioneye>
    </properties>
    <modules>
       <module>perfcake-bom</module>
@@ -169,6 +170,14 @@
             <plugin>
                <artifactId>maven-project-info-reports-plugin</artifactId>
                <version>${maven.project.info.reports.plugin.version}</version>
+            </plugin>
+            <plugin>
+               <groupId>com.versioneye</groupId>
+               <artifactId>versioneye-maven-plugin</artifactId>
+               <version>${maven.versioneye}</version>
+               <configuration>
+                  <apiKey>14c410c455f0ba1c83da</apiKey>
+               </configuration>
             </plugin>
          </plugins>
       </pluginManagement>
