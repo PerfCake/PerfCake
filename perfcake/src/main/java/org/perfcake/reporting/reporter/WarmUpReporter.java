@@ -84,7 +84,7 @@ public class WarmUpReporter extends AbstractReporter {
     * Maximal tolerance of waiting for the end of the warm-up phase. If we run out of this time/iteration count (determined by {@link #maximalWarmUpType},
     * we simply break the test and do not waste more time. {@code -1} means that the check is disabled.
     */
-   private long maximalWarmUpCount = -1;
+   private long maximalWarmUpDuration = -1;
 
    /**
     * The index number of the checking period in which the current run is.
@@ -142,15 +142,17 @@ public class WarmUpReporter extends AbstractReporter {
                   runInfo.removeTag(PerfCakeConst.WARM_UP_TAG);
                   warmed = true;
                }
-               if (maximalWarmUpCount > -1 && !warmed &&
-                     ((maximalWarmUpType == PeriodType.ITERATION && maximalWarmUpCount < getMaxIteration()) ||
-                           (maximalWarmUpType == PeriodType.TIME && maximalWarmUpCount < runInfo.getRunTime()) ||
-                           (maximalWarmUpType == PeriodType.PERCENTAGE && maximalWarmUpCount < runInfo.getPercentage()))) {
-                  log.warn("The system did not warm-up until the maximal tolerance (" + maximalWarmUpType + ": " + maximalWarmUpCount + "). Terminating the test.");
-                  reportManager.stop();
-               }
             }
             lastThroughput.add(currentThroughput);
+         }
+
+         // check whether we hit the maximal limit for warm-up duration
+         if (maximalWarmUpDuration > -1 && !warmed &&
+               ((maximalWarmUpType == PeriodType.ITERATION && maximalWarmUpDuration < getMaxIteration()) ||
+                     (maximalWarmUpType == PeriodType.TIME && maximalWarmUpDuration < runInfo.getRunTime()) ||
+                     (maximalWarmUpType == PeriodType.PERCENTAGE && maximalWarmUpDuration < runInfo.getPercentage()))) {
+            log.warn("The system did not warm-up until the maximal tolerance (" + maximalWarmUpType + ": " + maximalWarmUpDuration + "). Terminating the test.");
+            reportManager.stop();
          }
       }
    }
@@ -271,20 +273,20 @@ public class WarmUpReporter extends AbstractReporter {
     *
     * @return The maximal tolerance of waiting for the end of the warm-up phase.
     */
-   public long getMaximalWarmUpCount() {
-      return maximalWarmUpCount;
+   public long getMaximalWarmUpDuration() {
+      return maximalWarmUpDuration;
    }
 
    /**
     * Sets the maximal tolerance of waiting for the end of the warm-up phase. If we run out of this time/iteration count (determined by {@link #maximalWarmUpType},
     * we simply break the test and do not waste more time. {@code -1} means that the check is disabled.
     *
-    * @param maximalWarmUpCount
+    * @param maximalWarmUpDuration
     *       The maximal tolerance of waiting for the end of the warm-up phase.
     * @return Instance of this to support fluent API.
     */
-   public WarmUpReporter setMaximalWarmUpCount(final long maximalWarmUpCount) {
-      this.maximalWarmUpCount = maximalWarmUpCount;
+   public WarmUpReporter setMaximalWarmUpDuration(final long maximalWarmUpDuration) {
+      this.maximalWarmUpDuration = maximalWarmUpDuration;
       return this;
    }
 }

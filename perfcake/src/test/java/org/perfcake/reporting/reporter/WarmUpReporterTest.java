@@ -80,4 +80,40 @@ public class WarmUpReporterTest {
       rm.stop();
       Assert.assertTrue(warmUpDetected);
    }
+
+   @Test
+   public void testWarmUpTimeout() throws InterruptedException, ReportingException {
+      final ReportManager rm = new ReportManager();
+      final RunInfo ri = new RunInfo(new Period(PeriodType.ITERATION, COUNT));
+      final ResponseTimeStatsReporter dr = new ResponseTimeStatsReporter();
+      final WarmUpReporter wr = new WarmUpReporter();
+      wr.setMinimalWarmUpCount(0);
+      wr.setMinimalWarmUpDuration(0);
+      wr.setRelativeThreshold(0);
+      wr.setAbsoluteThreshold(0);
+      wr.setMaximalWarmUpType(PeriodType.ITERATION);
+      wr.setMaximalWarmUpDuration(10);
+
+      rm.setRunInfo(ri);
+      rm.registerReporter(wr);
+      rm.registerReporter(dr);
+
+      final DummyDestination dd = new DummyDestination();
+      dr.registerDestination(dd, new Period(PeriodType.ITERATION, 1));
+
+      rm.start();
+      MeasurementUnit mu;
+      int i;
+      for (i = 0; i < COUNT && ri.isStarted(); i++) {
+         mu = rm.newMeasurementUnit();
+         mu.startMeasure();
+         Thread.sleep(10);
+         mu.stopMeasure();
+         rm.report(mu);
+         Thread.sleep(10);
+      }
+      rm.stop();
+
+      Assert.assertEquals(dd.getLastMeasurement().getIteration(), 10);
+   }
 }
