@@ -12,7 +12,7 @@
 
    <container qualifier="wildfly-managed" default="true">
       <configuration>
-         <property name="jbossHome">target/wildfly-8.2.0.Final</property>
+         <property name="jbossHome">target/wildfly-8.2.1.Final</property>
          <property name="javaVmArguments">-Xmx128m -Xms128m</property>
          <property name="serverConfig">../../../../src/test/resources/standalone-min.xml</property>
       </configuration>

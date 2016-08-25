@@ -47,7 +47,7 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-      <version.jacoco>0.7.5.201505241946</version.jacoco>
+      <version.jacoco>0.7.7.201606060606</version.jacoco>
       <version.velocity>1.7</version.velocity>
       <version.puppycrawl>6.19</version.puppycrawl>
 
@@ -90,7 +90,7 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>net.sourceforge.findbugs</groupId>
+         <groupId>com.google.code.findbugs</groupId>
          <artifactId>annotations</artifactId>
          <scope>provided</scope>
       </dependency>
@@ -171,7 +171,7 @@
                <dependency>
                   <groupId>lt.velykis.maven.skins</groupId>
                   <artifactId>reflow-velocity-tools</artifactId>
-                  <version>1.1.0</version>
+                  <version>1.1.1</version>
                </dependency>
                <!-- Reflow skin requires Velocity >= 1.7  -->
                <dependency>

@@ -106,9 +106,9 @@
       <maven.xml.plugin.version>1.0.1</maven.xml.plugin.version>
       <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
       <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
-      <maven.pit.version>0.33</maven.pit.version>
+      <maven.pit.version>1.1.10</maven.pit.version>
       <maven.plugin.plugin>3.4</maven.plugin.plugin>
-      <maven.versioneye>3.5.1</maven.versioneye>
+      <maven.versioneye>3.10.2</maven.versioneye>
    </properties>
    <modules>
       <module>perfcake-bom</module>

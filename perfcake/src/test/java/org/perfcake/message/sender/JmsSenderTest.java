@@ -371,7 +371,7 @@ public class JmsSenderTest extends Arquillian {
       final String queueName = "jms/queue/test";
 
       final Properties props = new Properties();
-      props.setProperty("messagetType", "STRING");
+      props.setProperty("messageType", "STRING");
       props.setProperty("target", queueName);
       props.setProperty("jndiContextFactory", jndiFactory);
       props.setProperty("jndiUrl", jndiUrl);

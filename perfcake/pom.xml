@@ -48,12 +48,12 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
       <version.gmaven>1.5</version.gmaven>
-      <version.groovy>2.4.4</version.groovy>
-      <version.jacoco>0.7.6.201602180812</version.jacoco>
-      <version.arquillian>1.1.10.Final</version.arquillian>
-      <version.wildfly>8.2.0.Final</version.wildfly>
+      <version.groovy>2.4.7</version.groovy>
+      <version.jacoco>0.7.7.201606060606</version.jacoco>
+      <version.arquillian>1.1.11.Final</version.arquillian>
+      <version.wildfly>8.2.1.Final</version.wildfly>
       <version.velocity>1.7</version.velocity>
-      <version.puppycrawl>6.19</version.puppycrawl>
+      <version.puppycrawl>7.1</version.puppycrawl>
 
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
@@ -162,7 +162,7 @@
 
       <!-- Findbugs -->
       <dependency>
-         <groupId>net.sourceforge.findbugs</groupId>
+         <groupId>com.google.code.findbugs</groupId>
          <artifactId>annotations</artifactId>
          <scope>provided</scope>
       </dependency>
@@ -618,6 +618,7 @@
             <plugin>
                <groupId>org.codehaus.mojo</groupId>
                <artifactId>exec-maven-plugin</artifactId>
+               <version>${maven.exec.plugin.version}</version>
                <configuration>
                   <executable>java</executable>
                   <arguments>
