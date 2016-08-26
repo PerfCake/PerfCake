@@ -367,7 +367,7 @@ public class JmsSenderTest extends Arquillian {
    @RunAsClient
    public void testClientMode() throws Exception {
       final String jndiFactory = "org.jboss.naming.remote.client.InitialContextFactory";
-      final String jndiUrl = "http-remoting://localhost:8080";
+      final String jndiUrl = "http-remoting://127.0.0.1:8080";
       final String queueName = "jms/queue/test";
 
       final Properties props = new Properties();
@@ -378,6 +378,10 @@ public class JmsSenderTest extends Arquillian {
       props.setProperty("jndiSecurityPrincipal", "zappa");
       props.setProperty("jndiSecurityCredentials", "frank");
       props.setProperty("connectionFactory", "jms/RemoteConnectionFactory");
+      props.setProperty("username", "zappa");
+      props.setProperty("password", "frank");
+      props.setProperty("transacted", "true");
+      props.setProperty("persistent", "false");
 
       final JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
       Assert.assertEquals(sender.getJndiContextFactory(), jndiFactory);

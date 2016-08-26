@@ -51,7 +51,7 @@
       <version.groovy>2.4.7</version.groovy>
       <version.jacoco>0.7.7.201606060606</version.jacoco>
       <version.arquillian>1.1.11.Final</version.arquillian>
-      <version.wildfly>8.2.1.Final</version.wildfly>
+      <version.wildfly>10.1.0.Final</version.wildfly>
       <version.velocity>1.7</version.velocity>
       <version.puppycrawl>7.1</version.puppycrawl>
 
@@ -151,7 +151,7 @@
       <!-- JMS API -->
       <dependency>
          <groupId>javax.jms</groupId>
-         <artifactId>jms-api</artifactId>
+         <artifactId>javax.jms-api</artifactId>
       </dependency>
 
       <!-- Javassist -->
@@ -281,7 +281,7 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.wildfly</groupId>
+         <groupId>org.wildfly.arquillian</groupId>
          <artifactId>wildfly-arquillian-container-managed</artifactId>
          <scope>test</scope>
       </dependency>
@@ -304,18 +304,10 @@
 
       <!-- HornetQ remote client -->
       <dependency>
-         <groupId>org.hornetq</groupId>
-         <artifactId>hornetq-jms-client</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.hornetq</groupId>
-         <artifactId>hornetq-core-client</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
          <groupId>org.wildfly</groupId>
-         <artifactId>wildfly-naming</artifactId>
+         <artifactId>wildfly-jms-client-bom</artifactId>
+         <version>${version.wildfly}</version>
+         <type>pom</type>
          <scope>test</scope>
       </dependency>
 

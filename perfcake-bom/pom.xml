@@ -64,7 +64,7 @@
       <version.groovy>2.4.7</version.groovy>
       <version.slf4j>1.7.21</version.slf4j>
       <version.log4j>2.6.2</version.log4j>
-      <version.jms-api>1.1-rev-1</version.jms-api>
+      <version.jms-api>2.0.1</version.jms-api>
       <version.mqtt>1.14</version.mqtt>
       <version.testng>6.9.10</version.testng>
       <version.websocket-api>1.1</version.websocket-api>
@@ -92,11 +92,11 @@
 
       <!-- Test dependencies  -->
       <version.arquillian>1.1.11.Final</version.arquillian>
-      <version.wildfly>8.2.1.Final</version.wildfly>
+      <version.arquillian-container>2.0.0.Final</version.arquillian-container>
+      <version.wildfly>10.1.0.Final</version.wildfly>
       <version.javassist>3.20.0-GA</version.javassist>
       <version.amq>5.14.0</version.amq>
       <version.arquillian-jacoco>1.0.0.Alpha8</version.arquillian-jacoco>
-      <version.hornetq>2.4.7.Final</version.hornetq>
       <version.mockito>1.10.19</version.mockito>
       <version.netty>4.1.4.Final</version.netty>
 
@@ -199,7 +199,7 @@
          <!-- JMS API -->
          <dependency>
             <groupId>javax.jms</groupId>
-            <artifactId>jms-api</artifactId>
+            <artifactId>javax.jms-api</artifactId>
             <version>${version.jms-api}</version>
          </dependency>
 
@@ -370,9 +370,9 @@
             <scope>test</scope>
          </dependency>
          <dependency>
-            <groupId>org.wildfly</groupId>
+            <groupId>org.wildfly.arquillian</groupId>
             <artifactId>wildfly-arquillian-container-managed</artifactId>
-            <version>${version.wildfly}</version>
+            <version>${version.arquillian-container}</version>
             <scope>test</scope>
             <exclusions>
                <exclusion>
@@ -401,20 +401,15 @@
             <scope>test</scope>
          </dependency>
 
-         <!-- HornetQ remote client -->
+         <!-- WildFly JMS remote client -->
          <dependency>
-            <groupId>org.hornetq</groupId>
-            <artifactId>hornetq-jms-client</artifactId>
-            <version>${version.hornetq}</version>
+            <groupId>org.wildfly</groupId>
+            <artifactId>wildfly-jms-client-bom</artifactId>
+            <version>${version.wildfly}</version>
+            <type>pom</type>
             <scope>test</scope>
          </dependency>
-         <dependency>
-            <groupId>org.hornetq</groupId>
-            <artifactId>hornetq-core-client</artifactId>
-            <version>${version.hornetq}</version>
-            <scope>test</scope>
-         </dependency>
-         <dependency>
+         <!--dependency>
             <groupId>org.wildfly</groupId>
             <artifactId>wildfly-naming</artifactId>
             <version>${version.wildfly}</version>
@@ -425,7 +420,7 @@
                   <artifactId>jconsole</artifactId>
                </exclusion>
             </exclusions>
-         </dependency>
+         </dependency-->
 
          <!-- Mockito -->
          <dependency>

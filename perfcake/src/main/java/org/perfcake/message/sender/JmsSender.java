@@ -30,14 +30,12 @@ import java.io.Serializable;
 import java.util.Properties;
 import java.util.Set;
 import javax.jms.BytesMessage;
-import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
 import javax.jms.Destination;
-import javax.jms.JMSException;
+import javax.jms.JMSContext;
+import javax.jms.JMSProducer;
 import javax.jms.Message;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -93,24 +91,19 @@ public class JmsSender extends AbstractSender {
    protected ConnectionFactory qcf = null;
 
    /**
-    * JMS connection.
+    * JMS context.
     */
-   protected Connection connection;
+   protected JMSContext context;
 
    /**
-    * JMS session.
+    * JMS producer.
     */
-   protected Session session;
+   protected JMSProducer producer;
 
    /**
     * JMS destination where the messages are send.
     */
    protected Destination destination;
-
-   /**
-    * JMS destination sender.
-    */
-   protected MessageProducer sender;
 
    /**
     * JMS username.
@@ -213,19 +206,17 @@ public class JmsSender extends AbstractSender {
 
          qcf = (ConnectionFactory) ctx.lookup(connectionFactory);
          if (checkCredentials(username, password)) {
-            connection = qcf.createConnection(username, password);
+            context = qcf.createContext(username, password, transacted ? JMSContext.SESSION_TRANSACTED : JMSContext.CLIENT_ACKNOWLEDGE);
          } else {
-            connection = qcf.createConnection();
+            context = qcf.createContext(transacted ? JMSContext.SESSION_TRANSACTED : JMSContext.CLIENT_ACKNOWLEDGE);
          }
          destination = (Destination) ctx.lookup(safeGetTarget(messageAttributes));
          if (replyTo != null && !"".equals(replyTo)) {
             replyToDestination = (Destination) ctx.lookup(replyTo);
          }
-         session = connection.createSession(transacted, Session.AUTO_ACKNOWLEDGE);
-         connection.start();
-         sender = session.createProducer(destination);
-         sender.setDeliveryMode(persistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
-      } catch (JMSException | NamingException | RuntimeException e) {
+         producer = context.createProducer();
+         producer.setDeliveryMode(persistent ? DeliveryMode.PERSISTENT : DeliveryMode.NON_PERSISTENT);
+      } catch (NamingException | RuntimeException e) {
          throw new PerfCakeException(e);
       }
    }
@@ -234,35 +225,15 @@ public class JmsSender extends AbstractSender {
    public void doClose() throws PerfCakeException {
       try {
          try {
-            if (sender != null) {
-               sender.close();
+            if (context != null) {
+               context.close();
             }
          } finally {
-            // conn.stop();
-            try {
-               if (transacted) {
-                  session.commit();
-               }
-            } finally {
-               try {
-                  if (session != null) {
-                     session.close();
-                  }
-               } finally {
-                  try {
-                     if (connection != null) {
-                        connection.close();
-                     }
-                  } finally {
-                     if (ctx != null) {
-                        ctx.close();
-                     }
-                  }
-               }
+            if (ctx != null) {
+               ctx.close();
             }
          }
-
-      } catch (JMSException | NamingException e) {
+      } catch (NamingException e) {
          throw new PerfCakeException(e);
       }
    }
@@ -272,15 +243,15 @@ public class JmsSender extends AbstractSender {
       super.preSend(message, messageAttributes);
       switch (messageType) {
          case STRING:
-            mess = session.createTextMessage((String) message.getPayload());
+            mess = context.createTextMessage((String) message.getPayload());
             break;
          case BYTEARRAY:
-            final BytesMessage bytesMessage = session.createBytesMessage();
+            final BytesMessage bytesMessage = context.createBytesMessage();
             bytesMessage.writeUTF((String) message.getPayload());
             mess = bytesMessage;
             break;
          case OBJECT:
-            mess = session.createObjectMessage(message.getPayload());
+            mess = context.createObjectMessage(message.getPayload());
             break;
       }
       final Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
@@ -306,8 +277,8 @@ public class JmsSender extends AbstractSender {
          log.debug("Sending a message: " + message.getPayload().toString());
       }
       try {
-         sender.send(mess);
-      } catch (final JMSException e) {
+         producer.send(destination, mess);
+      } catch (final Throwable e) {
          throw new PerfCakeException("JMS Message cannot be sent", e);
       }
 

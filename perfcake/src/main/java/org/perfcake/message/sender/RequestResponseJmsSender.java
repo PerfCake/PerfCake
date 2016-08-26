@@ -32,14 +32,13 @@ import java.io.Serializable;
 import java.util.Properties;
 import java.util.UUID;
 import javax.jms.BytesMessage;
-import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
+import javax.jms.JMSConsumer;
+import javax.jms.JMSContext;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.MessageConsumer;
 import javax.jms.ObjectMessage;
-import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -69,19 +68,14 @@ public class RequestResponseJmsSender extends JmsSender {
    protected ConnectionFactory rcf = null;
 
    /**
-    * JMS connection to the response destination.
+    * JMS context for receiving the response.
     */
-   private Connection responseConnection;
+   private JMSContext responseContext;
 
    /**
     * JMS session to the response destination.
     */
-   private Session responseSession;
-
-   /**
-    * JMS consumer for the response destination.
-    */
-   private MessageConsumer responseReceiver;
+   private JMSConsumer responseConsumer;
 
    /**
     * Where to read the responses from.
@@ -161,18 +155,12 @@ public class RequestResponseJmsSender extends JmsSender {
             final String safeResponseTarget = messageAttributes == null ? responseTarget.toString() : responseTarget.toString(messageAttributes);
             final Destination responseDestination = (Destination) responseCtx.lookup(safeResponseTarget);
 
-            if (transacted && !autoAck) {
-               log.warn("AutoAck setting is ignored with a transacted session. Creating a transacted session.");
-            }
-            responseSession = responseConnection.createSession(transacted, autoAck ? Session.AUTO_ACKNOWLEDGE : Session.CLIENT_ACKNOWLEDGE);
-
             if (useCorrelationId) {
-               responseReceiver = responseSession.createConsumer(responseDestination, "JMSCorrelationID='" + correlationId + "'");
+               responseConsumer = responseContext.createConsumer(responseDestination, "JMSCorrelationID='" + correlationId + "'");
             } else {
-               responseReceiver = responseSession.createConsumer(responseDestination);
+               responseConsumer = responseContext.createConsumer(responseDestination);
             }
          }
-
       } catch (PerfCakeException pce) {
          throw pce;
       } catch (Exception e) {
@@ -194,14 +182,18 @@ public class RequestResponseJmsSender extends JmsSender {
             responseCtx = new InitialContext(ctxProps);
          }
 
+         if (transacted && !autoAck) {
+            log.warn("AutoAck setting will be ignored with a transacted session.");
+         }
+         int sessionMode = transacted ? JMSContext.SESSION_TRANSACTED : (autoAck ? JMSContext.AUTO_ACKNOWLEDGE : JMSContext.CLIENT_ACKNOWLEDGE);
+
          rcf = (ConnectionFactory) responseCtx.lookup(Utils.getFirstNotNull(responseConnectionFactory, connectionFactory));
          if (checkCredentials(responseUsername, responsePassword)) {
-            responseConnection = rcf.createConnection(responseUsername, responsePassword);
+            responseContext = rcf.createContext(responseUsername, responsePassword, sessionMode);
          } else {
-            responseConnection = rcf.createConnection();
+            responseContext = rcf.createContext(sessionMode);
          }
-         responseConnection.start();
-      } catch (JMSException | NamingException | RuntimeException e) {
+      } catch (NamingException | RuntimeException e) {
          throw new PerfCakeException(e);
       }
    }
@@ -209,33 +201,23 @@ public class RequestResponseJmsSender extends JmsSender {
    @Override
    public void doClose() throws PerfCakeException {
       try {
+         super.doClose();
+      } finally {
          try {
-            super.doClose();
+            if (responseConsumer != null) {
+               responseConsumer.close();
+            }
          } finally {
             try {
-               if (responseReceiver != null) {
-                  responseReceiver.close();
+               if (transacted) {
+                  responseContext.commit();
                }
             } finally {
-               try {
-                  if (transacted) {
-                     responseSession.commit();
-                  }
-               } finally {
-                  try {
-                     if (responseSession != null) {
-                        responseSession.close();
-                     }
-                  } finally {
-                     if (responseConnection != null) {
-                        responseConnection.close();
-                     }
-                  }
+               if (responseContext != null) {
+                  responseContext.close();
                }
             }
          }
-      } catch (final JMSException e) {
-         throw new PerfCakeException(e);
       }
    }
 
@@ -253,15 +235,15 @@ public class RequestResponseJmsSender extends JmsSender {
       super.doSend(message, measurementUnit);
 
       try {
-         if (transacted) {
-            session.commit();
-         }
+         /*if (transacted) {
+            responseContext.commit();
+         }*/
          // receive response
          Serializable retVal = null;
          int attempts = 0;
          do {
             attempts++;
-            final Message response = responseReceiver.receive(receivingTimeout);
+            final Message response = responseConsumer.receive(receivingTimeout);
             if (response == null) {
                if (log.isDebugEnabled()) {
                   log.debug("No message in " + responseTarget + " received within the specified timeout (" + receivingTimeout + " ms). Retrying (" + attempts + "/" + receiveAttempts + ") ...");
@@ -284,7 +266,7 @@ public class RequestResponseJmsSender extends JmsSender {
                }
 
                if (transacted) {
-                  responseSession.commit();
+                  responseContext.commit();
                }
             }
 
