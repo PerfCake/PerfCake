@@ -366,6 +366,9 @@ public class JmsSenderTest extends Arquillian {
       }
    }
 
+   /* https://issues.apache.org/jira/browse/ARTEMIS-385
+      This bug gets us a timeout while creating session. In WildFly 10.1.0.Final, there is Artemis 1.1.0. The bug is fixed in 1.3.0.
+    */
    @Test(enabled = false)
    @RunAsClient
    public void testClientMode() throws Exception {
@@ -508,10 +511,6 @@ public class JmsSenderTest extends Arquillian {
          env.put(Context.PROVIDER_URL, "http-remoting://127.0.0.1:8080?http-upgrade-enabled=true");
          env.put(Context.SECURITY_PRINCIPAL, "zappa");
          env.put(Context.SECURITY_CREDENTIALS, "frank");
-         env.put("connection.ConnectionFactory", "tcp://localhost:8080?http-upgrade-enabled=true");
-         env.put("connectionFactory", "tcp://localhost:8080?http-upgrade-enabled=true");
-         env.put("http-upgrade-enabled", "true");
-         env.put("connection.http-upgrade-enabled", "true");
 
          namingContext = new InitialContext(env);
 
