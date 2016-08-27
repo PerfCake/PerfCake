@@ -54,10 +54,10 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    private static final Logger log = LogManager.getLogger(RequestResponseJmsSenderTest.class);
 
-   @Resource(mappedName = "queue/test")
+   @Resource(mappedName = "jms/queue/test")
    private Queue queue;
 
-   @Resource(mappedName = "queue/test_reply")
+   @Resource(mappedName = "jms/queue/test_reply")
    private Queue queueReply;
 
    @Resource(mappedName = "java:/ConnectionFactory")
@@ -73,7 +73,8 @@ public class RequestResponseJmsSenderTest extends Arquillian {
             "org.apache.commons.beanutils",
             "org.apache.logging.log4j",
             "org.apache.commons.collections")
-                       .deleteClass("org.perfcake.message.sender.WebSocketSender").deleteClass("org.perfcake.message.sender.WebSocketSender$PerfCakeClientEndpoint");
+            .addAsResource("log4j2.xml")
+            .deleteClass("org.perfcake.message.sender.WebSocketSender").deleteClass("org.perfcake.message.sender.WebSocketSender$PerfCakeClientEndpoint");
    }
 
    @BeforeClass
@@ -91,8 +92,8 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testResponseSend() throws Exception {
-      final String queueName = "queue/test";
-      final String replyQueueName = "queue/test_reply";
+      final String queueName = "jms/queue/test";
+      final String replyQueueName = "jms/queue/test_reply";
 
       final JmsHelper.Wiretap wiretap = JmsHelper.wiretap(queueName, replyQueueName);
       wiretap.start();
@@ -186,8 +187,8 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testCorrelationId() throws Exception {
-      final String queueName = "queue/test";
-      final String replyQueueName = "queue/test_reply";
+      final String queueName = "jms/queue/test";
+      final String replyQueueName = "jms/queue/test_reply";
 
       final JmsHelper.Wiretap wiretap = JmsHelper.wiretap(queueName, replyQueueName);
       wiretap.start();
@@ -257,8 +258,8 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
    @Test
    public void testNegativeTimeout() throws Exception {
-      final String queueName = "queue/test";
-      final String replyQueueName = "queue/test_reply";
+      final String queueName = "jms/queue/test";
+      final String replyQueueName = "jms/queue/test_reply";
 
       final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
@@ -295,7 +296,7 @@ public class RequestResponseJmsSenderTest extends Arquillian {
 
          // read the original message from the queue
          final Message originalMessage = JmsHelper.readMessage(factory, 500, queue);
-         Assert.assertTrue(originalMessage instanceof TextMessage);
+         Assert.assertTrue(originalMessage instanceof TextMessage, "Expected TextMessage, the message really is: " + (originalMessage == null ? null : originalMessage.getClass().getName()));
          Assert.assertEquals(((TextMessage) originalMessage).getText(), payload);
 
          // make sure the queues are empty

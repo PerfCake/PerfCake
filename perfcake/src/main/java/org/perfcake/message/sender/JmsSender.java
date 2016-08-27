@@ -226,6 +226,9 @@ public class JmsSender extends AbstractSender {
       try {
          try {
             if (context != null) {
+               if (transacted) {
+                  context.commit();
+               }
                context.close();
             }
          } finally {

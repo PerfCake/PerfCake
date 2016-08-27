@@ -56,13 +56,13 @@ import javax.naming.InitialContext;
 @Test(groups = { "ueber" })
 public class JmsSenderTest extends Arquillian {
 
-   @Resource(mappedName = "queue/test")
+   @Resource(mappedName = "jms/queue/test")
    private Queue queue;
 
-   @Resource(mappedName = "queue/secured_test")
+   @Resource(mappedName = "jms/queue/secured_test")
    private Queue securedQueue;
 
-   @Resource(mappedName = "queue/test_reply")
+   @Resource(mappedName = "jms/queue/test_reply")
    private Queue queueReply;
 
    @Resource(mappedName = "java:/ConnectionFactory")
@@ -78,6 +78,7 @@ public class JmsSenderTest extends Arquillian {
             "org.apache.commons.beanutils",
             "org.apache.logging.log4j",
             "org.apache.commons.collections")
+            .addAsResource("log4j2.xml")
             .deleteClass("org.perfcake.message.sender.WebSocketSender").deleteClass("org.perfcake.message.sender.WebSocketSender$PerfCakeClientEndpoint");
    }
 
@@ -104,12 +105,12 @@ public class JmsSenderTest extends Arquillian {
    public void testBasicSend() throws Exception {
       final Properties props = new Properties();
       props.setProperty("messageType", "STRING");
-      props.setProperty("target", "queue/test");
+      props.setProperty("target", "jms/queue/test");
 
       final JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
 
       Assert.assertEquals(sender.getMessageType(), JmsSender.MessageType.STRING);
-      Assert.assertEquals(sender.getTarget(), "queue/test");
+      Assert.assertEquals(sender.getTarget(), "jms/queue/test");
       Assert.assertEquals(sender.isPersistent(), true);
       Assert.assertEquals(sender.isTransacted(), false);
 
@@ -170,7 +171,7 @@ public class JmsSenderTest extends Arquillian {
 
       final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "queue/secured_test");
+      props.setProperty("target", "jms/queue/secured_test");
       props.setProperty("username", "frank");
       props.setProperty("password", "frank");
 
@@ -213,7 +214,7 @@ public class JmsSenderTest extends Arquillian {
    public void testNonPersistentDelivery() throws Exception {
       final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "queue/test");
+      props.setProperty("target", "jms/queue/test");
       props.setProperty("persistent", "false");
 
       final JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
@@ -250,7 +251,7 @@ public class JmsSenderTest extends Arquillian {
    public void testClientAck() throws Exception {
       final Properties props = new Properties();
       props.setProperty("messageType", "STRING");
-      props.setProperty("target", "queue/test");
+      props.setProperty("target", "jms/queue/test");
 
       final JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
 
@@ -285,7 +286,7 @@ public class JmsSenderTest extends Arquillian {
    public void testSecuredNegativMissingCredentials() throws Exception {
       final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "queue/secured_test");
+      props.setProperty("target", "jms/queue/secured_test");
 
       final JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
       sender.setUsername("frank");
@@ -314,7 +315,7 @@ public class JmsSenderTest extends Arquillian {
    public void testSecuredNegativWrongPassword() throws Exception {
       final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "queue/secured_test");
+      props.setProperty("target", "jms/queue/secured_test");
 
       final JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
       sender.setUsername("frank");
@@ -336,7 +337,7 @@ public class JmsSenderTest extends Arquillian {
 
       final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "queue/test");
+      props.setProperty("target", "jms/queue/test");
 
       final JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
 
@@ -426,7 +427,7 @@ public class JmsSenderTest extends Arquillian {
 
       final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "queue/test");
+      props.setProperty("target", "jms/queue/test");
 
       final JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
 
@@ -463,8 +464,8 @@ public class JmsSenderTest extends Arquillian {
 
       final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
-      props.setProperty("target", "queue/test");
-      props.setProperty("replyTo", "queue/test_reply");
+      props.setProperty("target", "jms/queue/test");
+      props.setProperty("replyTo", "jms/queue/test_reply");
 
       final JmsSender sender = (JmsSender) ObjectFactory.summonInstance(JmsSender.class.getName(), props);
 
@@ -484,7 +485,7 @@ public class JmsSenderTest extends Arquillian {
          final Message response = JmsHelper.readMessage(factory, 500, queue);
          Assert.assertTrue(response instanceof TextMessage);
          Assert.assertEquals(((TextMessage) response).getText(), payload);
-         Assert.assertEquals(sender.getReplyTo(), "queue/test_reply");
+         Assert.assertEquals(sender.getReplyTo(), "jms/queue/test_reply");
 
          // make sure the destination is empty
          Assert.assertNull(JmsHelper.readMessage(factory, 500, queue));

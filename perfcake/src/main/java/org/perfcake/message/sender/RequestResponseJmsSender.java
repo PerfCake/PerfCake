@@ -235,9 +235,9 @@ public class RequestResponseJmsSender extends JmsSender {
       super.doSend(message, measurementUnit);
 
       try {
-         /*if (transacted) {
-            responseContext.commit();
-         }*/
+         if (transacted) {
+            context.commit();
+         }
          // receive response
          Serializable retVal = null;
          int attempts = 0;
