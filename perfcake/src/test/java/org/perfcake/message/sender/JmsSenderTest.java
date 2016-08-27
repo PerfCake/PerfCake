@@ -33,17 +33,20 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import javax.annotation.Resource;
 import javax.jms.BytesMessage;
 import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
+import javax.jms.Destination;
+import javax.jms.JMSConsumer;
+import javax.jms.JMSContext;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.TextMessage;
+import javax.naming.Context;
+import javax.naming.InitialContext;
 
 /**
  * Tests {@link org.perfcake.message.sender.JmsSender}.
@@ -75,7 +78,7 @@ public class JmsSenderTest extends Arquillian {
             "org.apache.commons.beanutils",
             "org.apache.logging.log4j",
             "org.apache.commons.collections")
-                       .deleteClass("org.perfcake.message.sender.WebSocketSender").deleteClass("org.perfcake.message.sender.WebSocketSender$PerfCakeClientEndpoint");
+            .deleteClass("org.perfcake.message.sender.WebSocketSender").deleteClass("org.perfcake.message.sender.WebSocketSender$PerfCakeClientEndpoint");
    }
 
    @BeforeClass
@@ -363,7 +366,7 @@ public class JmsSenderTest extends Arquillian {
       }
    }
 
-   @Test
+   @Test(enabled = false)
    @RunAsClient
    public void testClientMode() throws Exception {
       final String jndiFactory = "org.jboss.naming.remote.client.InitialContextFactory";
@@ -487,4 +490,69 @@ public class JmsSenderTest extends Arquillian {
       }
    }
 
+   @Test(enabled = false)
+   @RunAsClient
+   public void standaloneTest() throws Exception {
+      String MESSAGE = "Hello, World!";
+      String CONNECTION_FACTORY = "jms/RemoteConnectionFactory";
+      String DESTINATION = "jms/queue/secured_test";
+      Context namingContext = null;
+      JMSContext context = null;
+
+      try {
+
+         // Set up the namingContext for the JNDI lookup
+         final Properties env = new Properties();
+         env.put(Context.INITIAL_CONTEXT_FACTORY,
+               "org.jboss.naming.remote.client.InitialContextFactory");
+         env.put(Context.PROVIDER_URL, "http-remoting://127.0.0.1:8080?http-upgrade-enabled=true");
+         env.put(Context.SECURITY_PRINCIPAL, "zappa");
+         env.put(Context.SECURITY_CREDENTIALS, "frank");
+         env.put("connection.ConnectionFactory", "tcp://localhost:8080?http-upgrade-enabled=true");
+         env.put("connectionFactory", "tcp://localhost:8080?http-upgrade-enabled=true");
+         env.put("http-upgrade-enabled", "true");
+         env.put("connection.http-upgrade-enabled", "true");
+
+         namingContext = new InitialContext(env);
+
+         ConnectionFactory connectionFactory = (ConnectionFactory) namingContext
+               .lookup(CONNECTION_FACTORY);
+         System.out.println("Got ConnectionFactory " + CONNECTION_FACTORY);
+
+         Destination destination = (Destination) namingContext
+               .lookup(DESTINATION);
+         System.out.println("Got JMS Endpoint " + DESTINATION);
+
+         // Create the JMS context
+         context = connectionFactory.createContext("frank", "frank");
+
+         context.createProducer().send(destination, MESSAGE);
+         System.out.println("Sent message " + MESSAGE);
+
+         // Create the JMS consumer
+         JMSConsumer consumer = context.createConsumer(destination);
+         // Then receive the same number of messages that were sent
+
+         String text = consumer.receiveBody(String.class, 5000);
+         if (text == null) {
+            System.out.println("No message Received! Maybe another Consumer listening on the Queue ??");
+         }
+         System.out.println("Received message with content " + text);
+         Assert.assertEquals(text, MESSAGE);
+
+      } catch (Exception e) {
+         System.out.println(e.getMessage());
+         throw e;
+      } finally {
+         if (namingContext != null) {
+            namingContext.close();
+         }
+
+         // closing the context takes care of consumer too
+         if (context != null) {
+            context.close();
+         }
+      }
+   }
 }
+
