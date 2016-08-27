@@ -81,7 +81,7 @@ public class WarmUpReporter extends AbstractReporter {
    private PeriodType maximalWarmUpType = PeriodType.ITERATION;
 
    /**
-    * Maximal tolerance of waiting for the end of the warm-up phase. If we run out of this time/iteration count (determined by {@link #maximalWarmUpType},
+    * Maximal tolerance of waiting for the end of the warm-up phase. If we run out of this time/iteration count (determined by {@link #maximalWarmUpType}),
     * we simply break the test and do not waste more time. {@code -1} means that the check is disabled.
     */
    private long maximalWarmUpDuration = -1;
