@@ -107,12 +107,14 @@ public class JmsHelper {
                   if (message != null) {
                      this.message = message;
                      messageProducer.send(target, message);
-                     context.commit();
+                     if (context.getSessionMode() == JMSContext.SESSION_TRANSACTED) {
+                        context.commit();
+                     }
                   }
                }
             }
          } catch (final Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
+            if (e.getMessage() != null && e.getMessage().contains("java.lang.InterruptedException")) {
                log.info("Terminating gracefully.");
             } else {
                log.error("Error during wiretap:", e);
