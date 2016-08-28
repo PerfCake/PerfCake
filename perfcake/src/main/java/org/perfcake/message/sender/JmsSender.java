@@ -206,9 +206,17 @@ public class JmsSender extends AbstractSender {
 
          qcf = (ConnectionFactory) ctx.lookup(connectionFactory);
          if (checkCredentials(username, password)) {
-            context = qcf.createContext(username, password, transacted ? JMSContext.SESSION_TRANSACTED : JMSContext.CLIENT_ACKNOWLEDGE);
+            if (transacted) {
+               context = qcf.createContext(username, password, JMSContext.SESSION_TRANSACTED);
+            } else {
+               context = qcf.createContext(username, password);
+            }
          } else {
-            context = qcf.createContext(transacted ? JMSContext.SESSION_TRANSACTED : JMSContext.CLIENT_ACKNOWLEDGE);
+            if (transacted) {
+               context = qcf.createContext(JMSContext.SESSION_TRANSACTED);
+            } else {
+               context = qcf.createContext();
+            }
          }
          destination = (Destination) ctx.lookup(safeGetTarget(messageAttributes));
          if (replyTo != null && !"".equals(replyTo)) {
