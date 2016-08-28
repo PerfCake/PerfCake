@@ -1,6 +1,6 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.perfcake/perfcake/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.perfcake/perfcake/)
 [![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
-[![Ohloh](https://www.ohloh.net/p/PerfCake/widgets/project_thin_badge.gif)](https://www.ohloh.net/p/PerfCake)
+[![Project Stats](https://www.openhub.net/p/PerfCake/widgets/project_thin_badge?format=gif&ref=Thin+badge)](https://www.ohloh.net/p/PerfCake)
 [![Build Status](https://perfcake.ci.cloudbees.com/job/PerfCake-devel/badge/icon)](https://perfcake.ci.cloudbees.com/job/PerfCake-devel/)
 
 
