@@ -168,6 +168,7 @@ public class AccumulatorsTest {
       };
    }
 
+   @SuppressWarnings("unchecked")
    @Test(dataProvider = "timeSlidingWindowAccumulatorsTest")
    public void timeSlidingWindowAccumulatorTest(final Class<Accumulator> accumulatorClass, final Object oneTickResult, final Object twoTicksResult, final Object finalTickResult, Object[] values) throws Exception {
       final Constructor<Accumulator> constr = accumulatorClass.getDeclaredConstructor(int.class);
