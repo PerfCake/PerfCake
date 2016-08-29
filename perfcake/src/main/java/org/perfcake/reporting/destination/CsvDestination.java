@@ -211,7 +211,7 @@ public class CsvDestination extends AbstractDestination {
                   } else {
                      f = new File(name + "." + (ind++));
                   }
-               } while (f.exists());
+               } while (f.exists()); // @checkstyle.ignore(RightCurly) - Do-while cycle should have while after the brace.
                csvFile = f;
                break;
             case OVERWRITE:

@@ -195,7 +195,7 @@
 
    <module name="SuppressWithNearbyCommentFilter">
       <property name="commentFormat" value="@checkstyle.ignore\((\w*(\|\w*)*)\) - [-\w\.,:; ]{10,}"/>
-      <property name="checkFormat" value=".*"/>
+      <property name="checkFormat" value="$1"/>
       <property name="influenceFormat" value="0"/>
    </module>
 </module>

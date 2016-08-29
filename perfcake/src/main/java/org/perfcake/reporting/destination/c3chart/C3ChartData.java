@@ -133,7 +133,7 @@ public class C3ChartData {
          if (!dataHit) {
             idx++;
          }
-      } while (idx < data.size() && !dataHit);
+      } while (idx < data.size() && !dataHit); // @checkstyle.ignore(RightCurly) - Do-while cycle should have while after the brace.
 
       return idx;
    }

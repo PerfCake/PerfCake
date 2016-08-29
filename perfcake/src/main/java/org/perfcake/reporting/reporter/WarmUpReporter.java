@@ -147,10 +147,10 @@ public class WarmUpReporter extends AbstractReporter {
          }
 
          // check whether we hit the maximal limit for warm-up duration
-         if (maximalWarmUpDuration > -1 && !warmed &&
-               ((maximalWarmUpType == PeriodType.ITERATION && maximalWarmUpDuration < getMaxIteration()) ||
-                     (maximalWarmUpType == PeriodType.TIME && maximalWarmUpDuration < runInfo.getRunTime()) ||
-                     (maximalWarmUpType == PeriodType.PERCENTAGE && maximalWarmUpDuration < runInfo.getPercentage()))) {
+         if (maximalWarmUpDuration > -1 && !warmed
+               && ((maximalWarmUpType == PeriodType.ITERATION && maximalWarmUpDuration < getMaxIteration())
+                     || (maximalWarmUpType == PeriodType.TIME && maximalWarmUpDuration < runInfo.getRunTime())
+                     || (maximalWarmUpType == PeriodType.PERCENTAGE && maximalWarmUpDuration < runInfo.getPercentage()))) {
             log.warn("The system did not warm-up until the maximal tolerance (" + maximalWarmUpType + ": " + maximalWarmUpDuration + "). Terminating the test.");
             reportManager.stop();
          }

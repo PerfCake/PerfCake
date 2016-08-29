@@ -270,7 +270,7 @@ public class RequestResponseJmsSender extends JmsSender {
                }
             }
 
-         } while (retVal == null && attempts < receiveAttempts);
+         } while (retVal == null && attempts < receiveAttempts); // @checkstyle.ignore(RightCurly) - Do-while cycle should have while after the brace.
 
          if (retVal == null) {
             throw new PerfCakeException("No message in " + responseTarget + " received within the specified timeout (" + receivingTimeout + " ms) in " + receiveAttempts + " attempt(s).");
