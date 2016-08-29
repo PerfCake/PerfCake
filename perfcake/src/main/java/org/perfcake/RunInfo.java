@@ -22,13 +22,13 @@ package org.perfcake;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Information about the current scenario run.
