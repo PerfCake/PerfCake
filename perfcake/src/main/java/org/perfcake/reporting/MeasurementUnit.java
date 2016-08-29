@@ -357,11 +357,11 @@ public class MeasurementUnit implements Serializable {
       oos.writeInt(threads == null ? 0 : threads);
 
       // write REQUEST_SIZE_TAG
-      final Long requestSize = (long) measurementResults.get(PerfCakeConst.REQUEST_SIZE_TAG);
+      final Long requestSize = (Long) measurementResults.get(PerfCakeConst.REQUEST_SIZE_TAG);
       oos.writeLong(requestSize == null ? 0 : requestSize);
 
       // write RESPONSE_SIZE_TAG
-      final Long responseSize = (long) measurementResults.get(PerfCakeConst.RESPONSE_SIZE_TAG);
+      final Long responseSize = (Long) measurementResults.get(PerfCakeConst.RESPONSE_SIZE_TAG);
       oos.writeLong(responseSize == null ? 0 : responseSize);
 
       // write all results from the map except for FAILURES_TAG and properties under ATTRIBUTES_TAG
@@ -389,7 +389,7 @@ public class MeasurementUnit implements Serializable {
 
          //write iteration number in the attributes
          final String iteration = props.getProperty(PerfCakeConst.ITERATION_NUMBER_PROPERTY);
-         oos.writeLong(iteration == null ? 0 : Long.valueOf(iteration));
+         oos.writeLong(iteration == null ? 0 : Long.parseLong(iteration));
 
          // write all remaining attributes
          oos.writeInt(props.size() - (iteration != null ? 1 : 0));

@@ -30,6 +30,7 @@ import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
+import org.perfcake.reporting.ReportingException;
 import org.perfcake.validation.ValidationManager;
 import org.perfcake.validation.ValidationTask;
 
@@ -259,7 +260,7 @@ public class SenderTask implements Runnable {
 
             reportManager.report(mu);
          }
-      } catch (final Exception e) {
+      } catch (InterruptedException | PerfCakeException e) {
          if (e instanceof InterruptedException) { // there is just one line of code that can throw this exception above
             if (interruptWarningDisplayed.getAndIncrement() == 0) {
                log.warn("Test execution interrupted while waiting for a response message from a receiver.");

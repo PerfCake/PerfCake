@@ -28,6 +28,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Information about the current scenario run.
  *
@@ -60,16 +62,19 @@ public class RunInfo implements Serializable {
    /**
     * Number of threads that is currently used to generate the load.
     */
+   @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED", justification = "This is needed for RawReporter not to create huge files. The value of this field is stored separately.")
    private transient volatile int threads = 1;
 
    /**
     * Number of the last iteration.
     */
+   @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED", justification = "This is needed for RawReporter not to create huge files. The value of this field can be derived.")
    private final transient AtomicLong iterations = new AtomicLong(0);
 
    /**
     * Tags associated with this measurement run.
     */
+   @SuppressFBWarnings(value = "SE_TRANSIENT_FIELD_NOT_RESTORED", justification = "This is needed for RawReporter not to create huge files. The value of this field is stored separately.")
    private final transient Set<String> tags = new HashSet<>();
 
    /**

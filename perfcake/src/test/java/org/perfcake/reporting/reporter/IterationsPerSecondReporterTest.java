@@ -42,6 +42,8 @@ import java.util.Set;
  */
 @Test(groups = { "unit" })
 public class IterationsPerSecondReporterTest extends TestSetup {
+
+   @SuppressWarnings("unchecked")
    @Test
    public void testIterationsPerSecondReporter() throws PerfCakeException, InterruptedException {
       Scenario scenario = ScenarioLoader.load("test-scenario-iterations-per-second");

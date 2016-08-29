@@ -413,10 +413,10 @@ public class PerfCakeDebug {
 
       try {
          fis = new FileInputStream(file);
-         byte[] bytes = new byte[10];
-         StringBuilder builder = new StringBuilder();
-         fis.read(bytes);
-         for (int i = 0; i < 10; i++) {
+         final byte[] bytes = new byte[10];
+         final StringBuilder builder = new StringBuilder();
+         final int read = fis.read(bytes);
+         for (int i = 0; i < read; i++) {
             char c = (char) bytes[i];
             if (Character.isDigit(c)) {
                builder.append(c);
@@ -424,8 +424,8 @@ public class PerfCakeDebug {
                break;
             }
          }
-         pid = Integer.valueOf(builder.toString());
-      } catch (Exception e) {
+         pid = Integer.parseInt(builder.toString());
+      } catch (IOException e) {
          // ignore
       } finally {
          if (fis != null) {

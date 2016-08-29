@@ -109,7 +109,7 @@ public class ConsoleDestination extends AbstractDestination {
       int colorNo = -1;
 
       try {
-         colorNo = Integer.valueOf(StringUtil.trim(color));
+         colorNo = Integer.parseInt(StringUtil.trim(color));
          if (colorNo > 15 || colorNo < 0) {
             colorNo = -1;
          }
