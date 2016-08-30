@@ -19,6 +19,8 @@
  */
 package org.perfcake.reporting.destination;
 
+import static org.perfcake.reporting.destination.ChartDestination.ChartType.LINE;
+
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.common.PeriodType;
@@ -113,9 +115,18 @@ public class ChartDestination extends AbstractDestination {
    private boolean dynamicAttributes = false;
 
    /**
+    * The chart can be either of line or bar type. Line is the default.
+    */
+   private ChartType type = LINE;
+
+   /**
     * Holds the data when the dynamic attributes are used and we cannot stream directly to a file.
     */
    private DataBuffer buffer;
+
+   public enum ChartType {
+      LINE, BAR;
+   }
 
    @Override
    public void open() {
@@ -443,6 +454,27 @@ public class ChartDestination extends AbstractDestination {
     */
    public ChartDestination setAutoCombine(final boolean autoCombine) {
       this.autoCombine = autoCombine;
+      return this;
+   }
+
+   /**
+    * Gets the chart's graphics type - either line or bar. Line is the default.
+    *
+    * @return The chart's graphics type.
+    */
+   public ChartType getType() {
+      return type;
+   }
+
+   /**
+    * Sets the chart's graphics type - either line or bar. Line is the default.
+    *
+    * @param type
+    *       The chart's graphics type.
+    * @return Instance of this to support fluent API.
+    */
+   public ChartDestination setType(final ChartType type) {
+      this.type = type;
       return this;
    }
 
