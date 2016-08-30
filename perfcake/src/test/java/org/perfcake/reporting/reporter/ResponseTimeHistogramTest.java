@@ -36,10 +36,14 @@ import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import io.vertx.core.json.JsonObject;
 
@@ -171,6 +175,46 @@ public class ResponseTimeHistogramTest {
       Assert.assertEquals((long) res.get(4), 98);
       Assert.assertEquals((long) res.get(5), 99);
       Assert.assertEquals((long) res.get(6), 100);
+   }
+
+   @Test(enabled = false)
+   public void testResultFiltering() {
+      final SortedMap<String, String> results = new TreeMap<>();
+
+      results.put("perc0.000000000000", "2");
+      results.put("perc0.500000000000", "2");
+      results.put("perc0.750000000000", "2");
+      results.put("perc0.875000000000", "2");
+      results.put("perc0.937500000000", "2");
+      results.put("perc0.968750000000", "2");
+      results.put("perc0.984375000000", "2");
+      results.put("perc0.992187500000", "2");
+      results.put("perc0.996093750000", "2");
+      results.put("perc0.998046875000", "3");
+      results.put("perc0.999023437500", "3");
+      results.put("perc0.999511718750", "4");
+      results.put("perc0.999755859375", "5");
+      results.put("perc0.999877929688", "5");
+      results.put("perc0.999938964844", "6");
+      results.put("perc1.000000000000", "6");
+
+      String lastKey = null;
+      String lastValue = null;
+      SortedMap<String, String> output = new TreeMap<>();
+      for (Map.Entry<String, String> entry : results.entrySet()) {
+         if (lastValue != null) {
+            if (!entry.getValue().equals(lastValue)) {
+               output.put(lastKey, lastValue);
+            } else if (entry.getKey() == results.lastKey()) {
+               output.put(entry.getKey(), entry.getValue());
+            }
+         }
+         lastKey = entry.getKey();
+         lastValue = entry.getValue();
+      }
+
+      System.out.println(output);
+
    }
 
    private Measurement runTest(final Properties props) throws Exception {

@@ -108,6 +108,11 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
    private long maxExpectedValue = -1;
 
    /**
+    * When set to true, the results are filter to keep just unique values.
+    */
+   private boolean filter = false;
+
+   /**
     * Accumulator to store average response rate for histogram auto-correction.
     */
    private AvgAccumulator avg = new AvgAccumulator();
@@ -171,11 +176,28 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
             pi = new PercentileIterator(localHistogram, detail);
       }
 
+      String lastKey = null;
+      String lastValue = null;
+
       while (pi.hasNext()) {
          HistogramIterationValue val = pi.next();
 
-         m.set(prefix + String.format(Locale.US, percentileFormatString, val.getPercentileLevelIteratedTo() / 100d),
-               String.format(Locale.US, "%d", val.getValueIteratedTo()));
+         String key = prefix + String.format(Locale.US, percentileFormatString, val.getPercentileLevelIteratedTo() / 100d);
+         String value = String.format(Locale.US, "%d", val.getValueIteratedTo());
+
+         if (filter) {
+            if (lastValue != null) {
+               if (!value.equals(lastValue)) {
+                  m.set(lastKey, lastValue);
+               } else if (!pi.hasNext()) {
+                  m.set(key, value);
+               }
+            }
+            lastKey = key;
+            lastValue = value;
+         } else {
+            m.set(key, value);
+         }
       }
 
       destination.report(m);
@@ -330,6 +352,27 @@ public class ResponseTimeHistogramReporter extends AbstractReporter {
    public ResponseTimeHistogramReporter setMaxExpectedValue(final long maxExpectedValue) {
       this.maxExpectedValue = maxExpectedValue;
       initRecorder();
+      return this;
+   }
+
+   /**
+    * Gets the state of results filter. When true, the results with the same value are collapsed.
+    *
+    * @return The state of results filter. When true, the results with the same value are collapsed.
+    */
+   public boolean isFilter() {
+      return filter;
+   }
+
+   /**
+    * Sets the state of results filter. When true, the results with the same value are collapsed.
+    *
+    * @param filter
+    *       The state of results filter. When true, the results with the same value are collapsed.
+    * @return Instance of this to support fluent API.
+    */
+   public ResponseTimeHistogramReporter setFilter(final boolean filter) {
+      this.filter = filter;
       return this;
    }
 }
