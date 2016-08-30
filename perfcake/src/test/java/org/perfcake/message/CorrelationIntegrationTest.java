@@ -62,11 +62,7 @@ public class CorrelationIntegrationTest extends TestSetup {
       });
       new Thread(() -> server.requestHandler(router::accept).listen(8091)).start();
 
-      final Scenario scenario = ScenarioLoader.load("test-correlation");
-
-      scenario.init();
-      scenario.run();
-      scenario.close();
+      runScenario("test-correlation");
 
       server.close();
 

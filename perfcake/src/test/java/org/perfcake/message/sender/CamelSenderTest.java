@@ -57,11 +57,7 @@ public class CamelSenderTest extends TestSetup {
       });
       new Thread(() -> server.requestHandler(router::accept).listen(8283)).start();
 
-      final Scenario scenario = ScenarioLoader.load("test-camel");
-
-      scenario.init();
-      scenario.run();
-      scenario.close();
+      runScenario("test-camel");
 
       server.close();
 
