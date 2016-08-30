@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,11 @@
  */
 package org.perfcake.reporting.destination.c3chart;
 
+import static org.perfcake.reporting.destination.ChartDestination.ChartType.LINE;
+
 import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
+import org.perfcake.reporting.destination.ChartDestination;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -103,6 +106,11 @@ public class C3Chart {
     * Height of the resulting chart SVG graphics in pixels.
     */
    private int height = 400;
+
+   /**
+    * The chart can be either of line or bar type. Line is the default.
+    */
+   private ChartDestination.ChartType type = LINE;
 
    /**
     * Gets the base name of the data files of this chart.
@@ -300,6 +308,25 @@ public class C3Chart {
       this.height = height;
    }
 
+   /**
+    * Gets the chart's graphics type - either line or bar. Line is the default.
+    *
+    * @return The chart's graphics type.
+    */
+   public ChartDestination.ChartType getType() {
+      return type;
+   }
+
+   /**
+    * Sets the chart's graphics type - either line or bar. Line is the default.
+    *
+    * @param type
+    *       The chart's graphics type.
+    */
+   public void setType(final ChartDestination.ChartType type) {
+      this.type = type;
+   }
+
    @Override
    public String toString() {
       return "C3Chart{"
@@ -309,6 +336,8 @@ public class C3Chart {
             + ", yAxis='" + yAxis + '\''
             + ", xAxisType=" + xAxisType
             + ", attributes=" + attributes
-            + ", group='" + group + "'}";
+            + ", type=" + type
+            + ", group='" + group
+            + ", height=" + height + "'}";
    }
 }

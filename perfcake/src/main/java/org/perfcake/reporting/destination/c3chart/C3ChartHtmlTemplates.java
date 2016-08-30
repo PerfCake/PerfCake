@@ -20,6 +20,7 @@
 package org.perfcake.reporting.destination.c3chart;
 
 import org.perfcake.PerfCakeException;
+import org.perfcake.reporting.destination.ChartDestination;
 import org.perfcake.util.Utils;
 
 import java.nio.file.Path;
@@ -312,6 +313,7 @@ public class C3ChartHtmlTemplates {
       props.setProperty("yAxis", chart.getyAxis());
       props.setProperty("chartName", chart.getName());
       props.setProperty("height", String.valueOf(chart.getHeight()));
+      props.setProperty("type", chart.getType() == ChartDestination.ChartType.BAR ? "type: 'bar'," : "");
 
       switch (chart.getxAxisType()) {
          case TIME:

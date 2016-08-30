@@ -6,6 +6,7 @@ var chart_${baseName} = c3.generate({
    data: {
       x: '${xAxisKey}',
       rows: ${baseName},
+      ${type}
    },
    color: {
       pattern: ['#dd4814', '#e58200', '#edc003', '#cc617f', '#7a74bc', '#1f17a1', '#6bd5e2', '#afdd56', '#448d1a']
