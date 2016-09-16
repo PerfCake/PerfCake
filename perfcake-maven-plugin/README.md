@@ -33,15 +33,6 @@ Example configuration
       ...
    </properties>
    ...
-   <dependencies>
-      <dependency>
-         <groupId>org.perfcake</groupId>
-         <artifactId>perfcake</artifactId>
-         <version>${perfcake.version}</version>
-         <scope>test</scope>
-      </dependency>
-      ...
-   </dependencies>
    <build>
       <plugins>
          <plugin>
@@ -60,6 +51,13 @@ Example configuration
                   </goals>
                </execution>
             </executions>
+            <dependencies>
+               <dependency>
+                  <groupId>org.perfcake</groupId>
+                  <artifactId>perfcake</artifactId>
+                  <version>${perfcake.version}</version>
+               </dependency>
+            </dependencies>
          </plugin>
       ...
       </plugins>

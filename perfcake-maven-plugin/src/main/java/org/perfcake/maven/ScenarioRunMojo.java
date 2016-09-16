@@ -47,6 +47,7 @@ public class ScenarioRunMojo extends AbstractMojo {
    private static final String DEFAULT_SCENARIOS_DIR = PERFCAKE_DIR + File.separator + "scenarios";
    private static final String DEFAULT_MESSAGES_DIR = PERFCAKE_DIR + File.separator + "messages";
    private static final String DEFAULT_PLUGINS_DIR = PERFCAKE_DIR + File.separator + "plugins";
+   public static final String LOG4J2_CONFIG_PROPERTY = "log4j.configurationFile";
 
    @Parameter(required = true)
    private String scenario;
@@ -109,7 +110,8 @@ public class ScenarioRunMojo extends AbstractMojo {
          perfCakeProperties.setProperty(PerfCakeConst.PROPERTIES_FILE_PROPERTY, propertiesFile);
       }
 
-      System.setProperty("log4j.configurationFile", log4j2Config);
+      final String originalLog = System.getProperty(LOG4J2_CONFIG_PROPERTY);
+      System.setProperty(LOG4J2_CONFIG_PROPERTY, log4j2Config);
 
       try {
          Class<?> se = getClass().getClassLoader().loadClass("org.perfcake.ScenarioExecution");
@@ -120,6 +122,10 @@ public class ScenarioRunMojo extends AbstractMojo {
          getLog().info("PerfCake Maven Plugin: Finished scenario " + scenario);
       } catch (Exception e) {
          throw new MojoExecutionException(e.getMessage(), e);
+      } finally {
+         if (originalLog != null) {
+            System.setProperty(LOG4J2_CONFIG_PROPERTY, originalLog);
+         }
       }
    }
 
