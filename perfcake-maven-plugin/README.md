@@ -45,7 +45,7 @@ Example configuration
    <build>
       <plugins>
          <plugin>
-            <groupId>org.perfcake.maven</groupId>
+            <groupId>org.perfcake</groupId>
             <artifactId>perfcake-maven-plugin</artifactId>
             <version>${perfcake.version}</version>
             <configuration>
