@@ -285,12 +285,12 @@ public class ReporterContractTest {
          mu.appendResult("avg", (double) i - 1); // AvgAccumulator should be used
          mu.appendResult("it", String.valueOf(i)); // LastValueAccumulator should be used
          // 25 is the tolerance according to Puškvorec's constant
-         Assert.assertTrue(mu.getTotalTime() < 25.0 && mu.getTotalTime() >= 10.0, "Measurement run for 10ms, so the value should not be much different. Current value was: " + mu.getTotalTime());
+         Assert.assertTrue(mu.getTotalTime() < 25.0 && mu.getTotalTime() > 9.0, "Measurement run for 10ms, so the value should not be much different. Current value was: " + mu.getTotalTime());
          rm.report(mu);
       }
       Assert.assertEquals(mu.getIteration(), 99);
-      Assert.assertTrue(mu.getTotalTime() < 13.0 && mu.getTotalTime() >= 10.0);
-      Assert.assertTrue(mu.getTotalTime() < 13.0 && mu.getTotalTime() >= 10.0);
+      Assert.assertTrue(mu.getTotalTime() < 13.0 && mu.getTotalTime() > 9.0);
+      Assert.assertTrue(mu.getTotalTime() < 13.0 && mu.getTotalTime() > 9.0);
       Assert.assertEquals(d1.getLastType(), PeriodType.ITERATION);
       Assert.assertEquals(d2.getLastType(), PeriodType.PERCENTAGE);
 

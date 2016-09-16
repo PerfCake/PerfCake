@@ -60,7 +60,8 @@ public class StringTemplateTest {
             { "\\\\${env.JAVA_HOME} \\$aa", "\\" + System.getenv("JAVA_HOME") + " $aa", null, null },
             { "${props.java.runtime.name} ${props[java.runtime.name]} ${props['java.runtime.name']}", System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.name"), null, null },
             { "@{aaa:@{\\@\\{\\}\\\\}", "@{@{\\}", null, null },
-            { "no replacements needed", "no replacements needed", null, null }
+            { "no replacements needed", "no replacements needed", null, null },
+            { "${sthWithBackslash} c:\\User @{sthOtherWithBackslash}", "Ahoj\\Ahoj c:\\User Bye\\Bye", TestUtil.props("sthWithBackslash", "Ahoj\\Ahoj"), TestUtil.props("sthOtherWithBackslash", "Bye\\Bye") }
       };
    }
 

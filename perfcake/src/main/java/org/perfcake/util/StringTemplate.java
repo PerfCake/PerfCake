@@ -192,7 +192,7 @@ public class StringTemplate {
       StringBuilder buffer = new StringBuilder();
 
       while (!mill.end()) {
-         if (mill.cur() == '\\' && mill.next() != '@') {
+         if (mill.cur() == '\\' && mill.next() != '@' && (mill.next() == '\\' || mill.next() == '{' || mill.next() == '}' || mill.next() == '$')) {
             result.append(mill.next());
             mill.cut();
             mill.cut();
