@@ -42,7 +42,7 @@ import java.util.Properties;
 public class FileLinesSequence implements Sequence {
 
    /**
-    * The generator's logger.
+    * The sequence's logger.
     */
    private static final Logger log = LogManager.getLogger(FileLinesSequence.class);
 
@@ -64,7 +64,7 @@ public class FileLinesSequence implements Sequence {
    private final Integer[] iterator = new Integer[] { 0 };
 
    @Override
-   public final void publishNext(final String sequenceId, final Properties values) {
+   public void publishNext(final String sequenceId, final Properties values) {
       synchronized (iterator) {
          if (iterator[0] >= lines.length) {
             iterator[0] = 0;
@@ -77,7 +77,7 @@ public class FileLinesSequence implements Sequence {
    @Override
    public void reset() throws PerfCakeException {
       try {
-         final List<String> linesArray = Utils.readLines(new URL(fileUrl));
+         final List<String> linesArray = Utils.readLines(fileUrl);
          lines = linesArray.toArray(new String[linesArray.size()]);
          iterator[0] = 0;
       } catch (IOException e) {

@@ -32,7 +32,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.plugins.convert.TypeConverters;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -54,12 +53,11 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Holds useful utility methods used throughout PerfCake.
@@ -233,6 +231,23 @@ public class Utils {
       }
 
       return results;
+   }
+
+   /**
+    * Reads the lines from the given location. First it tries to read it as a file and then bypassing to {@link #readLines(URL)}.
+    *
+    * @param fileName
+    *       The file name to read content from.
+    * @return A list of lines in the file in the original order.
+    * @throws IOException
+    *       When it was not possible to read the content of the given file.
+    */
+   public static List<String> readLines(final String fileName) throws IOException {
+      if (Files.exists(Paths.get(fileName))) {
+         return Files.lines(Paths.get(fileName)).collect(Collectors.toList());
+      } else {
+         return readLines(new URL(fileName));
+      }
    }
 
    /**

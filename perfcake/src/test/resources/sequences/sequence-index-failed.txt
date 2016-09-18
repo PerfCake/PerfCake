@@ -1,0 +1,4 @@
+./perfcake/src/test/resources/messages/message2.txt
+
+./perfcake/src/test/resources/messages/message3.txt
+./perfcake/src/test/resources/messages/message4.txt
