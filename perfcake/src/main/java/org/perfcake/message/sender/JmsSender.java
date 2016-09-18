@@ -175,6 +175,11 @@ public class JmsSender extends AbstractSender {
    protected Message mess = null;
 
    /**
+    * Use safe message property names because some messaging implementations do not allow anything but valid Java identifiers.
+    */
+   protected boolean safePropertyNames = true;
+
+   /**
     * Creates a new instance of JmsSender.
     */
    public JmsSender() {
@@ -249,6 +254,7 @@ public class JmsSender extends AbstractSender {
       }
    }
 
+   // TODO: put into a common ancestor
    @Override
    public void preSend(final org.perfcake.message.Message message, final Properties messageAttributes) throws Exception {
       super.preSend(message, messageAttributes);
@@ -267,13 +273,13 @@ public class JmsSender extends AbstractSender {
       }
       final Set<String> propertyNameSet = message.getProperties().stringPropertyNames();
       for (final String property : propertyNameSet) {
-         mess.setStringProperty(property, message.getProperty(property));
+         mess.setStringProperty(safePropertyNames ? property.replaceAll("[^a-zA-Z0-9_]", "_") : property, message.getProperty(property));
       }
 
       // set additional properties
       if (messageAttributes != null) {
          for (String prop : messageAttributes.stringPropertyNames()) {
-            mess.setStringProperty(prop, messageAttributes.getProperty(prop));
+            mess.setStringProperty(safePropertyNames ? prop.replaceAll("[^a-zA-Z0-9_]", "_") : prop, messageAttributes.getProperty(prop));
          }
       }
 
@@ -545,6 +551,28 @@ public class JmsSender extends AbstractSender {
     */
    public JmsSender setReplyTo(final String replyTo) {
       this.replyTo = replyTo;
+      return this;
+   }
+
+   /**
+    * Gets the value of same message property name handling. Some messaging implementations do not allow anything but valid Java identifiers.
+    * Defaults to true.
+    *
+    * @return True if and only if the safe message property name handling is on.
+    */
+   public boolean isSafePropertyNames() {
+      return safePropertyNames;
+   }
+
+   /**
+    * Sets the value of same message property name handling. Some messaging implementations do not allow anything but valid Java identifiers.
+    *
+    * @param safePropertyNames
+    *       True if and only if the safe message property name handling should be switched on.
+    * @return Instance of this for fluent API.
+    */
+   public JmsSender setSafePropertyNames(final boolean safePropertyNames) {
+      this.safePropertyNames = safePropertyNames;
       return this;
    }
 }
