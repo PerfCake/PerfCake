@@ -53,7 +53,7 @@ public class CommandSenderTest {
       if (System.getProperty("os.name").toLowerCase().contains("windows")) {
          scriptFile = Utils.getResource("/") + File.separator + "greeting.bat";
       } else {
-         scriptFile = Utils.getResource("/") + File.separator + "greeting.sh";
+         scriptFile = "./src/test/resources/greeting.sh";
       }
    }
 
