@@ -207,4 +207,14 @@ public class UtilsTest extends TestSetup {
       Assert.assertTrue(Utils.readFilteredContent(Utils.getResourceAsUrl("/messages/unfiltered-message.txt")).contains("***10###"));
       Assert.assertTrue(Utils.readFilteredContent("file://" + Utils.getResource("/messages/unfiltered-message.txt")).contains("***10###"));
    }
+
+   @Test
+   public void filterPropertiesTest() {
+      System.setProperty("number", "@#$%^");
+
+      Assert.assertEquals(Utils.filterProperties("abc ${number}"), "abc @#$%^");
+      Assert.assertEquals(Utils.filterProperties("abc ${number} abc"), "abc @#$%^ abc");
+      Assert.assertEquals(Utils.filterProperties("${number} abc"), "@#$%^ abc");
+      Assert.assertEquals(Utils.filterProperties("${number}"), "@#$%^");
+   }
 }

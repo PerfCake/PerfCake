@@ -93,9 +93,10 @@ public class Utils {
     */
    public static String filterProperties(final String text) {
       final String propertyPattern = "[^\\\\](\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?})";
-      final Matcher matcher = Pattern.compile(propertyPattern).matcher(text);
+      final String newText = "_" + text;
+      final Matcher matcher = Pattern.compile(propertyPattern).matcher(newText);
 
-      return filterProperties(text, matcher, SystemPropertyGetter.INSTANCE);
+      return filterProperties(newText, matcher, SystemPropertyGetter.INSTANCE).substring(1);
    }
 
    /**
