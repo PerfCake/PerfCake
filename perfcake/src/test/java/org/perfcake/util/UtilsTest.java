@@ -20,6 +20,7 @@
 package org.perfcake.util;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.PerfCakeException;
 import org.perfcake.TestSetup;
 import org.perfcake.util.properties.DefaultPropertyGetter;
 
@@ -195,5 +196,15 @@ public class UtilsTest extends TestSetup {
       Assert.assertTrue(log.isInfoEnabled());
       Assert.assertTrue(log.isWarnEnabled());
       Assert.assertTrue(log.isErrorEnabled());
+   }
+
+   @Test
+   public void readFilteredContentTest() throws PerfCakeException, IOException {
+      System.setProperty("composedProperty", "***10###");
+
+      Assert.assertTrue(Utils.readFilteredContent(Utils.getResource("/messages/unfiltered-message.txt")).contains("***10###"));
+      Assert.assertTrue(Utils.readFilteredContent(new File(Utils.getResource("/messages/unfiltered-message.txt")).toURI().toURL()).contains("***10###"));
+      Assert.assertTrue(Utils.readFilteredContent(Utils.getResourceAsUrl("/messages/unfiltered-message.txt")).contains("***10###"));
+      Assert.assertTrue(Utils.readFilteredContent("file://" + Utils.getResource("/messages/unfiltered-message.txt")).contains("***10###"));
    }
 }

@@ -77,7 +77,7 @@ public class FileLinesSequence implements Sequence {
    @Override
    public void reset() throws PerfCakeException {
       try {
-         final List<String> linesArray = Utils.readLines(fileUrl);
+         final List<String> linesArray = Utils.readFilteredLines(fileUrl);
          lines = linesArray.toArray(new String[linesArray.size()]);
          iterator[0] = 0;
       } catch (IOException e) {

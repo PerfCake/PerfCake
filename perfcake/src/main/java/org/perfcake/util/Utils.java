@@ -209,6 +209,23 @@ public class Utils {
    }
 
    /**
+    * Reads the file location into a string while filtering properties. The file content is processed as an UTF-8 encoded text.
+    *
+    * @param fileLocation
+    *       The file location.
+    * @return The filtered file content.
+    * @throws IOException
+    *       When it was not possible to read the content.
+    */
+   public static String readFilteredContent(final String fileLocation) throws IOException {
+      if (Files.exists(Paths.get(fileLocation))) {
+         return filterProperties(new String(Files.readAllBytes(Paths.get(fileLocation)), getDefaultEncoding()));
+      } else {
+         return readFilteredContent(new URL(fileLocation.matches("^[a-zA-Z0-9-]*://.*") ? fileLocation : "file://" + fileLocation));
+      }
+   }
+
+   /**
     * Reads lines from the given URL as a list of strings.
     *
     * @param url
@@ -236,18 +253,31 @@ public class Utils {
    /**
     * Reads the lines from the given location. First it tries to read it as a file and then bypassing to {@link #readLines(URL)}.
     *
-    * @param fileName
+    * @param fileLocation
     *       The file name to read content from.
     * @return A list of lines in the file in the original order.
     * @throws IOException
     *       When it was not possible to read the content of the given file.
     */
-   public static List<String> readLines(final String fileName) throws IOException {
-      if (Files.exists(Paths.get(fileName))) {
-         return Files.lines(Paths.get(fileName)).collect(Collectors.toList());
+   public static List<String> readLines(final String fileLocation) throws IOException {
+      if (Files.exists(Paths.get(fileLocation))) {
+         return Files.lines(Paths.get(fileLocation)).collect(Collectors.toList());
       } else {
-         return readLines(new URL(fileName));
+         return readLines(new URL(fileLocation));
       }
+   }
+
+   /**
+    * Reads the lines from the given file location. The lines are filtered for properties.
+    *
+    * @param fileLocation
+    *       The file name to read content from.
+    * @return A list of lines in the file in the original order with filtered content.
+    * @throws IOException
+    *       When it was not possible to read the content of the given file.
+    */
+   public static List<String> readFilteredLines(final String fileLocation) throws IOException {
+      return readLines(fileLocation).stream().map(Utils::filterProperties).collect(Collectors.toList());
    }
 
    /**

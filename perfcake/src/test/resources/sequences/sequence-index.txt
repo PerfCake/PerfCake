@@ -1,2 +1,2 @@
-./perfcake/src/test/resources/messages/message2.txt
-./perfcake/src/test/resources/messages/message3.txt
+${perfcake.messages.dir}/message2.txt
+${perfcake.messages.dir}/message3.txt

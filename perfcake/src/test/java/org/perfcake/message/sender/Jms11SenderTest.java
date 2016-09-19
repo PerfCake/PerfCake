@@ -338,6 +338,7 @@ public class Jms11SenderTest extends Arquillian {
       final Properties props = new Properties();
       props.setProperty("messagetType", "STRING");
       props.setProperty("target", "jms/queue/test");
+      props.setProperty("safePropertyNames", "false");
 
       final Jms11Sender sender = (Jms11Sender) ObjectFactory.summonInstance(Jms11Sender.class.getName(), props);
 

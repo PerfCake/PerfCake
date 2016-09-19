@@ -106,7 +106,7 @@ public class FilesContentSequence extends FileLinesSequence {
     */
    private String readFile(final String fileName) {
       try {
-         return Utils.readLines(fileName).stream().collect(Collectors.joining());
+         return Utils.readFilteredContent(fileName);
       } catch (UncheckedIOException | IOException e) {
          log.warn("Unable to read file content for use in sequence: ", e);
       }
