@@ -7,7 +7,7 @@
    <modelVersion>4.0.0</modelVersion>
    <groupId>org.perfcake</groupId>
    <artifactId>perfcake-parent</artifactId>
-   <version>7.0-SNAPSHOT</version>
+   <version>7.0</version>
    <packaging>pom</packaging>
    <name>PerfCake parent</name>
    <organization>
