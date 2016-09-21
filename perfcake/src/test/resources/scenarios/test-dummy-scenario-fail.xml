@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:7.0">
+<scenario xmlns="urn:perfcake:scenario:8.0">
    <run type="time" value="10000"/>
    <generator class="DefaultMessageGenerator" threads="10">
       <property name="senderTaskQueueSize" value="5000"/>

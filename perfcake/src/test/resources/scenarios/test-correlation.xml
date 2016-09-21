@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:7.0">
+<scenario xmlns="urn:perfcake:scenario:8.0">
    <run type="iteration" value="${perfcake.run.duration:1000}"/>
    <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:10}" />
    <sequences>
