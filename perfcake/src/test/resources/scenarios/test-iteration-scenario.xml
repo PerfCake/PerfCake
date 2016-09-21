@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<scenario xmlns="urn:perfcake:scenario:6.0">
+<scenario xmlns="urn:perfcake:scenario:7.0">
    <run type="iteration" value="1"/>
    <generator class="DefaultMessageGenerator" threads="10">
       <property name="shutdownPeriod" value="5500"/>
