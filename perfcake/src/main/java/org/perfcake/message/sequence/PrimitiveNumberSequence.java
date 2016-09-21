@@ -21,6 +21,7 @@ package org.perfcake.message.sequence;
 
 import org.perfcake.PerfCakeException;
 
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -33,8 +34,8 @@ public class PrimitiveNumberSequence implements Sequence {
    private AtomicLong number = new AtomicLong(0);
 
    @Override
-   public String getNext() {
-      return String.valueOf(number.getAndIncrement());
+   public final void publishNext(final String sequenceId, final Properties values) {
+      values.setProperty(sequenceId, Long.toString(number.getAndIncrement()));
    }
 
    @Override

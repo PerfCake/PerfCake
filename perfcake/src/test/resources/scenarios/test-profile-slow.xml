@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:7.0">
+   <run type="time" value="4000"/>
+   <generator class="CustomProfileGenerator" threads="30">
+      <property name="profileClass" value="CsvProfile" />
+      <property name="profileSource" value="${perfcake.scenarios.dir}/test-profile-${test.name}.csv" />
+      <property name="senderTaskQueueSize" value="100" />
+   </generator>
+   <sender class="TestSender">
+   </sender>
+   <reporting>
+      <reporter class="IterationsPerSecondReporter">
+         <destination class="ConsoleDestination">
+            <period type="time" value="500"/>
+         </destination>
+      </reporter>
+   </reporting>
+</scenario>

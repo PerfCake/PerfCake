@@ -28,7 +28,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -36,12 +35,17 @@ import java.util.Properties;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-abstract public class AbstractSender implements MessageSender {
+public abstract class AbstractSender implements MessageSender {
 
    /**
     * The sender's logger.
     */
    private static final Logger log = LogManager.getLogger(AbstractSender.class);
+
+   /**
+    * We need to cache the value to be really fast.
+    */
+   private boolean isTraceEnabled = false;
 
    /**
     * The target where to send the messages.
@@ -60,9 +64,10 @@ abstract public class AbstractSender implements MessageSender {
       if (keepConnection) { // otherwise this is done in preSend()
          doInit(null);
       }
+      isTraceEnabled = log.isTraceEnabled();
    }
 
-   abstract public void doInit(final Properties messageAttributes) throws PerfCakeException;
+   public abstract void doInit(final Properties messageAttributes) throws PerfCakeException;
 
    @Override
    public final void close() throws PerfCakeException {
@@ -71,16 +76,16 @@ abstract public class AbstractSender implements MessageSender {
       }
    }
 
-   abstract public void doClose() throws PerfCakeException;
+   public abstract void doClose() throws PerfCakeException;
 
    @Override
-   public final Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
-      return doSend(message, properties, measurementUnit);
+   public final Serializable send(final Message message, final MeasurementUnit measurementUnit) throws Exception {
+      return doSend(message, measurementUnit);
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      if (log.isTraceEnabled()) {
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      if (isTraceEnabled) {
          log.trace(String.format("Message content: %s", (message == null) ? null : message.toString()));
       }
 
@@ -90,8 +95,7 @@ abstract public class AbstractSender implements MessageSender {
    }
 
    /**
-    * Actually performs the send operation. Relies to {@link #doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)}.
-    * Marked as final to prevent overriding. Override {@link #doSend(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)} instead.
+    * Actually performs the send operation. Should be overridden by specific implementations.
     *
     * @param message
     *       Message to be sent.
@@ -102,25 +106,7 @@ abstract public class AbstractSender implements MessageSender {
     *       When the sending operation failed.
     * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message, org.perfcake.reporting.MeasurementUnit)
     */
-   public final Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
-      return this.doSend(message, null, measurementUnit);
-   }
-
-   /**
-    * Actually performs the send operation. Should be overridden by specific implementations.
-    *
-    * @param message
-    *       Message to be sent.
-    * @param properties
-    *       Additional properties that can influence the sending of the message.
-    * @param measurementUnit
-    *       Measurement unit carrying the current stop-watch.
-    * @return Response to the message.
-    * @throws Exception
-    *       When the sending operation failed.
-    * @see org.perfcake.message.sender.MessageSender#send(org.perfcake.message.Message, java.util.Map, org.perfcake.reporting.MeasurementUnit)
-    */
-   abstract public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception;
+   public abstract Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception;
 
    @Override
    public void postSend(final Message message) throws Exception {
@@ -130,19 +116,22 @@ abstract public class AbstractSender implements MessageSender {
    }
 
    @Override
-   public final Serializable send(final Message message, final MeasurementUnit measurementUnit) throws Exception {
-      return send(message, null, measurementUnit);
-   }
-
-   @Override
    public final String getTarget() {
       return target.toString();
    }
 
+   @Override
    public final String getTarget(final Properties properties) {
       return target.toString(properties);
    }
 
+   /**
+    * Gets the target in a safe way to avoid NPE when properties are null.
+    *
+    * @param properties
+    *       Properties to replace placeholders in the target.
+    * @return The target template with placeholders replaced.
+    */
    public final String safeGetTarget(final Properties properties) {
       if (properties == null) {
          return getTarget();
@@ -175,8 +164,10 @@ abstract public class AbstractSender implements MessageSender {
     *
     * @param keepConnection
     *       True when the connection should be kept open.
+    * @return Instance of this to support fluent API.
     */
-   public void setKeepConnection(final boolean keepConnection) {
+   public AbstractSender setKeepConnection(final boolean keepConnection) {
       this.keepConnection = keepConnection;
+      return this;
    }
 }

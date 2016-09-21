@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE htmlEntities [
-<!ENTITY nbsp "&#xa0;">
-]>
+      <!ENTITY nbsp "&#xa0;">
+      ]>
 <!--suppress MavenModelInspection, XmlWrongRootElement -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <parent>
       <groupId>org.perfcake</groupId>
       <artifactId>perfcake-parent</artifactId>
-      <version>6.2</version>
+      <version>7.0</version>
    </parent>
    <artifactId>perfcake</artifactId>
    <packaging>jar</packaging>
@@ -24,7 +24,7 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-      <tag>v6.2</tag>
+      <tag>v7.0</tag>
    </scm>
    <licenses>
       <license>
@@ -48,11 +48,12 @@
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
       <version.gmaven>1.5</version.gmaven>
-      <version.groovy>2.4.6</version.groovy>
-      <version.jacoco>0.7.5.201505241946</version.jacoco>
-      <version.arquillian>1.1.10.Final</version.arquillian>
-      <version.wildfly>8.2.0.Final</version.wildfly>
+      <version.groovy>2.4.7</version.groovy>
+      <version.jacoco>0.7.7.201606060606</version.jacoco>
+      <version.arquillian>1.1.11.Final</version.arquillian>
+      <version.wildfly>10.1.0.Final</version.wildfly>
       <version.velocity>1.7</version.velocity>
+      <version.puppycrawl>7.1</version.puppycrawl>
 
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
@@ -86,11 +87,6 @@
          <artifactId>perfcake-agent</artifactId>
       </dependency>
 
-      <dependency>
-         <groupId>org.perfcake</groupId>
-         <artifactId>httl</artifactId>
-      </dependency>
-
       <!-- Logging -->
       <dependency>
          <groupId>org.apache.logging.log4j</groupId>
@@ -101,8 +97,16 @@
          <artifactId>log4j-1.2-api</artifactId>
       </dependency>
       <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-jul</artifactId>
+      </dependency>
+      <dependency>
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-log4j12</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
       </dependency>
 
       <!-- Test NG -->
@@ -122,6 +126,22 @@
          <artifactId>drools-compiler</artifactId>
       </dependency>
 
+      <!-- Elasticsearch client -->
+      <dependency>
+         <groupId>io.searchbox</groupId>
+         <artifactId>jest</artifactId>
+      </dependency>
+
+      <!-- InfluxDB client -->
+      <dependency>
+         <groupId>com.google.guava</groupId>
+         <artifactId>guava</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.influxdb</groupId>
+         <artifactId>influxdb-java</artifactId>
+      </dependency>
+
       <!-- Groovy -->
       <dependency>
          <groupId>org.codehaus.groovy</groupId>
@@ -131,7 +151,7 @@
       <!-- JMS API -->
       <dependency>
          <groupId>javax.jms</groupId>
-         <artifactId>jms-api</artifactId>
+         <artifactId>javax.jms-api</artifactId>
       </dependency>
 
       <!-- Javassist -->
@@ -142,7 +162,7 @@
 
       <!-- Findbugs -->
       <dependency>
-         <groupId>net.sourceforge.findbugs</groupId>
+         <groupId>com.google.code.findbugs</groupId>
          <artifactId>annotations</artifactId>
          <scope>provided</scope>
       </dependency>
@@ -159,6 +179,18 @@
          <artifactId>mqtt-client</artifactId>
       </dependency>
 
+      <!-- CoAP -->
+      <dependency>
+         <groupId>org.eclipse.californium</groupId>
+         <artifactId>californium-core</artifactId>
+      </dependency>
+
+      <!-- Camel -->
+      <dependency>
+         <groupId>org.apache.camel</groupId>
+         <artifactId>camel-core</artifactId>
+      </dependency>
+
       <!-- Commons -->
       <dependency>
          <groupId>org.apache.commons</groupId>
@@ -169,16 +201,16 @@
          <artifactId>commons-io</artifactId>
       </dependency>
       <dependency>
-         <groupId>commons-configuration</groupId>
-         <artifactId>commons-configuration</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>commons-collections</groupId>
-         <artifactId>commons-collections</artifactId>
-      </dependency>
-      <dependency>
          <groupId>commons-beanutils</groupId>
          <artifactId>commons-beanutils</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-collections4</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-lang3</artifactId>
       </dependency>
       <dependency>
          <groupId>commons-logging</groupId>
@@ -195,6 +227,16 @@
          <artifactId>HdrHistogram</artifactId>
       </dependency>
 
+      <!-- Debugging information publishing -->
+      <dependency>
+         <groupId>org.jboss.byteman</groupId>
+         <artifactId>byteman</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.netflix.servo</groupId>
+         <artifactId>servo-core</artifactId>
+      </dependency>
+
       <!-- Camel tests -->
       <dependency>
          <groupId>org.apache.camel</groupId>
@@ -203,7 +245,7 @@
       </dependency>
       <dependency>
          <groupId>org.apache.camel</groupId>
-         <artifactId>camel-core</artifactId>
+         <artifactId>camel-http</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
@@ -219,11 +261,6 @@
       <dependency>
          <groupId>org.apache.activemq</groupId>
          <artifactId>activemq-mqtt</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-api</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
@@ -244,7 +281,7 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>org.wildfly</groupId>
+         <groupId>org.wildfly.arquillian</groupId>
          <artifactId>wildfly-arquillian-container-managed</artifactId>
          <scope>test</scope>
       </dependency>
@@ -267,18 +304,10 @@
 
       <!-- HornetQ remote client -->
       <dependency>
-         <groupId>org.hornetq</groupId>
-         <artifactId>hornetq-jms-client</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.hornetq</groupId>
-         <artifactId>hornetq-core-client</artifactId>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
          <groupId>org.wildfly</groupId>
-         <artifactId>wildfly-naming</artifactId>
+         <artifactId>wildfly-jms-client-bom</artifactId>
+         <version>${version.wildfly}</version>
+         <type>pom</type>
          <scope>test</scope>
       </dependency>
 
@@ -298,7 +327,14 @@
       <dependency>
          <groupId>io.vertx</groupId>
          <artifactId>vertx-core</artifactId>
-         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>io.vertx</groupId>
+         <artifactId>vertx-web</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-annotations</artifactId>
       </dependency>
       <dependency>
          <groupId>io.netty</groupId>
@@ -356,14 +392,14 @@
             </configuration>
             <executions>
                <execution>
-                  <id>jacoco-initialize</id>
+                  <id>default-prepare-agent</id>
                   <goals>
                      <goal>prepare-agent</goal>
                   </goals>
                </execution>
                <execution>
-                  <id>jacoco-site</id>
-                  <phase>package</phase>
+                  <id>default-report</id>
+                  <phase>prepare-package</phase>
                   <goals>
                      <goal>report</goal>
                   </goals>
@@ -431,7 +467,7 @@
                <dependency>
                   <groupId>lt.velykis.maven.skins</groupId>
                   <artifactId>reflow-velocity-tools</artifactId>
-                  <version>1.1.0</version>
+                  <version>1.1.1</version>
                </dependency>
                <!-- Reflow skin requires Velocity >= 1.7  -->
                <dependency>
@@ -503,6 +539,39 @@
             <artifactId>maven-gpg-plugin</artifactId>
             <version>${maven.gpg.plugin.version}</version>
          </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${maven.checkstyle.plugin.version}</version>
+            <executions>
+               <execution>
+                  <id>validate</id>
+                  <phase>validate</phase>
+                  <goals>
+                     <goal>check</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <configLocation>${project.basedir}/src/site/perfcake-check.xml</configLocation>
+               <encoding>UTF-8</encoding>
+               <consoleOutput>true</consoleOutput>
+               <failsOnError>false</failsOnError>
+               <linkXRef>false</linkXRef>
+               <excludes>org/perfcake/model/*,org/perfcake/scenario/dsl/*</excludes>
+            </configuration>
+            <dependencies>
+               <dependency>
+                  <groupId>com.puppycrawl.tools</groupId>
+                  <artifactId>checkstyle</artifactId>
+                  <version>${version.puppycrawl}</version>
+               </dependency>
+            </dependencies>
+         </plugin>
+         <plugin>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+            <version>${maven.project.info.reports.plugin.version}</version>
+         </plugin>
       </plugins>
       <pluginManagement>
          <plugins>
@@ -545,6 +614,7 @@
             <plugin>
                <groupId>org.codehaus.mojo</groupId>
                <artifactId>exec-maven-plugin</artifactId>
+               <version>${maven.exec.plugin.version}</version>
                <configuration>
                   <executable>java</executable>
                   <arguments>
@@ -552,7 +622,7 @@
                      <argument>-Dlog4j.configurationFile=file://${basedir}/src/main/resources/log4j2.xml</argument>
                      <argument>-ea</argument>
                      <argument>-cp</argument>
-                     <classpath />
+                     <classpath/>
                      <argument>org.perfcake.ScenarioExecution</argument>
                      <argument>-s</argument>
                      <argument>${scenario}</argument>
@@ -605,57 +675,6 @@
                   <useAgent>true</useAgent>
                </configuration>
             </plugin>
-            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
-            <plugin>
-               <groupId>org.eclipse.m2e</groupId>
-               <artifactId>lifecycle-mapping</artifactId>
-               <version>1.0.0</version>
-               <configuration>
-                  <lifecycleMappingMetadata>
-                     <pluginExecutions>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.jacoco</groupId>
-                              <artifactId>jacoco-maven-plugin</artifactId>
-                              <versionRange>[0.6.3.201306030806,)</versionRange>
-                              <goals>
-                                 <goal>prepare-agent</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <ignore />
-                           </action>
-                        </pluginExecution>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.apache.maven.plugins</groupId>
-                              <artifactId>maven-dependency-plugin</artifactId>
-                              <versionRange>[1.0.0,)</versionRange>
-                              <goals>
-                                 <goal>unpack</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <execute />
-                           </action>
-                        </pluginExecution>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.codehaus.mojo</groupId>
-                              <artifactId>xml-maven-plugin</artifactId>
-                              <versionRange>[1.0.0,)</versionRange>
-                              <goals>
-                                 <goal>transform</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <execute />
-                           </action>
-                        </pluginExecution>
-                     </pluginExecutions>
-                  </lifecycleMappingMetadata>
-               </configuration>
-            </plugin>
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-surefire-plugin</artifactId>
@@ -667,6 +686,7 @@
    <reporting>
       <plugins>
          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-project-info-reports-plugin</artifactId>
             <version>${maven.project.info.plugin.version}</version>
             <configuration>
@@ -683,12 +703,34 @@
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>${version.jacoco}</version>
             <configuration>
+               <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+               <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
                <includes>
                   <include>org/perfcake/**</include>
                </includes>
                <excludes>
                   <exclude>org/perfcake/model/**</exclude>
                </excludes>
+            </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${maven.checkstyle.plugin.version}</version>
+            <reportSets>
+               <reportSet>
+                  <reports>
+                     <report>checkstyle</report>
+                  </reports>
+               </reportSet>
+            </reportSets>
+            <configuration>
+               <configLocation>src/site/perfcake-check.xml</configLocation>
+               <encoding>UTF-8</encoding>
+               <consoleOutput>true</consoleOutput>
+               <failsOnError>false</failsOnError>
+               <linkXRef>false</linkXRef>
+               <excludes>org/perfcake/model/*,org/perfcake/scenario/dsl/*</excludes>
             </configuration>
          </plugin>
       </plugins>
@@ -806,6 +848,94 @@
                   </configuration>
                </plugin>
             </plugins>
+         </build>
+      </profile>
+      <profile>
+         <!--Only use this dependency if a tools.jar file exists in the JDK's lib directory-->
+         <id>toosjar-profile</id>
+         <activation>
+            <file>
+               <exists>${java.home}/../lib/tools.jar</exists>
+            </file>
+         </activation>
+         <properties>
+            <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+         </properties>
+         <dependencies>
+            <dependency>
+               <!--Need tools.jar in compilation classpath. JDK 1.7 no longer has it there by default: -->
+               <groupId>com.sun</groupId>
+               <artifactId>tools</artifactId>
+               <!-- version number is irrelevant since we exclude this from the dependencies plugin: -->
+               <version>99.9.9</version>
+               <scope>system</scope>
+               <systemPath>${java.home}/../lib/tools.jar</systemPath>
+            </dependency>
+         </dependencies>
+      </profile>
+      <profile>
+         <id>only-eclipse</id>
+         <activation>
+            <property>
+               <name>m2e.version</name>
+            </property>
+         </activation>
+         <build>
+            <pluginManagement>
+               <plugins>
+                  <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+                  <plugin>
+                     <groupId>org.eclipse.m2e</groupId>
+                     <artifactId>lifecycle-mapping</artifactId>
+                     <version>1.0.0</version>
+                     <configuration>
+                        <lifecycleMappingMetadata>
+                           <pluginExecutions>
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.jacoco</groupId>
+                                    <artifactId>jacoco-maven-plugin</artifactId>
+                                    <versionRange>[0.7.6.201602180812,)</versionRange>
+                                    <goals>
+                                       <goal>prepare-agent</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <ignore/>
+                                 </action>
+                              </pluginExecution>
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.apache.maven.plugins</groupId>
+                                    <artifactId>maven-dependency-plugin</artifactId>
+                                    <versionRange>[1.0.0,)</versionRange>
+                                    <goals>
+                                       <goal>unpack</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <execute/>
+                                 </action>
+                              </pluginExecution>
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.codehaus.mojo</groupId>
+                                    <artifactId>xml-maven-plugin</artifactId>
+                                    <versionRange>[1.0.0,)</versionRange>
+                                    <goals>
+                                       <goal>transform</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <execute/>
+                                 </action>
+                              </pluginExecution>
+                           </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                     </configuration>
+                  </plugin>
+               </plugins>
+            </pluginManagement>
          </build>
       </profile>
    </profiles>

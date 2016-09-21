@@ -20,6 +20,8 @@
 package org.perfcake.validation;
 
 import org.perfcake.message.Message;
+import org.perfcake.util.Utils;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -50,9 +52,25 @@ import javax.script.ScriptException;
  */
 public class ScriptValidator implements MessageValidator {
 
+   /**
+    * The name of the Java Script Engine.
+    */
+   @MandatoryProperty
    private String engine;
+
+   /**
+    * The script to be used for validation (code of the script). Has priority over scriptFile.
+    */
    private String script;
+
+   /**
+    * Location of the file with the script.
+    */
    private String scriptFile;
+
+   /**
+    * Compiled representation of the script.
+    */
    private CompiledScript compiledScript = null;
 
    private static final Logger log = LogManager.getLogger(ScriptValidator.class);
@@ -65,7 +83,7 @@ public class ScriptValidator implements MessageValidator {
          if (script != null) {
             compiledScript = ((Compilable) engine).compile(script);
          } else if (scriptFile != null) {
-            try (Reader fr = new BufferedReader(new InputStreamReader(new FileInputStream(new File(scriptFile)), StandardCharsets.UTF_8))) {
+            try (Reader fr = new BufferedReader(new InputStreamReader(new FileInputStream(new File(scriptFile)), Utils.getDefaultEncoding()))) {
                compiledScript = ((Compilable) engine).compile(fr);
             } catch (final IOException e) {
                throw new ValidationException("Error loading script file: ", e);

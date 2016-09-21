@@ -70,14 +70,12 @@ public interface MessageSender {
     *
     * @param message
     *       Message to be sent.
-    * @param properties
-    *       Additional properties that can influence the sending of the message.
     * @param messageAttributes
     *       Attributes that can be used to replace placeholders in message and or target.
     * @throws Exception
     *       In case anything fails during the preparation.
     */
-   void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception;
+   void preSend(final Message message, final Properties messageAttributes) throws Exception;
 
    /**
     * Sends a message.
@@ -91,21 +89,6 @@ public interface MessageSender {
     *       When the send operation failed.
     */
    Serializable send(final Message message, final MeasurementUnit measurementUnit) throws Exception;
-
-   /**
-    * Sends a message with additional properties.
-    *
-    * @param message
-    *       Message to be sent.
-    * @param properties
-    *       Properties that can be used or anyhow influence the sending of the message. Typically carries message headers.
-    * @param measurementUnit
-    *       Measurement unit that carries the current send iteration information.
-    * @return Received response.
-    * @throws java.lang.Exception
-    *       When the send operation failed.
-    */
-   Serializable send(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception;
 
    /**
     * Performs any action that needs to be done to complete the sending of  the message but is not directly related to the sending operation and thus not measured.
@@ -126,7 +109,7 @@ public interface MessageSender {
 
    /**
     * Gets the target where to send the messages providing additional properties to replace placeholders in the
-    * tearget template.
+    * target template.
     *
     * @param properties
     *       Additional properties to replace placeholders in the target template.

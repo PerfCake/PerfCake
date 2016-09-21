@@ -19,15 +19,16 @@
  */
 package org.perfcake.message.sender;
 
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.util.ObjectFactory;
+import org.perfcake.util.Utils;
 
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.File;
 import java.util.Properties;
 
 /**
@@ -47,154 +48,108 @@ public class CommandSenderTest {
    private static String scriptFile;
 
    @BeforeClass
-   public static void determineOS() {
+   public static void determineOS() throws PerfCakeException {
+
       if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-         scriptFile = "greeting.bat";
+         scriptFile = Utils.getResource("/") + File.separator + "greeting.bat";
       } else {
-         scriptFile = "greeting.sh";
+         scriptFile = "./src/test/resources/greeting.sh";
       }
    }
 
    @Test
    public void nullMessageNoPayloadFakeArgumentTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile + " Pepo");
+      senderProperties.setProperty("target", scriptFile + " Pepo");
       final Message message = null;
-      String response = null;
-      try {
-         final CommandSender sender = (CommandSender) ObjectFactory.summonInstance(CommandSender.class.getName(), senderProperties);
-         final Map<String, String> additionalMessageProperties = new HashMap<>();
-
-         response = _sendMessage(sender, message, additionalMessageProperties);
-      } catch (Exception e) {
-         e.printStackTrace();
-         Assert.fail(e.getMessage());
-      }
+      String response = sendUsingCommandSender(senderProperties, message, null);
       Assert.assertEquals(response.trim(), "Greetings Pepo! From ARG #1.");
    }
 
    @Test
    public void emptyMessageNoPayloadFakeArgumentTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile + " Pepo");
+      senderProperties.setProperty("target", scriptFile + " Pepo");
       final Message message = new Message();
-      String response = null;
-      try {
-         final CommandSender sender = (CommandSender) ObjectFactory.summonInstance(CommandSender.class.getName(), senderProperties);
-         final Map<String, String> additionalMessageProperties = new HashMap<>();
-
-         response = _sendMessage(sender, message, additionalMessageProperties);
-      } catch (Exception e) {
-         e.printStackTrace();
-         Assert.fail(e.getMessage());
-      }
+      String response = sendUsingCommandSender(senderProperties, message, null);
       Assert.assertEquals(response.trim(), "Greetings Pepo! From ARG #1.");
    }
 
    @Test
    public void messageWithPayloadFromStdinTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile);
+      senderProperties.setProperty("target", scriptFile);
       final Message message = new Message();
       message.setPayload("Pepo");
-      String response = null;
-      try {
-         final CommandSender sender = (CommandSender) ObjectFactory.summonInstance(CommandSender.class.getName(), senderProperties);
-         final Map<String, String> additionalMessageProperties = new HashMap<>();
-
-         response = _sendMessage(sender, message, additionalMessageProperties);
-      } catch (Exception e) {
-         e.printStackTrace();
-         Assert.fail(e.getMessage());
-      }
+      String response = sendUsingCommandSender(senderProperties, message, null);
       Assert.assertEquals(response.trim(), "Greetings Pepo! From STDIN.");
    }
 
    @Test
    public void messageWithPayloadFromArgumentTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile);
+      senderProperties.setProperty("target", scriptFile);
       senderProperties.setProperty("messageFrom", "ARGUMENTS");
       final Message message = new Message();
       message.setPayload("Pepo");
-      String response = null;
-      try {
-         final CommandSender sender = (CommandSender) ObjectFactory.summonInstance(CommandSender.class.getName(), senderProperties);
-         final Map<String, String> additionalMessageProperties = new HashMap<>();
-
-         response = _sendMessage(sender, message, additionalMessageProperties);
-      } catch (Exception e) {
-         e.printStackTrace();
-         Assert.fail(e.getMessage());
-      }
+      String response = sendUsingCommandSender(senderProperties, message, null);
       Assert.assertEquals(response.trim(), "Greetings Pepo! From ARG #1.");
    }
 
    @Test
    public void messageWithPayloadFromArgumentWithGlobalPropertyTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile);
+      senderProperties.setProperty("target", scriptFile);
       senderProperties.setProperty("messageFrom", "ARGUMENTS");
       final Message message = new Message();
       message.setPayload("Pepo");
-      String response = null;
-      try {
-         final CommandSender sender = (CommandSender) ObjectFactory.summonInstance(CommandSender.class.getName(), senderProperties);
-         final Map<String, String> additionalMessageProperties = new HashMap<>();
-         additionalMessageProperties.put("TEST_VARIABLE", "testing");
-         response = _sendMessage(sender, message, additionalMessageProperties);
-      } catch (Exception e) {
-         e.printStackTrace();
-         Assert.fail(e.getMessage());
-      }
+      final Properties additionalMessageProperties = new Properties();
+      additionalMessageProperties.setProperty("TEST_VARIABLE", "testing");
+      String response = sendUsingCommandSender(senderProperties, message, additionalMessageProperties);
       Assert.assertEquals(response.trim(), "Greetings Pepo! From ARG #1. TEST_VARIABLE=testing.");
    }
 
    @Test
    public void messageWithHeaderAndPayloadFromArgumentTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile);
+      senderProperties.setProperty("target", scriptFile);
       senderProperties.setProperty("messageFrom", "ARGUMENTS");
       final Message message = new Message();
       message.setPayload("Pepo");
       message.setHeader("TEST_VARIABLE", "testing");
-      String response = null;
-      try {
-         final CommandSender sender = (CommandSender) ObjectFactory.summonInstance(CommandSender.class.getName(), senderProperties);
-         final Map<String, String> additionalMessageProperties = new HashMap<>();
-         response = _sendMessage(sender, message, additionalMessageProperties);
-      } catch (Exception e) {
-         e.printStackTrace();
-         Assert.fail(e.getMessage());
-      }
+      String response = sendUsingCommandSender(senderProperties, message, null);
       Assert.assertEquals(response.trim(), "Greetings Pepo! From ARG #1. TEST_VARIABLE=testing.");
    }
 
    @Test
    public void messageWithPropertyAndPayloadFromArgumentTest() {
       final Properties senderProperties = new Properties();
-      senderProperties.setProperty("target", "./src/test/resources/" + scriptFile);
+      senderProperties.setProperty("target", scriptFile);
       senderProperties.setProperty("messageFrom", "ARGUMENTS");
       final Message message = new Message();
       message.setPayload("Pepo");
       message.setProperty("TEST_VARIABLE", "testing");
-      String response = null;
+      String response = sendUsingCommandSender(senderProperties, message, null);
+      Assert.assertEquals(response.trim(), "Greetings Pepo! From ARG #1. TEST_VARIABLE=testing.");
+   }
+
+   private String sendUsingCommandSender(final Properties senderProperties, final Message message, final Properties additionalProperties) {
       try {
          final CommandSender sender = (CommandSender) ObjectFactory.summonInstance(CommandSender.class.getName(), senderProperties);
-         final Map<String, String> additionalMessageProperties = new HashMap<>();
-         response = _sendMessage(sender, message, additionalMessageProperties);
+         return _sendMessage(sender, message, additionalProperties);
       } catch (Exception e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
-      Assert.assertEquals(response.trim(), "Greetings Pepo! From ARG #1. TEST_VARIABLE=testing.");
+
+      return null;
    }
 
-   private String _sendMessage(final CommandSender sender, final Message message, final Map<String, String> additionalProperties) throws Exception {
+   private String _sendMessage(final CommandSender sender, final Message message, final Properties additionalProperties) throws Exception {
       String response = null;
       sender.init();
-      sender.preSend(message, additionalProperties, null);
-      response = (String) sender.send(message, additionalProperties, null);
+      sender.preSend(message, additionalProperties);
+      response = (String) sender.send(message, null);
       sender.postSend(message);
       sender.close();
       return response;

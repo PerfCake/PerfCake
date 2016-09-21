@@ -19,13 +19,16 @@
  */
 package org.perfcake.message.generator;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
+import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
+import org.perfcake.util.Utils;
 import org.perfcake.validation.ValidationManager;
 
 import org.apache.logging.log4j.LogManager;
@@ -44,7 +47,10 @@ import java.util.concurrent.ThreadPoolExecutor;
  */
 public abstract class AbstractMessageGenerator implements MessageGenerator {
 
-   private final static Logger log = LogManager.getLogger(AbstractMessageGenerator.class);
+   /**
+    * Our logger.
+    */
+   private static final Logger log = LogManager.getLogger(AbstractMessageGenerator.class);
 
    /**
     * Message sender manager.
@@ -87,6 +93,16 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
    private int threads = 1;
 
    /**
+    * True when we should interrupt generating messages on error.
+    */
+   private boolean failFast = false;
+
+   /**
+    * Correlates received messages with the sent ones. Null means that it is unused.
+    */
+   private Correlator correlator = null;
+
+   /**
     * Initializes the generator. During the initialization the {@link #messageSenderManager} is initialized as well.
     *
     * @param messageSenderManager
@@ -98,6 +114,8 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     */
    @Override
    public void init(final MessageSenderManager messageSenderManager, final List<MessageTemplate> messageStore) throws PerfCakeException {
+      failFast = Boolean.parseBoolean(Utils.getProperty(PerfCakeConst.FAIL_FAST_PROPERTY, "false"));
+
       this.messageStore = messageStore;
       this.messageSenderManager = messageSenderManager;
       this.messageSenderManager.init();
@@ -115,18 +133,17 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
     * Gets a new instance of a {@link org.perfcake.message.generator.SenderTask}.
     * The provided semaphore can be used to control parallel execution of sender tasks in multiple threads.
     *
-    * @param semaphore
-    *       Semaphore that will be released upon completion of the sender task. Can be null.
     * @return A sender task ready to work on another iteration.
     */
-   protected SenderTask newSenderTask(final Semaphore semaphore) {
-      final SenderTask task = new SenderTask(new CanalStreet(this, semaphore));
+   protected SenderTask newSenderTask() {
+      final SenderTask task = new SenderTask(this);
 
       task.setMessageStore(messageStore);
       task.setReportManager(reportManager);
       task.setSenderManager(messageSenderManager);
       task.setValidationManager(validationManager);
       task.setSequenceManager(sequenceManager);
+      task.setCorrelator(correlator);
 
       return task;
    }
@@ -147,7 +164,7 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
    /**
     * Verifies that the current configuration of {@link org.perfcake.RunInfo} is supported by the current generator.
     */
-   abstract protected void validateRunInfo();
+   protected abstract void validateRunInfo();
 
    /**
     * Sets the {@link org.perfcake.reporting.ReportManager} to be used for the current performance test execution.
@@ -261,4 +278,13 @@ public abstract class AbstractMessageGenerator implements MessageGenerator {
       return executorService.getTaskCount() - executorService.getCompletedTaskCount();
    }
 
+   @Override
+   public boolean isFailFast() {
+      return failFast;
+   }
+
+   @Override
+   public void setCorrelator(final Correlator correlator) {
+      this.correlator = correlator;
+   }
 }

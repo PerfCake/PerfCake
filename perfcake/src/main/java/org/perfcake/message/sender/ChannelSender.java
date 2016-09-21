@@ -25,7 +25,6 @@ import org.perfcake.message.Message;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -34,7 +33,7 @@ import java.util.Properties;
  * @author <a href="mailto:domin.hanak@gmail.com">Dominik Hanák</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-abstract public class ChannelSender extends AbstractSender {
+public abstract class ChannelSender extends AbstractSender {
 
    /**
     * Buffer for writing to and reading from NIO channel.
@@ -62,8 +61,8 @@ abstract public class ChannelSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
 
       // Encode message payload into buffer
       if (message != null && message.getPayload() != null) {
@@ -100,9 +99,11 @@ abstract public class ChannelSender extends AbstractSender {
     *
     * @param awaitResponse
     *       True to make the sender to wait for a response.
+    * @return Instance of this to support fluent API.
     */
-   public void setAwaitResponse(final boolean awaitResponse) {
+   public ChannelSender setAwaitResponse(final boolean awaitResponse) {
       this.awaitResponse = awaitResponse;
+      return this;
    }
 
    /**
@@ -119,8 +120,10 @@ abstract public class ChannelSender extends AbstractSender {
     *
     * @param maxResponseSize
     *       The desired maximum response size.
+    * @return Instance of this to support fluent API.
     */
-   public void setMaxResponseSize(final int maxResponseSize) {
+   public ChannelSender setMaxResponseSize(final int maxResponseSize) {
       this.maxResponseSize = maxResponseSize;
+      return this;
    }
 }

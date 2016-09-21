@@ -1,0 +1,68 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>org.perfcake.test</groupId>
+   <artifactId>perfcake-maven-plugin-test</artifactId>
+   <version>1.0-SNAPSHOT</version>
+   <packaging>jar</packaging>
+   <name>ParfCake Maven Plugin Test</name>
+   <organization>
+      <name>PerfCake Community</name>
+      <url>https://www.perfcake.org</url>
+   </organization>
+   <description>A Lightweight Performance Testing Framework</description>
+   <url>https://www.perfcake.org</url>
+   <inceptionYear>2010</inceptionYear>
+   <licenses>
+      <license>
+         <name>The Apache Software License, Version 2.0</name>
+         <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+         <distribution>repo</distribution>
+         <comments>A business-friendly OSS license</comments>
+      </license>
+   </licenses>
+   <properties>
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      <perfcake.version>7.0</perfcake.version>
+      <java.level>1.8</java.level>
+   </properties>
+   <dependencyManagement>
+      <dependencies>
+         <dependency>
+            <groupId>org.perfcake</groupId>
+            <artifactId>perfcake-bom</artifactId>
+            <version>${perfcake.version}</version>
+            <type>pom</type>
+            <scope>import</scope>
+         </dependency>
+      </dependencies>
+   </dependencyManagement>
+   <dependencies>
+      <dependency>
+         <groupId>org.perfcake</groupId>
+         <artifactId>perfcake</artifactId>
+         <scope>test</scope>
+      </dependency>
+   </dependencies>
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.perfcake</groupId>
+            <artifactId>perfcake-maven-plugin</artifactId>
+            <version>${perfcake.version}</version>
+            <configuration>
+               <scenario>scenario</scenario>
+               <scenarios-dir>src/test/resources/projects/custom/src/test/resources/perfcake/scenarios_custom</scenarios-dir>
+               <messages-dir>src/test/resources/projects/custom/src/test/resources/perfcake/messages_custom</messages-dir>
+            </configuration>
+            <executions>
+               <execution>
+                  <id>perfcake-scenario-run</id>
+                  <goals>
+                     <goal>scenario-run</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
+</project>

@@ -26,12 +26,14 @@ import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
+import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.generator.MessageGenerator;
+import org.perfcake.message.receiver.Receiver;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.Sequence;
 import org.perfcake.message.sequence.SequenceManager;
-import org.perfcake.model.Header;
-import org.perfcake.model.Property;
+import org.perfcake.model.HeaderType;
+import org.perfcake.model.PropertyType;
 import org.perfcake.model.Scenario.Generator;
 import org.perfcake.model.Scenario.Messages;
 import org.perfcake.model.Scenario.Messages.Message.ValidatorRef;
@@ -39,8 +41,8 @@ import org.perfcake.model.Scenario.Reporting;
 import org.perfcake.model.Scenario.Sender;
 import org.perfcake.model.Scenario.Validation;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.destination.Destination;
+import org.perfcake.reporting.reporter.Reporter;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
@@ -110,12 +112,12 @@ public class XmlFactory implements ScenarioFactory {
    }
 
    @Override
-   public void init(final URL scenarioURL) throws PerfCakeException {
+   public void init(final URL scenarioUrl) throws PerfCakeException {
       try {
-         prepareModelTwoPass(scenarioURL);
+         prepareModelTwoPass(scenarioUrl);
 
          if (log.isDebugEnabled()) {
-            log.debug(String.format("Loaded scenario definition from '%s'.", scenarioURL.toString()));
+            log.debug(String.format("Loaded scenario definition from '%s'.", scenarioUrl.toString()));
          }
       } catch (final IOException e) {
          throw new PerfCakeException("Cannot read scenario configuration: ", e);
@@ -126,20 +128,20 @@ public class XmlFactory implements ScenarioFactory {
     * Parses the scenario twice, first to read the properties defined in it, second using the new properties directly
     * in the scenario.
     *
-    * @param scenarioURL
+    * @param scenarioUrl
     *       Scenario location URL.
     * @throws PerfCakeException
     *       When it was not possible to parse the scenario.
     * @throws IOException
     *       When it was not possible to read the scenario definition.
     */
-   private void prepareModelTwoPass(final URL scenarioURL) throws PerfCakeException, IOException {
+   private void prepareModelTwoPass(final URL scenarioUrl) throws PerfCakeException, IOException {
       // two-pass parsing to first read the properties specified in the scenario and then use them
-      this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
+      this.scenarioConfig = Utils.readFilteredContent(scenarioUrl);
       this.scenarioModel = parse();
       putScenarioPropertiesToSystem(parseScenarioProperties());
 
-      this.scenarioConfig = Utils.readFilteredContent(scenarioURL);
+      this.scenarioConfig = Utils.readFilteredContent(scenarioUrl);
       this.scenarioModel = parse();
       final Properties scenarioProperties = parseScenarioProperties();
       putScenarioPropertiesToSystem(scenarioProperties);
@@ -161,6 +163,8 @@ public class XmlFactory implements ScenarioFactory {
 
          scenario.setGenerator(messageGenerator);
          scenario.setMessageSenderManager(parseSender(messageGenerator.getThreads()));
+         scenario.setReceiver(parseReceiver());
+         scenario.setCorrelator(parseCorrelator());
          scenario.setReportManager(parseReporting());
          scenario.getReportManager().setRunInfo(runInfo);
 
@@ -174,6 +178,66 @@ public class XmlFactory implements ScenarioFactory {
       return scenario;
    }
 
+   private Receiver parseReceiver() throws PerfCakeException {
+      if (scenarioModel.getReceiver() != null) {
+         try {
+            final org.perfcake.model.Scenario.Receiver rec = scenarioModel.getReceiver();
+            String receiverClass = rec.getClazz();
+            if (!receiverClass.contains(".")) {
+               receiverClass = DEFAULT_RECEIVER_PACKAGE + "." + receiverClass;
+            }
+
+            final int threads = Integer.parseInt(rec.getThreads());
+            final String source = rec.getSource();
+
+            if (log.isDebugEnabled()) {
+               log.debug("--- Receiver (" + receiverClass + ") ---");
+               log.debug("  threads=" + threads);
+            }
+
+            final Properties receiverProperties = getPropertiesFromList(rec.getProperty());
+            Utils.logProperties(log, Level.DEBUG, receiverProperties, "   ");
+
+            final Receiver receiver = (Receiver) ObjectFactory.summonInstance(receiverClass, receiverProperties);
+            receiver.setThreads(threads);
+            if (source != null) {
+               receiver.setSource(source);
+            }
+
+            return receiver;
+         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new PerfCakeException("Cannot parse message generator configuration: ", e);
+         }
+      } else {
+         return null;
+      }
+   }
+
+   private Correlator parseCorrelator() throws PerfCakeException {
+      if (scenarioModel.getReceiver() != null && scenarioModel.getReceiver().getCorrelator() != null) {
+         try {
+            final org.perfcake.model.Scenario.Receiver.Correlator cor = scenarioModel.getReceiver().getCorrelator();
+            String correlatorClass = cor.getClazz();
+            if (!correlatorClass.contains(".")) {
+               correlatorClass = DEFAULT_CORRELATOR_PACKAGE + "." + correlatorClass;
+            }
+
+            if (log.isDebugEnabled()) {
+               log.debug("  '- Correlator (" + correlatorClass + ")");
+            }
+
+            final Properties correlatorProperties = getPropertiesFromList(cor.getProperty());
+            Utils.logProperties(log, Level.DEBUG, correlatorProperties, "   '- ");
+
+            return (Correlator) ObjectFactory.summonInstance(correlatorClass, correlatorProperties);
+         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+            throw new PerfCakeException("Cannot parse message generator configuration: ", e);
+         }
+      } else {
+         return null;
+      }
+   }
+
    /**
     * Does the parsing itself by using JAXB.
     *
@@ -183,7 +247,7 @@ public class XmlFactory implements ScenarioFactory {
     */
    private org.perfcake.model.Scenario parse() throws PerfCakeException {
       try {
-         final Source scenarioXML = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes(Utils.getDefaultEncoding())));
+         final Source scenarioXml = new StreamSource(new ByteArrayInputStream(scenarioConfig.getBytes(Utils.getDefaultEncoding())));
          final String schemaFileName = "perfcake-scenario-" + PerfCakeConst.XSD_SCHEMA_VERSION + ".xsd";
          final URL backupUrl = new URL("http://schema.perfcake.org/" + schemaFileName);
 
@@ -204,7 +268,7 @@ public class XmlFactory implements ScenarioFactory {
          final JAXBContext context = JAXBContext.newInstance(org.perfcake.model.Scenario.class);
          final Unmarshaller unmarshaller = context.createUnmarshaller();
          unmarshaller.setSchema(schema);
-         return (org.perfcake.model.Scenario) unmarshaller.unmarshal(scenarioXML);
+         return (org.perfcake.model.Scenario) unmarshaller.unmarshal(scenarioXml);
       } catch (final SAXException e) {
          throw new PerfCakeException("Cannot validate scenario configuration. PerfCake installation seems broken. ", e);
       } catch (final JAXBException e) {
@@ -222,10 +286,10 @@ public class XmlFactory implements ScenarioFactory {
       }
    }
 
-   private static Properties getPropertiesFromList(final List<Property> properties) throws PerfCakeException {
+   private static Properties getPropertiesFromList(final List<PropertyType> properties) throws PerfCakeException {
       final Properties props = new Properties();
 
-      for (final Property p : properties) {
+      for (final PropertyType p : properties) {
          final Element valueElement = p.getAny();
          final String valueString = p.getValue();
 
@@ -311,7 +375,7 @@ public class XmlFactory implements ScenarioFactory {
 
          if (sequences != null) {
             for (org.perfcake.model.Scenario.Sequences.Sequence seq : sequences.getSequence()) {
-               final String sequenceName = seq.getName();
+               final String sequenceId = seq.getId();
                String sequenceClass = seq.getClazz();
                final Properties sequenceProperties = getPropertiesFromList(seq.getProperty());
 
@@ -320,13 +384,13 @@ public class XmlFactory implements ScenarioFactory {
                }
 
                if (log.isDebugEnabled()) {
-                  log.debug("--- Sequence (" + sequenceName + ":" + sequenceClass + ") ---");
+                  log.debug("--- Sequence (" + sequenceId + ":" + sequenceClass + ") ---");
                }
 
                Utils.logProperties(log, Level.DEBUG, sequenceProperties, "   ");
 
                final Sequence sequence = (Sequence) ObjectFactory.summonInstance(sequenceClass, sequenceProperties);
-               sequenceManager.addSequence(sequenceName, sequence);
+               sequenceManager.addSequence(sequenceId, sequence);
             }
          }
       } catch (ReflectiveOperationException e) {
@@ -412,7 +476,7 @@ public class XmlFactory implements ScenarioFactory {
 
                final Properties currentMessageProperties = getPropertiesFromList(m.getProperty());
                final Properties currentMessageHeaders = new Properties();
-               for (final Header h : m.getHeader()) {
+               for (final HeaderType h : m.getHeader()) {
                   currentMessageHeaders.setProperty(h.getName(), h.getValue());
                }
 

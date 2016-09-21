@@ -1,5 +1,8 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.perfcake/perfcake/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.perfcake/perfcake/)
-[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)  
+[![License](https://img.shields.io/badge/license-Apache%202-4EB1BA.svg)](https://www.apache.org/licenses/LICENSE-2.0.html)
+[![Project Stats](https://www.openhub.net/p/PerfCake/widgets/project_thin_badge?format=gif&ref=Thin+badge)](https://www.ohloh.net/p/PerfCake)
+[![Build Status](https://perfcake.ci.cloudbees.com/job/PerfCake-devel/badge/icon)](https://perfcake.ci.cloudbees.com/job/PerfCake-devel/)
+
 
 PerfCake
 ========
@@ -26,7 +29,7 @@ The development branch name is `devel`.
 Bug reporting
 -------------
 
-Please report all bugs related to core source code, documentation,,
+Please report all bugs related to core source code, documentation,
 demos, and web pages to the issues of this repository. Only some of other
 repositories have dedicated issue tracker that has a different release schedule
 (this is always specified in README.md).

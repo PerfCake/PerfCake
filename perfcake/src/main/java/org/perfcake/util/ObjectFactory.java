@@ -125,6 +125,13 @@ public class ObjectFactory {
 
          if (!successSet) { // not yet set - either it was not an XML element or it failed with it
             beanUtilsBean.setProperty(object, entry.getKey().toString(), entry.getValue());
+            try {
+               beanUtilsBean.getProperty(object, entry.getKey().toString());
+            } catch (ReflectiveOperationException reo) {
+               log.warn(String.format("It was not possible to reliably configure property %s on class %s. "
+                           + "You may have a mistake in the scenario, or the class does not allow reading of the property.",
+                     entry.getKey().toString(), object.getClass().getCanonicalName()));
+            }
          }
       }
    }
@@ -172,7 +179,12 @@ public class ObjectFactory {
     */
    public static Properties getObjectProperties(final Object object) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
       final Properties properties = new Properties();
-      properties.putAll(BeanUtils.describe(object));
+      final Map<String, String> attributes = BeanUtils.describe(object);
+      attributes.forEach((key, value) -> {
+         if (value != null) {
+            properties.put(key, value);
+         }
+      });
 
       return properties;
    }
@@ -187,30 +199,42 @@ public class ObjectFactory {
          final ClassLoader currentClassLoader = ObjectFactory.class.getClassLoader();
          final String pluginsDirProp = Utils.getProperty(PerfCakeConst.PLUGINS_DIR_PROPERTY);
          if (pluginsDirProp == null) {
-            return currentClassLoader;
+            pluginClassLoader = currentClassLoader;
+            return pluginClassLoader;
          }
 
          final File pluginsDir = new File(pluginsDirProp);
          final File[] plugins = pluginsDir.listFiles(new FileExtensionFilter(".jar"));
 
-         if ((plugins == null) || (plugins.length == 0)) {
-            return currentClassLoader;
+         if (plugins == null) {
+            if (log.isWarnEnabled()) {
+               log.warn("Plugin directory (" + pluginsDir + ") is invalid. Skipping plugins loading.");
+            }
+            pluginClassLoader = currentClassLoader;
+            return pluginClassLoader;
          }
 
-         final URL[] pluginURLs = new URL[plugins.length];
+         if (plugins.length == 0) {
+            pluginClassLoader = currentClassLoader;
+            return pluginClassLoader;
+         }
+
+         for (final File f : plugins) {
+            log.info("Recognized plugin library " + f.getName());
+         }
+
+         final URL[] pluginUrls = new URL[plugins.length];
          for (int i = 0; i < plugins.length; i++) {
             try {
-               pluginURLs[i] = plugins[i].toURI().toURL();
+               pluginUrls[i] = plugins[i].toURI().toURL();
             } catch (final MalformedURLException e) {
                log.warn(String.format("Cannot resolve path to plugin '%s', skipping this file", plugins[i]));
             }
          }
 
-         AccessController.doPrivileged(new PrivilegedAction<Void>() {
-            public Void run() {
-               pluginClassLoader = new URLClassLoader(pluginURLs, currentClassLoader);
-               return null;
-            }
+         AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+            pluginClassLoader = new URLClassLoader(pluginUrls, currentClassLoader);
+            return null;
          });
       }
 

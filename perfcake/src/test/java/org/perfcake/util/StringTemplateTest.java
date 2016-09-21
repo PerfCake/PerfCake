@@ -19,129 +19,72 @@
  */
 package org.perfcake.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.perfcake.TestUtil;
+
 import org.testng.Assert;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import java.lang.reflect.Field;
 import java.util.Properties;
 
 /**
- * Tests {@link org.perfcake.util.StringTemplate}.
+ * Tests {@link StringTemplate}.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 @Test(groups = { "unit" })
 public class StringTemplateTest {
 
-   @Test
-   public void testStringTemplateLarge() {
-      final String message = StringUtils.repeat("Galia est omnis divisa in partes tres quarum unam incolunt Belgae, aliam Aquitanii, tertiam qui lingua ipsorum Celtae, nostra Gali appelantur.", 5 * 1024 / 140);
-      final String expression = "${hello} ${1+1} ${ahoj||1} ${hello - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}";
+   @DataProvider(name = "patterns")
+   public static Object[][] testPatterns() {
+      return new Object[][] {
+            // { "", "", props("", ""), props("", "") },
+            { "${abc}", "123", TestUtil.props("abc", "123"), null },
+            { "${abc}", "null", null, TestUtil.props("abc", "123") },
+            { "@{abc}", "123", TestUtil.props("abc", "123"), null },
+            { "@{abc}", "123", null, TestUtil.props("abc", "123") },
+            { "$ab@cd", "$ab@cd", TestUtil.props("ab", "1", "cd", "2"), null },
+            { "a$ab@cda", "a$ab@cda", TestUtil.props("ab", "1", "cd", "2"), null },
+            { "\\\\@{cd}", "\\2", null, TestUtil.props("cd", "2") },
+            { "\\${ab}\\@{cd}", "${ab}@{cd}", TestUtil.props("ab", "1", "cd", "2"), TestUtil.props("ab", "1", "cd", "2") },
+            { "a\\$ab\\@cd", "a$ab@cd", TestUtil.props("ab", "1", "cd", "2"), TestUtil.props("ab", "1", "cd", "2") },
+            { "a\\\\${ab}\\\\@{cd}", "a\\1\\2", TestUtil.props("ab", "1", "cd", "2"), TestUtil.props("ab", "1", "cd", "2") },
+            { "a\\\\${ab}\\\\@{cd}", "a\\1\\2", TestUtil.props("ab", "1"), TestUtil.props("cd", "2") },
+            { "a\\\\${ab}\\\\@{cd}", "a\\null\\2", TestUtil.props("cd", "2"), TestUtil.props("ab", "1") },
+            { "a\\$ab\\@cd", "a$ab@cd", TestUtil.props("ab", "1", "cd", "2"), TestUtil.props("ab", "1", "cd", "2") },
+            { "${ab}${ahoj:4}@{cd:1}${env.JAVA_HOME}${props['java.runtime.name']}", "142" + System.getenv("JAVA_HOME") + System.getProperty("java.runtime.name"), TestUtil.props("ab", "1"), TestUtil.props("cd", "2") },
+            { "@{ab}${cd:4}${ab:7}@{env.JAVA_HOME}@{props['java.runtime.name']}", "141" + System.getenv("JAVA_HOME") + System.getProperty("java.runtime.name"), TestUtil.props("ab", "1"), TestUtil.props("cd", "2") },
+            { "${env.JAVA_HOME} - ${env.JAVA_HOME:aaa} - ${env.nonexist:a$a\\\\a@a\\$a\\@a{a\\{a\\}a:a} - \\${env.JAVA_HOME} - ${...",
+                  System.getenv("JAVA_HOME") + " - " + System.getenv("JAVA_HOME") + " - a$a\\a@a$a@a{a{a}a:a - ${env.JAVA_HOME} - ${...", null, null },
+            { "${aaa\\}", "${aaa}", null, null },
+            { "\\\\${env.JAVA_HOME} \\$aa", "\\" + System.getenv("JAVA_HOME") + " $aa", null, null },
+            { "${props.java.runtime.name} ${props[java.runtime.name]} ${props['java.runtime.name']}", System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.name") + " " + System.getProperty("java.runtime.name"), null, null },
+            { "@{aaa:@{\\@\\{\\}\\\\}", "@{@{\\}", null, null },
+            { "no replacements needed", "no replacements needed", null, null },
+            { "${sthWithBackslash} c:\\User @{sthOtherWithBackslash}", "Ahoj\\Ahoj c:\\User Bye\\Bye", TestUtil.props("sthWithBackslash", "Ahoj\\Ahoj"), TestUtil.props("sthOtherWithBackslash", "Bye\\Bye") }
+      };
+   }
 
-      final Properties vars = new Properties();
-      vars.setProperty("hello", "4"); // set int as string
+   @Test(dataProvider = "patterns")
+   public void testStringTemplateLarge(final String template, final String result, final Properties permanentProps, final Properties dynamicProps) {
+      final StringTemplate s = new StringTemplate(template, permanentProps);
 
-      final String result = StringTemplate.parseTemplate(message + expression, vars); // this passes variables into constructor immediately
-
-      Assert.assertEquals(result, message + "4 2 1 3 " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"));
+      Assert.assertEquals(s.toString(dynamicProps), result, String.format("Original template: '%s' perm: %s, dynamic: %s", template, permanentProps == null ? null : permanentProps.toString(),
+            dynamicProps == null ? null : dynamicProps.toString()));
    }
 
    @Test
-   public void testStringTemplateBasic() {
-      final String expression = "@{hello} ${1+1} @{ahoj||1} @{hello - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}";
-      final StringTemplate template = new StringTemplate(expression);
+   public void hasPlaceholdersTest() {
+      final StringTemplate s1 = new StringTemplate("no replacements");
+      final StringTemplate s2 = new StringTemplate("no repla${ce}ments", TestUtil.props("ce", "1"));
+      final StringTemplate s3 = new StringTemplate("no repla@{ce}ments", TestUtil.props("ce", "1"));
 
-      final Properties vars = new Properties();
-      vars.put("hello", 4); // entered directly as int - usually, we should use setProperty() here
-
-      final String result = template.toString(vars); // pass the variables later
-
-      Assert.assertEquals(result, "4 2 1 3 " + System.getenv("JAVA_HOME") + " " + System.getProperty("java.runtime.name"));
-   }
-
-   @Test
-   public void testNoTemplate() {
-      final String noTemplate = "Karel Pilka";
-      final StringTemplate template = new StringTemplate(noTemplate);
-      Assert.assertEquals(template.toString(), noTemplate);
-      Assert.assertFalse(template.hasPlaceholders());
-   }
-
-   @Test
-   public void testEscapeAtStringBeginningAndDuplicateNames() {
-      // make sure that escaped pattern at the string beginning is properly ignored and that escaped duplicates are skipped too
-      String expression = "\\@{hello} @{hello} \\@{hello}";
-      StringTemplate template = new StringTemplate(expression);
-      final Properties vars = new Properties();
-
-      Assert.assertTrue(template.hasPlaceholders());
-
-      vars.setProperty("hello", "42");
-      String result = template.toString(vars); // pass the variables later
-      Assert.assertEquals(result, "@{hello} 42 @{hello}");
-
-      // the same for the dollar sign
-      System.setProperty("test_prop", "42");
-      expression = "\\${hello} ${props.test_prop} \\${hello}";
-      template = new StringTemplate(expression);
-      result = template.toString(vars);
-      Assert.assertEquals(result, "${hello} 42 ${hello}");
-   }
-
-   @Test
-   public void testPatternEscaping() {
-      // make sure that escaped pattern at the string beginning is properly ignored
-      System.setProperty("test_prop", "kuk");
-      final String expression = "\\${hello} @{hello} ${props.test_prop} \\@{hello}";
-      final StringTemplate template = new StringTemplate(expression);
-      final Properties vars = new Properties();
-
-      Assert.assertTrue(template.hasPlaceholders());
-
-      vars.setProperty("hello", "42");
-      final String result = template.toString(vars); // pass the variables later
-      Assert.assertEquals(result, "${hello} 42 kuk @{hello}");
-   }
-
-   @Test
-   public void testPatternEfficiency() throws NoSuchFieldException, IllegalAccessException {
-      final String expression = "${1 + 1}";
-      final StringTemplate template = new StringTemplate(expression);
-      String result = template.toString();
-
-      Assert.assertFalse(template.hasPlaceholders());
-
-      Assert.assertEquals(result, "2");
-      final Field templateField = StringTemplate.class.getDeclaredField("template");
-      templateField.setAccessible(true);
-      Assert.assertNull(templateField.get(template));
-
-      // subsequent calls must return the same without using the template engine as we did not use any @{property}
-      result = template.toString();
-      Assert.assertEquals(result, "2");
-   }
-
-   @Test
-   public void testNotYetDefinedProperty() {
-      final String expression = "${1 + 1} @{undefined}";
-      final StringTemplate template = new StringTemplate(expression);
-
-      Assert.assertTrue(template.hasPlaceholders());
-      Assert.assertEquals(template.toString(), "2 null");
-   }
-
-   @Test
-   public void testSpecialChars() {
-      final String function = "array.add(var, [0, 1, 2], 'name');\n";
-      final String expression = "<script>$(function() {\n ${1 + 1} 'ahoj' ${ohmy} @{my}\n });</script>";
-      final Properties vars = new Properties();
-      vars.setProperty("ohmy", function);
-      final StringTemplate template = new StringTemplate(expression, vars);
-      final Properties vars2 = new Properties();
-      vars2.setProperty("my", function);
-
-      Assert.assertEquals(template.toString(vars2), "<script>$(function() {\n 2 'ahoj' " + function + " " + function + "\n });</script>");
+      Assert.assertFalse(s1.hasPlaceholders());
+      Assert.assertFalse(s1.hasDynamicPlaceholders());
+      Assert.assertTrue(s2.hasPlaceholders());
+      Assert.assertFalse(s2.hasDynamicPlaceholders());
+      Assert.assertTrue(s3.hasPlaceholders());
+      Assert.assertTrue(s3.hasDynamicPlaceholders());
    }
 
 }

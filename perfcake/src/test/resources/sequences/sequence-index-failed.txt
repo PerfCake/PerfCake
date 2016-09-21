@@ -1,0 +1,4 @@
+${perfcake.messages.dir}/message2.txt
+
+${perfcake.messages.dir}/message3.txt
+${perfcake.messages.dir}/message4.txt

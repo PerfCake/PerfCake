@@ -21,7 +21,9 @@ package org.perfcake.scenario;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.MessageTemplate;
+import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.generator.MessageGenerator;
+import org.perfcake.message.receiver.Receiver;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
@@ -78,6 +80,16 @@ public class Scenario {
    private SequenceManager sequenceManager;
 
    /**
+    * Correlates received messages with the sent ones. Null means that it is unused.
+    */
+   private Correlator correlator = null;
+
+   /**
+    * Receives messages from a different message channel. Null means that it is unused.
+    */
+   private Receiver receiver = null;
+
+   /**
     * Initializes the scenario execution.
     *
     * @throws org.perfcake.PerfCakeException
@@ -93,6 +105,7 @@ public class Scenario {
       generator.setReportManager(reportManager);
       generator.setValidationManager(validationManager);
       generator.setSequenceManager(sequenceManager);
+      generator.setCorrelator(correlator);
 
       try {
          generator.init(messageSenderManager, messageStore);
@@ -112,6 +125,14 @@ public class Scenario {
          log.trace("Running scenario...");
       }
 
+      if (receiver != null) {
+         if (correlator == null) {
+            throw new PerfCakeException("A correlator must be set in order to use a receiver.");
+         }
+         receiver.setCorrelator(correlator);
+         receiver.start();
+      }
+
       if (validationManager.isEnabled()) {
          validationManager.startValidation();
       }
@@ -128,6 +149,10 @@ public class Scenario {
     */
    public void stop() {
       reportManager.stop();
+
+      if (receiver != null) {
+         receiver.stop();
+      }
    }
 
    /**
@@ -267,7 +292,7 @@ public class Scenario {
     * @param sequenceManager
     *       The {@link SequenceManager} to be set.
     */
-   public void setSequenceManager(final SequenceManager sequenceManager) {
+   void setSequenceManager(final SequenceManager sequenceManager) {
       this.sequenceManager = sequenceManager;
    }
 
@@ -278,5 +303,47 @@ public class Scenario {
     */
    SequenceManager getSequenceManager() {
       return sequenceManager;
+   }
+
+   /**
+    * Gets the {@link Correlator} used to correlate received messages with sent ones. It is needed only when a separate message channel is used
+    * for receiving messages. Null means that correlator is not used.
+    *
+    * @return The correlator used in the current test run.
+    */
+   Correlator getCorrelator() {
+      return correlator;
+   }
+
+   /**
+    * Sets the {@link Correlator} used to correlate received messages with sent ones. It is needed only when a separate message channel is used
+    * for receiving messages. Null means that correlator is not used.
+    *
+    * @param correlator
+    *       The correlator to be used in the current test run.
+    */
+   void setCorrelator(final Correlator correlator) {
+      this.correlator = correlator;
+   }
+
+   /**
+    * Gets the {@link Receiver} used to receive response messages from a separate message channel. A correlator is needed to match
+    * requests and responses together. Null means that the receiver is not used.
+    *
+    * @return The receiver used to receive responses from a separate message channel.
+    */
+   Receiver getReceiver() {
+      return receiver;
+   }
+
+   /**
+    * Sets the {@link Receiver} used to receive response messages from a separate message channel. A correlator is needed to match
+    * requests and responses together. Null means that the receiver is not used.
+    *
+    * @param receiver
+    *       The receiver to be used to receive responses from a separate message channel.
+    */
+   void setReceiver(final Receiver receiver) {
+      this.receiver = receiver;
    }
 }

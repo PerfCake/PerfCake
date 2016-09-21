@@ -19,6 +19,7 @@
  */
 package org.perfcake;
 
+import org.perfcake.scenario.ReplayResults;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.util.TimerBenchmark;
@@ -53,9 +54,12 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-@edu.umd.cs.findbugs.annotations.SuppressWarnings(value = "DM_EXIT", justification = "This class is allowed to terminate the JVM.")
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "DM_EXIT", justification = "This class is allowed to terminate the JVM.")
 public class ScenarioExecution {
 
+   /**
+    * Logger.
+    */
    private static final Logger log = LogManager.getLogger(ScenarioExecution.class);
 
    /**
@@ -69,11 +73,6 @@ public class ScenarioExecution {
    private Scenario scenario;
 
    /**
-    * Skips timer benchmark when set to true.
-    */
-   private boolean skipTimerBenchmark = false;
-
-   /**
     * Parses command line arguments and creates this class to take care of the Scenario execution.
     *
     * @param args
@@ -82,6 +81,11 @@ public class ScenarioExecution {
    private ScenarioExecution(final String[] args) {
       Utils.initTimeStamps();
       parseCommandLine(args);
+
+      // now it is safe to greet the user
+      log.info(String.format(PerfCakeConst.WELCOME, PerfCakeConst.VERSION));
+
+      Utils.initDebugAgent();
       loadScenario();
    }
 
@@ -94,14 +98,49 @@ public class ScenarioExecution {
    public static void main(final String[] args) {
       final ScenarioExecution se = new ScenarioExecution(args);
 
-      log.info(String.format("=== Welcome to PerfCake %s ===", PerfCakeConst.VERSION));
-
       // Print system properties
       se.printTraceInformation();
 
-      se.executeScenario();
+      if (Utils.getProperty(PerfCakeConst.REPLAY_PROPERTY) == null) {
+         se.executeScenario();
+      } else {
+         se.replayScenario();
+      }
 
       log.info("=== Goodbye! ===");
+   }
+
+   /**
+    * Executes the given scenario in the same way as PerfCake was started from the command line.
+    * It just allows easy usage in TestNG and jUnit frameworks for instance.
+    *
+    * @param scenarioFile
+    *       The file with scenario definition.
+    * @param properties
+    *       Any additional properties that would be normally set using -Dprop=value (most command line arguments can be set like this).
+    * @throws PerfCakeException
+    *       When it was not possible to load the scenario.
+    */
+   public static void execute(final String scenarioFile, final Properties properties) throws PerfCakeException {
+      final Properties backup = new Properties();
+
+      properties.forEach((k, v) -> {
+         if (System.getProperty(k.toString()) != null) {
+            backup.setProperty(k.toString(), System.getProperty(k.toString()));
+         }
+
+         System.setProperty(k.toString(), v.toString());
+      });
+
+      Utils.initTimeStamps();
+      Utils.initDebugAgent();
+
+      final Scenario scenario = ScenarioLoader.load(scenarioFile);
+      scenario.init();
+      scenario.run();
+      scenario.close();
+
+      backup.forEach((k, v) -> System.setProperty(k.toString(), v.toString()));
    }
 
    /**
@@ -144,7 +183,6 @@ public class ScenarioExecution {
       for (final Entry<Object, Object> entry : props.entrySet()) {
          System.setProperty(entry.getKey().toString(), entry.getValue().toString());
       }
-
    }
 
    /**
@@ -158,12 +196,16 @@ public class ScenarioExecution {
       final HelpFormatter formatter = new HelpFormatter();
       final Options options = new Options();
 
+      options.addOption(Option.builder("h").longOpt(PerfCakeConst.HELP_OPT).desc("prints help/usage").build());
       options.addOption(Option.builder("s").longOpt(PerfCakeConst.SCENARIO_OPT).desc("scenario to be executed").hasArg().argName("SCENARIO").build());
       options.addOption(Option.builder("sd").longOpt(PerfCakeConst.SCENARIOS_DIR_OPT).desc("directory for scenarios").hasArg().argName("SCENARIOS_DIR").build());
       options.addOption(Option.builder("md").longOpt(PerfCakeConst.MESSAGES_DIR_OPT).desc("directory for messages").hasArg().argName("MESSAGES_DIR").build());
       options.addOption(Option.builder("pd").longOpt(PerfCakeConst.PLUGINS_DIR_OPT).desc("directory for plugins").hasArg().argName("PLUGINS_DIR").build());
       options.addOption(Option.builder("pf").longOpt(PerfCakeConst.PROPERTIES_FILE_OPT).desc("custom system properties file").hasArg().argName("PROPERTIES_FILE").build());
       options.addOption(Option.builder("log").longOpt(PerfCakeConst.LOGGING_LEVEL_OPT).desc("logging level").hasArg().argName("LOG_LEVEL").build());
+      options.addOption(Option.builder("r").longOpt(PerfCakeConst.REPLAY_OPT).desc("raw file to be replayed").hasArg().argName("RAW_FILE").build());
+      options.addOption(Option.builder("d").longOpt(PerfCakeConst.DEBUG_OPT).desc("start debug JMX agent for external monitoring").build());
+      options.addOption(Option.builder("dn").longOpt(PerfCakeConst.DEBUG_AGENT_NAME_OPT).desc("debug agent name in the JMX tree").hasArg().argName("AGENT_NAME").build());
       options.addOption(Option.builder("skip").longOpt(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT).desc("skip system timer benchmark").build());
       options.addOption(Option.builder("D").argName("property=value").numberOfArgs(2).valueSeparator().desc("system properties").build());
 
@@ -177,6 +219,13 @@ public class ScenarioExecution {
          return;
       }
 
+      if (commandLine.hasOption(PerfCakeConst.HELP_OPT)) {
+         System.out.println(String.format(PerfCakeConst.WELCOME, PerfCakeConst.VERSION));
+         formatter.printHelp(PerfCakeConst.USAGE_HELP, options);
+         System.exit(PerfCakeConst.ERR_PRINT_HELP);
+         return;
+      }
+
       if (commandLine.hasOption(PerfCakeConst.SCENARIO_OPT)) {
          System.setProperty(PerfCakeConst.SCENARIO_PROPERTY, commandLine.getOptionValue(PerfCakeConst.SCENARIO_OPT));
       } else {
@@ -186,7 +235,11 @@ public class ScenarioExecution {
       }
 
       if (commandLine.hasOption(PerfCakeConst.SKIP_TIMER_BENCHMARK_OPT)) {
-         skipTimerBenchmark = true;
+         System.setProperty(PerfCakeConst.SKIP_TIMER_BENCHMARK_PROPERTY, "true");
+      }
+
+      if (commandLine.hasOption(PerfCakeConst.DEBUG_OPT)) {
+         System.setProperty(PerfCakeConst.DEBUG_PROPERTY, "true");
       }
 
       parseParameter(PerfCakeConst.SCENARIOS_DIR_OPT, PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.determineDefaultLocation("scenarios"));
@@ -194,11 +247,17 @@ public class ScenarioExecution {
       parseParameter(PerfCakeConst.PLUGINS_DIR_OPT, PerfCakeConst.PLUGINS_DIR_PROPERTY, Utils.DEFAULT_PLUGINS_DIR.getAbsolutePath());
       parseParameter(PerfCakeConst.PROPERTIES_FILE_OPT, PerfCakeConst.PROPERTIES_FILE_PROPERTY, null);
       parseParameter(PerfCakeConst.LOGGING_LEVEL_OPT, PerfCakeConst.LOGGING_LEVEL_PROPERTY, null);
+      parseParameter(PerfCakeConst.REPLAY_OPT, PerfCakeConst.REPLAY_PROPERTY, null);
+      parseParameter(PerfCakeConst.DEBUG_AGENT_NAME_OPT, PerfCakeConst.DEBUG_AGENT_NAME_PROPERTY, PerfCakeConst.DEBUG_AGENT_DEFAULT_NAME);
       if (Utils.getProperty(PerfCakeConst.LOGGING_LEVEL_PROPERTY, null) != null) {
          Utils.setLoggingLevel(Level.toLevel(Utils.getProperty(PerfCakeConst.LOGGING_LEVEL_PROPERTY), Level.INFO));
       }
 
       parseUserProperties();
+
+      if (System.getProperty(PerfCakeConst.KEYSTORES_DIR_PROPERTY) == null) {
+         System.setProperty(PerfCakeConst.KEYSTORES_DIR_PROPERTY, Utils.determineDefaultLocation("keystores"));
+      }
    }
 
    /**
@@ -217,8 +276,8 @@ public class ScenarioExecution {
 
          // Print classpath
          log.trace("Classpath:");
-         final ClassLoader currentCL = ScenarioExecution.class.getClassLoader();
-         final URL[] curls = ((URLClassLoader) currentCL).getURLs();
+         final ClassLoader currentClassLoader = ScenarioExecution.class.getClassLoader();
+         final URL[] curls = ((URLClassLoader) currentClassLoader).getURLs();
 
          for (final URL curl : curls) {
             log.trace("\t" + curl);
@@ -244,7 +303,7 @@ public class ScenarioExecution {
     * Executes the loaded scenario.
     */
    private void executeScenario() {
-      if (!skipTimerBenchmark) {
+      if (Utils.getProperty(PerfCakeConst.SKIP_TIMER_BENCHMARK_PROPERTY) == null) {
          TimerBenchmark.measureTimerResolution();
       }
 
@@ -274,8 +333,24 @@ public class ScenarioExecution {
 
       if (!scenario.areAllThreadsTerminated()) {
          log.warn("There are some blocked threads that were not possible to terminate. The test results might be flawed."
-               + " This is usually caused by deadlocks or raise conditions in the application under test.");
+               + " This is usually caused by deadlocks or race conditions in the application under test.");
          System.exit(PerfCakeConst.ERR_BLOCKED_THREADS);
+      }
+   }
+
+   /**
+    * Replays the previously recorded raw results.
+    */
+   private void replayScenario() {
+      final String rawFile = Utils.getProperty(PerfCakeConst.REPLAY_PROPERTY);
+
+      log.info("Replaying raw results recorded in {}.", rawFile);
+
+      try (final ReplayResults replay = new ReplayResults(scenario, rawFile)) {
+         replay.replay();
+      } catch (IOException ioe) {
+         log.fatal("Unable to replay scenario: ", ioe);
+         System.exit(PerfCakeConst.ERR_SCENARIO_REPLAY);
       }
    }
 }

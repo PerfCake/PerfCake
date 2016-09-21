@@ -74,7 +74,10 @@ public class ScenarioLoader {
       final ScenarioFactory scenarioFactory = getFactory(extension);
       scenarioFactory.init(scenarioUrl);
 
-      return scenarioFactory.getScenario();
+      final Scenario result = scenarioFactory.getScenario();
+      result.getReportManager().getRunInfo().setScenarioName(scenarioUrl.toString());
+
+      return result;
    }
 
    private static ScenarioFactory getFactory(final String extension) throws PerfCakeException {

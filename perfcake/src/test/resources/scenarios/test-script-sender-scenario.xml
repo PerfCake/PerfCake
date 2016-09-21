@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:7.0">
+   <run type="iteration" value="100"/>
+   <generator class="DefaultMessageGenerator" threads="10"/>
+   <sequences>
+      <sequence id="mid" class="PrimitiveNumberSequence"/>
+   </sequences>
+   <sender class="ScriptSender">
+      <target>${perfcake.messages.dir}/../script-sender.groovy</target>
+      <property name="engine" value="groovy"/>
+   </sender>
+   <reporting>
+      <reporter class="DummyReporter">
+         <destination class="DummyDestination">
+            <period type="time" value="1000"/>
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message content="script-sender-message">
+         <header name="mid" value="@{mid}"/>
+         <header name="tmpPath" value="${tmpPath}"/>
+      </message>
+   </messages>
+</scenario>

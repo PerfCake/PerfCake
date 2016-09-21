@@ -34,7 +34,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.Socket;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -42,7 +41,7 @@ import java.util.Properties;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-abstract public class AbstractSocketSender extends AbstractSender {
+public abstract class AbstractSocketSender extends AbstractSender {
 
    /**
     * The host of the socket.
@@ -92,7 +91,7 @@ abstract public class AbstractSocketSender extends AbstractSender {
     * @throws Exception
     *       When it was not possible to open the socket.
     */
-   abstract protected void openSocket() throws Exception;
+   protected abstract void openSocket() throws Exception;
 
    /**
     * Opens the writer to an outbound socket's stream and the reader to read from inbound socket's stream.
@@ -123,14 +122,14 @@ abstract public class AbstractSocketSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
       openSocket();
       openStreams();
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
       out.print(message.getPayload().toString());
 
       if (out.checkError()) { // flush and check for error

@@ -19,6 +19,8 @@
  */
 package org.perfcake;
 
+import org.perfcake.scenario.Scenario;
+import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.util.Utils;
 
 import org.apache.logging.log4j.LogManager;
@@ -50,6 +52,7 @@ public class TestSetup {
 
    @BeforeClass(alwaysRun = true)
    public void configureLocations() throws Exception {
+      Utils.initTimeStamps();
       System.setProperty(PerfCakeConst.SCENARIOS_DIR_PROPERTY, Utils.getResource("/scenarios"));
       System.setProperty(PerfCakeConst.MESSAGES_DIR_PROPERTY, Utils.getResource("/messages"));
    }
@@ -82,4 +85,18 @@ public class TestSetup {
       }
    }
 
+   /**
+    * Runs a scenario using PerfCake API.
+    *
+    * @param scenarioName
+    *       Name of the scenario to run.
+    * @throws PerfCakeException
+    *       When the execution did not went well.
+    */
+   protected static void runScenario(final String scenarioName) throws PerfCakeException {
+      final Scenario scenario = ScenarioLoader.load(scenarioName);
+      scenario.init();
+      scenario.run();
+      scenario.close();
+   }
 }

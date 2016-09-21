@@ -20,14 +20,17 @@
 package org.perfcake.message.generator;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.PerfCakeException;
 import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.ReceivedMessage;
+import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportManager;
+import org.perfcake.reporting.ReportingException;
 import org.perfcake.validation.ValidationManager;
 import org.perfcake.validation.ValidationTask;
 
@@ -35,10 +38,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Executes a single task of sending messages from the message store
@@ -50,12 +54,17 @@ import java.util.Properties;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  * @see org.perfcake.message.sender.MessageSenderManager
  */
-class SenderTask implements Runnable {
+public class SenderTask implements Runnable {
 
    /**
     * Sender task's logger.
     */
    private static final Logger log = LogManager.getLogger(SenderTask.class);
+
+   /**
+    * Limit the number of warning about interrupted response receival at the end of the test.
+    */
+   private static volatile AtomicInteger interruptWarningDisplayed = new AtomicInteger(0);
 
    /**
     * Reference to a message sender manager that is providing the message senders.
@@ -83,9 +92,9 @@ class SenderTask implements Runnable {
    private SequenceManager sequenceManager;
 
    /**
-    * Controls the amount of prepared tasks in a buffer.
+    * Message generator that created this sender task.
     */
-   private final CanalStreet canalStreet;
+   private final MessageGenerator messageGenerator;
 
    /**
     * The time when the task was enqueued.
@@ -93,40 +102,68 @@ class SenderTask implements Runnable {
    private long enqueueTime = System.nanoTime();
 
    /**
+    * Correlator to correlate message received from a separate channel.
+    */
+   private Correlator correlator = null;
+
+   /**
+    * A response matched by a correlator.
+    */
+   private Serializable correlatedResponse = null;
+
+   /**
+    * Synchronize on waiting for a message from a correlator.
+    * Must be set before correlator is used.
+    */
+   private Semaphore waitForResponse;
+
+   /**
     * Creates a new task to send a message.
     * There is a communication channel established that allows and requires the sender task to report the task completion and any possible error.
     * The visibility of this constructor is limited as it is not intended for normal use.
     * To obtain a new instance of a sender task properly initialized call
-    * {@link org.perfcake.message.generator.AbstractMessageGenerator#newSenderTask(java.util.concurrent.Semaphore)}.
+    * {@link AbstractMessageGenerator#newSenderTask()}.
     *
-    * @param canalStreet
-    *       The communication channel between this sender task instance and a generator.
+    * @param messageGenerator
+    *       The message generator that created this sender task.
     */
-   protected SenderTask(final CanalStreet canalStreet) {
-      this.canalStreet = canalStreet;
+   protected SenderTask(final MessageGenerator messageGenerator) {
+      this.messageGenerator = messageGenerator;
    }
 
-   private Serializable sendMessage(final MessageSender sender, final Message message, final HashMap<String, String> messageHeaders, final Properties messageAttributes, final MeasurementUnit mu) {
+   /**
+    * Reports an exception from a sender when the generator is supposed to fail fast. This terminates test execution.
+    *
+    * @param e
+    *       The error from the sender to be reported.
+    */
+   private void reportSenderError(final Exception e) {
+      if (messageGenerator.isFailFast()) {
+         messageGenerator.interrupt(e);
+      }
+   }
+
+   private Serializable sendMessage(final MessageSender sender, final Message message, final Properties messageAttributes, final MeasurementUnit mu) {
       try {
-         sender.preSend(message, messageHeaders, messageAttributes);
+         sender.preSend(message, messageAttributes);
       } catch (final Exception e) {
          if (log.isErrorEnabled()) {
             log.error("Unable to initialize sending of a message: ", e);
          }
-         canalStreet.senderError(e);
+         reportSenderError(e);
       }
 
       mu.startMeasure();
 
       Serializable result = null;
       try {
-         result = sender.send(message, messageHeaders, mu);
+         result = sender.send(message, mu);
       } catch (final Exception e) {
          mu.setFailure(e);
          if (log.isErrorEnabled()) {
             log.error("Unable to send a message: ", e);
          }
-         canalStreet.senderError(e);
+         reportSenderError(e);
       }
       mu.stopMeasure();
 
@@ -136,7 +173,7 @@ class SenderTask implements Runnable {
          if (log.isErrorEnabled()) {
             log.error("Unable to finish sending of a message: ", e);
          }
-         canalStreet.senderError(e);
+         reportSenderError(e);
       }
 
       return result;
@@ -151,19 +188,21 @@ class SenderTask implements Runnable {
 
       final Properties messageAttributes = sequenceManager != null ? sequenceManager.getSnapshot() : new Properties();
 
-      final HashMap<String, String> messageHeaders = new HashMap<>();
       MessageSender sender = null;
       ReceivedMessage receivedMessage;
       try {
          final MeasurementUnit mu = reportManager.newMeasurementUnit();
+         long requestSize = 0;
+         long responseSize = 0;
 
          if (mu != null) {
             mu.setEnqueueTime(enqueueTime);
-            // only set numbering to headers if it is enabled, later there is no change to
-            // filter out the headers before sending
+
             if (messageAttributes != null) {
-               messageHeaders.put(PerfCakeConst.MESSAGE_NUMBER_HEADER, messageAttributes.getProperty(PerfCakeConst.MESSAGE_NUMBER_PROPERTY, String.valueOf(mu.getIteration())));
+               mu.appendResult(PerfCakeConst.ATTRIBUTES_TAG, messageAttributes);
+               messageAttributes.put(PerfCakeConst.ITERATION_NUMBER_PROPERTY, String.valueOf(mu.getIteration()));
             }
+            mu.appendResult(PerfCakeConst.THREADS_TAG, reportManager.getRunInfo().getThreads());
 
             sender = senderManager.acquireSender();
 
@@ -174,36 +213,79 @@ class SenderTask implements Runnable {
                   final MessageTemplate messageToSend = iterator.next();
                   final Message currentMessage = messageToSend.getFilteredMessage(messageAttributes);
                   final long multiplicity = messageToSend.getMultiplicity();
+                  requestSize = requestSize + (currentMessage.getPayload().toString().length() * multiplicity);
 
                   for (int i = 0; i < multiplicity; i++) {
-                     receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageHeaders, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
+                     if (correlator != null) {
+                        correlator.registerRequest(this, currentMessage, messageAttributes);
+                        sendMessage(sender, currentMessage, messageAttributes, mu);
+                        waitForResponse.acquire(); // the only line throwing InterruptedException here
+                        receivedMessage = new ReceivedMessage(correlatedResponse, messageToSend, currentMessage, messageAttributes);
+                     } else {
+                        receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
+                     }
+
+                     if (receivedMessage.getResponse() != null) {
+                        responseSize = responseSize + receivedMessage.getResponse().toString().length();
+                     }
+
                      if (validationManager.isEnabled()) {
                         validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
                      }
                   }
-
                }
             } else {
-               receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageHeaders, messageAttributes, mu), null, null, messageAttributes);
-               if (validationManager.isEnabled()) {
-                  validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
+               if (correlator != null) {
+                  final String error = "Receiver and Correlator cannot be used without a message definition. There is no information to compute and store the correlation ID. At least, define a message with an empty content.";
+                  log.error(error);
+                  reportSenderError(new PerfCakeException(error));
+               } else {
+                  receivedMessage = new ReceivedMessage(sendMessage(sender, null, messageAttributes, mu), null, null, messageAttributes);
+
+                  if (receivedMessage.getResponse() != null) {
+                     responseSize = responseSize + receivedMessage.getResponse().toString().length();
+                  }
+
+                  if (validationManager.isEnabled()) {
+                     validationManager.submitValidationTask(new ValidationTask(Thread.currentThread().getName(), receivedMessage));
+                  }
                }
             }
 
             senderManager.releaseSender(sender); // !!! important !!!
             sender = null;
 
+            mu.appendResult(PerfCakeConst.REQUEST_SIZE_TAG, requestSize);
+            mu.appendResult(PerfCakeConst.RESPONSE_SIZE_TAG, responseSize);
+
             reportManager.report(mu);
          }
-      } catch (final Exception e) {
-         e.printStackTrace();
+      } catch (InterruptedException | PerfCakeException e) {
+         if (e instanceof InterruptedException) { // there is just one line of code that can throw this exception above
+            if (interruptWarningDisplayed.getAndIncrement() == 0) {
+               log.warn("Test execution interrupted while waiting for a response message from a receiver.");
+            }
+         } else {
+            log.error("Error sending message: ", e);
+            reportSenderError(e);
+         }
       } finally {
-         canalStreet.acknowledgeSend();
-
          if (sender != null) {
             senderManager.releaseSender(sender);
          }
       }
+   }
+
+   /**
+    * Notifies the sender task of receiving a response from a separate message channel.
+    * This is called from {@link org.perfcake.message.correlator.Correlator} when {@link org.perfcake.message.receiver.Receiver} is used.
+    *
+    * @param response
+    *       The response corresponding to the original request.
+    */
+   public void registerResponse(final Serializable response) {
+      correlatedResponse = response;
+      waitForResponse.release();
    }
 
    /**
@@ -254,5 +336,16 @@ class SenderTask implements Runnable {
     */
    public void setSequenceManager(final SequenceManager sequenceManager) {
       this.sequenceManager = sequenceManager;
+   }
+
+   /**
+    * Sets the correlator that is used to notify us about receiving a response from a separate message channel.
+    *
+    * @param correlator
+    *       The correlator to be used.
+    */
+   public void setCorrelator(final Correlator correlator) {
+      waitForResponse = new Semaphore(0);
+      this.correlator = correlator;
    }
 }

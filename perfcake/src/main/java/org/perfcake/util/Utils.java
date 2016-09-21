@@ -22,6 +22,7 @@ package org.perfcake.util;
 import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.common.TimestampedRecord;
+import org.perfcake.debug.PerfCakeDebug;
 import org.perfcake.util.properties.PropertyGetter;
 import org.perfcake.util.properties.SystemPropertyGetter;
 
@@ -52,12 +53,11 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
 import java.util.Properties;
-import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Holds useful utility methods used throughout PerfCake.
@@ -93,9 +93,10 @@ public class Utils {
     */
    public static String filterProperties(final String text) {
       final String propertyPattern = "[^\\\\](\\$\\{([^\\$\\{:]+)(:[^\\$\\{:]*)?})";
-      final Matcher matcher = Pattern.compile(propertyPattern).matcher(text);
+      final String newText = "_" + text;
+      final Matcher matcher = Pattern.compile(propertyPattern).matcher(newText);
 
-      return filterProperties(text, matcher, SystemPropertyGetter.INSTANCE);
+      return filterProperties(newText, matcher, SystemPropertyGetter.INSTANCE).substring(1);
    }
 
    /**
@@ -201,10 +202,27 @@ public class Utils {
     *       When it was not possible to read the content.
     */
    public static String readFilteredContent(final URL url) throws IOException {
-      try (InputStream is = url.openStream(); Scanner scanner = new Scanner(is, "UTF-8")) {
-         return filterProperties(scanner.useDelimiter("\\Z").next());
-      } catch (final NoSuchElementException nsee) {
-         throw new IOException("The content of " + url + " is empty.");
+      try {
+         return filterProperties(new String(Files.readAllBytes(Paths.get(url.toURI())), getDefaultEncoding()));
+      } catch (URISyntaxException e) {
+         throw new IOException("Invalid URL: " + url, e);
+      }
+   }
+
+   /**
+    * Reads the file location into a string while filtering properties. The file content is processed as an UTF-8 encoded text.
+    *
+    * @param fileLocation
+    *       The file location.
+    * @return The filtered file content.
+    * @throws IOException
+    *       When it was not possible to read the content.
+    */
+   public static String readFilteredContent(final String fileLocation) throws IOException {
+      if (Files.exists(Paths.get(fileLocation))) {
+         return filterProperties(new String(Files.readAllBytes(Paths.get(fileLocation)), getDefaultEncoding()));
+      } else {
+         return readFilteredContent(new URL(fileLocation.matches("^[a-zA-Z0-9-]*://.*") ? fileLocation : "file://" + fileLocation));
       }
    }
 
@@ -221,7 +239,7 @@ public class Utils {
       List<String> results = new ArrayList<>();
 
       try (InputStream is = url.openStream();
-            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
+            InputStreamReader isr = new InputStreamReader(is, getDefaultEncoding());
             BufferedReader br = new BufferedReader(isr)) {
 
          String line;
@@ -231,6 +249,36 @@ public class Utils {
       }
 
       return results;
+   }
+
+   /**
+    * Reads the lines from the given location. First it tries to read it as a file and then bypassing to {@link #readLines(URL)}.
+    *
+    * @param fileLocation
+    *       The file name to read content from.
+    * @return A list of lines in the file in the original order.
+    * @throws IOException
+    *       When it was not possible to read the content of the given file.
+    */
+   public static List<String> readLines(final String fileLocation) throws IOException {
+      if (Files.exists(Paths.get(fileLocation))) {
+         return Files.lines(Paths.get(fileLocation)).collect(Collectors.toList());
+      } else {
+         return readLines(new URL(fileLocation));
+      }
+   }
+
+   /**
+    * Reads the lines from the given file location. The lines are filtered for properties.
+    *
+    * @param fileLocation
+    *       The file name to read content from.
+    * @return A list of lines in the file in the original order with filtered content.
+    * @throws IOException
+    *       When it was not possible to read the content of the given file.
+    */
+   public static List<String> readFilteredLines(final String fileLocation) throws IOException {
+      return readLines(fileLocation).stream().map(Utils::filterProperties).collect(Collectors.toList());
    }
 
    /**
@@ -368,7 +416,7 @@ public class Utils {
     *       The timestamp in milliseconds.
     * @return The string representing the timestamp in H:MM:SS format.
     */
-   public static String timeToHMS(final long time) {
+   public static String timeToHms(final long time) {
       final long hours = TimeUnit.MILLISECONDS.toHours(time);
       final long minutes = TimeUnit.MILLISECONDS.toMinutes(time - TimeUnit.HOURS.toMillis(hours));
       final long seconds = TimeUnit.MILLISECONDS.toSeconds(time - TimeUnit.HOURS.toMillis(hours) - TimeUnit.MINUTES.toMillis(minutes));
@@ -536,9 +584,24 @@ public class Utils {
     *       When it is not possible to render the template or store the target file.
     */
    public static void copyTemplateFromResource(final String resource, final Path target, final Properties properties) throws PerfCakeException {
+      Utils.writeFileContent(target, readTemplateFromResource(resource, properties));
+   }
+
+   /**
+    * Reads the given resource and processes it as a template.
+    *
+    * @param resource
+    *       The resource location of a template.
+    * @param properties
+    *       The properties to fill into the template.
+    * @return The filtered content of the template.
+    * @throws PerfCakeException
+    *       When it was not possible to read the resource.
+    */
+   public static String readTemplateFromResource(final String resource, final Properties properties) throws PerfCakeException {
       try {
          final StringTemplate template = new StringTemplate(IOUtils.toString(Utils.class.getResourceAsStream(resource), Utils.getDefaultEncoding()), properties);
-         Utils.writeFileContent(target, template.toString());
+         return template.toString();
       } catch (final IOException e) {
          final String message = String.format("Could not render template from resource %s:", resource);
          throw new PerfCakeException(message, e);
@@ -573,4 +636,12 @@ public class Utils {
       }
    }
 
+   /**
+    * Initializes the debug agent when configured.
+    */
+   public static void initDebugAgent() {
+      if (Boolean.parseBoolean(System.getProperty(PerfCakeConst.DEBUG_PROPERTY))) {
+         PerfCakeDebug.initialize();
+      }
+   }
 }

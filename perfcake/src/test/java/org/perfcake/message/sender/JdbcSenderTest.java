@@ -65,7 +65,7 @@ public class JdbcSenderTest {
       }
 
       @Override
-      public Layout getLayout() {
+      public Layout<? extends Serializable> getLayout() {
          return null;
       }
 
@@ -157,7 +157,7 @@ public class JdbcSenderTest {
 
       final org.perfcake.message.Message message = new org.perfcake.message.Message();
       message.setPayload(sql);
-      sender.preSend(message, null, null);
+      sender.preSend(message, null);
       final Serializable response = sender.send(message, null);
       sender.postSend(message);
       sender.close();
@@ -212,12 +212,12 @@ public class JdbcSenderTest {
 
       final org.perfcake.message.Message message = new org.perfcake.message.Message();
       message.setPayload(sql);
-      sender.preSend(message, null, null);
+      sender.preSend(message, null);
       final Serializable response = sender.send(message, null);
       sender.postSend(message);
       sender.close();
 
-      Assert.assertEquals((Integer) response, Integer.valueOf(3));
+      Assert.assertEquals(response, 3);
 
       final InOrder order = inOrder(c, s);
       order.verify(c).createStatement();

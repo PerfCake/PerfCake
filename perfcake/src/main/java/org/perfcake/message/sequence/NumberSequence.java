@@ -21,6 +21,8 @@ package org.perfcake.message.sequence;
 
 import org.perfcake.PerfCakeException;
 
+import java.util.Properties;
+
 /**
  * Simple sequence of numbers.
  * Can go in both directions, can specify boundaries and a step.
@@ -45,17 +47,17 @@ public class NumberSequence implements Sequence {
    private long step = 1;
 
    /**
-    * Current sequence value;
+    * Current sequence value.
     */
    private long value = 0;
 
    /**
-    * Should we start from the beginning after reaching the last number in the sequence?
+    * True when we should cycle over from the beginning when we reached the end.
     */
    private boolean cycle = true;
 
    @Override
-   public synchronized String getNext() {
+   public final synchronized void publishNext(final String sequenceId, final Properties values) {
       final long res = value;
       final boolean internalCycle = isCycle();
 
@@ -96,7 +98,7 @@ public class NumberSequence implements Sequence {
 
       }
 
-      return String.valueOf(res);
+      values.setProperty(sequenceId, Long.toString(res));
    }
 
    @Override
@@ -118,9 +120,11 @@ public class NumberSequence implements Sequence {
     *
     * @param start
     *       The beginning of the sequence.
+    * @return Instance of this to support fluent API.
     */
-   public void setStart(final long start) {
+   public NumberSequence setStart(final long start) {
       this.start = start;
+      return this;
    }
 
    /**
@@ -138,9 +142,11 @@ public class NumberSequence implements Sequence {
     *
     * @param end
     *       The last value in the sequence.
+    * @return Instance of this to support fluent API.
     */
-   public void setEnd(final long end) {
+   public NumberSequence setEnd(final long end) {
       this.end = end;
+      return this;
    }
 
    /**
@@ -157,8 +163,9 @@ public class NumberSequence implements Sequence {
     *
     * @param step
     *       The step size.
+    * @return Instance of this to support fluent API.
     */
-   public void setStep(final long step) {
+   public NumberSequence setStep(final long step) {
       if (step < 0 && end == Long.MIN_VALUE) {
          end = Long.MAX_VALUE;
       } else if (step > 0 && end == Long.MAX_VALUE) {
@@ -166,6 +173,7 @@ public class NumberSequence implements Sequence {
       }
 
       this.step = step;
+      return this;
    }
 
    /**
@@ -182,8 +190,10 @@ public class NumberSequence implements Sequence {
     *
     * @param cycle
     *       True to allow the sequence to cycle around.
+    * @return Instance of this to support fluent API.
     */
-   public void setCycle(final boolean cycle) {
+   public NumberSequence setCycle(final boolean cycle) {
       this.cycle = cycle;
+      return this;
    }
 }

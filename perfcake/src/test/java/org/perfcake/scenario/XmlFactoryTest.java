@@ -31,11 +31,11 @@ import org.perfcake.message.generator.DefaultMessageGenerator;
 import org.perfcake.message.generator.MessageGenerator;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.destinations.DummyDestination;
-import org.perfcake.reporting.reporters.DummyReporter;
-import org.perfcake.reporting.reporters.Reporter;
-import org.perfcake.reporting.reporters.WarmUpReporter;
+import org.perfcake.reporting.destination.Destination;
+import org.perfcake.reporting.destination.DummyDestination;
+import org.perfcake.reporting.reporter.DummyReporter;
+import org.perfcake.reporting.reporter.Reporter;
+import org.perfcake.reporting.reporter.WarmUpReporter;
 import org.perfcake.util.Utils;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.RegExpValidator;
@@ -67,7 +67,7 @@ public class XmlFactoryTest extends TestSetup {
    private static final String FILTERED_PROPERTY_VALUE = "filtered-property-value";
    private static final String DEFAULT_PROPERTY_VALUE = "default-property-value";
 
-   final Properties emptyProperties = new Properties();
+   private static final Properties emptyProperties = new Properties();
 
    @BeforeClass
    public void prepareScenarioParser() throws PerfCakeException, URISyntaxException, IOException {

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:7.0">
+   <run type="time" value="2000"/>
+   <generator class="DefaultMessageGenerator" threads="10" />
+   <sender class="DummySender">
+      <target>Out there!</target>
+   </sender>
+   <reporting>
+      <reporter class="IterationsPerSecondReporter">
+         <destination class="CsvDestination">
+            <period type="time" value="500"/>
+            <property name="path" value="perfcake-maven-plugin.csv" />
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message uri="msg.txt"/>
+   </messages>
+</scenario>

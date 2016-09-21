@@ -19,6 +19,8 @@
  */
 package org.perfcake.message.sequence;
 
+import java.util.Properties;
+
 /**
  * Sequence that returns current thread id.
  *
@@ -27,7 +29,7 @@ package org.perfcake.message.sequence;
 public class ThreadIdSequence implements Sequence {
 
    @Override
-   public String getNext() {
-      return String.valueOf(Thread.currentThread().getId());
+   public final void publishNext(final String sequenceId, final Properties values) {
+      values.setProperty(sequenceId, Long.toString(Thread.currentThread().getId()));
    }
 }

@@ -22,13 +22,15 @@ package org.perfcake.scenario;
 import org.perfcake.PerfCakeException;
 import org.perfcake.RunInfo;
 import org.perfcake.message.MessageTemplate;
+import org.perfcake.message.correlator.Correlator;
 import org.perfcake.message.generator.MessageGenerator;
+import org.perfcake.message.receiver.Receiver;
 import org.perfcake.message.sender.MessageSender;
 import org.perfcake.message.sender.MessageSenderManager;
 import org.perfcake.message.sequence.Sequence;
 import org.perfcake.message.sequence.SequenceManager;
 import org.perfcake.reporting.ReportManager;
-import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.reporter.Reporter;
 import org.perfcake.util.ObjectFactory;
 import org.perfcake.validation.MessageValidator;
 import org.perfcake.validation.ValidationManager;
@@ -129,10 +131,37 @@ public class ScenarioBuilder {
    }
 
    /**
+    * Sets the receiver to receive message responses from a separate message channel. Null disables this feature.
+    *
+    * @param r
+    *       The receiver to be used to receive responses from a separate message channel.
+    * @return Instance of this for fluent API.
+    */
+   public ScenarioBuilder setReceiver(final Receiver r) {
+      scenario.setReceiver(r);
+      return this;
+   }
+
+   /**
+    * Sets the correlator to match request and response messages when a receiver is used. It must be set when receiver is used.
+    *
+    * @param c
+    *       The correlator to match request and response messages.
+    * @return Instance of this for fluent API.
+    */
+   public ScenarioBuilder setCorrelator(final Correlator c) {
+      scenario.setCorrelator(c);
+      if (scenario.getReceiver() != null) {
+         scenario.getReceiver().setCorrelator(c);
+      }
+      return this;
+   }
+
+   /**
     * Adds a {@link Reporter}, which will be used in {@link org.perfcake.scenario.Scenario} for reporting results. More reporters can be added
     *
     * @param r
-    *       implementation
+    *       A {@link Reporter} implementation.
     * @return Instance of this for fluent API.
     */
    public ScenarioBuilder addReporter(final Reporter r) {
@@ -170,16 +199,16 @@ public class ScenarioBuilder {
    /**
     * Registers a new sequence under the given property name.
     *
-    * @param sequenceName
-    *       The name of the sequence (the name of the placeholder).
+    * @param sequenceId
+    *       The id of the sequence (the name of the placeholder).
     * @param sequence
     *       The new sequence to be registered.
     * @return Instance of this for fluent API.
     * @throws PerfCakeException
     *       When it was not possible to properly initialize the newly added sequence.
     */
-   public ScenarioBuilder putSequence(final String sequenceName, final Sequence sequence) throws PerfCakeException {
-      scenario.getSequenceManager().addSequence(sequenceName, sequence);
+   public ScenarioBuilder putSequence(final String sequenceId, final Sequence sequence) throws PerfCakeException {
+      scenario.getSequenceManager().addSequence(sequenceId, sequence);
       return this;
    }
 

@@ -22,8 +22,8 @@ package org.perfcake.reporting;
 import org.perfcake.RunInfo;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.PeriodType;
-import org.perfcake.reporting.destinations.Destination;
-import org.perfcake.reporting.reporters.Reporter;
+import org.perfcake.reporting.destination.Destination;
+import org.perfcake.reporting.reporter.Reporter;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,8 +45,14 @@ import java.util.concurrent.TimeUnit;
  */
 public class ReportManager {
 
+   /**
+    * Logger of the class.
+    */
    private static final Logger log = LogManager.getLogger(ReportManager.class);
 
+   /**
+    * Signaling the time based reporting thread to reset the recorded last reported times and start from scratch.
+    */
    private volatile boolean resetLastTimes = false;
 
    /**
@@ -71,19 +77,20 @@ public class ReportManager {
    private ThreadPoolExecutor reportingTasks;
 
    /**
+    * We need to be really fast.
+    */
+   private boolean isTraceEnabled = false;
+
+   /**
     * Creates a new {@link org.perfcake.reporting.MeasurementUnit measurement unit} with a unique iteration number.
     *
     * @return A {@link org.perfcake.reporting.MeasurementUnit measurement unit} unit with a unique iteration number, or null if a measurement is not running or is already finished.
     */
    public MeasurementUnit newMeasurementUnit() {
       if (runInfo.isRunning()) {
-         if (log.isTraceEnabled()) {
-            log.trace("Creating a new measurement unit.");
-         }
-
          return new MeasurementUnit(runInfo.getNextIteration());
       }
-      
+
       return null;
    }
 
@@ -105,6 +112,15 @@ public class ReportManager {
    }
 
    /**
+    * Gets {@link RunInfo} associated with this reporter.
+    *
+    * @return The {@link RunInfo} associated with this reporter.
+    */
+   public RunInfo getRunInfo() {
+      return runInfo;
+   }
+
+   /**
     * Reports a newly measured {@link MeasurementUnit}. Each Measurement Unit must be reported exactly once.
     *
     * @param measurementUnit
@@ -116,7 +132,7 @@ public class ReportManager {
       if (reportingTasks != null) {
          try {
             reportingTasks.submit(() -> {
-               if (log.isTraceEnabled()) {
+               if (isTraceEnabled) {
                   log.trace("Reporting a new measurement unit " + measurementUnit);
                }
 
@@ -148,6 +164,8 @@ public class ReportManager {
     * Resets reporting to the zero state. It is used after the warm-up period.
     */
    public void reset() {
+      isTraceEnabled = log.isTraceEnabled();
+
       if (log.isDebugEnabled()) {
          log.debug("Resetting reporting.");
       }
@@ -156,27 +174,28 @@ public class ReportManager {
 
       runInfo.reset();
       resetLastTimes = true;
-      reporters.forEach(org.perfcake.reporting.reporters.Reporter::reset);
+      reporters.forEach(org.perfcake.reporting.reporter.Reporter::reset);
    }
 
    /**
     * Resets the executor of reporting tasks.
     */
    private void resetReportingTasks() {
-      if (reportingTasks != null) {
-         reportingTasks.shutdownNow();
+      final ThreadPoolExecutor oldTasks = reportingTasks;
+      reportingTasks = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+
+      if (oldTasks != null) {
+         oldTasks.shutdownNow();
          try {
-            reportingTasks.awaitTermination(1, TimeUnit.SECONDS);
+            oldTasks.awaitTermination(5, TimeUnit.SECONDS);
          } catch (InterruptedException ie) {
-            log.info("Could not terminate reporting tasks.");
+            log.info("Could not terminate pre-warmup reporting tasks.");
          }
       }
-
-      reportingTasks = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
    }
 
    /**
-    * Registers a new {@link org.perfcake.reporting.reporters.Reporter}.
+    * Registers a new {@link org.perfcake.reporting.reporter.Reporter}.
     *
     * @param reporter
     *       A reporter to be registered.
@@ -192,7 +211,7 @@ public class ReportManager {
    }
 
    /**
-    * Removes a registered {@link org.perfcake.reporting.reporters.Reporter}.
+    * Removes a registered {@link org.perfcake.reporting.reporter.Reporter}.
     *
     * @param reporter
     *       A reporter to unregistered.
@@ -228,7 +247,7 @@ public class ReportManager {
 
       runInfo.start(); // runInfo must be started first, otherwise the time monitoring thread in AbstractReporter dies immediately
 
-      reporters.forEach(org.perfcake.reporting.reporters.Reporter::start);
+      reporters.forEach(org.perfcake.reporting.reporter.Reporter::start);
 
       periodicThread = new Thread(() -> {
          long now;
@@ -329,7 +348,7 @@ public class ReportManager {
 
       reportFinalTimeResults();
 
-      reporters.forEach(org.perfcake.reporting.reporters.Reporter::stop);
+      reporters.forEach(org.perfcake.reporting.reporter.Reporter::stop);
 
       if (periodicThread != null) {
          periodicThread.interrupt();
@@ -338,12 +357,22 @@ public class ReportManager {
    }
 
    /**
+    * Gets the number of reporting tasks in the queue awaiting to be processed.
+    *
+    * @return The number of reporting tasks in the queue awaiting to be processed.
+    */
+   private long getTasksInQueue() {
+      return reportingTasks.getTaskCount() - reportingTasks.getCompletedTaskCount();
+   }
+
+   /**
     * Shutdowns reporting task thread and waits for the reporting tasks to be finished.
     */
    private void waitForReportingTasks() {
       // in case of time bound execution, we do not want to see any more results
       if (runInfo.getDuration().getPeriodType() == PeriodType.TIME) {
-         int lastTasks = 0, tasks = reportingTasks.getQueue().size();
+         long lastTasks = 0;
+         long tasks = getTasksInQueue();
 
          reportingTasks.shutdown();
 
@@ -356,12 +385,12 @@ public class ReportManager {
                // no problem
             }
 
-            tasks = reportingTasks.getQueue().size();
+            tasks = getTasksInQueue();
          }
 
          reportingTasks = null;
       } else {
-         while (reportingTasks.getQueue().size() > 0) {
+         while (getTasksInQueue() > 0 && periodicThread != null && periodicThread.isAlive()) {
             try {
                Thread.sleep(1000);
             } catch (InterruptedException ie) {

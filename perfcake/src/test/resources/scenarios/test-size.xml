@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:7.0">
+   <run type="iteration" value="1000"/>
+   <generator class="DefaultMessageGenerator" threads="10"/>
+   <sender class="TestSender">
+   	  <property name="delay" value="1" />
+   </sender>
+   <reporting>
+      <reporter class="ResponseTimeStatsReporter">
+         <destination class="ConsoleDestination">
+            <period type="iteration" value="100" />
+         </destination>
+         <destination class="DummyDestination">
+            <period type="iteration" value="100"/>
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message uri="message3.txt" />
+   </messages>
+</scenario>

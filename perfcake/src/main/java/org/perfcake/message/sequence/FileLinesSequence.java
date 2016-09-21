@@ -21,6 +21,7 @@ package org.perfcake.message.sequence;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.Utils;
+import org.perfcake.util.properties.MandatoryProperty;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,6 +29,7 @@ import org.apache.logging.log4j.Logger;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Every single line in a given input file specifies a value of this sequence.
@@ -40,13 +42,14 @@ import java.util.List;
 public class FileLinesSequence implements Sequence {
 
    /**
-    * The generator's logger.
+    * The sequence's logger.
     */
    private static final Logger log = LogManager.getLogger(FileLinesSequence.class);
 
    /**
-    * The location of the file to read ro
+    * The location of the file to read from.
     */
+   @MandatoryProperty
    private String fileUrl;
 
    /**
@@ -61,20 +64,20 @@ public class FileLinesSequence implements Sequence {
    private final Integer[] iterator = new Integer[] { 0 };
 
    @Override
-   public String getNext() {
+   public void publishNext(final String sequenceId, final Properties values) {
       synchronized (iterator) {
          if (iterator[0] >= lines.length) {
             iterator[0] = 0;
          }
 
-         return lines[iterator[0]++];
+         values.setProperty(sequenceId, lines[iterator[0]++]);
       }
    }
 
    @Override
    public void reset() throws PerfCakeException {
       try {
-         final List<String> linesArray = Utils.readLines(new URL(fileUrl));
+         final List<String> linesArray = Utils.readFilteredLines(fileUrl);
          lines = linesArray.toArray(new String[linesArray.size()]);
          iterator[0] = 0;
       } catch (IOException e) {
@@ -83,11 +86,24 @@ public class FileLinesSequence implements Sequence {
       }
    }
 
+   /**
+    * Gets the file from where to read lines representing the sequence values.
+    *
+    * @return The file from where to read lines representing the sequence values.
+    */
    public String getFileUrl() {
       return fileUrl;
    }
 
-   public void setFileUrl(final String fileUrl) {
+   /**
+    * Sets the file from where to read lines representing the sequence values.
+    *
+    * @param fileUrl
+    *       The file from where to read lines representing the sequence values.
+    * @return Instance of this to support fluent API.
+    */
+   public FileLinesSequence setFileUrl(final String fileUrl) {
       this.fileUrl = fileUrl;
+      return this;
    }
 }

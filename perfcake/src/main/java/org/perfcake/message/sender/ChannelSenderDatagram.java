@@ -29,7 +29,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.DatagramChannel;
 import java.nio.charset.Charset;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -60,8 +59,8 @@ public class ChannelSenderDatagram extends ChannelSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
 
       // Open the Datagram channel in blocking mode
       datagramChannel = DatagramChannel.open();
@@ -69,7 +68,7 @@ public class ChannelSenderDatagram extends ChannelSender {
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws PerfCakeException {
+   public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws PerfCakeException {
       if (messageBuffer != null) {
          // write data into channel
          try {

@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,6 +19,7 @@
  */
 package org.perfcake.message.generator;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.ReportManager;
 
@@ -26,6 +27,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -41,11 +43,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DefaultMessageGenerator extends AbstractMessageGenerator {
 
    /**
-    * Shutdown log message.
-    */
-   private static final String SHUTDOWN_LOG = "Shutting down execution...";
-
-   /**
     * The generator's logger.
     */
    private static final Logger log = LogManager.getLogger(DefaultMessageGenerator.class);
@@ -54,6 +51,18 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     * The period in milliseconds in which the thread queue is filled with new tasks.
     */
    protected long monitoringPeriod = 1000; // default 1s
+
+   /**
+    * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
+    * If the same amount of threads keeps running for this period, they are forcefully stopped.
+    * The unit of this value is milliseconds. The default value is 5000ms.
+    */
+   protected long shutdownPeriod = 5000;
+
+   /**
+    * The size of internal queue of prepared sender tasks. The default value is 1000 tasks.
+    */
+   protected int senderTaskQueueSize = 1000;
 
    /**
     * Gets the shutdown period.
@@ -73,27 +82,12 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     *
     * @param shutdownPeriod
     *       The new shutdown period.
+    * @return Instance of this to support fluent API.
     */
-   public void setShutdownPeriod(final long shutdownPeriod) {
+   public DefaultMessageGenerator setShutdownPeriod(final long shutdownPeriod) {
       this.shutdownPeriod = shutdownPeriod;
+      return this;
    }
-
-   /**
-    * During a shutdown, the thread queue is regularly checked for the threads finishing their work.
-    * If the same amount of threads keeps running for this period, they are forcefully stopped.
-    * The unit of this value is milliseconds. The default value is 1000ms.
-    */
-   protected long shutdownPeriod = 1000;
-
-   /**
-    * The size of internal queue of prepared sender tasks. The default value is 1000 tasks.
-    */
-   protected int senderTaskQueueSize = 1000;
-
-   /**
-    * Controls the maximal number of threads running in parallel.
-    */
-   protected Semaphore semaphore;
 
    @Override
    public void setReportManager(final ReportManager reportManager) {
@@ -132,8 +126,8 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     *       When it was not possible to place another task because the queue was empty.
     */
    protected boolean prepareTask() throws InterruptedException {
-      if (semaphore.tryAcquire(monitoringPeriod, TimeUnit.MILLISECONDS)) {
-         executorService.submit(newSenderTask(semaphore));
+      if (executorService.getQueue().remainingCapacity() > 0) {
+         executorService.submit(newSenderTask());
          return true;
       }
 
@@ -148,8 +142,16 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     */
    private void adaptiveTermination() throws InterruptedException {
       executorService.shutdown();
-      long active = getTasksInQueue(), lastActive = 0;
 
+      if (shutdownPeriod == -1) {
+         shutdownPeriod = Math.max(5000, 5 * runInfo.getRunTime() * runInfo.getThreads() / runInfo.getIteration());
+         if (log.isInfoEnabled()) {
+            log.info(String.format("Shutdown period auto-tuned to " + shutdownPeriod + " ms."));
+         }
+      }
+
+      long active = getTasksInQueue();
+      long lastActive = 0;
       while (active > 0 && lastActive != active) { // make sure the threads are finishing
          lastActive = active;
          executorService.awaitTermination(shutdownPeriod, TimeUnit.MILLISECONDS);
@@ -178,12 +180,12 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
     */
    protected void shutdown() throws InterruptedException {
       if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // in case of iterations, we wait for the tasks to be finished first
-         log.info(SHUTDOWN_LOG);
+         log.info("Waiting for all messages to be sent...");
          adaptiveTermination();
          setStopTime();
       } else { // in case of time, we must stop measurement first
          setStopTime();
-         log.info(SHUTDOWN_LOG);
+         log.info("Shutting down execution...");
          adaptiveTermination();
       }
 
@@ -193,26 +195,35 @@ public class DefaultMessageGenerator extends AbstractMessageGenerator {
    @Override
    public void generate() throws Exception {
       log.info("Starting to generate...");
-      semaphore = new Semaphore(senderTaskQueueSize);
-      executorService = (ThreadPoolExecutor) Executors.newFixedThreadPool(getThreads(), new DaemonThreadFactory());
+      executorService = new ThreadPoolExecutor(getThreads(), getThreads(), 0, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(getSenderTaskQueueSize()), new DaemonThreadFactory());
       runInfo.setThreads(getThreads());
       setStartTime();
 
-      if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) {
+      if (runInfo.getDuration().getPeriodType() == PeriodType.ITERATION) { // for iterations, we need a precise number of messages
          long i = 0;
          final long max = runInfo.getDuration().getPeriod();
+         boolean wasWarmUp = false;
+
          while (i < max) {
+            boolean warmUpTag = runInfo.hasTag(PerfCakeConst.WARM_UP_TAG);
+
+            if (wasWarmUp && !warmUpTag) { // if we were in the warmUp phase and it ended, we start counting from 0 again
+               i = 0;
+            }
+
             if (prepareTask()) {
                i = i + 1; // long does not work with i++
             }
+
+            wasWarmUp = warmUpTag;
          }
       } else {
-         while (runInfo.isRunning()) {
+         while (runInfo.isRunning()) { // for time controlled run, we just go until the time is over
             prepareTask();
          }
       }
 
-      log.info("Reached test end.");
+      log.info("Reached test end. All messages were prepared to be sent.");
       shutdown();
    }
 

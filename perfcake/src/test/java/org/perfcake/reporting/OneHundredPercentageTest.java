@@ -26,8 +26,8 @@ import org.perfcake.message.Message;
 import org.perfcake.message.MessageTemplate;
 import org.perfcake.message.generator.DefaultMessageGenerator;
 import org.perfcake.message.sender.TestSender;
-import org.perfcake.reporting.destinations.DummyDestination;
-import org.perfcake.reporting.reporters.ThroughputStatsReporter;
+import org.perfcake.reporting.destination.DummyDestination;
+import org.perfcake.reporting.reporter.ThroughputStatsReporter;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioBuilder;
 
@@ -71,7 +71,7 @@ public class OneHundredPercentageTest {
       s.init();
       s.run();
 
-      Assert.assertEquals(dd.getLastMeasurement().getPercentage(), 100l);
+      Assert.assertEquals(dd.getLastMeasurement().getPercentage(), 100L);
    }
 
    @Test
@@ -81,6 +81,6 @@ public class OneHundredPercentageTest {
       s.init();
       s.run();
 
-      Assert.assertEquals(dd.getLastMeasurement().getPercentage(), 100l);
+      Assert.assertEquals(dd.getLastMeasurement().getPercentage(), 100L);
    }
 }

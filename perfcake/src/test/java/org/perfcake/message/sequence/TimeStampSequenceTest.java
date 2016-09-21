@@ -22,6 +22,8 @@ package org.perfcake.message.sequence;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.util.Properties;
+
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
@@ -31,11 +33,13 @@ public class TimeStampSequenceTest {
    @Test
    public void testTimeStampSequence() throws Exception {
       final TimeStampSequence tss = new TimeStampSequence();
+      final Properties props = new Properties();
 
       int success = 0;
       for (int i = 0; i < 100; i++) {
          long curr = System.currentTimeMillis();
-         long seq = Long.parseLong(tss.getNext());
+         tss.publishNext("v1", props);
+         long seq = Long.parseLong(props.getProperty("v1"));
 
          if (seq - curr <= 1) {
             success++;

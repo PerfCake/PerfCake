@@ -6,11 +6,11 @@
    <run type="iteration" value="5"/>
    <generator class="DefaultMessageGenerator" threads="1"/>
    <sequences>
-      <sequence name="counter" class="NumberSequence"/>
-      <sequence name="doubleCounter" class="NumberSequence">
+      <sequence id="counter" class="NumberSequence"/>
+      <sequence id="doubleCounter" class="NumberSequence">
          <property name="step" value="2"/>
       </sequence>
-      <sequence name="counterPlus" class="NumberSequence">
+      <sequence id="counterPlus" class="NumberSequence">
          <property name="start" value="10"/>
       </sequence>
    </sequences>

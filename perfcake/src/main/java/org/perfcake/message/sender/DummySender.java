@@ -27,7 +27,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.Serializable;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -44,6 +43,11 @@ public class DummySender extends AbstractSender {
    private static final Logger log = LogManager.getLogger(DummySender.class);
 
    /**
+    * We need to cache the value to be really fast.
+    */
+   private boolean isDebugEnabled = false;
+
+   /**
     * The delay duration to simulate a asynchronous waiting.
     */
    private long delay = 0;
@@ -52,28 +56,30 @@ public class DummySender extends AbstractSender {
    public void doInit(final Properties messageAttributes) throws PerfCakeException {
       final String currentTarget = safeGetTarget(messageAttributes);
 
-      if (log.isDebugEnabled()) {
+      isDebugEnabled = log.isDebugEnabled();
+
+      if (isDebugEnabled) {
          log.debug("Initializing... " + currentTarget);
       }
    }
 
    @Override
    public void doClose() throws PerfCakeException {
-      if (log.isDebugEnabled()) {
+      if (isDebugEnabled) {
          log.debug("Closing Dummy sender.");
       }
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
-      if (log.isDebugEnabled()) {
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
+      if (isDebugEnabled) {
          log.debug("Sending to " + safeGetTarget(messageAttributes) + "...");
       }
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
       if (delay > 0) {
          final long sleepStart = System.currentTimeMillis();
          try {

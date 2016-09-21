@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,80 +19,56 @@
  */
 package org.perfcake.util;
 
-import org.perfcake.PerfCakeConst;
-import org.perfcake.util.properties.SystemPropertyGetter;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import httl.Engine;
-import httl.Template;
 
 /**
- * Holds a template capable of replacing properties in form of ${property} and #{property} to their values.
- * The properties with the dollar sign are replaced only once, while the properties with the hash sign are replaced with each call
- * to {@link #toString()} with the current values (this simulates JavaEE EL). System properties can be accessed using the props. prefix,
+ * Holds a template capable of replacing properties in form of ${property} and @{property} to their values.
+ * The properties with the dollar sign are replaced only once, while the properties with the "at" sign are replaced with each call
+ * to {@link #toString(Properties)} with the current values (this simulates JavaEE EL). System properties can be accessed using the props. prefix,
  * and environment properties can be accessed using the env. prefix.
  * Automatically provides environment properties, system properties and user specified properties.
- * Examples: ${propertyA} ${1+1} ${non_existing||existing} ${propertyB - 1} ${env.JAVA_HOME} ${props['java.runtime.name']}
- * Notice: The first call to the constructor and calls to the static method {@link #parseTemplate(String)} might take more time than a simple RegExp
- * match but this is payed back for the subsequent calls to {@link #toString()}. Internally, the fast HTTL templating engine is used.
+ * Default values are separated by semicolon (e.g. ${property:defaultValue}). The property name must contain only letters, numbers and underscores
+ * (this is not strictly checked but may lead to undefined behaviour).
+ * Backslash works as a general escape character and escapes any letter behind it (e.g. \\ is replaced by \, \@ is replaced by @ etc.).
+ * Examples: ${propertyA} ${non_existing:default} ${env.JAVA_HOME} ${props['java.runtime.name']}
+ * Notice: The first call to the constructor and calls to the static method {@link #parseTemplate(String, Properties)} might take more time than a simple RegExp
+ * match but this is payed back for the subsequent calls to {@link #toString()}.
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class StringTemplate {
 
    /**
-    * Prefix to allow usage of "env." and "props." prefixes in the template.
+    * Global properties passed in while creating the template.
     */
-   private static final String PREFIX = "#set(Map env)#set(Map props)";
+   private Properties properties;
 
    /**
-    * Pattern to find \@{property}.
+    * Compiled data of the template. Static parts of the template.
     */
-   private static final String ESCAPED_PROPERTY_PATTERN = "([\\\\](@\\{[^@\\$\\{]+}))";
+   private String[] parts;
 
    /**
-    * Pattern to find ${pattern}.
+    * Compiled data of the template. Property names to be replaced.
     */
-   private static final String ESCAPED_PATTERN = "(\\$(\\{[^\\$\\{]+}))";
+   private String[] replacements;
 
    /**
-    * Logger for this class.
+    * Compiled data of the template. Default values of properties.
     */
-   private static final Logger log = LogManager.getLogger(StringTemplate.class);
+   private String[] defaults;
 
    /**
-    * Template engine can be disable by a system property.
+    * Compiled data of the template. Number of replacements in the template.
     */
-   private static boolean disableTemplateEngine = Boolean.valueOf(SystemPropertyGetter.INSTANCE.getProperty(PerfCakeConst.DISABLE_TEMPLATES_PROPERTY, "false"));
+   private int patternSize;
 
    /**
-    * Cached compiled template.
+    * True when there were any placeholders in the template.
     */
-   private Template template = null;
-
-   /**
-    * Original version of the template. Used in case there was not anything to replace.
-    */
-   private String originalTemplate = null;
-
-   /**
-    * Variables to be replaced in the template.
-    */
-   private final Map vars = new HashMap();
-
-   /**
-    * Template engine.
-    */
-   private final Engine engine = getEngine();
+   private boolean hasPlaceholders = false;
 
    /**
     * Creates a template using the provided string interpretation.
@@ -112,23 +88,27 @@ public class StringTemplate {
     * @param properties
     *       Properties to be immediately replaced in the template.
     */
-   @SuppressWarnings("unchecked")
    public StringTemplate(final String template, final Properties properties) {
-      this.originalTemplate = template;
+      this.properties = properties == null ? new Properties() : properties;
+      compilePattern(firstPhase(template));
+   }
 
-      if (!disableTemplateEngine) {
-         vars.put("env", System.getenv());
-         vars.put("props", System.getProperties());
-         if (properties != null) {
-            vars.putAll(properties);
-         }
+   /**
+    * Were there any placeholders in the template?
+    *
+    * @return True if and only if there were any placeholders in the template.
+    */
+   public boolean hasPlaceholders() {
+      return hasPlaceholders;
+   }
 
-         try {
-            preParse(template);
-         } catch (final ParseException pe) {
-            log.error("Unable to parse template. Continue with un-parsed content: ", pe);
-         }
-      }
+   /**
+    * Were there any placeholders that need to be replaced each time when rendered?
+    *
+    * @return True if and only if there were any placeholders that need to be replaced each time when rendered.
+    */
+   public boolean hasDynamicPlaceholders() {
+      return patternSize > 0;
    }
 
    /**
@@ -137,24 +117,30 @@ public class StringTemplate {
     * @return The rendered template.
     */
    public String toString() {
-      return renderTemplate(vars);
+      return toString(null);
    }
 
    /**
     * Renders the template using the additionally provided properties.
     *
-    * @param properties
+    * @param localProperties
     *       The additional properties to be replaced in the template.
     * @return The rendered template.
     */
-   @SuppressWarnings("unchecked")
-   public String toString(final Properties properties) {
-      final Map localVars = new HashMap(vars);
-      if (properties != null) {
-         localVars.putAll(properties);
+   public String toString(final Properties localProperties) {
+      final StringBuilder result = new StringBuilder(parts[0]);
+
+      for (int i = 0; i < patternSize; i++) {
+         if (localProperties == null) {
+            result.append(getProperty(replacements[i], this.properties, defaults[i]));
+         } else {
+            final String globalProperty = this.properties.getProperty(replacements[i]);
+            result.append(getProperty(replacements[i], localProperties, globalProperty == null ? defaults[i] : globalProperty));
+         }
+         result.append(parts[i + 1]);
       }
 
-      return renderTemplate(localVars);
+      return result.toString();
    }
 
    /**
@@ -171,121 +157,287 @@ public class StringTemplate {
    }
 
    /**
-    * Gets the rendered template of the provided string interpretation.
+    * Reads the property name from inside ${...} placeholder.
     *
-    * @param template
-    *       The string representation of the template.
-    * @return The rendered template.
+    * @param mill
+    *       The string mill crunching the template.
+    * @param buffer
+    *       The output buffer to append the property name.
     */
-   private Template parseTemplate(final String template) throws ParseException {
-      return engine.parseTemplate(PREFIX + template);
-   }
+   private void readPropertyName(final StringMill mill, final StringBuilder buffer) {
+      hasPlaceholders = true; // we are reading a property now
 
-   private String renderTemplate(final Map variables) {
-      return renderTemplate(this.template, variables);
-   }
-
-   /**
-    * Is there anything in the template to be rendered?
-    *
-    * @return <code>true</code> if and only if the template contains any placeholders to be rendered.
-    */
-   public boolean hasPlaceholders() {
-      return template != null;
-   }
-
-   private String renderTemplate(final Template template, final Map variables) {
-      if (template != null && !disableTemplateEngine) {
-         try {
-            return template.evaluate(variables).toString();
-         } catch (final ParseException pe) {
-            log.error("Cannot parse template. Continue with un-parsed content: ", pe);
-         }
-      }
-      return originalTemplate;
-   }
-
-   private Engine getEngine() {
-      final Properties config = new Properties();
-      config.setProperty("value.filters", "");
-      config.setProperty("script.value.filters", "");
-      config.setProperty("style.value.filters", "");
-      config.setProperty("text.filters", "");
-      config.setProperty("preload", "false");
-      config.setProperty("null.value", "null");
-      config.setProperty("modes", "");
-      config.setProperty("compiler", "httl.spi.compilers.JavassistCompiler");
-
-      return Engine.getEngine(config);
-   }
-
-   private boolean isUnescapedAtSign(final String suspect) {
-      char last = '\0';
-      for (int i = 0; i < suspect.length(); i++) {
-         final char c = suspect.charAt(i);
-         if (c == '@' && last != '\\') {
-            return true;
-         }
-         last = c;
-      }
-      return false;
-   }
-
-   private String replaceUnescapedAtSign(final String suspect) {
-      char last = '\0';
-      final StringBuilder sb = new StringBuilder();
-      for (int i = 0; i < suspect.length(); i++) {
-         final char c = suspect.charAt(i);
-         if (c == '@' && last != '\\') {
-            sb.append("$");
+      while (!mill.end() && mill.cur() != '}') {
+         if (mill.cur() == '\\' || mill.cur() == '\u0001') {
+            buffer.append(mill.next());
+            mill.cut();
+            mill.cut();
          } else {
-            sb.append(c);
+            buffer.append(mill.cur());
+            mill.step();
          }
-         last = c;
       }
-      return sb.toString();
    }
 
    /**
-    * During the first pass, the values of ${property} placeholders are replaced immediately.
-    * All occurrences of #{property} are replaced with ${property} and the resulting string is returned for the second pass.
+    * Pre-compiles the template string replacing all ${...} and preserving escaped characters.
     *
     * @param template
-    *       The original template
-    * @return The template with first pass placeholders replaced and second pass placeholders ready for further parsing.
+    *       The template to be compiled.
+    * @return The pre-compiled template.
     */
-   private void preParse(final String template) throws ParseException {
-      final Template tmpTemplate = parseTemplate(template);
+   private String firstPhase(final String template) {
+      final StringMill mill = new StringMill(template);
+      final StringBuilder result = new StringBuilder();
+      StringBuilder buffer = new StringBuilder();
 
-      // first replace all ${property} with their values
-      String parsed = renderTemplate(tmpTemplate, vars); // patterns need to check one character ahead, if this was the string beginning, the first property could have been skipped
+      while (!mill.end()) {
+         if (mill.cur() == '\\' && mill.next() != '@' && (mill.next() == '\\' || mill.next() == '{' || mill.next() == '}' || mill.next() == '$')) {
+            result.append(mill.next());
+            mill.cut();
+            mill.cut();
+         } else if (mill.cur() == '\\' && mill.next() == '@') { // let's mark the escaped @ for the second round
+            result.append('\u0001');
+            result.append('@');
+            mill.cut();
+            mill.cut();
+         } else if (mill.pre() != '\\' && mill.cur() == '$' && mill.next() == '{') {
+            mill.step();
+            mill.step();
+            readPropertyName(mill, buffer);
 
-      // are there any @{property} patterns? if not, we are done and the result can stay as is, else we must handle the @ sign
-      if (isUnescapedAtSign(parsed)) {
+            if (mill.cur() == '}') {
+               mill.step();
 
-         // after the first render, we must return back the escape sign to original \${property} as these backslashes were removed
-         Matcher matcher = Pattern.compile(ESCAPED_PATTERN).matcher(parsed);
-         int correction = 0; // we are adding characters to the string, while the matcher works with the original version
-         while (matcher.find()) {
-            parsed = parsed.substring(0, matcher.start(1) + correction) + "\\$" + matcher.group(2) + parsed.substring(matcher.end(1) + correction);
-            correction++;
+               final String[] curly = buffer.toString().split(":", 2);
+               String value = getProperty(curly[0], properties);
+               if (value == null && curly.length > 1) {
+                  value = curly[1];
+               }
+               result.append(value);
+            } else {
+               result.append("${");
+               result.append(buffer);
+            }
+            buffer = new StringBuilder();
+         } else {
+            result.append(mill.cur());
+            mill.step();
          }
+      }
 
-         // now switch @{property} to ${property}
-         parsed = replaceUnescapedAtSign(parsed);
+      if (buffer.length() > 0) {
+         result.append(buffer);
+      }
 
-         // also change \@{property} to @{property} to achieve the same behaviour as for \${property}
-         matcher = Pattern.compile(ESCAPED_PROPERTY_PATTERN).matcher(parsed);
-         matcher.reset();
-         correction = 0; // we are removing characters from the string, while the matcher works with the original version
-         while (matcher.find()) {
-            parsed = parsed.substring(0, matcher.start(1) - correction) + matcher.group(2) + parsed.substring(matcher.end(1) - correction);
-            correction++; // we removed one character, this must be considered during the next loop
+      return result.toString();
+   }
+
+   /**
+    * Second phase of pattern processing, compiles the needed data structures to be able to fast render the template.
+    *
+    * @param template
+    *       The pre-compiled template.
+    */
+   private void compilePattern(final String template) {
+      final List<String> parts = new LinkedList<>();
+      final List<String> replacements = new LinkedList<>();
+      final List<String> defaults = new LinkedList<>();
+
+      final StringMill mill = new StringMill(template);
+      StringBuilder result = new StringBuilder();
+      StringBuilder buffer = new StringBuilder();
+
+      while (!mill.end()) {
+         if (mill.cur() == '\u0001' && mill.next() == '@') {
+            result.append(mill.next());
+            mill.cut();
+            mill.cut();
+         } else if (mill.cur() == '@' && mill.next() == '{') {
+            mill.step();
+            mill.step();
+            readPropertyName(mill, buffer);
+
+            if (mill.cur() == '}') {
+               mill.step();
+
+               final String[] curly = buffer.toString().split(":", 2);
+               parts.add(result.toString());
+               result = new StringBuilder();
+               replacements.add(curly[0]);
+               defaults.add(curly.length > 1 ? curly[1] : null);
+            } else {
+               result.append("@{");
+               result.append(buffer);
+            }
+            buffer = new StringBuilder();
+         } else {
+            result.append(mill.cur());
+            mill.step();
          }
+      }
 
-         this.template = parseTemplate(parsed);
+      if (buffer.length() > 0) {
+         result.append(buffer);
+      }
+
+      if (result.length() > 0) {
+         parts.add(result.toString());
       } else {
-         this.originalTemplate = parsed;
+         parts.add(""); // avoid out of bounds exception later
+      }
+
+      this.parts = parts.toArray(new String[parts.size()]);
+      this.replacements = replacements.toArray(new String[replacements.size()]);
+      this.defaults = defaults.toArray(new String[defaults.size()]);
+      this.patternSize = replacements.size();
+   }
+
+   /**
+    * Gets the property value from all known places given the property prefix.
+    *
+    * @param property
+    *       The property name.
+    * @param properties
+    *       Local properties to be used for default values.
+    * @return The property value, or null if the property was not found in any location.
+    */
+   private static String getProperty(final String property, final Properties properties) {
+      if (property.startsWith("env.")) {
+         return System.getenv(property.substring(4));
+      }
+
+      if (property.startsWith("props['")) {
+         return System.getProperty(property.substring(7, property.length() - 2)); // we expect it to end with ']
+      }
+
+      if (property.startsWith("props[")) {
+         return System.getProperty(property.substring(6, property.length() - 1));
+      }
+
+      if (property.startsWith("props.")) {
+         return System.getProperty(property.substring(6));
+      }
+
+      return properties != null ? properties.getProperty(property) : null;
+   }
+
+   /**
+    * Gets the property value from all known places given the property prefix.
+    *
+    * @param property
+    *       The property name.
+    * @param properties
+    *       Local properties to be used when system resources did not contain the property.
+    * @param defaultValue
+    *       The default value to be used when the property was not found anywhere.
+    * @return The property value, or null if the property was not found in any location.
+    */
+   private static String getProperty(final String property, final Properties properties, final String defaultValue) {
+      final String value = getProperty(property, properties);
+      return value == null ? defaultValue : value;
+   }
+
+   /**
+    * Helper to crunch through a string.
+    */
+   private static class StringMill {
+
+      /**
+       * The string being crunched.
+       */
+      private final String str;
+
+      /**
+       * Current position in the string.
+       */
+      private int i = 0;
+
+      /**
+       * Is the previous character masked? Simulates consumption of the previous character.
+       */
+      private boolean preNull = false;
+
+      /**
+       * Start crunching the given string.
+       *
+       * @param str
+       *       String to be crunched.
+       */
+      private StringMill(final String str) {
+         this.str = str;
+      }
+
+      /**
+       * Character relative to the current position.
+       *
+       * @param rel
+       *       Index relative to the current position.
+       * @return The character from the corresponding index or \u0000 if the index is out of string boundaries.
+       */
+      private char charRel(final int rel) {
+         if (i + rel < 0 || i + rel >= str.length()) {
+            return 0;
+         }
+
+         return str.charAt(i + rel);
+      }
+
+      /**
+       * Skip the character and move to the next position.
+       */
+      private void step() {
+         i++;
+         preNull = false;
+      }
+
+      /**
+       * Consume the character and move to the next position. The character cannot be later obtained by the {@link #pre()} method.
+       */
+      private void cut() {
+         i++;
+         preNull = true;
+      }
+
+      /**
+       * Did we reach the end of the string?
+       *
+       * @return True if and only if we hit the end of the string.
+       */
+      private boolean end() {
+         return i >= str.length();
+      }
+
+      /**
+       * Gets the character at the current position.
+       *
+       * @return The character at the current position.
+       */
+      private char cur() {
+         return charRel(0);
+      }
+
+      /**
+       * Gets the character at the previous position.
+       *
+       * @return The character at the previous position.
+       */
+      private char pre() {
+         return preNull ? 0 : charRel(-1);
+      }
+
+      /**
+       * Gets the character at the next position.
+       *
+       * @return The character at the next position.
+       */
+      private char next() {
+         return charRel(1);
+      }
+
+      @Override
+      public String toString() {
+         return "StringMill: " + pre() + " --->" + cur() + " " + next();
       }
    }
 }

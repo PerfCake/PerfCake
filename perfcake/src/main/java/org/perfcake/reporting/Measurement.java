@@ -26,9 +26,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Measurement is a product of {@link org.perfcake.reporting.reporters.Reporter}.
+ * Measurement is a product of {@link org.perfcake.reporting.reporter.Reporter}.
  * It is typically a combination of multiple {@link MeasurementUnit Measuremen Units}.
- * The way they are combined is the matter of a particular {@link org.perfcake.reporting.reporters.Reporter}
+ * The way they are combined is the matter of a particular {@link org.perfcake.reporting.reporter.Reporter}
  * implementation.
  *
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
@@ -158,11 +158,31 @@ public class Measurement {
       results.put(DEFAULT_RESULT, result);
    }
 
+   /**
+    * Removes the result stored under the given <code>name</code> from the results map.
+    *
+    * @param name
+    *       The name of the result to be removed.
+    */
+   public void remove(final String name) {
+      results.remove(name);
+   }
+
+   /**
+    * Puts all the results from the result map into the measurement.
+    *
+    * @param newResults
+    *       New results to be added.
+    */
+   public void setAll(Map<String, Object> newResults) {
+      results.putAll(newResults);
+   }
+
    @Override
    public String toString() {
       final StringBuilder sb = new StringBuilder();
       sb.append("[");
-      sb.append(Utils.timeToHMS(time));
+      sb.append(Utils.timeToHms(time));
       sb.append("][");
       sb.append(iteration + 1); // first iteration index is 0
       sb.append(" iterations][");

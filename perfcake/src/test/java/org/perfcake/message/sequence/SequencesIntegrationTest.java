@@ -58,16 +58,16 @@ public class SequencesIntegrationTest extends TestSetup {
       // First iteration, sequences has the same values as these differe only for different iterations
       // Dollar signed properties are only qsName, @-signed properties got properly replaced
       Assert.assertEquals(messages.get(0), "counter:null-counter:0,double:null-double:0-testQS,testQS");
-      Assert.assertEquals(messages.get(1), "Test message: counter:null-counter:0,double:null-double:0-testQS,testQS");
+      Assert.assertEquals(messages.get(1).replaceAll("\\v", ""), "Test message: counter:null-counter:0,double:null-double:0-testQS,testQS");
 
       Assert.assertEquals(messages.get(2), "counter:null-counter:1,double:null-double:2-testQS,testQS");
-      Assert.assertEquals(messages.get(3), "Test message: counter:null-counter:1,double:null-double:2-testQS,testQS");
+      Assert.assertEquals(messages.get(3).replaceAll("\\v", ""), "Test message: counter:null-counter:1,double:null-double:2-testQS,testQS");
 
       Assert.assertEquals(messages.get(4), "counter:null-counter:2,double:null-double:4-testQS,testQS");
-      Assert.assertEquals(messages.get(5), "Test message: counter:null-counter:2,double:null-double:4-testQS,testQS");
+      Assert.assertEquals(messages.get(5).replaceAll("\\v", ""), "Test message: counter:null-counter:2,double:null-double:4-testQS,testQS");
 
       Assert.assertEquals(messages.get(6), "counter:null-counter:3,double:null-double:6-testQS,testQS");
-      Assert.assertEquals(messages.get(7), "Test message: counter:null-counter:3,double:null-double:6-testQS,testQS");
+      Assert.assertEquals(messages.get(7).replaceAll("\\v", ""), "Test message: counter:null-counter:3,double:null-double:6-testQS,testQS");
 
       Assert.assertEquals(targets.size(), 10);
       Assert.assertEquals(targets.get(0), "test-null-0");

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:7.0">
+   <run type="iteration" value="${perfcake.test.duration:1000000}"/>
+   <generator class="DefaultMessageGenerator" threads="10">
+      <property name="senderTaskQueueSize" value="5000"/>
+   </generator>
+   <sequences>
+      <sequence class="PrimitiveNumberSequence" id="seq.number"/>
+   </sequences>
+   <sender class="TestSender">
+      <target>Out there!</target>
+   </sender>
+   <receiver class="DummyReceiver" threads="1">
+      <correlator class="DummyCorrelator"/>
+      <property name="messagesToConfirm" value="${perfcake.test.duration:1000000}"/>
+   </receiver>
+   <reporting>
+      <reporter class="IterationsPerSecondReporter">
+         <destination class="ConsoleDestination">
+            <period type="iteration" value="500"/>
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message uri="message1.xml">
+         <validatorRef id="validator1"/>
+      </message>
+   </messages>
+   <validation>
+      <validator class="DummyValidator" id="validator1"/>
+   </validation>
+</scenario>

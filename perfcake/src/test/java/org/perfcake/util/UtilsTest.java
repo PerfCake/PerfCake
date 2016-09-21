@@ -20,6 +20,7 @@
 package org.perfcake.util;
 
 import org.perfcake.PerfCakeConst;
+import org.perfcake.PerfCakeException;
 import org.perfcake.TestSetup;
 import org.perfcake.util.properties.DefaultPropertyGetter;
 
@@ -63,11 +64,11 @@ public class UtilsTest extends TestSetup {
    public void testTimeToHMS() {
 
       final long test1 = (12 * 3600 + 12 * 60 + 12) * 1000;
-      Assert.assertEquals(Utils.timeToHMS(test1), "12:12:12");
+      Assert.assertEquals(Utils.timeToHms(test1), "12:12:12");
       final long test2 = (121 * 3600 + 12 * 60 + 12) * 1000;
-      Assert.assertEquals(Utils.timeToHMS(test2), "121:12:12");
+      Assert.assertEquals(Utils.timeToHms(test2), "121:12:12");
       final long test3 = (1 * 3600 + 12 * 60 + 12) * 1000;
-      Assert.assertEquals(Utils.timeToHMS(test3), "1:12:12");
+      Assert.assertEquals(Utils.timeToHms(test3), "1:12:12");
    }
 
    @Test
@@ -195,5 +196,25 @@ public class UtilsTest extends TestSetup {
       Assert.assertTrue(log.isInfoEnabled());
       Assert.assertTrue(log.isWarnEnabled());
       Assert.assertTrue(log.isErrorEnabled());
+   }
+
+   @Test
+   public void readFilteredContentTest() throws PerfCakeException, IOException {
+      System.setProperty("composedProperty", "***10###");
+
+      Assert.assertTrue(Utils.readFilteredContent(Utils.getResource("/messages/unfiltered-message.txt")).contains("***10###"));
+      Assert.assertTrue(Utils.readFilteredContent(new File(Utils.getResource("/messages/unfiltered-message.txt")).toURI().toURL()).contains("***10###"));
+      Assert.assertTrue(Utils.readFilteredContent(Utils.getResourceAsUrl("/messages/unfiltered-message.txt")).contains("***10###"));
+      Assert.assertTrue(Utils.readFilteredContent("file://" + Utils.getResource("/messages/unfiltered-message.txt")).contains("***10###"));
+   }
+
+   @Test
+   public void filterPropertiesTest() {
+      System.setProperty("number", "@#$%^");
+
+      Assert.assertEquals(Utils.filterProperties("abc ${number}"), "abc @#$%^");
+      Assert.assertEquals(Utils.filterProperties("abc ${number} abc"), "abc @#$%^ abc");
+      Assert.assertEquals(Utils.filterProperties("${number} abc"), "@#$%^ abc");
+      Assert.assertEquals(Utils.filterProperties("${number}"), "@#$%^");
    }
 }

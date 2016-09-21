@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn">
+   <Appenders>
+      <Console name="CONSOLE" target="SYSTEM_OUT">
+         <PatternLayout pattern="%d %-5p {%c} %m%n"/>
+      </Console>
+      <RollingFile name="ROLLING" fileName="./perfcake-maven-plugin.log" filePattern="./perfcake-maven-plugin.log.%d{yyyy-MM-dd}">
+         <PatternLayout pattern="%d %-5p [%t] {%c} %m%n"/>
+         <Policies>
+            <TimeBasedTriggeringPolicy/>
+         </Policies>
+         <DefaultRolloverStrategy max="10"/>
+      </RollingFile>
+      <Async name="ASYNC">
+         <AppenderRef ref="ROLLING"/>
+         <AppenderRef ref="CONSOLE"/>
+      </Async>
+   </Appenders>
+   <Loggers>
+      <Logger name="com" level="info"/>
+      <Logger name="org" level="info"/>
+      <Logger name="io.searchbox" level="warn"/>
+      <Logger name="org.perfcake" level="info"/>
+      <Root level="info">
+         <AppenderRef ref="ASYNC"/>
+      </Root>
+   </Loggers>
+</Configuration>

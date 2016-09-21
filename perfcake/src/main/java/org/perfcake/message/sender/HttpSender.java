@@ -193,8 +193,8 @@ public class HttpSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
 
       currentMethod = getDynamicMethod(messageAttributes);
 
@@ -212,7 +212,7 @@ public class HttpSender extends AbstractSender {
       if (currentMethod == Method.POST || currentMethod == Method.PUT) {
          requestConnection.setDoOutput(true);
       }
-      requestConnection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
+      requestConnection.setRequestProperty("Content-Type", "text/plain; charset=utf-8");
       if (payloadLength > 0) {
          requestConnection.setRequestProperty("Content-Length", Integer.toString(payloadLength));
       }
@@ -247,25 +247,13 @@ public class HttpSender extends AbstractSender {
          }
       }
 
-      // set additional properties as HTTP headers
-      if (properties != null) {
-         for (final Entry<String, String> property : properties.entrySet()) {
-            final String pKey = property.getKey();
-            final String pValue = property.getValue();
-            requestConnection.setRequestProperty(pKey, pValue);
-            if (log.isDebugEnabled()) {
-               log.debug(pKey + ": " + pValue);
-            }
-         }
-      }
-
       if (log.isDebugEnabled()) {
          log.debug("End of HTTP headers.");
       }
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
       int respCode;
       requestConnection.connect();
       if (payload != null && (currentMethod == Method.POST || currentMethod == Method.PUT)) {

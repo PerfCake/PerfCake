@@ -2,12 +2,13 @@
 <!DOCTYPE htmlEntities [
       <!ENTITY nbsp "&#xa0;">
       ]>
+<!--suppress MavenModelInspection, XmlWrongRootElement -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
    <modelVersion>4.0.0</modelVersion>
    <parent>
       <groupId>org.perfcake</groupId>
       <artifactId>perfcake-parent</artifactId>
-      <version>6.2</version>
+      <version>7.0</version>
    </parent>
    <artifactId>perfcake-agent</artifactId>
    <packaging>jar</packaging>
@@ -23,7 +24,7 @@
       <url>https://github.com/PerfCake/PerfCake</url>
       <connection>scm:git:git://github.com/PerfCake/PerfCake.git</connection>
       <developerConnection>scm:git:git@github.com:PerfCake/PerfCake.git</developerConnection>
-      <tag>v6.2</tag>
+      <tag>v7.0</tag>
    </scm>
    <licenses>
       <license>
@@ -46,10 +47,11 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-      <version.jacoco>0.7.5.201505241946</version.jacoco>
+      <version.jacoco>0.7.7.201606060606</version.jacoco>
       <version.velocity>1.7</version.velocity>
+      <version.puppycrawl>7.1</version.puppycrawl>
 
-      <java.level>1.5</java.level>
+      <java.level>1.7</java.level>
    </properties>
    <dependencyManagement>
       <dependencies>
@@ -78,36 +80,6 @@
       </dependency>
 
       <dependency>
-         <groupId>org.apache.commons</groupId>
-         <artifactId>commons-math3</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>commons-io</groupId>
-         <artifactId>commons-io</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>commons-configuration</groupId>
-         <artifactId>commons-configuration</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>commons-collections</groupId>
-         <artifactId>commons-collections</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>commons-beanutils</groupId>
-         <artifactId>commons-beanutils</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>commons-logging</groupId>
-         <artifactId>commons-logging</artifactId>
-         <scope>runtime</scope>
-      </dependency>
-      <dependency>
-         <groupId>commons-cli</groupId>
-         <artifactId>commons-cli</artifactId>
-      </dependency>
-
-      <dependency>
          <groupId>org.testng</groupId>
          <artifactId>testng</artifactId>
          <scope>test</scope>
@@ -118,7 +90,7 @@
          <scope>test</scope>
       </dependency>
       <dependency>
-         <groupId>net.sourceforge.findbugs</groupId>
+         <groupId>com.google.code.findbugs</groupId>
          <artifactId>annotations</artifactId>
          <scope>provided</scope>
       </dependency>
@@ -183,6 +155,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
+            <version>${maven.surefire.plugin.version}</version>
             <configuration>
                <!-- Fork every test because it will launch a separate AS instance -->
                <forkCount>1</forkCount>
@@ -198,7 +171,7 @@
                <dependency>
                   <groupId>lt.velykis.maven.skins</groupId>
                   <artifactId>reflow-velocity-tools</artifactId>
-                  <version>1.1.0</version>
+                  <version>1.1.1</version>
                </dependency>
                <!-- Reflow skin requires Velocity >= 1.7  -->
                <dependency>
@@ -239,6 +212,35 @@
             <artifactId>maven-gpg-plugin</artifactId>
             <version>${maven.gpg.plugin.version}</version>
          </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${maven.checkstyle.plugin.version}</version>
+            <executions>
+               <execution>
+                  <id>validate</id>
+                  <phase>validate</phase>
+                  <goals>
+                     <goal>check</goal>
+                  </goals>
+               </execution>
+            </executions>
+            <configuration>
+               <configLocation>../perfcake/src/site/perfcake-check.xml</configLocation>
+               <encoding>UTF-8</encoding>
+               <consoleOutput>true</consoleOutput>
+               <failsOnError>false</failsOnError>
+               <linkXRef>false</linkXRef>
+               <excludes>org/perfcake/model/*</excludes>
+            </configuration>
+            <dependencies>
+               <dependency>
+                  <groupId>com.puppycrawl.tools</groupId>
+                  <artifactId>checkstyle</artifactId>
+                  <version>${version.puppycrawl}</version>
+               </dependency>
+            </dependencies>
+         </plugin>
       </plugins>
       <pluginManagement>
          <plugins>
@@ -256,8 +258,13 @@
                <version>${maven.jar.plugin.version}</version>
                <configuration>
                   <archive>
+                     <manifest>
+                        <addClasspath>true</addClasspath>
+                        <mainClass>org.perfcake.agent.PerfCakeAgent</mainClass>
+                     </manifest>
                      <manifestEntries>
                         <Premain-class>org.perfcake.agent.PerfCakeAgent</Premain-class>
+                        <Agent-class>org.perfcake.agent.PerfCakeAgent</Agent-class>
                         <Class-Path>../resources/ ../</Class-Path>
                      </manifestEntries>
                   </archive>
@@ -303,7 +310,7 @@
                   <windowtitle>${project.name} API Documentation (version ${project.version})</windowtitle>
                   <doctitle>${project.name} API Documentation (version ${project.version})</doctitle>
                   <show>public</show>
-                  <stylesheetfile>${basedir}/src/main/javadoc/javadoc.css</stylesheetfile>
+                  <stylesheetfile>${basedir}/../perfcake/src/main/javadoc/javadoc.css</stylesheetfile>
                </configuration>
             </plugin>
             <plugin>
@@ -312,57 +319,6 @@
                <version>${maven.gpg.plugin.version}</version>
                <configuration>
                   <useAgent>true</useAgent>
-               </configuration>
-            </plugin>
-            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
-            <plugin>
-               <groupId>org.eclipse.m2e</groupId>
-               <artifactId>lifecycle-mapping</artifactId>
-               <version>1.0.0</version>
-               <configuration>
-                  <lifecycleMappingMetadata>
-                     <pluginExecutions>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.jacoco</groupId>
-                              <artifactId>jacoco-maven-plugin</artifactId>
-                              <versionRange>[0.6.3.201306030806,)</versionRange>
-                              <goals>
-                                 <goal>prepare-agent</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <ignore />
-                           </action>
-                        </pluginExecution>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.apache.maven.plugins</groupId>
-                              <artifactId>maven-dependency-plugin</artifactId>
-                              <versionRange>[1.0.0,)</versionRange>
-                              <goals>
-                                 <goal>unpack</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <execute />
-                           </action>
-                        </pluginExecution>
-                        <pluginExecution>
-                           <pluginExecutionFilter>
-                              <groupId>org.codehaus.mojo</groupId>
-                              <artifactId>xml-maven-plugin</artifactId>
-                              <versionRange>[1.0.0,)</versionRange>
-                              <goals>
-                                 <goal>transform</goal>
-                              </goals>
-                           </pluginExecutionFilter>
-                           <action>
-                              <execute />
-                           </action>
-                        </pluginExecution>
-                     </pluginExecutions>
-                  </lifecycleMappingMetadata>
                </configuration>
             </plugin>
             <plugin>
@@ -378,7 +334,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-project-info-reports-plugin</artifactId>
-            <version>${maven.project.info.reports.plugin}</version>
+            <version>${maven.project.info.reports.plugin.version}</version>
             <configuration>
                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
             </configuration>
@@ -392,6 +348,26 @@
             <groupId>org.jacoco</groupId>
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>${version.jacoco}</version>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-checkstyle-plugin</artifactId>
+            <version>${maven.checkstyle.plugin.version}</version>
+            <reportSets>
+               <reportSet>
+                  <reports>
+                     <report>checkstyle</report>
+                  </reports>
+               </reportSet>
+            </reportSets>
+            <configuration>
+               <configLocation>../perfcake/src/site/perfcake-check.xml</configLocation>
+               <encoding>UTF-8</encoding>
+               <consoleOutput>true</consoleOutput>
+               <failsOnError>false</failsOnError>
+               <linkXRef>false</linkXRef>
+               <excludes>org/perfcake/model/*</excludes>
+            </configuration>
          </plugin>
       </plugins>
    </reporting>
@@ -442,6 +418,96 @@
                   <artifactId>maven-surefire-plugin</artifactId>
                </plugin>
             </plugins>
+         </build>
+      </profile>
+
+      <profile>
+         <!--Only use this dependency if a tools.jar file exists in the JDK's lib directory-->
+         <id>toosjar-profile</id>
+         <activation>
+            <file>
+               <exists>${java.home}/../lib/tools.jar</exists>
+            </file>
+         </activation>
+         <properties>
+            <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
+         </properties>
+         <dependencies>
+            <dependency>
+               <!--Need tools.jar in compilation classpath. JDK 1.7 no longer has it there by default: -->
+               <groupId>com.sun</groupId>
+               <artifactId>tools</artifactId>
+               <!-- version number is irrelevant since we exclude this from the dependencies plugin: -->
+               <version>99.9.9</version>
+               <scope>system</scope>
+               <systemPath>${java.home}/../lib/tools.jar</systemPath>
+            </dependency>
+         </dependencies>
+      </profile>
+
+      <profile>
+         <id>only-eclipse</id>
+         <activation>
+            <property>
+               <name>m2e.version</name>
+            </property>
+         </activation>
+         <build>
+            <pluginManagement>
+               <plugins>
+                  <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
+                  <plugin>
+                     <groupId>org.eclipse.m2e</groupId>
+                     <artifactId>lifecycle-mapping</artifactId>
+                     <version>1.0.0</version>
+                     <configuration>
+                        <lifecycleMappingMetadata>
+                           <pluginExecutions>
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.jacoco</groupId>
+                                    <artifactId>jacoco-maven-plugin</artifactId>
+                                    <versionRange>[0.7.6.201602180812,)</versionRange>
+                                    <goals>
+                                       <goal>prepare-agent</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <ignore/>
+                                 </action>
+                              </pluginExecution>
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.apache.maven.plugins</groupId>
+                                    <artifactId>maven-dependency-plugin</artifactId>
+                                    <versionRange>[1.0.0,)</versionRange>
+                                    <goals>
+                                       <goal>unpack</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <execute/>
+                                 </action>
+                              </pluginExecution>
+                              <pluginExecution>
+                                 <pluginExecutionFilter>
+                                    <groupId>org.codehaus.mojo</groupId>
+                                    <artifactId>xml-maven-plugin</artifactId>
+                                    <versionRange>[1.0.0,)</versionRange>
+                                    <goals>
+                                       <goal>transform</goal>
+                                    </goals>
+                                 </pluginExecutionFilter>
+                                 <action>
+                                    <execute/>
+                                 </action>
+                              </pluginExecution>
+                           </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                     </configuration>
+                  </plugin>
+               </plugins>
+            </pluginManagement>
          </build>
       </profile>
    </profiles>

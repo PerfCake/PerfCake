@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -56,6 +56,7 @@ public class AgentThread implements Runnable {
       this.agentArgs = agentArgs;
    }
 
+   @Override
    public void run() {
       InetAddress host;
       int port = PerfCakeAgent.DEFAULT_PORT;
@@ -71,7 +72,7 @@ public class AgentThread implements Runnable {
             for (final String arg : args) {
                final String[] keyValuePair = arg.split("=");
                if (keyValuePair.length == 2) {
-                  props.put(keyValuePair[0], keyValuePair[1]);
+                  props.put(keyValuePair[0], keyValuePair[1].trim());
                } else {
                   err("Invalid agent argument \"" + arg + "\" - ignoring");
                }
@@ -156,7 +157,7 @@ public class AgentThread implements Runnable {
                e.printStackTrace();
             }
          }
-         
+
          if (serverSocket != null) {
             try {
                serverSocket.close();

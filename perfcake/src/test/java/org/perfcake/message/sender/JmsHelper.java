@@ -26,7 +26,10 @@ import java.util.Properties;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
+import javax.jms.JMSConsumer;
+import javax.jms.JMSContext;
 import javax.jms.JMSException;
+import javax.jms.JMSProducer;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
@@ -84,22 +87,16 @@ public class JmsHelper {
 
       @Override
       public void run() {
-         Context context = null;
+         Context initialContext = null;
          try {
-            context = new InitialContext();
-            final ConnectionFactory cf = (ConnectionFactory) context.lookup("ConnectionFactory");
-            final Destination source = (Destination) context.lookup(inQueue);
-            final Destination target = (Destination) context.lookup(outQueue);
+            initialContext = new InitialContext();
+            final ConnectionFactory cf = (ConnectionFactory) initialContext.lookup("ConnectionFactory");
+            final Destination source = (Destination) initialContext.lookup(inQueue);
+            final Destination target = (Destination) initialContext.lookup(outQueue);
 
-            Connection connection = null;
-            Session session = null;
-
-            try {
-               connection = cf.createConnection();
-               connection.start();
-               session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-               final MessageConsumer messageConsumer = session.createConsumer(source);
-               final MessageProducer messageProducer = session.createProducer(target);
+            try (final JMSContext context = cf.createContext(JMSContext.AUTO_ACKNOWLEDGE)) {
+               final JMSConsumer messageConsumer = context.createConsumer(source);
+               final JMSProducer messageProducer = context.createProducer();
 
                if (master == null) {
                   throw new IllegalStateException("First set the master thread.");
@@ -109,31 +106,23 @@ public class JmsHelper {
                   final Message message = messageConsumer.receive(1000);
                   if (message != null) {
                      this.message = message;
-                     messageProducer.send(message);
-                  }
-               }
-
-            } finally {
-               try {
-                  if (session != null) {
-                     session.close();
-                  }
-               } finally {
-                  if (connection != null) {
-                     connection.close();
+                     messageProducer.send(target, message);
+                     if (context.getSessionMode() == JMSContext.SESSION_TRANSACTED) {
+                        context.commit();
+                     }
                   }
                }
             }
          } catch (final Exception e) {
-            if (e.getCause() instanceof InterruptedException) {
+            if (e.getMessage() != null && e.getMessage().contains("java.lang.InterruptedException")) {
                log.info("Terminating gracefully.");
             } else {
                log.error("Error during wiretap:", e);
             }
          } finally {
             try {
-               if (context != null) {
-                  context.close();
+               if (initialContext != null) {
+                  initialContext.close();
                }
             } catch (final NamingException ne) {
                log.error("Error closing initial context:", ne);
@@ -150,30 +139,11 @@ public class JmsHelper {
       return w;
    }
 
-   public static Message readMessage(final ConnectionFactory factory, final long timeout, final Queue queue) throws JMSException {
-      Connection connection = null;
-      Session session = null;
-      Message message = null;
-
-      try {
-         connection = factory.createConnection();
-         connection.start();
-         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-         final MessageConsumer messageConsumer = session.createConsumer(queue);
-         message = messageConsumer.receive(timeout);
-      } finally {
-         try {
-            if (session != null) {
-               session.close();
-            }
-         } finally {
-            if (connection != null) {
-               connection.close();
-            }
-         }
+   public static Message readMessage(final ConnectionFactory factory, final long timeout, final Destination queue) throws JMSException {
+      try (final JMSContext context = factory.createContext(JMSContext.AUTO_ACKNOWLEDGE)) {
+         final JMSConsumer messageConsumer = context.createConsumer(queue);
+         return messageConsumer.receive(timeout);
       }
-
-      return message;
    }
 
    public static Message clientReadMessage(final long timeout, final String queueName) throws Exception {
@@ -184,33 +154,14 @@ public class JmsHelper {
       env.put(Context.SECURITY_CREDENTIALS, "frank");
 
       Message message = null;
-      final Context context = new InitialContext(env);
+      final Context initialContext = new InitialContext(env);
       try {
-         final ConnectionFactory cf = (ConnectionFactory) context.lookup("jms/RemoteConnectionFactory");
-         final Destination destination = (Destination) context.lookup("jms/queue/test");
+         final ConnectionFactory cf = (ConnectionFactory) initialContext.lookup("jms/RemoteConnectionFactory");
+         final Destination destination = (Destination) initialContext.lookup("jms/queue/test");
 
-         Connection connection = null;
-         Session session = null;
-
-         try {
-            connection = cf.createConnection();
-            connection.start();
-            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            final MessageConsumer messageConsumer = session.createConsumer(destination);
-            message = messageConsumer.receive(timeout);
-         } finally {
-            try {
-               if (session != null) {
-                  session.close();
-               }
-            } finally {
-               if (connection != null) {
-                  connection.close();
-               }
-            }
-         }
+         message = readMessage(cf, timeout, destination);
       } finally {
-         context.close();
+         initialContext.close();
       }
 
       return message;

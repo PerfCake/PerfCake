@@ -6,6 +6,8 @@ logs
 *.log.*
 test-output
 *.csv
+!perfcake/src/test/resources/scenarios/test-profile*csv
+**/Californium.properties
 
 # Eclipse stuff
 bin

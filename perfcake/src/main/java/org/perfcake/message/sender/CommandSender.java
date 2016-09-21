@@ -29,11 +29,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 import java.util.Properties;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Invokes external command (specified by {@link #target} property)
@@ -106,8 +106,8 @@ public class CommandSender extends AbstractSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
       if (message != null) {
          final Serializable payload = message.getPayload();
          if (payload != null) {
@@ -125,28 +125,20 @@ public class CommandSender extends AbstractSender {
          command = (commandPrefix + " " + safeGetTarget(messageAttributes)).trim();
       }
 
-      final Set<Entry<String, String>> propertiesEntrySet = properties.entrySet();
-      final Set<Entry<String, String>> envEntrySet = System.getenv().entrySet();
-      environmentVariables = new String[propertiesEntrySet.size() + envEntrySet.size() + (message != null ? message.getHeaders().size() + message.getProperties().size() : 0)];
-      int i = 0;
-      for (final Entry<String, String> entry : propertiesEntrySet) {
-         environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
+      final List<String> variables = new ArrayList<>();
+      if (messageAttributes != null) {
+         messageAttributes.stringPropertyNames().forEach(prop -> variables.add(prop + "=" + messageAttributes.getProperty(prop)));
       }
-      for (final Entry<String, String> entry : envEntrySet) {
-         environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
-      }
+      variables.addAll(System.getenv().entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.toList()));
       if (message != null) {
-         for (final Entry<Object, Object> entry : message.getHeaders().entrySet()) {
-            environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
-         }
-         for (final Entry<Object, Object> entry : message.getProperties().entrySet()) {
-            environmentVariables[i++] = entry.getKey() + "=" + entry.getValue();
-         }
+         variables.addAll(message.getHeaders().entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.toList()));
+         variables.addAll(message.getProperties().entrySet().stream().map(e -> e.getKey() + "=" + e.getValue()).collect(Collectors.toList()));
       }
+      environmentVariables = variables.toArray(new String[variables.size()]);
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
       process = Runtime.getRuntime().exec(command, environmentVariables);
       if (messagePayload != null && messageFrom == MessageFrom.STDIN) {
          writer = new PrintWriter(new OutputStreamWriter(new BufferedOutputStream(process.getOutputStream()), Utils.getDefaultEncoding()), true);

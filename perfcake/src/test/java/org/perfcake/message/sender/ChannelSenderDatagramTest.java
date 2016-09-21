@@ -22,6 +22,8 @@ package org.perfcake.message.sender;
 import org.perfcake.message.Message;
 import org.perfcake.util.ObjectFactory;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -29,6 +31,7 @@ import org.testng.annotations.Test;
 
 import java.io.Serializable;
 import java.util.Properties;
+import java.util.concurrent.Semaphore;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.AsyncResultHandler;
@@ -49,14 +52,15 @@ public class ChannelSenderDatagramTest {
    private static final int PORT = 4444;
    private static final String HOST = "127.0.0.1";
    private String target;
-   final private DatagramSocketVerticle vert = new DatagramSocketVerticle();
+   final private Semaphore s = new Semaphore(0);
+   final private DatagramSocketVerticle vert = new DatagramSocketVerticle(s);
    final private Vertx vertx = Vertx.vertx();
 
    @BeforeClass
    public void setUp() throws Exception {
       target = HOST + ":" + PORT;
-
       vertx.deployVerticle(vert);
+      s.acquire(); // wait for deployment
    }
 
    @AfterClass
@@ -81,9 +85,9 @@ public class ChannelSenderDatagramTest {
          Assert.assertEquals(sender.maxResponseSize, 5);
 
          sender.init();
-         sender.preSend(message, null, null);
+         sender.preSend(message, null);
 
-         final Serializable response = sender.doSend(message, null, null);
+         final Serializable response = sender.doSend(message, null);
          Assert.assertEquals(response, "fish2");
 
          sender.postSend(message);
@@ -101,9 +105,9 @@ public class ChannelSenderDatagramTest {
          final ChannelSender sender = (ChannelSenderDatagram) ObjectFactory.summonInstance(ChannelSenderDatagram.class.getName(), senderProperties);
 
          sender.init();
-         sender.preSend(null, null, null);
+         sender.preSend(null, null);
 
-         final Serializable response = sender.doSend(null, null, null);
+         final Serializable response = sender.doSend(null, null);
          Assert.assertNull(response);
 
          sender.postSend(null);
@@ -113,6 +117,12 @@ public class ChannelSenderDatagramTest {
    }
 
    static class DatagramSocketVerticle extends AbstractVerticle {
+
+      private final Semaphore s;
+
+      public DatagramSocketVerticle(final Semaphore s) {
+         this.s = s;
+      }
 
       @Override
       public void start() {
@@ -124,6 +134,7 @@ public class ChannelSenderDatagramTest {
                      throw new IllegalStateException("Cannot send test response: ", asyncResult1.cause());
                   }
                }));
+               s.release();
             } else {
                throw new IllegalStateException("Listen failed: " + HOST + ":" + PORT, asyncResult.cause());
             }

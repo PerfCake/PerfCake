@@ -28,7 +28,6 @@ import java.io.RandomAccessFile;
 import java.io.Serializable;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -38,8 +37,9 @@ import java.util.Properties;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class ChannelSenderFile extends ChannelSender {
+
    /**
-    * Sender's fileChannel
+    * Sender's fileChannel.
     */
    private FileChannel fileChannel;
 
@@ -48,8 +48,8 @@ public class ChannelSenderFile extends ChannelSender {
    }
 
    @Override
-   public void preSend(final Message message, final Map<String, String> properties, final Properties messageAttributes) throws Exception {
-      super.preSend(message, properties, messageAttributes);
+   public void preSend(final Message message, final Properties messageAttributes) throws Exception {
+      super.preSend(message, messageAttributes);
 
       fileChannel = new RandomAccessFile(getTarget(), "rw").getChannel();
 
@@ -59,7 +59,7 @@ public class ChannelSenderFile extends ChannelSender {
    }
 
    @Override
-   public Serializable doSend(final Message message, final Map<String, String> properties, final MeasurementUnit measurementUnit) throws Exception {
+   public Serializable doSend(final Message message, final MeasurementUnit measurementUnit) throws Exception {
       if (messageBuffer != null) {
          fileChannel.write(messageBuffer);
 

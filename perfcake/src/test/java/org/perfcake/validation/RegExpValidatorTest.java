@@ -124,7 +124,7 @@ public class RegExpValidatorTest {
       final RegExpValidator testedValidator = new RegExpValidator();
       final Message m = new Message();
       m.setPayload("Bedřich 3.");
-      testedValidator.setPattern("\\w+ \\d+\\.");
+      testedValidator.setPattern("\\\\w+ \\\\d+\\.");
 
       Assert.assertFalse(testedValidator.isValid(null, m, emptyProperties));
       testedValidator.setUnicodeCharacterClass(true);

@@ -39,27 +39,17 @@ public final class PerfCakeConst {
    /**
     * Help on PerfCake command line usage.
     */
-   public static final String USAGE_HELP = "ScenarioExecution -s <SCENARIO> [-sd <SCENARIOS_DIR>] [-md <MESSAGES_DIR>] [-D<property=value>]*";
+   public static final String USAGE_HELP = "ScenarioExecution -s <SCENARIO> [options] [-D<property=value>]*";
 
    /**
-    * Name of the message header that stores message number.
+    * PerfCake welcome greeting.
     */
-   public static final String MESSAGE_NUMBER_HEADER = "PerfCake_Performance_Message_Number";
+   public static final String WELCOME = "=== Welcome to PerfCake %s ===";
 
    /**
-    * Name of the sequence and property placeholder that stores message number. It can be used in message templates.
+    * Name of the message header that stores the number of the current iteration.
     */
-   public static final String MESSAGE_NUMBER_PROPERTY = "MessageNumber";
-
-   /**
-    * Name of the sequence and property placeholder that stores current timestamp. It can be used in message templates.
-    */
-   public static final String CURRENT_TIMESTAMP_PROPERTY = "CurrentTimestamp";
-
-   /**
-    * Name of the sequence and property placeholder that stores thread ID. It can be used in message templates.
-    */
-   public static final String THREAD_ID_PROPERTY = "ThreadId";
+   public static final String ITERATION_NUMBER_PROPERTY = "perfcake.iteration.number";
 
    /**
     * Name of the system property that stores name of scenario that is executed.
@@ -97,6 +87,11 @@ public final class PerfCakeConst {
    public static final String PLUGINS_DIR_PROPERTY = "perfcake.plugins.dir";
 
    /**
+    * Name of the system property that specifies SSL key store directory.
+    */
+   public static final String KEYSTORES_DIR_PROPERTY = "perfcake.keystores.dir";
+
+   /**
     * Name of the system property that stores path to the property file with system properties.
     */
    public static final String PROPERTIES_FILE_PROPERTY = "perfcake.properties.file";
@@ -107,9 +102,34 @@ public final class PerfCakeConst {
    public static final String LOGGING_LEVEL_PROPERTY = "perfcake.logging.level";
 
    /**
+    * Name of the system property that stores the skip timer benchmark option.
+    */
+   public static final String SKIP_TIMER_BENCHMARK_PROPERTY = "perfcake.skip.timer.benchmark";
+
+   /**
+    * Name of the system property that stores the path to the raw recording to be replayed.
+    */
+   public static final String REPLAY_PROPERTY = "perfcake.replay";
+
+   /**
+    * Name of the system property that stores the debug agent activation state.
+    */
+   public static final String DEBUG_PROPERTY = "perfcake.debug";
+
+   /**
+    * Name of the system property that stores the debug agent name.
+    */
+   public static final String DEBUG_AGENT_NAME_PROPERTY = "perfcake.debug.name";
+
+   /**
     * Name of the system property to cause immediate scenario termination when there is an exception thrown by a sender.
     */
    public static final String FAIL_FAST_PROPERTY = "perfcake.fail.fast";
+
+   /**
+    * Name of the CLI argument to print help.
+    */
+   public static final String HELP_OPT = "help";
 
    /**
     * Name of the CLI argument to specify scenario name.
@@ -147,6 +167,26 @@ public final class PerfCakeConst {
    public static final String SKIP_TIMER_BENCHMARK_OPT = "skip-timer-benchmark";
 
    /**
+    * Name of the cli argument to start raw recording replay.
+    */
+   public static final String REPLAY_OPT = "replay";
+
+   /**
+    * Name of the cli argument to start debugging agent.
+    */
+   public static final String DEBUG_OPT = "debug";
+
+   /**
+    * Name of the cli argument to start debugging agent name.
+    */
+   public static final String DEBUG_AGENT_NAME_OPT = "debug-name";
+
+   /**
+    * Default name of the debug agent.
+    */
+   public static final String DEBUG_AGENT_DEFAULT_NAME = "perfcake-1";
+
+   /**
     * Result name indicating whether the scenario.
     */
    public static final String WARM_UP_TAG = "warmUp";
@@ -157,9 +197,34 @@ public final class PerfCakeConst {
    public static final String FAILURES_TAG = "failures";
 
    /**
-    * Result name the number of threads.
+    * Result name of message attributes stored in the measurement unit.
+    */
+   public static final String ATTRIBUTES_TAG = "attributes";
+
+   /**
+    * Result name of the number of threads.
     */
    public static final String THREADS_TAG = "Threads";
+
+   /**
+    * Result name of the total size of response.
+    */
+   public static final String RESPONSE_SIZE_TAG = "ResponseSize";
+
+   /**
+    * Result name of the total size of request.
+    */
+   public static final String REQUEST_SIZE_TAG = "RequestSize";
+
+   /**
+    * Result name of the user tags.
+    */
+   public static final String TAGS_TAG = "tags";
+
+   /**
+    * Result name of the test execution real time tag.
+    */
+   public static final String REAL_TIME_TAG = "rt";
 
    /**
     * Property that can disable templating engine (HTTL) in {@link org.perfcake.util.StringTemplate}.
@@ -187,7 +252,7 @@ public final class PerfCakeConst {
    public static final int ERR_SCENARIO_EXECUTION = 4;
 
    /**
-    * Exit code when there were validation errors;
+    * Exit code when there were validation errors.
     */
    public static final int ERR_VALIDATION = 5;
 
@@ -195,6 +260,16 @@ public final class PerfCakeConst {
     * Exit code when there are blocked threads after the scenario was executed.
     */
    public static final int ERR_BLOCKED_THREADS = 6;
+
+   /**
+    * Error while trying to replay scenario.
+    */
+   public static final int ERR_SCENARIO_REPLAY = 7;
+
+   /**
+    * Error while trying to replay scenario.
+    */
+   public static final int ERR_PRINT_HELP = 8;
 
    /**
     * There should be no instance of a utility class.

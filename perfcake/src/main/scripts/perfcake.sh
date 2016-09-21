@@ -179,14 +179,22 @@ if [ -n "$sedExecutable" ]; then
   fi
 fi
 
+# Check for debug parameter
+PERFCAKE_DEBUG=""
+for x; do
+  if [ "$x" = "-d" ]; then PERFCAKE_DEBUG=":${JAVA_HOME}/lib"; break; fi
+  if [ "$x" = "--debug" ]; then PERFCAKE_DEBUG=":${JAVA_HOME}/lib"; break; fi
+done
+
 # Set the PerfCake working directory
 cd "$PERFCAKE_HOME"
 
-PERFCAKE_JAR="$(find $PERFCAKE_HOME/lib -type f -regex '.*lib/perfcake-[0-9][0-9]*\.[0-9][0-9]*.*\.jar')"
+PERFCAKE_JAR=$(find "$PERFCAKE_HOME/lib" -type f -regex '.*lib/perfcake-[0-9][0-9]*\.[0-9][0-9]*.*\.jar')
 
 # Run PerfCake
 exec "$JAVACMD" \
   -Dlog4j.configurationFile="${PERFCAKE_HOME}/log4j2.xml" \
-  -Djava.ext.dirs="${JAVA_HOME}/lib/ext:${JAVA_HOME}/jre/lib/ext:${PERFCAKE_HOME}/lib/ext" \
+  -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager \
+  -Djava.ext.dirs="${JAVA_HOME}/lib/ext:${JAVA_HOME}/jre/lib/ext:${PERFCAKE_HOME}/lib/ext:${JAVA_HOME}/lib${PERFCAKE_DEBUG}" \
   -jar "${PERFCAKE_JAR}" \
   "$@"
