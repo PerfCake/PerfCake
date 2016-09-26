@@ -106,7 +106,7 @@ public class HttpReceiver extends AbstractReceiver {
       }
 
       try {
-         Thread.sleep(Integer.getInteger(PerfCakeConst.RECEIVER_BOOT_DELAY_PROPERTY), 500); // make sure the listener gets started
+         Thread.sleep(Integer.getInteger(PerfCakeConst.RECEIVER_BOOT_DELAY_PROPERTY, 500)); // make sure the listener gets started
       } catch (InterruptedException e) {
          // nps
       }
