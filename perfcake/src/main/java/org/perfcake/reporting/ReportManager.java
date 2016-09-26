@@ -390,7 +390,7 @@ public class ReportManager {
 
          reportingTasks = null;
       } else {
-         while (getTasksInQueue() > 0 && periodicThread != null && periodicThread.isAlive()) {
+         while (getTasksInQueue() > 0 || (periodicThread != null && periodicThread.isAlive())) {
             try {
                Thread.sleep(1000);
             } catch (InterruptedException ie) {
