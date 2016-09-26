@@ -51,7 +51,7 @@ public class DataBuffer {
     *       The attributes to watch for, including * expansions.
     */
    public DataBuffer(final List<String> attributes) {
-      this.attributes = attributes;
+      this.attributes = new ArrayList<>(attributes);
    }
 
    /**
