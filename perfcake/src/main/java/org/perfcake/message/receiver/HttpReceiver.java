@@ -19,6 +19,7 @@
  */
 package org.perfcake.message.receiver;
 
+import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 
 import io.vertx.core.Vertx;
@@ -39,6 +40,11 @@ public class HttpReceiver extends AbstractReceiver {
     * Cached HTTP server so it can be stopped.
     */
    private HttpServer server;
+
+   /**
+    * Handle to terminate Vertx.
+    */
+   private Vertx vertx;
 
    /**
     * HTTP status code to return to the client. Defaults to 200.
@@ -69,7 +75,7 @@ public class HttpReceiver extends AbstractReceiver {
       }
 
       VertxOptions vertxOptions = new VertxOptions().setWorkerPoolSize(threads);
-      Vertx vertx = Vertx.vertx(vertxOptions);
+      vertx = Vertx.vertx(vertxOptions);
       server = vertx.createHttpServer();
       Router router = Router.router(vertx);
       router.route().handler(BodyHandler.create());
@@ -90,15 +96,26 @@ public class HttpReceiver extends AbstractReceiver {
       });
 
       if (urlParts.length == 1) {
-         new Thread(() -> server.requestHandler(router::accept).listen(Integer.valueOf(urlParts[0]))).start();
+         final Thread t = new Thread(() -> server.requestHandler(router::accept).listen(Integer.valueOf(urlParts[0])));
+         t.setDaemon(true);
+         t.start();
       } else {
-         new Thread(() -> server.requestHandler(router::accept).listen(Integer.valueOf(urlParts[1]), urlParts[0])).start();
+         final Thread t = new Thread(() -> server.requestHandler(router::accept).listen(Integer.valueOf(urlParts[1]), urlParts[0]));
+         t.setDaemon(true);
+         t.start();
+      }
+
+      try {
+         Thread.sleep(Integer.getInteger(PerfCakeConst.RECEIVER_BOOT_DELAY_PROPERTY), 500); // make sure the listener gets started
+      } catch (InterruptedException e) {
+         // nps
       }
    }
 
    @Override
    public void stop() {
       server.close();
+      vertx.close();
    }
 
    /**

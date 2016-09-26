@@ -127,6 +127,11 @@ public final class PerfCakeConst {
    public static final String FAIL_FAST_PROPERTY = "perfcake.fail.fast";
 
    /**
+    * Name of the system property that stores the boot delay for receivers.
+    */
+   public static final String RECEIVER_BOOT_DELAY_PROPERTY = "perfcake.receiver.boot.delay";
+
+   /**
     * Name of the CLI argument to print help.
     */
    public static final String HELP_OPT = "help";

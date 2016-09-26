@@ -172,6 +172,10 @@ public class Scenario {
          throw new PerfCakeException("Could not finish messages response validation properly: ", ie);
       }
 
+      if (receiver != null) {
+         receiver.stop();
+      }
+
       if (log.isTraceEnabled()) {
          if (validationManager.isAllMessagesValid()) {
             log.trace("Scenario finished successfully!");
