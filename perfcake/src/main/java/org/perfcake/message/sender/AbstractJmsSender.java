@@ -29,6 +29,7 @@ import java.util.Properties;
 import java.util.Set;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.naming.InitialContext;
 
@@ -166,6 +167,15 @@ abstract public class AbstractJmsSender extends AbstractSender {
             mess.setStringProperty(safePropertyNames ? prop.replaceAll("[^a-zA-Z0-9_]", "_") : prop, messageAttributes.getProperty(prop));
          }
       }
+
+      final Properties headers = message.getHeaders();
+      headers.forEach((k, v) -> {
+         try {
+            mess.setStringProperty(safePropertyNames ? k.toString().replaceAll("[^a-zA-Z0-9_]", "_") : k.toString(), v.toString());
+         } catch (JMSException e) {
+            log.warn("Unknown message header " + k.toString() + "=>" + v.toString() + ": ", e);
+         }
+      });
 
       if (replyToDestination != null) {
          mess.setJMSReplyTo(replyToDestination);

@@ -29,7 +29,7 @@ public final class PerfCakeConst {
    /**
     * PerfCake version.
     */
-   public static final String VERSION = "7.0";
+   public static final String VERSION = "7.1";
 
    /**
     * PerfCake scenario XML Schema version that is part of namespace <code>urn:perfcake:scenario:&lt;version&gt;</code>.
@@ -125,6 +125,11 @@ public final class PerfCakeConst {
     * Name of the system property to cause immediate scenario termination when there is an exception thrown by a sender.
     */
    public static final String FAIL_FAST_PROPERTY = "perfcake.fail.fast";
+
+   /**
+    * Name of the system property that stores the boot delay for receivers.
+    */
+   public static final String RECEIVER_BOOT_DELAY_PROPERTY = "perfcake.receiver.boot.delay";
 
    /**
     * Name of the CLI argument to print help.
