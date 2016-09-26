@@ -57,7 +57,7 @@ public class C3ChartDataFile {
    /**
     * A list of file resources to be copied in the resulting report.
     */
-   private static String[] resourceFiles = new String[] { "c3.min.css", "c3.min.js", "d3.v3.min.js", "report.css", "report.js", "favicon.svg" };
+   private static final String[] resourceFiles = new String[] { "c3.min.css", "c3.min.js", "d3.v3.min.js", "report.css", "report.js", "favicon.svg" };
 
    /**
     * The JavaScript file representing chart data. This is not set for charts created as a combination of existing ones.
@@ -312,7 +312,6 @@ public class C3ChartDataFile {
     */
    void appendResult(final Measurement measurement) throws ReportingException {
       final String line = getResultLine(measurement);
-
       if (!"".equals(line)) {
          try {
             outputChannel.write(ByteBuffer.wrap(line.getBytes(Charset.forName(Utils.getDefaultEncoding()))));
