@@ -390,13 +390,17 @@ public class ReportManager {
 
          reportingTasks = null;
       } else {
-         while (getTasksInQueue() > 0 || (periodicThread != null && periodicThread.isAlive())) {
+         int deadLine = 5;
+         while (deadLine > 0 && (getTasksInQueue() > 0 || (periodicThread != null && periodicThread.isAlive()))) {
             try {
                Thread.sleep(1000);
             } catch (InterruptedException ie) {
                // no problem
             }
+            deadLine--;
          }
+
+
          reportingTasks.shutdown();
 
          reportingTasks = null;
