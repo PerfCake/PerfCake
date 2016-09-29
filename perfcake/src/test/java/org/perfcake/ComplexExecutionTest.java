@@ -127,11 +127,11 @@ public class ComplexExecutionTest extends TestSetup {
       dd.setObserving(true);
 
       scenario.run();
-      Thread.sleep(500);
       scenario.close();
 
       dd.setObserving(false);
-      Assert.assertTrue(dd.getObservedMeasurements().size() < 5);
+      System.out.println(dd.getObservedMeasurements().size());
+      Assert.assertTrue(dd.getObservedMeasurements().size() < 30);
    }
 
 }
