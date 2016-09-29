@@ -193,6 +193,7 @@ public class ReporterContractTest {
       final DummyDestination d1 = new DummyDestination();
       final DummyDestination d2 = new DummyDestination();
       final DummyDestination d3 = new DummyDestination();
+      final DummyDestination d4 = new DummyDestination();
 
       rm.setRunInfo(ri);
       rm.registerReporter(r1);
@@ -200,12 +201,12 @@ public class ReporterContractTest {
 
       r1.registerDestination(d1, new Period(PeriodType.ITERATION, 100));
       r1.registerDestination(d2, new Period(PeriodType.PERCENTAGE, 8));
-      r1.registerDestination(d1, new Period(PeriodType.TIME, 2000));
+      r1.registerDestination(d4, new Period(PeriodType.TIME, 2000));
 
       final Set<BoundPeriod<Destination>> bp = new HashSet<>();
       bp.add(new BoundPeriod<>(PeriodType.ITERATION, 100, d1));
       bp.add(new BoundPeriod<>(PeriodType.PERCENTAGE, 8, d2));
-      bp.add(new BoundPeriod<>(PeriodType.TIME, 2000, d1));
+      bp.add(new BoundPeriod<>(PeriodType.TIME, 2000, d4));
       Assert.assertTrue(r1.getReportingPeriods().containsAll(bp));
 
       r2.registerDestination(d3, new Period(PeriodType.TIME, 1500));
@@ -234,7 +235,7 @@ public class ReporterContractTest {
                Assert.assertEquals(((Quantity<Number>) m.get()).getNumber().longValue(), 10);
                Assert.assertEquals(m.get("avg"), 49.5d);
                Assert.assertEquals(m.get("it"), "100");
-               crc.incrementAndGet(); // this block will be executed twice, first for iteration, second for time
+               crc.incrementAndGet();
             }
          }
       });
@@ -258,7 +259,7 @@ public class ReporterContractTest {
                Assert.assertEquals(m.get("avg"), 39.5d);
                crc.incrementAndGet();
                run = 2;
-            } else {
+            } else { // this should never occur
                Assert.assertEquals(m.getPercentage(), 10);
                Assert.assertEquals(((Quantity<Number>) m.get()).getNumber().longValue(), 10);
                Assert.assertEquals(m.get("avg"), 49.5d);
@@ -268,13 +269,7 @@ public class ReporterContractTest {
          }
       });
 
-      d3.setReportAssert(new DummyDestination.ReportAssert() {
-
-         @Override
-         public void report(final Measurement m) {
-            Assert.assertEquals(m.get("avg"), 97.5d);
-         }
-      });
+      d3.setReportAssert(m -> Assert.assertEquals(m.get("avg"), 97.5d));
 
       MeasurementUnit mu = null;
       for (int i = 1; i <= 100; i++) {
@@ -301,12 +296,13 @@ public class ReporterContractTest {
          Thread.sleep(100);
       }
 
-      Assert.assertEquals(d1.getLastType(), PeriodType.TIME);
+      Assert.assertEquals(d1.getLastType(), PeriodType.ITERATION);
+      Assert.assertEquals(d4.getLastType(), PeriodType.TIME);
       d3.setReportAssert(null);
 
       rm.stop();
 
-      Assert.assertEquals(crc.get(), 4);
+      Assert.assertEquals(crc.get(), 2);
    }
 
    @Test

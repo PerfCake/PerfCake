@@ -371,35 +371,43 @@ public class ReportManager {
    private void waitForReportingTasks() {
       // in case of time bound execution, we do not want to see any more results
       if (runInfo.getDuration().getPeriodType() == PeriodType.TIME) {
-         long lastTasks = 0;
-         long tasks = getTasksInQueue();
-
          reportingTasks.shutdown();
-
-         while (tasks > 0 && tasks != lastTasks) {
-            lastTasks = tasks;
-
-            try {
-               reportingTasks.awaitTermination(1, TimeUnit.SECONDS);
-            } catch (InterruptedException ie) {
-               // no problem
-            }
-
-            tasks = getTasksInQueue();
-         }
-
+         adaptiveTermination();
          reportingTasks = null;
       } else {
-         while (getTasksInQueue() > 0 || (periodicThread != null && periodicThread.isAlive())) {
+         adaptiveTermination();
+
+         if (periodicThread != null && periodicThread.isAlive()) { // give destinations a chance to complete
             try {
                Thread.sleep(1000);
             } catch (InterruptedException ie) {
                // no problem
             }
          }
+
          reportingTasks.shutdown();
 
          reportingTasks = null;
+      }
+   }
+
+   /**
+    * Waits for reporting tasks to be finished.
+    */
+   private void adaptiveTermination() {
+      long lastTasks = 0;
+      long tasks = getTasksInQueue();
+
+      while (tasks > 0 && tasks != lastTasks) {
+         lastTasks = tasks;
+
+         try {
+            reportingTasks.awaitTermination(1, TimeUnit.SECONDS);
+         } catch (InterruptedException ie) {
+            // no problem
+         }
+
+         tasks = getTasksInQueue();
       }
    }
 }
