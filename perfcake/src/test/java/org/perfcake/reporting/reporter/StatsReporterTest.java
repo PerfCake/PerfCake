@@ -21,6 +21,7 @@ package org.perfcake.reporting.reporter;
 
 import org.perfcake.PerfCakeConst;
 import org.perfcake.RunInfo;
+import org.perfcake.TestSetup;
 import org.perfcake.common.Period;
 import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
@@ -38,6 +39,8 @@ import org.testng.annotations.Test;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Tests all {@link org.perfcake.reporting.reporter.StatsReporter} implemetations.
@@ -45,7 +48,7 @@ import java.util.Properties;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 @Test(groups = { "unit" })
-public class StatsReporterTest {
+public class StatsReporterTest extends TestSetup {
 
    private static final long ITERATION_COUNT = 10L;
 
@@ -257,5 +260,58 @@ public class StatsReporterTest {
       Assert.assertTrue(((Quantity<Double>) dest.getLastMeasurement().get(StatsReporter.MAXIMUM)).getNumber() > 10d);
 
       System.out.println(dest.getLastMeasurement());
+   }
+
+   @Test(groups = { "performance", "stress" })
+   public void testTimeSlidingWindowThreadSafeness() throws Exception {
+
+      final Properties reporterProperties = new Properties();
+      reporterProperties.setProperty("windowType", "time");
+      reporterProperties.setProperty("windowSize", "1000");
+
+      final ResponseTimeStatsReporter rtsr = (ResponseTimeStatsReporter) ObjectFactory.summonInstance(ResponseTimeStatsReporter.class.getName(), reporterProperties);
+
+      final ReportManager rm = new ReportManager();
+      final DummyDestination dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), new Properties());
+      final long duration = 5000;
+
+      rtsr.registerDestination(dest, new Period(PeriodType.TIME, 1000));
+      rm.registerReporter(rtsr);
+      final RunInfo ri = new RunInfo(new Period(PeriodType.TIME, duration));
+      rm.setRunInfo(ri);
+      rm.start();
+
+      final ExecutorService ex = Executors.newFixedThreadPool(100);
+      final long start = System.nanoTime();
+      while ((System.nanoTime() - start) < duration * 1e6) {
+         ex.submit(new Worker(rm));
+      }
+      ex.shutdown();
+
+      Assert.assertNotNull(dest.getLastMeasurement(), "Destination should have registered some measurements.");
+   }
+
+   private static class Worker implements Runnable {
+      private ReportManager rm;
+
+      public Worker(ReportManager rm) {
+         this.rm = rm;
+      }
+
+      @Override
+      public void run() {
+         final MeasurementUnit mu = rm.newMeasurementUnit();
+
+         try {
+            Thread.sleep(1);
+            mu.startMeasure();
+            Thread.sleep(1);
+            mu.stopMeasure();
+            Thread.sleep(1);
+            rm.report(mu);
+         } catch (ReportingException | InterruptedException e) {
+            e.printStackTrace();
+         }
+      }
    }
 }
