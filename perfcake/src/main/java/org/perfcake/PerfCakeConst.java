@@ -29,12 +29,12 @@ public final class PerfCakeConst {
    /**
     * PerfCake version.
     */
-   public static final String VERSION = "8.0";
+   public static final String VERSION = "7.2";
 
    /**
     * PerfCake scenario XML Schema version that is part of namespace <code>urn:perfcake:scenario:&lt;version&gt;</code>.
     */
-   public static final String XSD_SCHEMA_VERSION = "8.0";
+   public static final String XSD_SCHEMA_VERSION = "7.0";
 
    /**
     * Help on PerfCake command line usage.
