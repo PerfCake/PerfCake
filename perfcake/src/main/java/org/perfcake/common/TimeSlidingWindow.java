@@ -21,7 +21,6 @@ package org.perfcake.common;
 
 import org.apache.commons.collections4.list.CursorableLinkedList;
 
-import java.util.Iterator;
 import java.util.function.Consumer;
 
 /**
@@ -123,7 +122,7 @@ public class TimeSlidingWindow<E> {
    public void forEach(final Consumer<E> action) {
       gc();
 
-      window.forEach(te -> action.accept(te.object));
+      window.cursor().forEachRemaining(te -> action.accept(te.object));
    }
 
    /**
@@ -170,7 +169,8 @@ public class TimeSlidingWindow<E> {
     */
    public void gc(final long time) {
       // remove all leading old objects
-      Iterator<TemporalObject<E>> it = window.iterator();
+      CursorableLinkedList.Cursor<TemporalObject<E>> it = window.cursor();
+
       while (it.hasNext() && it.next().time < time - length) {
          it.remove();
       }
