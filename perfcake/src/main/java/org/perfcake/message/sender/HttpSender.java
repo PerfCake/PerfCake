@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Sends messages via HTTP protocol.
@@ -117,7 +118,7 @@ public class HttpSender extends AbstractSender {
    /**
     * Cookies storage for each client.
     */
-   private ThreadLocal<CookieManager> localCookieManager = new ThreadLocal<>();
+   private static ThreadLocal<CookieManager> localCookieManager = new ThreadLocal<>();
 
    /**
     * The request payload.
@@ -216,7 +217,6 @@ public class HttpSender extends AbstractSender {
       super.preSend(message, messageAttributes);
 
       if (storeCookies && localCookieManager.get() == null) {
-         localCookieManager = new ThreadLocal<>();
          localCookieManager.set(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
       }
 
