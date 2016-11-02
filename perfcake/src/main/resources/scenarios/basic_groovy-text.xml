@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- TODO: create a scenario with GroovySender and with RegExpValidator -->
-<scenario xmlns="urn:perfcake:scenario:6.0">
+<scenario xmlns="urn:perfcake:scenario:7.0">
    <!--properties/-->
    <generator/>
    <sender/>
