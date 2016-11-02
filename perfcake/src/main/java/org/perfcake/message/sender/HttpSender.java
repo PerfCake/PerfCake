@@ -25,6 +25,7 @@ import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.util.StringTemplate;
 import org.perfcake.util.Utils;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -32,6 +33,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
+import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -54,6 +58,11 @@ public class HttpSender extends AbstractSender {
     * The sender's logger.
     */
    private static final Logger log = LogManager.getLogger(HttpSender.class);
+
+   /**
+    * HTTP cookies header.
+    */
+   private static final String COOKIES_HEADER = "Set-Cookie";
 
    /**
     * The URL where the HTTP request is sent.
@@ -99,6 +108,16 @@ public class HttpSender extends AbstractSender {
     * The HTTP request connection.
     */
    protected HttpURLConnection requestConnection;
+
+   /**
+    * When true, cookies are stored between HTTP requests.
+    */
+   private boolean storeCookies = false;
+
+   /**
+    * Cookies storage for each client.
+    */
+   private ThreadLocal<CookieManager> localCookieManager = new ThreadLocal<>();
 
    /**
     * The request payload.
@@ -196,6 +215,11 @@ public class HttpSender extends AbstractSender {
    public void preSend(final Message message, final Properties messageAttributes) throws Exception {
       super.preSend(message, messageAttributes);
 
+      if (storeCookies && localCookieManager.get() == null) {
+         localCookieManager = new ThreadLocal<>();
+         localCookieManager.set(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+      }
+
       currentMethod = getDynamicMethod(messageAttributes);
 
       payloadLength = 0;
@@ -215,6 +239,10 @@ public class HttpSender extends AbstractSender {
       requestConnection.setRequestProperty("Content-Type", "text/plain; charset=utf-8");
       if (payloadLength > 0) {
          requestConnection.setRequestProperty("Content-Length", Integer.toString(payloadLength));
+      }
+
+      if (storeCookies) {
+         popCookies();
       }
 
       if (log.isDebugEnabled()) {
@@ -302,7 +330,36 @@ public class HttpSender extends AbstractSender {
    @Override
    public void postSend(final Message message) throws Exception {
       super.postSend(message);
+
+      if (storeCookies) {
+         pushCookies();
+      }
+
       requestConnection.disconnect();
+   }
+
+   /**
+    * Stores cookies from request connection in the thread local cookie manager.
+    */
+   private void pushCookies() {
+      final Map<String, List<String>> headerFields = requestConnection.getHeaderFields();
+      final List<String> cookiesHeader = headerFields.get(COOKIES_HEADER);
+
+      if (cookiesHeader != null) {
+         for (String cookie : cookiesHeader) {
+            localCookieManager.get().getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
+         }
+      }
+   }
+
+   /**
+    * Sets the stored cookies to the request connection.
+    */
+   private void popCookies() {
+      if (localCookieManager.get().getCookieStore().getCookies().size() > 0) {
+         requestConnection.setRequestProperty("Cookie",
+               StringUtils.join(localCookieManager.get().getCookieStore().getCookies(), ";"));
+      }
    }
 
    /**
@@ -357,4 +414,25 @@ public class HttpSender extends AbstractSender {
       }
    }
 
+   /**
+    * Gets whether the sender will store cookies between requests.
+    *
+    * @return If and only if the cookies will be stored between requests.
+    */
+   public boolean isStoreCookies() {
+      return storeCookies;
+   }
+
+   /**
+    * Sets whether the sender will store cookies between requests.
+    *
+    * @param storeCookies
+    *       True if and only if the cookies should be stored between requests.
+    * @return Instance of this to support fluent API.
+    */
+   public HttpSender setStoreCookies(final boolean storeCookies) {
+      this.storeCookies = storeCookies;
+
+      return this;
+   }
 }

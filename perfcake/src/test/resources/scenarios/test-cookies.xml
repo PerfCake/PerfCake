@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:8.0">
+   <run type="iteration" value="${perfcake.run.duration:1000}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:10}" />
+   <sender class="HttpSender">
+      <target>http://127.0.0.1:8091/</target>
+      <property name="storeCookies" value="true" />
+   </sender>
+   <messages>
+      <message content="Hello Cookie!}">
+      </message>
+   </messages>
+</scenario>
