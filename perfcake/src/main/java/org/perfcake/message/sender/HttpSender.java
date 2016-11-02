@@ -117,7 +117,7 @@ public class HttpSender extends AbstractSender {
    /**
     * Cookies storage for each client.
     */
-   private ThreadLocal<CookieManager> localCookieManager;
+   private ThreadLocal<CookieManager> localCookieManager = new ThreadLocal<>();
 
    /**
     * The request payload.
@@ -215,7 +215,7 @@ public class HttpSender extends AbstractSender {
    public void preSend(final Message message, final Properties messageAttributes) throws Exception {
       super.preSend(message, messageAttributes);
 
-      if (storeCookies && localCookieManager == null) {
+      if (storeCookies && localCookieManager.get() == null) {
          localCookieManager = new ThreadLocal<>();
          localCookieManager.set(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
       }
@@ -414,4 +414,25 @@ public class HttpSender extends AbstractSender {
       }
    }
 
+   /**
+    * Gets whether the sender will store cookies between requests.
+    *
+    * @return If and only if the cookies will be stored between requests.
+    */
+   public boolean isStoreCookies() {
+      return storeCookies;
+   }
+
+   /**
+    * Sets whether the sender will store cookies between requests.
+    *
+    * @param storeCookies
+    *       True if and only if the cookies should be stored between requests.
+    * @return Instance of this to support fluent API.
+    */
+   public HttpSender setStoreCookies(final boolean storeCookies) {
+      this.storeCookies = storeCookies;
+
+      return this;
+   }
 }

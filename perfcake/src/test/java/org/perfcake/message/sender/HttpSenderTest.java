@@ -20,15 +20,27 @@
 package org.perfcake.message.sender;
 
 import org.perfcake.PerfCakeException;
+import org.perfcake.TestSetup;
 import org.perfcake.message.Message;
+import org.perfcake.message.correlator.GenerateHeaderCorrelator;
 import org.perfcake.message.sender.HttpSender.Method;
 import org.perfcake.util.ObjectFactory;
 
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpClient;
+import io.vertx.core.http.HttpServer;
+import io.vertx.core.impl.ConcurrentHashSet;
+import io.vertx.ext.web.Cookie;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CookieHandler;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Tests {@link org.perfcake.message.sender.HttpSender}.
@@ -36,7 +48,7 @@ import java.util.Properties;
  * @author <a href="mailto:pavel.macik@gmail.com">Pavel Macík</a>
  */
 @Test(groups = { "unit" })
-public class HttpSenderTest {
+public class HttpSenderTest extends TestSetup {
 
    private static final String URL_GET = "http://httpbin.org/get";
    private static final String URL_POST = "http://httpbin.org/post";
@@ -253,6 +265,29 @@ public class HttpSenderTest {
       }
       Assert.assertNotNull(response);
       Assert.assertTrue(response.contains("500 Internal Server Error"));
+   }
+
+   @Test
+   public void testCookies() throws PerfCakeException, InterruptedException {
+      final AtomicInteger atomicInteger = new AtomicInteger();
+      final Vertx vertx = Vertx.vertx();
+      final HttpServer server = vertx.createHttpServer();
+      final Router router = Router.router(vertx);
+      router.route("/*").handler(BodyHandler.create());
+      router.route("/*").handler(CookieHandler.create());
+      router.route("/*").handler((context) -> {
+         if (context.getCookie("mysid") == null) {
+            context.addCookie(Cookie.cookie("mysid", Integer.toString(atomicInteger.getAndIncrement())));
+         }
+         context.response().setStatusCode(200).end();
+      });
+      new Thread(() -> server.requestHandler(router::accept).listen(8091)).start();
+
+      runScenario("test-cookies");
+
+      server.close();
+
+      Assert.assertEquals(atomicInteger.get(), 10); // each client maintained its own cookies
    }
 
    private String _sendMessage(final MessageSender sender, final Message message) throws Exception {
