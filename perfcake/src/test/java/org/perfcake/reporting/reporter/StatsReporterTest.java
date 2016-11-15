@@ -28,6 +28,7 @@ import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportManager;
+import org.perfcake.reporting.ReportManagerRetractor;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destination.DummyDestination;
 import org.perfcake.util.ObjectFactory;
@@ -36,7 +37,10 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -51,6 +55,8 @@ import java.util.concurrent.Executors;
 public class StatsReporterTest extends TestSetup {
 
    private static final long ITERATION_COUNT = 10L;
+
+   private static final List<Throwable> throwablesFromThreads = new LinkedList<>();
 
    @Test
    public void testDefaults() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
@@ -272,8 +278,9 @@ public class StatsReporterTest extends TestSetup {
       final ResponseTimeStatsReporter rtsr = (ResponseTimeStatsReporter) ObjectFactory.summonInstance(ResponseTimeStatsReporter.class.getName(), reporterProperties);
 
       final ReportManager rm = new ReportManager();
+
       final DummyDestination dest = (DummyDestination) ObjectFactory.summonInstance(DummyDestination.class.getName(), new Properties());
-      final long duration = 5000;
+      final long duration = 60000;
 
       rtsr.registerDestination(dest, new Period(PeriodType.TIME, 1000));
       rm.registerReporter(rtsr);
@@ -282,11 +289,26 @@ public class StatsReporterTest extends TestSetup {
       rm.start();
 
       final ExecutorService ex = Executors.newFixedThreadPool(100);
+
+      final ReportManagerRetractor rmr = new ReportManagerRetractor(rm);
+      rmr.getPeriodicThread().setUncaughtExceptionHandler((t, e) -> {
+         throwablesFromThreads.add(e);
+      });
+
       final long start = System.nanoTime();
-      while ((System.nanoTime() - start) < duration * 1e6) {
+      while (throwablesFromThreads.size() == 0 && (System.nanoTime() - start) < duration * 1e6) {
          ex.submit(new Worker(rm));
       }
       ex.shutdown();
+
+      if (throwablesFromThreads.size() > 0) {
+         final StringWriter sw = new StringWriter();
+         final PrintWriter pw = new PrintWriter(sw);
+         throwablesFromThreads.forEach(t -> {
+            t.printStackTrace(pw);
+         });
+         Assert.fail("Some of the threads threw an exception: " + sw.toString());
+      }
 
       Assert.assertNotNull(dest.getLastMeasurement(), "Destination should have registered some measurements.");
    }
