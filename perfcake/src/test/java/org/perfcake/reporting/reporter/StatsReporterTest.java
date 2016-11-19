@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Tests all {@link org.perfcake.reporting.reporter.StatsReporter} implemetations.
@@ -268,7 +269,7 @@ public class StatsReporterTest extends TestSetup {
       System.out.println(dest.getLastMeasurement());
    }
 
-   @Test(groups = { "performance", "stress" })
+   @Test(groups = { "stress" })
    public void testTimeSlidingWindowThreadSafeness() throws Exception {
 
       final Properties reporterProperties = new Properties();
@@ -288,7 +289,7 @@ public class StatsReporterTest extends TestSetup {
       rm.setRunInfo(ri);
       rm.start();
 
-      final ExecutorService ex = Executors.newFixedThreadPool(100);
+      final ThreadPoolExecutor ex = (ThreadPoolExecutor) Executors.newFixedThreadPool(100);
 
       final ReportManagerRetractor rmr = new ReportManagerRetractor(rm);
       rmr.getPeriodicThread().setUncaughtExceptionHandler((t, e) -> {
@@ -297,7 +298,9 @@ public class StatsReporterTest extends TestSetup {
 
       final long start = System.nanoTime();
       while (throwablesFromThreads.size() == 0 && (System.nanoTime() - start) < duration * 1e6) {
-         ex.submit(new Worker(rm));
+         if (ex.getQueue().size() < 1000000) {
+            ex.submit(new Worker(rm));
+         }
       }
       ex.shutdown();
 
