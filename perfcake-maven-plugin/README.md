@@ -29,7 +29,7 @@ Example configuration
 
 ```xml
    <properties>
-      <perfcake.version>8.0</perfcake.version>
+      <perfcake.version>7.4</perfcake.version>
       ...
    </properties>
    ...

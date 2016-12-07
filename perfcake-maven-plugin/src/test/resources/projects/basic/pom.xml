@@ -22,7 +22,7 @@
    </licenses>
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <perfcake.version>8.0-SNAPSHOT</perfcake.version>
+      <perfcake.version>7.4</perfcake.version>
       <java.level>1.8</java.level>
    </properties>
    <dependencyManagement>
