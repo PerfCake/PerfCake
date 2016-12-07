@@ -308,6 +308,15 @@ public class ReportManager {
    }
 
    /**
+    * Gets the current {@link Thread} used for periodic ticking.
+    *
+    * @return The current {@link Thread} used for periodic ticking.
+    */
+   Thread getPeriodicThread() {
+      return periodicThread;
+   }
+
+   /**
     * Makes sure 100% is reported for time based destinations after the end of the test.
     */
    private void reportFinalTimeResults() {

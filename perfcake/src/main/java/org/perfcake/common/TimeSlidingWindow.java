@@ -21,6 +21,9 @@ package org.perfcake.common;
 
 import org.apache.commons.collections4.list.CursorableLinkedList;
 
+import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 
 /**
@@ -42,6 +45,8 @@ public class TimeSlidingWindow<E> {
     * The data are kept ordered because we assume mainly linear behavior.
     */
    private CursorableLinkedList<TemporalObject<E>> window = new CursorableLinkedList<>();
+
+   private Semaphore gcLock = new Semaphore(1);
 
    /**
     * The length of the window in milliseconds.
@@ -122,7 +127,9 @@ public class TimeSlidingWindow<E> {
    public void forEach(final Consumer<E> action) {
       gc();
 
-      window.cursor().forEachRemaining(te -> action.accept(te.object));
+      if (window.size() > 0) {
+         window.cursor().forEachRemaining(te -> action.accept(te.object));
+      }
    }
 
    /**
@@ -168,11 +175,19 @@ public class TimeSlidingWindow<E> {
     *       Current artificial time.
     */
    public void gc(final long time) {
-      // remove all leading old objects
-      CursorableLinkedList.Cursor<TemporalObject<E>> it = window.cursor();
+      if (gcLock.tryAcquire()) {
+         try {
+            // remove all leading old objects
+            if (window.size() > 0) {
+               CursorableLinkedList.Cursor<TemporalObject<E>> it = window.cursor();
 
-      while (it.hasNext() && it.next().time < time - length) {
-         it.remove();
+               while (it.hasNext() && it.next().time < time - length) {
+                  it.remove();
+               }
+            }
+         } finally {
+            gcLock.release();
+         }
       }
    }
 
