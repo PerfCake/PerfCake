@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class OathHttpSender extends HttpSender {
+public class OauthHttpSender extends HttpSender {
 
    /**
     * URL of the server granting us a token. Default value works with Keycloak, supposing your realm name is demo.
@@ -57,12 +57,12 @@ public class OathHttpSender extends HttpSender {
    /**
     * Header where the token is passed to the target service. The default value works with Keycloak.
     */
-   private String oathHeader = "Authorization";
+   private String oauthHeader = "Authorization";
 
    /**
     * String formatting the value of authorization header. The token is placed instead of %s. The default value works with Keycloak.
     */
-   private String oathHeaderFormat = "Bearer %s";
+   private String oauthHeaderFormat = "Bearer %s";
 
    /**
     * How long is a token valid before a new one is needed. Defaults to 60s.
@@ -109,7 +109,7 @@ public class OathHttpSender extends HttpSender {
    }
 
    private void setRequestHeader(final HttpURLConnection http) {
-      http.setRequestProperty(oathHeader, String.format(oathHeaderFormat, token));
+      http.setRequestProperty(oauthHeader, String.format(oauthHeaderFormat, token));
    }
 
    private void refreshToken() throws IOException {
@@ -150,20 +150,20 @@ public class OathHttpSender extends HttpSender {
       this.responseParser = responseParser;
    }
 
-   public String getOathHeader() {
-      return oathHeader;
+   public String getOauthHeader() {
+      return oauthHeader;
    }
 
-   public void setOathHeader(final String oathHeader) {
-      this.oathHeader = oathHeader;
+   public void setOauthHeader(final String oauthHeader) {
+      this.oauthHeader = oauthHeader;
    }
 
-   public String getOathHeaderFormat() {
-      return oathHeaderFormat;
+   public String getOauthHeaderFormat() {
+      return oauthHeaderFormat;
    }
 
-   public void setOathHeaderFormat(final String oathHeaderFormat) {
-      this.oathHeaderFormat = oathHeaderFormat;
+   public void setOauthHeaderFormat(final String oauthHeaderFormat) {
+      this.oauthHeaderFormat = oauthHeaderFormat;
    }
 
    public long getTokenTimeout() {

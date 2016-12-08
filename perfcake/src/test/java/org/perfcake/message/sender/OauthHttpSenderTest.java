@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.LongAdder;
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class OathHttpSenderTest extends TestSetup {
+public class OauthHttpSenderTest extends TestSetup {
 
    public static final String TOKEN = "abcdef0123456789";
    public static final String RESPONSE = "You made it through!";
@@ -67,7 +67,7 @@ public class OathHttpSenderTest extends TestSetup {
 
       Thread.sleep(500);
 
-      final OathHttpSender s = new OathHttpSender();
+      final OauthHttpSender s = new OauthHttpSender();
       final Message m = new Message();
 
       s.setTokenServerUrl("http://127.0.0.1:8095/token");
