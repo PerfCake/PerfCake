@@ -85,44 +85,39 @@ public class WebSocketSender extends AbstractSender {
     *       The remote endpoint type. The value should be one of <code>basic</code> or <code>async</code>.
     * @return Instance of this to support fluent API.
     */
-   public WebSocketSender setRemoteEndpointType(final String remoteEndpointType) {
-      switch (remoteEndpointType) {
-         case "basic":
-            this.remoteEndpointType = RemoteEndpointType.BASIC;
-            break;
-         case "async":
-            this.remoteEndpointType = RemoteEndpointType.ASYNC;
-            break;
-         default:
-            throw new IllegalStateException("Unknown or undefined web socket remote endpoint type. Use either basic or async.");
-      }
-
+   public WebSocketSender setRemoteEndpointType(final RemoteEndpointType remoteEndpointType) {
+      this.remoteEndpointType = remoteEndpointType;
       return this;
+   }
+
+   /**
+    * Returns remote endpoint type.
+    *
+    * @return One of <code>basic</code> or <code>async</code>.
+    */
+   public RemoteEndpointType getRemoteEndpointType() {
+      return this.remoteEndpointType;
    }
 
    /**
     * Sets payload type.
     *
     * @param payloadType
-    *       The remote endpoint type. The value should be one of <code>text</code>, <code>binary</code> or <code>ping</code>.
+    *       The payload type. The value should be one of <code>text</code>, <code>binary</code> or <code>ping</code>.
     * @return Instance of this to support fluent API.
     */
-   public WebSocketSender setPayloadType(final String payloadType) {
-      switch (payloadType) {
-         case "text":
-            this.payloadType = PayloadType.TEXT;
-            break;
-         case "binary":
-            this.payloadType = PayloadType.BINARY;
-            break;
-         case "ping":
-            this.payloadType = PayloadType.PING;
-            break;
-         default:
-            throw new IllegalStateException("Unknown or undefined web socket payload type. Use text, binary, or ping.");
-      }
-
+   public WebSocketSender setPayloadType(PayloadType payloadType) {
+      this.payloadType = payloadType;
       return this;
+   }
+
+   /**
+    * Returns payload type.
+    *
+    * @return One of <code>text</code>, <code>binary</code> or <code>ping</code>.
+    */
+   public PayloadType getPayloadType() {
+      return this.payloadType;
    }
 
    @Override
