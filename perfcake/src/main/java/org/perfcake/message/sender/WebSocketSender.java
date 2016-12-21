@@ -38,6 +38,7 @@ import javax.websocket.CloseReason;
 import javax.websocket.ContainerProvider;
 import javax.websocket.DeploymentException;
 import javax.websocket.OnClose;
+import javax.websocket.OnError;
 import javax.websocket.OnMessage;
 import javax.websocket.OnOpen;
 import javax.websocket.RemoteEndpoint;
@@ -233,6 +234,13 @@ public class WebSocketSender extends AbstractSender {
       public void onClose(final Session session, final CloseReason closeReason) {
          if (logger.isTraceEnabled()) {
             logger.trace(String.format("Session %s closed because of %s", session.getId(), closeReason));
+         }
+      }
+
+      @OnError
+      public void onError(final Session session, final Throwable throwable) {
+         if (logger.isErrorEnabled()) {
+            logger.error(throwable.getMessage());
          }
       }
    }
