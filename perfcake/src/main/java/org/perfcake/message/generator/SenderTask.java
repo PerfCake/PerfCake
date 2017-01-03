@@ -220,6 +220,7 @@ public class SenderTask implements Runnable {
                         correlator.registerRequest(this, currentMessage, messageAttributes);
                         sendMessage(sender, currentMessage, messageAttributes, mu);
                         waitForResponse.acquire(); // the only line throwing InterruptedException here
+                        mu.stopMeasure();
                         receivedMessage = new ReceivedMessage(correlatedResponse, messageToSend, currentMessage, messageAttributes);
                      } else {
                         receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
