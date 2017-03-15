@@ -24,7 +24,6 @@ import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
-import org.perfcake.reporting.destination.Destination;
 import org.perfcake.util.properties.MandatoryProperty;
 
 import java.util.Map;
@@ -71,13 +70,13 @@ public class ClassifyingReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
+   public Measurement computeMeasurement(final PeriodType periodType) throws ReportingException {
       final Measurement m = newMeasurement();
       publishAccumulatedResult(m);
 
       classes.forEach((key, value) -> m.set(prefix + key, value.longValue()));
 
-      destination.report(m);
+      return m;
    }
 
    /**

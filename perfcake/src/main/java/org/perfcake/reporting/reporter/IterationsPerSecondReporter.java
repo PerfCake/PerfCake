@@ -24,7 +24,6 @@ import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
-import org.perfcake.reporting.destination.Destination;
 
 /**
  * Reports the average number of iterations that were completed since the test beginning per second.
@@ -43,9 +42,9 @@ public class IterationsPerSecondReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
+   public Measurement computeMeasurement(final PeriodType periodType) throws ReportingException {
       final Measurement m = newMeasurement();
       m.set(Measurement.DEFAULT_RESULT, new Quantity<>(1000.0 * runInfo.getIteration() / runInfo.getRunTime(), "iterations/s"));
-      destination.report(m);
+      return m;
    }
 }

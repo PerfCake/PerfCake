@@ -21,9 +21,9 @@ package org.perfcake.reporting.reporter;
 
 import org.perfcake.PerfCakeConst;
 import org.perfcake.common.PeriodType;
+import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.ReportingException;
-import org.perfcake.reporting.destination.Destination;
 import org.perfcake.reporting.reporter.accumulator.LastValueAccumulator;
 
 import org.apache.logging.log4j.LogManager;
@@ -110,7 +110,7 @@ public class WarmUpReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
+   public Measurement computeMeasurement(final PeriodType periodType) throws ReportingException {
       throw new ReportingException("No destination is allowed on " + getClass().getSimpleName());
    }
 

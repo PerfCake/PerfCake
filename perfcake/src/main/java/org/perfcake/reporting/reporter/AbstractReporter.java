@@ -160,6 +160,25 @@ public abstract class AbstractReporter implements Reporter {
    }
 
    /**
+    * Computes current measurement to be reported to a destination based on accumulated {@link MeasurementUnit MeasurementUnits}.
+    * As a side effect, accumulated results can be reset.
+    *
+    * @param periodType
+    *       For which type of period we need to compute the {@link Measurement}.
+    * @return The newly computed {@link Measurement}.
+    */
+   abstract protected Measurement computeMeasurement(final PeriodType periodType) throws ReportingException;
+
+   @Override
+   final public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
+      final Measurement m = computeMeasurement(periodType);
+
+      if (m != null) {
+         destination.report(computeMeasurement(periodType));
+      }
+   }
+
+   /**
     * Copies current accumulated results to the provided {@link org.perfcake.reporting.Measurement}. This can be used in the child's {@link #publishResult(PeriodType, Destination)} method.
     *
     * @param measurement
