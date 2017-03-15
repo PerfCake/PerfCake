@@ -57,7 +57,8 @@ public class NumericReportingFilter implements ReportingFilter {
    /**
     * Creates a reporting filter that will be using the specified filtering algorithm.
     *
-    * @param filterAlgorithmClass The filtering algorithm class to be used.
+    * @param filterAlgorithmClass
+    *       The filtering algorithm class to be used.
     */
    public NumericReportingFilter(final Class<FilterAlgorithm> filterAlgorithmClass) {
       this.filterAlgorithmClass = filterAlgorithmClass;
