@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Validates message responses returned by {@link org.perfcake.message.sender.MessageSender}
@@ -101,14 +102,16 @@ public class ValidationManager {
     * Creates a new validator manager. The message responses are store in a file queue in a temporary file.
     *
     * @throws PerfCakeException
-    *       When it was not possible to initialize the message store.
+    *    When it was not possible to initialize the message store.
     */
    public ValidationManager() throws PerfCakeException {
       statistics.put(OVERALL_STAT_KEY, new Score());
+
       try {
          final File tmpFile = File.createTempFile("perfcake", "queue");
          tmpFile.deleteOnExit();
-         setQueueFile(tmpFile);
+         //setQueueFile(tmpFile);
+         resetQueue();
       } catch (final IOException e) {
          throw new PerfCakeException("Cannot create a file queue for messages to be validated: ", e);
       }
@@ -118,9 +121,10 @@ public class ValidationManager {
     * Sets a different location of the file queue for storing message responses.
     *
     * @param queueFile
-    *       The new location of the file queue.
+    *    The new location of the file queue.
     * @throws PerfCakeException
-    *       When it was not possible to initialize the file queue or there is a running validation.
+    *    When it was not possible to initialize the file queue or there is a running validation.
+    * @deprecated
     */
    public void setQueueFile(final File queueFile) throws PerfCakeException {
       if (isFinished()) {
@@ -131,12 +135,23 @@ public class ValidationManager {
    }
 
    /**
+    * Resets the queue for storing message responses.
+    */
+   public void resetQueue() {
+      if (validationTasks == null) {
+         validationTasks = new LinkedBlockingQueue<>(1024);
+      } else {
+         validationTasks.clear();
+      }
+   }
+
+   /**
     * Adds a new message validator.
     *
     * @param validatorId
-    *       A string id of the new validator.
+    *    A string id of the new validator.
     * @param messageValidator
-    *       A validator instance.
+    *    A validator instance.
     */
    public void addValidator(final String validatorId, final MessageValidator messageValidator) {
       validators.put(validatorId, messageValidator);
@@ -146,7 +161,7 @@ public class ValidationManager {
     * Gets the validator with the given id.
     *
     * @param validatorId
-    *       A string id of the validator.
+    *    A string id of the validator.
     * @return The validator instance or null if there is no such validator with the given id.
     */
    public MessageValidator getValidator(final String validatorId) {
@@ -157,7 +172,7 @@ public class ValidationManager {
     * Get all the validators requested in the list of ids.
     *
     * @param validatorIds
-    *       A list of ids of validators to be returned.
+    *    A list of ids of validators to be returned.
     * @return The list of requested validators.
     */
    public List<MessageValidator> getValidators(final List<String> validatorIds) {
@@ -187,7 +202,7 @@ public class ValidationManager {
     * is thrown. Internally, this joins the validator thread to the current thread.
     *
     * @throws InterruptedException
-    *       If the validator thread was interrupted.
+    *    If the validator thread was interrupted.
     */
    public void waitForValidation() throws InterruptedException {
       if (validationThread != null) {
@@ -210,7 +225,7 @@ public class ValidationManager {
     * Submits a new validation task. The message response in it will be validated.
     *
     * @param validationTask
-    *       The new validation task to be processed.
+    *    The new validation task to be processed.
     */
    public void submitValidationTask(final ValidationTask validationTask) {
       validationTasks.add(validationTask);
@@ -238,7 +253,7 @@ public class ValidationManager {
     * Enables/disables validation. This only takes effect before the validation is started and or finished.
     *
     * @param enabled
-    *       Specifies whether we want the validation to be enabled.
+    *    Specifies whether we want the validation to be enabled.
     */
    public void setEnabled(final boolean enabled) {
       if (enabled || finished) {
@@ -274,7 +289,7 @@ public class ValidationManager {
     * Enables/disables the fast forward mode of the validation.
     *
     * @param fastForward
-    *       <code>true</code> to enable the fast forward mode.
+    *    <code>true</code> to enable the fast forward mode.
     */
    public void setFastForward(final boolean fastForward) {
       this.fastForward = fastForward;

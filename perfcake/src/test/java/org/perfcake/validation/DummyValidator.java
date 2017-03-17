@@ -74,7 +74,7 @@ public class DummyValidator implements MessageValidator {
     * Sets the value the validation method should return.
     *
     * @param returnValue
-    *       The value that should be returned from the validation.
+    *    The value that should be returned from the validation.
     */
    public void setReturnValue(final boolean returnValue) {
       this.returnValue = returnValue;

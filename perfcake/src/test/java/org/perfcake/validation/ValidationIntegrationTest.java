@@ -67,7 +67,7 @@ public class ValidationIntegrationTest extends TestSetup {
       long lastCalled2 = v.getLastCalledTimestamp();
       long timeDiff = lastCalled2 - lastCalled;
 
-      Assert.assertTrue(timeDiff >= 450, "Validator called to often during running measurement.");
+      Assert.assertTrue(timeDiff >= 450, "Validator called too often during running measurement.");
 
       // after we stop the measurement, the validation must switch to full speed
       scenario.close();
@@ -94,8 +94,6 @@ public class ValidationIntegrationTest extends TestSetup {
 
       scenario.init();
       scenario.run();
-
-      validationManager.waitForValidation();
       scenario.close();
 
       Assert.assertEquals(validationManager.getOverallStatistics().getPassed(), 1000, "Validation have not validated all the messages.");
@@ -114,8 +112,6 @@ public class ValidationIntegrationTest extends TestSetup {
 
       scenario.init();
       scenario.run();
-
-      validationManager.waitForValidation();
       scenario.close();
 
       Assert.assertEquals(validationManager.getOverallStatistics().getPassed(), 1000, "Validation have not validated all the messages.");
