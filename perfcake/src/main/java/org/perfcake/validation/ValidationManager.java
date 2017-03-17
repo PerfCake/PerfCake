@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
@@ -139,7 +140,7 @@ public class ValidationManager {
     */
    public void resetQueue() {
       if (validationTasks == null) {
-         validationTasks = new LinkedBlockingQueue<>(1024);
+         validationTasks = new ConcurrentLinkedQueue<>();
       } else {
          validationTasks.clear();
       }
