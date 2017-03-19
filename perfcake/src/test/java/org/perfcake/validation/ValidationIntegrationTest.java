@@ -95,7 +95,6 @@ public class ValidationIntegrationTest extends TestSetup {
       scenario.init();
       scenario.run();
 
-      validationManager.waitForValidation();
       scenario.close();
 
       Assert.assertEquals(validationManager.getOverallStatistics().getPassed(), 1000, "Validation have not validated all the messages.");
@@ -115,7 +114,6 @@ public class ValidationIntegrationTest extends TestSetup {
       scenario.init();
       scenario.run();
 
-      validationManager.waitForValidation();
       scenario.close();
 
       Assert.assertEquals(validationManager.getOverallStatistics().getPassed(), 1000, "Validation have not validated all the messages.");
