@@ -93,22 +93,19 @@ public class TimeSlidingWindow<E> {
       } else {
          // very expensive inserting in the middle, values inserted in the meanwhile may be lost
          final Deque<TemporalObject<E>> newWindow = new ConcurrentLinkedDeque<>();
-         final Iterator<TemporalObject<E>> iterator = window.iterator();
+         final Iterator<TemporalObject<E>> iterator = window.descendingIterator();
          TemporalObject<E> t = null;
 
-         while (iterator.hasNext() && (t = iterator.next()).time <= time) {
-            newWindow.add(t);
+         while (iterator.hasNext() && (t = iterator.next()).time >= time) {
+            newWindow.push(t);
          }
 
-         if (t != null && t.time <= time) { // we skipped the one that does not fit the condition
-            newWindow.add(t);
-         }
-         newWindow.add(new TemporalObject<>(object, time));
+         newWindow.push(new TemporalObject<>(object, time));
 
-         if (t != null && t.time > time) { // if there was just one entry, it might have been still bigger and we did not copy it
-            newWindow.add(t);
+         if (t != null && t.time < time) { // if there was just one entry, it might have been still bigger and we did not copy it
+            newWindow.push(t);
          }
-         iterator.forEachRemaining(newWindow::add);
+         iterator.forEachRemaining(newWindow::push);
 
          window = newWindow;
       }
