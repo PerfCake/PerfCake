@@ -230,10 +230,12 @@ public class C3ChartReport {
          C3ChartData tmpChartData = new C3ChartData(chart.getBaseName(), target);
          tmpChartData = tmpChartData.filter(chart.getAttributes().indexOf(matchingAttribute));
 
-         if (chartData == null) {
-            chartData = tmpChartData;
-         } else {
-            chartData = chartData.combineWith(tmpChartData);
+         if (tmpChartData.getData().size() > 0) {
+            if (chartData == null) {
+               chartData = tmpChartData;
+            } else {
+               chartData = chartData.combineWith(tmpChartData);
+            }
          }
       }
 

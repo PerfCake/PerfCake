@@ -23,6 +23,7 @@ import org.perfcake.TestSetup;
 import org.perfcake.scenario.Scenario;
 import org.perfcake.scenario.ScenarioLoader;
 import org.perfcake.scenario.ScenarioRetractor;
+import org.perfcake.util.Utils;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -78,6 +79,44 @@ public class ValidationIntegrationTest extends TestSetup {
       timeDiff = lastCalled2 - lastCalled;
 
       Assert.assertTrue(timeDiff >= 1 && timeDiff < 100, String.format("Validation did not switch to normal speed operation (timeDiff = %d).", timeDiff));
+   }
+
+   @Test(enabled = true)
+   public void fileLinesSequenceValidationTest() throws Exception {
+      final String sequencesDir = Utils.getResource("/sequences");
+      final String fileUrl = Utils.locationToUrlWithCheck("seq", null, sequencesDir, ".txt").toString();
+
+      System.setProperty("sequence.file", fileUrl);
+
+      final Scenario scenario = ScenarioLoader.load("test-file-lines-seq-validation");
+
+      final ValidationManager validationManager = getValidationManager(scenario);
+
+      scenario.init();
+      scenario.run();
+
+      scenario.close();
+
+      Assert.assertEquals(validationManager.getOverallStatistics().getPassed(), 1000, "Validation have not validated all the messages.");
+   }
+
+   @Test(enabled = true)
+   public void fileLinesSequenceNotUsedValidationTest() throws Exception {
+      final String sequencesDir = Utils.getResource("/sequences");
+      final String fileUrl = Utils.locationToUrlWithCheck("seq", null, sequencesDir, ".txt").toString();
+
+      System.setProperty("sequence.file", fileUrl);
+
+      final Scenario scenario = ScenarioLoader.load("test-file-lines-seq-not-used-validation");
+
+      final ValidationManager validationManager = getValidationManager(scenario);
+
+      scenario.init();
+      scenario.run();
+
+      scenario.close();
+
+      Assert.assertEquals(validationManager.getOverallStatistics().getPassed(), 1000, "Validation have not validated all the messages.");
    }
 
    /**

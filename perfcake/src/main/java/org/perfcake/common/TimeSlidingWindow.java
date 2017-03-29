@@ -19,11 +19,9 @@
  */
 package org.perfcake.common;
 
-import org.apache.commons.collections4.list.CursorableLinkedList;
-
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.Semaphore;
 import java.util.function.Consumer;
 
 /**
@@ -44,9 +42,7 @@ public class TimeSlidingWindow<E> {
     * The internal data structure maintaining the records of objects together with the time when they were added.
     * The data are kept ordered because we assume mainly linear behavior.
     */
-   private CursorableLinkedList<TemporalObject<E>> window = new CursorableLinkedList<>();
-
-   private Semaphore gcLock = new Semaphore(1);
+   private Deque<TemporalObject<E>> window = new ConcurrentLinkedDeque<>();
 
    /**
     * The length of the window in milliseconds.
@@ -93,12 +89,25 @@ public class TimeSlidingWindow<E> {
     */
    public void add(final E object, final long time) {
       if (window.size() == 0 || window.getLast().time <= time) {
-         window.add(new TemporalObject<E>(object, time));
+         window.add(new TemporalObject<>(object, time));
       } else {
-         CursorableLinkedList.Cursor<TemporalObject<E>> c = window.cursor(window.size());
-         while (c.hasPrevious() && c.previous().time > time) {
+         // very expensive inserting in the middle, values inserted in the meanwhile may be lost
+         final Deque<TemporalObject<E>> newWindow = new ConcurrentLinkedDeque<>();
+         final Iterator<TemporalObject<E>> iterator = window.descendingIterator();
+         TemporalObject<E> t = null;
+
+         while (iterator.hasNext() && (t = iterator.next()).time >= time) {
+            newWindow.push(t);
          }
-         c.add(new TemporalObject<>(object, time));
+
+         newWindow.push(new TemporalObject<>(object, time));
+
+         if (t != null && t.time < time) { // if there was just one entry, it might have been still bigger and we did not copy it
+            newWindow.push(t);
+         }
+         iterator.forEachRemaining(newWindow::push);
+
+         window = newWindow;
       }
    }
 
@@ -128,7 +137,7 @@ public class TimeSlidingWindow<E> {
       gc();
 
       if (window.size() > 0) {
-         window.cursor().forEachRemaining(te -> action.accept(te.object));
+         window.iterator().forEachRemaining(te -> action.accept(te.object));
       }
    }
 
@@ -175,20 +184,7 @@ public class TimeSlidingWindow<E> {
     *       Current artificial time.
     */
    public void gc(final long time) {
-      if (gcLock.tryAcquire()) {
-         try {
-            // remove all leading old objects
-            if (window.size() > 0) {
-               CursorableLinkedList.Cursor<TemporalObject<E>> it = window.cursor();
-
-               while (it.hasNext() && it.next().time < time - length) {
-                  it.remove();
-               }
-            }
-         } finally {
-            gcLock.release();
-         }
-      }
+      window.removeIf(it -> it.time < time - length);
    }
 
    /**

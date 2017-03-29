@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:8.0">
+   <properties>
+      <property name="server.host" value="localhost"/>
+      <property name="server.port" value="1234"/>
+   </properties>
+   <run type="iteration" value="1000"/>
+   <generator class="DefaultMessageGenerator" threads="10"/>
+   <sequences>
+      <sequence id="counter" class="PrimitiveNumberSequence"/>
+      <sequence id="value" class="FileLinesSequence">
+         <property name="fileUrl" value="${sequence.file}"/>
+      </sequence>
+   </sequences>
+   <sender class="DummySender">
+      <target>http://${server.host}:${server.port}/api/items</target>
+   </sender>
+   <reporting>
+      <reporter class="IterationsPerSecondReporter">
+         <destination class="ConsoleDestination">
+            <period type="iteration" value="1000"/>
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message content="message no. @{counter}">
+         <header name="header1" value="Value: value"/>
+         <validatorRef id="printer"/>
+      </message>
+   </messages>
+   <validation>
+      <validator id="printer" class="PrintingValidator"/>
+   </validation>
+</scenario>
