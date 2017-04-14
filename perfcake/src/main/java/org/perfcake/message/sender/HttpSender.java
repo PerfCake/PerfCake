@@ -134,6 +134,9 @@ public class HttpSender extends AbstractSender {
    public void doInit(final Properties messageAttributes) throws PerfCakeException {
       final String targetUrl = safeGetTarget(messageAttributes);
       try {
+         if(log.isDebugEnabled()){
+            log.debug("Setting target URL to: " + targetUrl);
+         }
          url = new URL(targetUrl);
       } catch (MalformedURLException e) {
          throw new PerfCakeException(String.format("Cannot initialize HTTP connection, invalid URL %s: ", targetUrl), e);

@@ -34,6 +34,7 @@ import io.vertx.ext.web.Cookie;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CookieHandler;
+
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -52,7 +53,8 @@ public class HttpSenderTest extends TestSetup {
 
    private static final String URL_GET = "http://httpbin.org/get";
    private static final String URL_POST = "http://httpbin.org/post";
-   private static final String URL_STATUS_500 = "http://httpbin.org/status/:500";
+   private static final int RESPONSE_500_SIZE = 10;
+   private static final String URL_STATUS_500 = "http://httpbin.org/drip?numbytes=" + RESPONSE_500_SIZE + "&duration=0&delay=0&code=500";
 
    private static final String TEST_HEADER_NAME = "Test-Header-Name";
    private static final String TEST_HEADER_VALUE = "test-header-value...";
@@ -264,7 +266,7 @@ public class HttpSenderTest extends TestSetup {
          Assert.fail(e.getMessage());
       }
       Assert.assertNotNull(response);
-      Assert.assertTrue(response.contains("500 Internal Server Error"));
+      Assert.assertEquals(response.length(), RESPONSE_500_SIZE, "Response contains " + response.length() + "/" + RESPONSE_500_SIZE + " bytes.");
    }
 
    @Test

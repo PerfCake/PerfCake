@@ -220,6 +220,7 @@ public class SenderTask implements Runnable {
                         correlator.registerRequest(this, currentMessage, messageAttributes);
                         sendMessage(sender, currentMessage, messageAttributes, mu);
                         waitForResponse.acquire(); // the only line throwing InterruptedException here
+                        mu.stopMeasure();
                         receivedMessage = new ReceivedMessage(correlatedResponse, messageToSend, currentMessage, messageAttributes);
                      } else {
                         receivedMessage = new ReceivedMessage(sendMessage(sender, currentMessage, messageAttributes, mu), messageToSend, currentMessage, messageAttributes);
@@ -260,7 +261,7 @@ public class SenderTask implements Runnable {
 
             reportManager.report(mu);
          }
-      } catch (InterruptedException | PerfCakeException e) {
+      } catch (RuntimeException | InterruptedException | PerfCakeException e) {
          if (e instanceof InterruptedException) { // there is just one line of code that can throw this exception above
             if (interruptWarningDisplayed.getAndIncrement() == 0) {
                log.warn("Test execution interrupted while waiting for a response message from a receiver.");

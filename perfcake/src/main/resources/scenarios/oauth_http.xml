@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<scenario xmlns="urn:perfcake:scenario:8.0">
+   <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:30000}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}"/>
+   <sender class="OauthHttpSender">
+      <target>http://domain.com/secured_url</target>
+      <property name="method" value="POST"/>
+      <property name="tokenServerUrl" value="http://127.0.0.1:8180/auth/realms/demo/protocol/openid-connect/token"/>
+      <property name="tokenServerData" value="grant_type=password&amp;client_id=jboss-javaee-webapp&amp;username=marvec&amp;password=abc123"/>
+      <property name="responseParser" value=".*&quot;access_token&quot;:&quot;([^&quot;]*)&quot;.*"/>
+      <property name="oauthHeader" value="Authorization"/>
+      <property name="oauthHeaderFormat" value="Bearer %s"/>
+      <property name="tokenTimeout" value="60000"/>
+   </sender>
+   <reporting>
+      <reporter class="IterationsPerSecondReporter">
+         <destination class="ConsoleDestination">
+            <period type="time" value="1000"/>
+         </destination>
+      </reporter>
+   </reporting>
+   <messages>
+      <message uri="plain.txt"/>
+   </messages>
+</scenario>

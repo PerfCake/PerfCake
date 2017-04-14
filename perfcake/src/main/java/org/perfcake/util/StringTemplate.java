@@ -19,6 +19,7 @@
  */
 package org.perfcake.util;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -38,7 +39,12 @@ import java.util.Properties;
  *
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
-public class StringTemplate {
+public class StringTemplate implements Serializable {
+
+   /**
+    * Serial version UID.
+    */
+   private static final long serialVersionUID = -1263887679189281564L;
 
    /**
     * Global properties passed in while creating the template.
