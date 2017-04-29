@@ -19,10 +19,12 @@
  */
 package org.perfcake.reporting.destination;
 
+import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
+import org.perfcake.reporting.destination.anomalyDetection.RegressionAnalysisHeuristics;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,20 +35,21 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
- * Appends a {@link Measurement} into a crystal report file.
+ * A destination that performs heuristics for anomalies detection and
+ * compiles all tests results into one document report.
  *
  * @author <a href="mailto:kurovamartina@gmail.com">Martina Kůrová</a>
  */
 public class CrystalDestination extends AbstractDestination {
 
    /**
-   * Logger.
-   */
+    * Logger.
+    */
    private static final Logger log = LogManager.getLogger(CrystalDestination.class);
 
    /**
-   * Caching the state of trace logging level to speed up reporting.
-   */
+    * Caching the state of trace logging level to speed up reporting.
+    */
    private static final boolean logTrace = log.isTraceEnabled();
 
    /**
@@ -98,7 +101,6 @@ public class CrystalDestination extends AbstractDestination {
    public void open() {
       resultSetKey = perfTestName;
       sharedResultsMap.putIfAbsent(resultSetKey, new ArrayList<>());
-
       readWriteLock.writeLock().lock();
       finishedThreadList.put(resultSetKey, false);
       readWriteLock.writeLock().unlock();
@@ -110,10 +112,14 @@ public class CrystalDestination extends AbstractDestination {
       finishedThreadList.replace(resultSetKey, true);
       readWriteLock.writeLock().unlock();
 
-      // last thread
+      // check for anomalies
+      processAnomalyDetection();
+
       readWriteLock.readLock().lock();
       masterThread = !finishedThreadList.containsValue(Boolean.FALSE);
       readWriteLock.readLock().unlock();
+
+      // last thread -> generate final report
       if (masterThread) {
          masterThreadName = resultSetKey;
          generateUnifiedReport();
@@ -121,14 +127,36 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    * Generates the final unified report by master thread.
+    * According to an actual reporter, performs adequate heuristics for detection anomalies.
+    */
+   private void processAnomalyDetection(){
+      String actualReporter = this.getParentReporter().getClass().getSimpleName();
+      switch (actualReporter){
+         case "ResponseTimeHistogramReporter":
+         case "ResponseTimeStatsReporter":
+         case "ThroughputStatsReporter":
+         case "IterationsPerSecondReporter":
+            // regression analysis
+            List<Measurement> dataSet = sharedResultsMap.get(resultSetKey);
+            RegressionAnalysisHeuristics ra = new RegressionAnalysisHeuristics();
+            ra.run(dataSet);
+            String reResult = ra.analyzeResults();
+            System.out.println("For test '" + resultSetKey + "' RA result is '" + reResult + "'.");
+            break;
+         default:
+            // nothing to do here
+      }
+   }
+
+   /**
+    * Generates the final unified report by a master thread.
     */
    private void generateUnifiedReport() {
    }
 
    @Override
    public void report(final Measurement measurement) throws ReportingException {
-      // store measurement into shared map based on the result set key
+      // store measurement into shared map according to the result set key name
       sharedResultsMap.get(resultSetKey).add(measurement);
    }
 
