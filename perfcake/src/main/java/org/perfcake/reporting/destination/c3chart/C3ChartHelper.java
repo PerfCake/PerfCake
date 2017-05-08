@@ -19,16 +19,25 @@
  */
 package org.perfcake.reporting.destination.c3chart;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destination.ChartDestination;
+import org.perfcake.reporting.destination.CrystalDestination;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+
+import static java.lang.Thread.sleep;
+import static org.perfcake.common.PeriodType.TIME;
+import static org.perfcake.reporting.destination.ChartDestination.ChartType.LINE;
 
 /**
  * Helper class for the ChartDestination. Bridges the destination methods to the corresponding actions of other classes in the package.
@@ -100,6 +109,56 @@ public class C3ChartHelper {
          chart.setType(chartDestination.getType());
 
          chartDataFile = new C3ChartDataFile(chart, chartDestination.getOutputDirAsPath());
+         chartDataFile.open();
+
+         initialized = true;
+      } catch (final PerfCakeException e) {
+         log.error(String.format("%s did not get initialized properly:", this.getClass().getName()), e);
+         initialized = false;
+      }
+   }
+
+   /**
+    * Creates a new helper for the given CrystalDestination.
+    *
+    * @param crystalDestination
+    *       The CrystalDestination this helper is supposed to serve to.
+    */
+   public C3ChartHelper(CrystalDestination crystalDestination) {
+      try {
+         final List<String> attributes = new ArrayList<>(Arrays.asList("Average, Maximum, Minimum, RequestSize, ResponseSize, Result, Threads, failures".split("\\s*,\\s*")));
+         // TODO decide according to a reporter
+         switch (TIME) {
+            case PERCENTAGE:
+               attributes.add(0, COLUMN_PERCENT);
+               break;
+            case TIME:
+               attributes.add(0, COLUMN_TIME);
+               break;
+            case ITERATION:
+               attributes.add(0, COLUMN_ITERATION);
+               break;
+         }
+
+         final C3Chart chart = new C3Chart();
+         chart.setGroup("default");
+         chart.setAttributes(attributes);
+         chart.setName(crystalDestination.getPerfTestName());
+
+         // set unique name - js/json/html files overwrite protection
+         long timeMillis = System.currentTimeMillis();
+         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+         Date resultDate = new Date(timeMillis);
+         chart.setBaseName(chart.getGroup() + sdf.format(resultDate));
+
+         // TODO set according to a reporter
+         chart.setxAxisType(TIME);
+         chart.setxAxis("Time");
+         chart.setyAxis("Value");
+         chart.setHeight(400);
+         chart.setType(LINE);
+
+         chartDataFile = new C3ChartDataFile(chart, Paths.get(crystalDestination.getPath()));
          chartDataFile.open();
 
          initialized = true;

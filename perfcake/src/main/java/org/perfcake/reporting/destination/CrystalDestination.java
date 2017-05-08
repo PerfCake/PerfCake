@@ -19,12 +19,13 @@
  */
 package org.perfcake.reporting.destination;
 
-import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destination.anomalyDetection.RegressionAnalysisHeuristics;
+import org.perfcake.reporting.destination.c3chart.C3ChartHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,6 +64,12 @@ public class CrystalDestination extends AbstractDestination {
    private static Map<String, Boolean> finishedThreadList = new HashMap<>();
 
    /**
+    * A structure for storing results of RA.
+    */
+   private static ConcurrentHashMap<String, String> regressionAnalysisResults = new ConcurrentHashMap();
+   private static ConcurrentHashMap<String, CrystalDestination> instances = new ConcurrentHashMap();
+
+   /**
     * A lock for accessing the finishedThreadList.
     */
    ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
@@ -80,7 +87,7 @@ public class CrystalDestination extends AbstractDestination {
    /**
     * An unique key describing a specific result set.
     */
-   private String resultSetKey = null;
+   protected String resultSetKey = null;
 
    /**
     * The path of a final report.
@@ -101,6 +108,7 @@ public class CrystalDestination extends AbstractDestination {
    public void open() {
       resultSetKey = perfTestName;
       sharedResultsMap.putIfAbsent(resultSetKey, new ArrayList<>());
+      instances.putIfAbsent(resultSetKey, this);
       readWriteLock.writeLock().lock();
       finishedThreadList.put(resultSetKey, false);
       readWriteLock.writeLock().unlock();
@@ -136,12 +144,15 @@ public class CrystalDestination extends AbstractDestination {
          case "ResponseTimeStatsReporter":
          case "ThroughputStatsReporter":
          case "IterationsPerSecondReporter":
-            // regression analysis
+            // perform regression analysis
             List<Measurement> dataSet = sharedResultsMap.get(resultSetKey);
             RegressionAnalysisHeuristics ra = new RegressionAnalysisHeuristics();
             ra.run(dataSet);
-            String reResult = ra.analyzeResults();
-            System.out.println("For test '" + resultSetKey + "' RA result is '" + reResult + "'.");
+            String raResult = ra.analyzeResults();
+            // TODO save RA result to the final report
+            System.out.println("For test '" + resultSetKey + "' RA result is '" + raResult + "'.");
+            // save RA results into a shared map
+            regressionAnalysisResults.putIfAbsent(resultSetKey, raResult);
             break;
          default:
             // nothing to do here
@@ -152,6 +163,27 @@ public class CrystalDestination extends AbstractDestination {
     * Generates the final unified report by a master thread.
     */
    private void generateUnifiedReport() {
+      // for all tests
+      for (Map.Entry e : sharedResultsMap.entrySet()) {
+         List<Measurement> measurements = sharedResultsMap.get(e.getKey());
+         System.out.println(resultSetKey + " : generating chart for : " + e.getKey());
+         // generate C3 chart
+         C3ChartHelper helper = new C3ChartHelper(instances.get(e.getKey()));
+         for(Measurement m : measurements){
+            try {
+               helper.appendResult(m);
+            } catch (ReportingException e1) {
+               new ReportingException(e1.getCause());
+            }
+         }
+         // TODO add ra results
+         try {
+            helper.close();
+            helper.compileResults(false);
+         } catch (PerfCakeException e1) {
+            new PerfCakeException(e1.getCause());
+         }
+      }
    }
 
    @Override
@@ -187,7 +219,7 @@ public class CrystalDestination extends AbstractDestination {
     *
     * @return The name of the chart.
     */
-   public String getName() {
+   public String getPerfTestName() {
       return perfTestName;
    }
 
@@ -198,7 +230,7 @@ public class CrystalDestination extends AbstractDestination {
     *       The name of the chart.
     * @return Instance of this to support fluent API.
     */
-   public CrystalDestination setName(final String name) {
+   public CrystalDestination setPerfTestName(final String name) {
       this.perfTestName = name;
       return this;
    }
