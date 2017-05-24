@@ -1,17 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:8.0">
-   <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:30000}"/>
-   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:100}"/>
+   <run type="${perfcake.run.type:time}" value="${perfcake.run.duration:120000}"/>
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:3}"/>
    <sender class="HttpSender">
-      <target>http://${server.host}/post</target>
+      <target>http://${server.host}:${server.port}/post</target>
       <property name="method" value="POST"/>
    </sender>
    <reporting>
-      <reporter class="IterationsPerSecondReporter">
+      <reporter class="ResponseTimeStatsReporter">
          <destination class="ConsoleDestination">
             <period type="time" value="1000"/>
+            <property name="foreground" value="6"/>
+         </destination>
+         <destination class="CrystalDestination">
+            <period type="time" value="600"/>
+            <property name="path" value="./Testing1/" />
+            <property name="title" value="Response time" />
+            <property name="order" value="1" />
+            <property name="threshold" value="1000" />
+            <property name="resultsAnalysis" value="true" />
+            <property name="window" value="3000" />
+            <property name="chartYAxis" value="Response Time [ms]"/>
+            <property name="chartGroup" value="response"/>
+            <property name="chartAttributes" value="Result,Average"/>
          </destination>
       </reporter>
+      <!--reporter class="ResponseTimeStatsReporter">
+         <destination class="CrystalDestination">
+            <period type="time" value="500"/>
+            <property name="path" value="./Report2/" />
+            <property name="name" value="Test chart name 2" />
+            <property name="order" value="4" />
+         </destination>
+      </reporter>
+      <reporter class="ResponseTimeStatsReporter">
+         <destination class="CrystalDestination">
+            <period type="time" value="500"/>
+            <property name="path" value="./Report1/" />
+            <property name="name" value="Test chart name 3" />
+            <property name="order" value="4" />
+         </destination>
+      </reporter-->
    </reporting>
    <messages>
       <message uri="plain.txt"/>

@@ -7,6 +7,7 @@
       <title>PerfCake: Performance Report</title>
 
       <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
       <link rel="stylesheet" href="../src/report.css" media="screen">
       <link rel="stylesheet" href="../src/c3.min.css" media="screen">
       <link href="../src/favicon.svg" rel="shortcut icon">
@@ -15,6 +16,12 @@
       <script type="text/javascript" src="../src/d3.v3.min.js"></script>
       <script type="text/javascript" src="../src/report.js"></script>
       <script type="text/javascript" src="${baseName}.js"></script>
+      <style media="screen" type="text/css">
+         .c3-region.regionRed {
+            fill: red;
+            fill-opacity:.1;
+         }
+      </style>
    </head>
    <body>
       <div class="navbar navbar-default navbar-fixed-top">
@@ -98,6 +105,9 @@
                            }
                          }
                        },
+                       regions: [
+                         ${regions}
+                       ],
                        grid: {
                          x: {
                            show: true

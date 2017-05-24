@@ -19,21 +19,26 @@
  */
 package org.perfcake.reporting.destination;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.perfcake.PerfCakeException;
+import org.perfcake.common.BoundPeriod;
+import org.perfcake.common.PeriodType;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
-import org.perfcake.reporting.destination.anomalyDetection.RegressionAnalysisHeuristics;
+import org.perfcake.reporting.destination.anomalyDetection.BasicStatisticsAnalysis;
+import org.perfcake.reporting.destination.anomalyDetection.SimpleRegressionAnalysis;
 import org.perfcake.reporting.destination.c3chart.C3ChartHelper;
+import org.perfcake.util.properties.MandatoryProperty;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static org.perfcake.common.PeriodType.*;
+import static org.perfcake.reporting.destination.ChartDestination.ChartType.LINE;
 
 /**
  * A destination that performs heuristics for anomalies detection and
@@ -66,7 +71,6 @@ public class CrystalDestination extends AbstractDestination {
    /**
     * A structure for storing results of RA.
     */
-   private static ConcurrentHashMap<String, String> regressionAnalysisResults = new ConcurrentHashMap();
    private static ConcurrentHashMap<String, CrystalDestination> instances = new ConcurrentHashMap();
 
    /**
@@ -90,23 +94,91 @@ public class CrystalDestination extends AbstractDestination {
    protected String resultSetKey = null;
 
    /**
-    * The path of a final report.
+    * The path to the directory of a final report.
     */
-   private String path = null;
+   private String path = "./PerfCake-report";
 
    /**
-    * The title of a result in the final report.
+    * The title of a test in a final report.
     */
-   private String perfTestName = null;
+   private String title = "PerfCake Test Result";
 
    /**
     * The order of the interpreted result within the final report.
     */
    private Integer order = null;
 
+   /**
+    * An indicator to perform results analysis.
+    */
+   private boolean resultsAnalysis = true;
+
+   /**
+    * Threshold for monitored metrics
+    */
+   private Double threshold = null;
+
+   /**
+    * Tim sliding window size
+    */
+   private int window = 0;
+
+   /**
+    *
+    */
+   private SimpleRegressionAnalysis ra;
+
+   /**
+    *
+    */
+   private BasicStatisticsAnalysis stats;
+
+   /**
+    * Attributes that should be stored in the chart.
+    */
+   private List<String> chartAttributes = new ArrayList<>(Arrays.asList("*".split("\\s*,\\s*")));
+
+   /**
+    * Group of this chart. Charts in the same group can be later matched for the column names.
+    */
+   private String chartGroup = "default";
+
+   /**
+    * Y axis legend.
+    */
+   private String chartYAxis = "Value";
+
+   /**
+    * X axis legend.
+    */
+   private String chartXAxis = "Time";
+
+   /**
+    * The type of the X axis. It can display the overall progress of the test in Percents, Time, or Iteration numbers.
+    */
+   private PeriodType chartXAxisType = TIME;
+
+   /**
+    * Height of the resulting chart in pixels.
+    */
+   private int chartHeight = 400;
+
+   /**
+    * The chart can be either of line or bar type. Line is the default.
+    */
+   private ChartDestination.ChartType chartType = LINE;
+
+
    @Override
    public void open() {
-      resultSetKey = perfTestName;
+      System.out.println("PerfTestName: " + title);
+      if(title == null) {
+         resultSetKey = "mock";
+         title = resultSetKey;
+      }
+      else {
+         resultSetKey = title;
+      }
       sharedResultsMap.putIfAbsent(resultSetKey, new ArrayList<>());
       instances.putIfAbsent(resultSetKey, this);
       readWriteLock.writeLock().lock();
@@ -142,17 +214,46 @@ public class CrystalDestination extends AbstractDestination {
       switch (actualReporter){
          case "ResponseTimeHistogramReporter":
          case "ResponseTimeStatsReporter":
-         case "ThroughputStatsReporter":
-         case "IterationsPerSecondReporter":
+         //case "ThroughputStatsReporter":
+         //case "IterationsPerSecondReporter":
             // perform regression analysis
             List<Measurement> dataSet = sharedResultsMap.get(resultSetKey);
-            RegressionAnalysisHeuristics ra = new RegressionAnalysisHeuristics();
-            ra.run(dataSet);
-            String raResult = ra.analyzeResults();
-            // TODO save RA result to the final report
-            System.out.println("For test '" + resultSetKey + "' RA result is '" + raResult + "'.");
-            // save RA results into a shared map
-            regressionAnalysisResults.putIfAbsent(resultSetKey, raResult);
+            ra = new SimpleRegressionAnalysis();
+            ra.setThreshold(threshold.doubleValue());
+            Set<BoundPeriod<Destination>> reportingPeriods = getParentReporter().getReportingPeriods();
+            int numberOfRecordsInWindow = 0;
+            for(BoundPeriod<Destination> bpd: reportingPeriods){
+               if("CrystalDestination".equals(bpd.getBinding().getClass().getSimpleName())){
+                  switch (bpd.getPeriodType()){
+                     case TIME:
+                        numberOfRecordsInWindow = window/(int)bpd.getPeriod();
+                        System.out.println("window: " + window);
+                        System.out.println("period: " + String.valueOf((int)bpd.getPeriod()));
+                        System.out.println("numberOfRecordsInWindow: " + numberOfRecordsInWindow);
+                        break;
+                     default:
+
+                  }
+               }
+            }
+            ra.setWindow(numberOfRecordsInWindow);
+            ra.setDataSet(dataSet);
+            ra.run();
+            System.out.println("For test '" + resultSetKey + "' slope result is '" + ra.getSlope() + "'.");
+            System.out.println("For test '" + resultSetKey + "' R is '" + ra.getR() + "'.");
+            System.out.println("For test '" + resultSetKey + "' R square is '" + ra.getrSquare() + "'.");
+            System.out.println("For test '" + resultSetKey + "' significance is '" + ra.getP() + "'.");
+            System.out.println("For test '" + resultSetKey + "' threshold was '" + String.valueOf(ra.isThresholdExceeded()) + "'.");
+
+            stats = new BasicStatisticsAnalysis();
+            stats.setDataSet(dataSet);
+            stats.setThreshold(threshold.doubleValue());
+            stats.run();
+            System.out.println("For test '" + resultSetKey + "' mean was '" + String.valueOf(stats.getMean()) + "'.");
+            System.out.println("For test '" + resultSetKey + "' stdErr was '" + String.valueOf(stats.getStandardDeviation()) + "'.");
+            System.out.println("For test '" + resultSetKey + "' 95percentile was '" + String.valueOf(stats.getPercentile95()) + "'.");
+            System.out.println("For test '" + resultSetKey + "' 99percentile was '" + String.valueOf(stats.getPercentile99()) + "'.");
+            System.out.println("For test '" + resultSetKey + "' variance was '" + String.valueOf(stats.getVariance()) + "'.");
             break;
          default:
             // nothing to do here
@@ -176,7 +277,6 @@ public class CrystalDestination extends AbstractDestination {
                new ReportingException(e1.getCause());
             }
          }
-         // TODO add ra results
          try {
             helper.close();
             helper.compileResults(false);
@@ -188,6 +288,7 @@ public class CrystalDestination extends AbstractDestination {
 
    @Override
    public void report(final Measurement measurement) throws ReportingException {
+      // TODO do not report first 10 values
       // store measurement into shared map according to the result set key name
       sharedResultsMap.get(resultSetKey).add(measurement);
    }
@@ -206,7 +307,6 @@ public class CrystalDestination extends AbstractDestination {
     *
     * @param path
     *       The path string.
-    *
     * @return Instance of this to support fluent API.
     */
    public CrystalDestination setPath(String path) {
@@ -219,19 +319,19 @@ public class CrystalDestination extends AbstractDestination {
     *
     * @return The name of the chart.
     */
-   public String getPerfTestName() {
-      return perfTestName;
+   public String getTitle() {
+      return title;
    }
 
    /**
     * Sets the name of the chart.
     *
-    * @param name
+    * @param title
     *       The name of the chart.
     * @return Instance of this to support fluent API.
     */
-   public CrystalDestination setPerfTestName(final String name) {
-      this.perfTestName = name;
+   public CrystalDestination setTitle(final String title) {
+      this.title = title;
       return this;
    }
 
@@ -253,6 +353,208 @@ public class CrystalDestination extends AbstractDestination {
     */
    public CrystalDestination setOrder(Integer order) {
       this.order = order;
+      return this;
+   }
+
+   /**
+    * Gets the indicator to perform results analysis.
+    *
+    * @return The boolean value of resultsAnalysis.
+    */
+   public boolean isResultsAnalysis() {
+      return resultsAnalysis;
+   }
+
+   /**
+    * Sets the indicator to perform results analysis.
+    *
+    * @param resultsAnalysis
+    *       The boolean value of resultsAnalysis.
+    */
+   public void setResultsAnalysis(boolean resultsAnalysis) {
+      this.resultsAnalysis = resultsAnalysis;
+   }
+
+   /**
+    * Gets the threshold for the monitored metrics.
+    * @return The threshold value.
+    */
+   public Double getThreshold() {
+      return threshold;
+   }
+
+   /**
+    * Sets the threshold for monitored metrics.
+    * @param threshold
+    *    The threshold value.
+    * @return Instance of this to support fluent API.
+    */
+   public CrystalDestination setThreshold(Double threshold) {
+      this.threshold = threshold;
+      return this;
+   }
+
+   /**
+    *
+    * @return
+    */
+   public int getWindow() {
+      return window;
+   }
+
+   /**
+    *
+    * @param window
+    */
+   public void setWindow(int window) {
+      this.window = window;
+   }
+
+   public SimpleRegressionAnalysis getRa() {
+      return ra;
+   }
+
+   public void setRa(SimpleRegressionAnalysis ra) {
+      this.ra = ra;
+   }
+
+   public BasicStatisticsAnalysis getStats() {
+      return stats;
+   }
+
+   public void setStats(BasicStatisticsAnalysis stats) {
+      this.stats = stats;
+   }
+
+   /**
+    * Gets the attributes that will be written to the chart.
+    *
+    * @return The attributes separated by comma.
+    */
+   public String getChartAttributes() {
+      return StringUtils.join(chartAttributes, ",");
+   }
+
+   /**
+    * Sets the attributes that will be written to the chart.
+    *
+    * @param attributes
+    *       The attributes separated by comma.
+    * @return Instance of this to support fluent API.
+    */
+   public CrystalDestination setChartAttributes(final String attributes) {
+      this.chartAttributes = new ArrayList<>(Arrays.asList(attributes.split("\\s*,\\s*")));
+      return this;
+   }
+
+   /**
+    * Gets the attributes that will be written to the chart as a List.
+    *
+    * @return The attributes list.
+    */
+   public List<String> getChartAttributesAsList() {
+      return chartAttributes;
+   }
+
+   /**
+    *
+    * @return
+    */
+   public String getChartGroup() {
+      return chartGroup;
+   }
+
+   /**
+    *
+    * @param chartGroup
+    */
+   public void setChartGroup(String chartGroup) {
+      this.chartGroup = chartGroup;
+   }
+
+   /**
+    *
+    * @return
+    */
+   public String getChartYAxis() {
+      return chartYAxis;
+   }
+
+   /**
+    *
+    * @param chartYAxis
+    */
+   public void setChartYAxis(String chartYAxis) {
+      this.chartYAxis = chartYAxis;
+   }
+
+   /**
+    *
+    * @return
+    */
+   public String getChartXAxis() {
+      return chartXAxis;
+   }
+
+   /**
+    *
+    * @param chartXAxis
+    */
+   public void setChartXAxis(String chartXAxis) {
+      this.chartXAxis = chartXAxis;
+   }
+
+   /**
+    *
+    * @return
+    */
+   public PeriodType getChartXAxisType() {
+      return chartXAxisType;
+   }
+
+   /**
+    *
+    * @param chartXAxisType
+    */
+   public void setChartXAxisType(PeriodType chartXAxisType) {
+      this.chartXAxisType = chartXAxisType;
+   }
+
+   /**
+    *
+    * @return
+    */
+   public int getChartHeight() {
+      return chartHeight;
+   }
+
+   /**
+    *
+    * @param chartHeight
+    */
+   public void setChartHeight(int chartHeight) {
+      this.chartHeight = chartHeight;
+   }
+
+
+   /**
+    * Gets the chart's graphics type - either line or bar. Line is the default.
+    *
+    * @return The chart's graphics type.
+    */
+   public ChartDestination.ChartType getChartType() {
+      return chartType;
+   }
+
+   /**
+    * Sets the chart's graphics type - either line or bar. Line is the default.
+    *
+    * @param chartType
+    *       The chart's graphics type.
+    * @return Instance of this to support fluent API.
+    */
+   public CrystalDestination setChartType(final ChartDestination.ChartType chartType) {
+      this.chartType = chartType;
       return this;
    }
 }

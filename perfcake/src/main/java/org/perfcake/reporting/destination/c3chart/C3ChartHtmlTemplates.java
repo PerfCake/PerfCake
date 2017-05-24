@@ -19,6 +19,7 @@
  */
 package org.perfcake.reporting.destination.c3chart;
 
+import org.apache.commons.lang3.StringUtils;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.destination.ChartDestination;
 import org.perfcake.util.Utils;
@@ -30,12 +31,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Renders HTML and JavaScript templates to the final chart report.
@@ -141,6 +137,96 @@ public class C3ChartHtmlTemplates {
       props.setProperty("leftEntries", leftEntries.toString());
       props.setProperty("rightEntries", rightEntries.toString());
       return Utils.readTemplateFromResource("/c3chart/toc.html", props);
+   }
+
+   /**
+    * Gets an entry of the results analysis that should be displayed as a <td> element in the table.
+    *
+    * @param label
+    *       Name label.
+    * @return The element of results analysis
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getRaTdEntry(final String label) throws PerfCakeException {
+      final Properties props = new Properties();
+      props.setProperty("label", label);
+      return Utils.readTemplateFromResource("/c3chart/ra-td.html", props);
+   }
+
+   /**
+    * Gets an entry of the results analysis that should be displayed as a <th> element in the table.
+    *
+    * @param label
+    *       Name label.
+    * @return The element of results analysis
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getRaThEntry(final String label) throws PerfCakeException {
+      final Properties props = new Properties();
+      props.setProperty("label", label);
+      return Utils.readTemplateFromResource("/c3chart/ra-th.html", props);
+   }
+
+   /**
+    * Gets a complete results analysis.
+    *
+    * @param labelList
+    *       The list of results analysis labels.
+    * @param valueList
+    *       The list of results analysis values.
+    * @param evaluationList
+    *       The list of results analysis evaluations.
+    * @param statLabelList
+    *       The list of statistics labels.
+    * @param statValueList
+    *       The list of statistics values.
+    * @return The complete results analysis.
+    * @throws PerfCakeException
+    *       When it was not possible to read or parse the template.
+    */
+   private static String getRaDiv(final List<String> labelList, final List<String> valueList, final List<String> evaluationList,
+                                  final List<String> statLabelList, final List<String> statValueList) throws PerfCakeException {
+      final StringBuilder raLabelEntries = new StringBuilder();
+      final StringBuilder raValueEntries = new StringBuilder();
+      final StringBuilder raEvaluationEntries = new StringBuilder();
+      final StringBuilder statParamLabelEntries = new StringBuilder();
+      final StringBuilder statParamValueEntries = new StringBuilder();
+
+      if(labelList != null) {
+         for (String s : labelList) {
+            raLabelEntries.append(getRaTdEntry(s));
+         }
+      }
+      if(valueList != null) {
+         for (String s : valueList) {
+            raValueEntries.append(getRaThEntry(s));
+         }
+      }
+      if(evaluationList != null) {
+         for (String s : evaluationList) {
+            raEvaluationEntries.append(getRaTdEntry(s));
+         }
+      }
+      if(statLabelList != null) {
+         for (String s : statLabelList) {
+            statParamLabelEntries.append(getRaTdEntry(s));
+         }
+      }
+      if(statValueList != null) {
+         for (String s : statValueList) {
+            statParamValueEntries.append(getRaTdEntry(s));
+         }
+      }
+
+      final Properties props = new Properties();
+      props.setProperty("ra-labels", raLabelEntries.toString());
+      props.setProperty("ra-values", raValueEntries.toString());
+      props.setProperty("ra-evaluations", raEvaluationEntries.toString());
+      props.setProperty("stat-params-labels", statParamLabelEntries.toString());
+      props.setProperty("stat-params-values", statParamValueEntries.toString());
+      return Utils.readTemplateFromResource("/c3chart/ra-div.html", props);
    }
 
    /**
@@ -254,6 +340,8 @@ public class C3ChartHtmlTemplates {
                final String label = chart.getName() + " (created: " + getCreatedAsString(chart) + ")";
                sb.append(getHeading(4, chart.getBaseName(), label));
                sb.append(getChartDiv(chart.getBaseName()));
+               sb.append(getRaDiv(chart.getRaLabelList(), chart.getRaValueList(), chart.getRaEvaluationList(),
+                     chart.getStatParamLabelList(), chart.getStatParamValueList()));
                toc.put(chart.getBaseName(), label);
             }
          }
@@ -314,6 +402,7 @@ public class C3ChartHtmlTemplates {
       props.setProperty("chartName", chart.getName());
       props.setProperty("height", String.valueOf(chart.getHeight()));
       props.setProperty("type", chart.getType() == ChartDestination.ChartType.BAR ? "type: 'bar'," : "");
+      props.setProperty("regions", StringUtils.join(chart.getRegions(), ","));
 
       switch (chart.getxAxisType()) {
          case TIME:

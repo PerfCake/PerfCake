@@ -113,6 +113,36 @@ public class C3Chart {
    private ChartDestination.ChartType type = LINE;
 
    /**
+    * Regions for highlighting suspicious results
+    */
+   private List<String> regions;
+
+   /**
+    * Labels that should be shown in the results analysis part.
+    */
+   private List<String> raLabelList;
+
+   /**
+    * Values that should be shown in the results analysis part.
+    */
+   private List<String> raValueList;
+
+   /**
+    * Evaluations that should be shown in the results analysis part.
+    */
+   private List<String> raEvaluationList;
+
+   /**
+    * Labels of statistics that should be shown in the results analysis part.
+    */
+   private List<String> statParamLabelList;
+
+   /**
+    * Values of statistics that should be shown in the results analysis part.
+    */
+   private List<String> statParamValueList;
+
+   /**
     * Gets the base name of the data files of this chart.
     *
     * @return The base name of the data files of this chart.
@@ -327,6 +357,128 @@ public class C3Chart {
       this.type = type;
    }
 
+   /**
+    * Gets the list of regions that will be highlighted in a final report.
+    *
+    * @return The list of regions.
+    */
+   public List<String> getRegions() {
+      return regions;
+   }
+
+   /**
+    * Sets the list of regions containing detected suspicious results.
+    *
+    * @param regions
+    *       The list of regions.
+    */
+   public void setRegions(List<String> regions) {
+      this.regions = regions;
+   }
+
+   /**
+    * Gets the list of labels of performed analysis.
+    *
+    * @return The list of labels.
+    */
+   public List<String> getRaLabelList() {
+      return raLabelList;
+   }
+
+   /**
+    * Sets the list of labels of performed analysis.
+    *
+    * @param raLabelList
+    *       The list of labels.
+    */
+   public void setRaLabelList(List<String> raLabelList) {
+      this.raLabelList = raLabelList;
+   }
+
+   /**
+    * Gets the list of values of performed analysis.
+    *
+    * @return The list of values.
+    */
+   public List<String> getRaValueList() {
+      return raValueList;
+   }
+
+   /**
+    * Sets the list of values of performed analysis.
+    *
+    * @param raValueList
+    *       The list of values.
+    */
+   public void setRaValueList(List<String> raValueList) {
+      this.raValueList = raValueList;
+   }
+
+   /**
+    * Gets the list of evaluations of performed analysis.
+    *
+    * @return The list of evaluations.
+    */
+   public List<String> getRaEvaluationList() {
+      return raEvaluationList;
+   }
+
+   /**
+    * Sets the list of evaluations of performed analysis.
+    *
+    * @param raEvaluationList
+    *       The list of evaluations.
+    */
+   public void setRaEvaluationList(List<String> raEvaluationList) {
+      this.raEvaluationList = raEvaluationList;
+   }
+
+   /**
+    * Gets the list of statistics labels that should be shown in the results analysis part.
+    *
+    * @return The list of labels.
+    */
+   public List<String> getStatParamLabelList() {
+      return statParamLabelList;
+   }
+
+   /**
+    * Sets the list of statistics labels that should be shown in the results analysis part.
+    *
+    * @param statParamLabelList
+    *       The list of labels.
+    */
+   public void setStatParamLabelList(List<String> statParamLabelList) {
+      this.statParamLabelList = statParamLabelList;
+   }
+
+   /**
+    * Gets the list of statistics values that should be shown in the results analysis part.
+    *
+    * @return The list of values.
+    */
+   public List<String> getStatParamValueList() {
+      return statParamValueList;
+   }
+
+   /**
+    * Sets the list of statistics values that should be shown in the results analysis part.
+    *
+    * @param statParamValueList
+    *       The list of values.
+    */
+   public void setStatParamValueList(List<String> statParamValueList) {
+      this.statParamValueList = statParamValueList;
+   }
+
+   public void addResultsAnalysisContent(C3ChartResultsAnalysis rrraaa) {
+      this.raLabelList = rrraaa.getRaLabelList();
+      this.raValueList = rrraaa.getRaValueList();
+      this.raEvaluationList = rrraaa.getRaEvaluationList();
+      this.statParamLabelList = rrraaa.getStatParamLabelList();
+      this.statParamValueList = rrraaa.getStatParamValueList();
+   }
+
    @Override
    public String toString() {
       return "C3Chart{"
@@ -338,6 +490,8 @@ public class C3Chart {
             + ", attributes=" + attributes
             + ", type=" + type
             + ", group='" + group
-            + ", height=" + height + "'}";
+            + ", height=" + height
+            + ", regions=" + regions
+            + "'}";
    }
 }

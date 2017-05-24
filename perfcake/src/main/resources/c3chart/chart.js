@@ -28,6 +28,9 @@ var chart_${baseName} = c3.generate({
          }
       }
    },
+   regions:[
+       ${regions}
+   ],
    grid: {
       x: {
          show: true
