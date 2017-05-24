@@ -17,32 +17,33 @@
  * limitations under the License.
  * -----------------------------------------------------------------------/
  */
-package org.perfcake.reporting.destination.anomalyDetection;
+package org.perfcake.reporting.destination.c3chart;
 
-import org.perfcake.reporting.Measurement;
-import org.perfcake.reporting.destination.Destination;
-import org.perfcake.reporting.reporter.Reporter;
+import org.perfcake.reporting.destination.CrystalDestination;
 
 import java.util.List;
 
 /**
- * An algorithm for detecting suspicious results in the list of measured values from the performance test
- * and identifying a performance issue.
+ * Results analysis table.
  *
  * @author <a href="mailto:kurovamartina@gmail.com">Martina Kůrová</a>
  */
-public interface Heuristics {
+public interface C3ChartResultsAnalysis {
 
-   /**
-    * Performs the heuristics with the given data set.
-    * @param dataSet
-    *       A list of measured results from the performance test.
-    */
-   void run(List<Measurement> dataSet);
+   void addRaValueList(CrystalDestination crystalDestination);
 
-   /**
-    * Analyzes result of the heuristics for the purpose of detecting anomalies.
-    * @return evaluation string (identified performance problem if any)
-    */
-   String analyzeResults();
+   void addRaEvaluationList(CrystalDestination crystalDestination);
+
+   void addStatValueList(CrystalDestination crystalDestination);
+
+   List<String> getRaLabelList();
+
+   List<String> getRaValueList();
+
+   List<String> getRaEvaluationList();
+
+   List<String> getStatParamLabelList();
+
+   List<String> getStatParamValueList();
+
 }

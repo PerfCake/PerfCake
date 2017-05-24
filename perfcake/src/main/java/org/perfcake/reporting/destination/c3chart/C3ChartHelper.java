@@ -21,23 +21,20 @@ package org.perfcake.reporting.destination.c3chart;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.perfcake.PerfCakeConst;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destination.ChartDestination;
 import org.perfcake.reporting.destination.CrystalDestination;
+import org.perfcake.reporting.destination.anomalyDetection.PerformanceIssue;
 
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import static java.lang.Thread.sleep;
-import static org.perfcake.common.PeriodType.TIME;
-import static org.perfcake.reporting.destination.ChartDestination.ChartType.LINE;
 
 /**
  * Helper class for the ChartDestination. Bridges the destination methods to the corresponding actions of other classes in the package.
@@ -126,9 +123,8 @@ public class C3ChartHelper {
     */
    public C3ChartHelper(CrystalDestination crystalDestination) {
       try {
-         final List<String> attributes = new ArrayList<>(Arrays.asList("Average, Maximum, Minimum, RequestSize, ResponseSize, Result, Threads, failures".split("\\s*,\\s*")));
-         // TODO decide according to a reporter
-         switch (TIME) {
+         final List<String> attributes = new ArrayList<>(crystalDestination.getChartAttributesAsList());
+         switch (crystalDestination.getChartXAxisType()) {
             case PERCENTAGE:
                attributes.add(0, COLUMN_PERCENT);
                break;
@@ -140,23 +136,32 @@ public class C3ChartHelper {
                break;
          }
 
+         String actualReporter = crystalDestination.getParentReporter().getClass().getSimpleName();
          final C3Chart chart = new C3Chart();
-         chart.setGroup("default");
+         chart.setGroup(crystalDestination.getChartGroup());
          chart.setAttributes(attributes);
-         chart.setName(crystalDestination.getPerfTestName());
+         chart.setName(crystalDestination.getTitle());
+         switch (actualReporter) {
+            case "ResponseTimeStatsReporter":
+               // add regions - highlighted suspicious intervals
+               chart.setRegions(addRegions(crystalDestination));
+               // add the content of the result analysis section
+               chart.addResultsAnalysisContent(addResultsAnalysisContent(crystalDestination));
+               break;
+            default:
+               // nothing to do here
+         }
 
          // set unique name - js/json/html files overwrite protection
          long timeMillis = System.currentTimeMillis();
          SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
          Date resultDate = new Date(timeMillis);
          chart.setBaseName(chart.getGroup() + sdf.format(resultDate));
-
-         // TODO set according to a reporter
-         chart.setxAxisType(TIME);
-         chart.setxAxis("Time");
-         chart.setyAxis("Value");
-         chart.setHeight(400);
-         chart.setType(LINE);
+         chart.setxAxisType(crystalDestination.getChartXAxisType());
+         chart.setxAxis(crystalDestination.getChartXAxis());
+         chart.setyAxis(crystalDestination.getChartYAxis());
+         chart.setHeight(crystalDestination.getChartHeight());
+         chart.setType(crystalDestination.getChartType());
 
          chartDataFile = new C3ChartDataFile(chart, Paths.get(crystalDestination.getPath()));
          chartDataFile.open();
@@ -165,6 +170,78 @@ public class C3ChartHelper {
       } catch (final PerfCakeException e) {
          log.error(String.format("%s did not get initialized properly:", this.getClass().getName()), e);
          initialized = false;
+      }
+   }
+
+   /**
+    * Add the content of results analysis section.
+    * @param crystalDestination
+    *       The instance carrying results of analyzes.
+    * @return Results analysis content for corresponding reporter.
+    */
+   private C3ChartResultsAnalysis addResultsAnalysisContent(CrystalDestination crystalDestination){
+      // TODO ! C3ChartResponseTimeStatistics only
+      C3ChartResponseTimeStatistics resultsAnalysis = new C3ChartResponseTimeStatistics();
+      resultsAnalysis.addRaValueList(crystalDestination);
+      resultsAnalysis.addRaEvaluationList(crystalDestination);
+      resultsAnalysis.addStatValueList(crystalDestination);
+      return resultsAnalysis;
+   }
+
+   /**
+    * Adds regions - suspicious intervals to highlight.
+    *
+    * @param crystalDestination
+    *       The instance carrying the list of detected issues and other required parameters.
+    * @return The list of regions.
+    */
+   private List<String> addRegions(CrystalDestination crystalDestination){
+      final List<String> regions = new ArrayList<>();
+      List<PerformanceIssue> issues = crystalDestination.getRa().getIssues();
+      if(issues != null) {
+         for (PerformanceIssue pi : issues) {
+            final StringBuilder sb = new StringBuilder();
+            sb.append("{'axis': '" + crystalDestination.getChartXAxis() +
+                  "', 'start': " + String.valueOf((int)pi.getFrom()) +
+                  ", 'end': " + String.valueOf((int)pi.getTo()) +
+                  ", 'class': 'regionRed'}");
+            regions.add(sb.toString());
+         }
+      }
+      return regions;
+   }
+
+   /**
+    * Adds a new evaluation item into the given list.
+    *
+    * @param thresholdExceeded
+    *       The boolean value indicating the exceeded threshold.
+    * @param list
+    *       The list of evaluations.
+    */
+   private void addEvaluation(boolean thresholdExceeded, List<String> list){
+      if(thresholdExceeded){
+         list.add("<span class=\"glyphicon glyphicon-remove\">");
+      }
+      else{
+         list.add("<span class=\"glyphicon glyphicon-ok\">");
+      }
+   }
+
+   /**
+    * Adds a new colored evaluation item into the given list.
+    *
+    * @param thresholdExceeded
+    *       The boolean value indicating the exceeded threshold.
+    * @param list
+    *       The list of evaluations.
+    */
+   private void addColoredEvaluation(boolean thresholdExceeded, List<String> list){
+      if(thresholdExceeded){
+         list.add("<span class=\"glyphicon glyphicon-remove\" style=\"color: rgb(221, 72, 20);\">");
+      }
+      else{
+         list.add("<span class=\"glyphicon glyphicon-ok\" style=\"color: green;\">");
       }
    }
 
