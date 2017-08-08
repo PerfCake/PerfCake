@@ -47,7 +47,7 @@ public class NumericReportingFilter implements ReportingFilter {
    /**
     * Filtering algorithms class to be used.
     */
-   final private Class<FilterAlgorithm> filterAlgorithmClass;
+   final private Class<? extends FilterAlgorithm> filterAlgorithmClass;
 
    /**
     * Algorithms for individual keys in the measurements map.
@@ -60,7 +60,7 @@ public class NumericReportingFilter implements ReportingFilter {
     * @param filterAlgorithmClass
     *       The filtering algorithm class to be used.
     */
-   public NumericReportingFilter(final Class<FilterAlgorithm> filterAlgorithmClass) {
+   public NumericReportingFilter(final Class<? extends FilterAlgorithm> filterAlgorithmClass) {
       this.filterAlgorithmClass = filterAlgorithmClass;
    }
 
