@@ -27,7 +27,6 @@ import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
-import org.perfcake.reporting.destination.Destination;
 import org.perfcake.util.Utils;
 
 import org.apache.logging.log4j.LogManager;
@@ -212,12 +211,14 @@ public class MemoryUsageReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
+   public Measurement computeMeasurement(final PeriodType periodType) throws ReportingException {
       try {
          final Measurement m = newMeasurement();
+
          if (performGcOnMemoryUsage) {
             sendAgentCommand(AgentCommand.GC.name());
          }
+
          final long used = sendAgentCommand(AgentCommand.USED.name());
          m.set("Used", (new Quantity<Number>((double) used / BYTES_IN_MIB, "MiB")));
          m.set("Total", (new Quantity<Number>((double) sendAgentCommand(AgentCommand.TOTAL.name()) / BYTES_IN_MIB, "MiB")));
@@ -231,10 +232,12 @@ public class MemoryUsageReporter extends AbstractReporter {
                m.set("MemoryLeak", null);
             }
          }
-         destination.report(m);
+
          if (log.isDebugEnabled()) {
             log.debug("Reporting: [" + m.toString() + "]");
          }
+
+         return m;
       } catch (final IOException ioe) {
          throw new ReportingException("Could not publish result", ioe);
       }

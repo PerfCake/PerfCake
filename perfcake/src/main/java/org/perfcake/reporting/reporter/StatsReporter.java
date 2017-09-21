@@ -252,7 +252,7 @@ public abstract class StatsReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
+   public Measurement computeMeasurement(final PeriodType periodType) throws ReportingException {
       final Measurement m = newMeasurement();
       publishAccumulatedResult(m);
       final String unit = getResultUnit();
@@ -279,7 +279,7 @@ public abstract class StatsReporter extends AbstractReporter {
          histogramCounter.getHistogramInPercent().forEach((range, value) -> m.set(histogramPrefix + range.toString(), new Quantity<>(value, "%")));
       }
 
-      destination.report(m);
+      return m;
    }
 
    private void wrapResultByScalableQuantity(final Measurement measurement, final String key, final String unit) {

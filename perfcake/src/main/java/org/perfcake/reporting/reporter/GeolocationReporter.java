@@ -24,7 +24,6 @@ import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.MeasurementUnit;
 import org.perfcake.reporting.Quantity;
 import org.perfcake.reporting.ReportingException;
-import org.perfcake.reporting.destination.Destination;
 import org.perfcake.util.Utils;
 
 import io.vertx.core.json.Json;
@@ -87,7 +86,7 @@ public class GeolocationReporter extends AbstractReporter {
    }
 
    @Override
-   public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
+   public Measurement computeMeasurement(final PeriodType periodType) throws ReportingException {
       final Measurement m = newMeasurement();
       m.set(Measurement.DEFAULT_RESULT, new Quantity<>(1000.0 * runInfo.getIteration() / runInfo.getRunTime(), "iterations/s"));
 
@@ -99,7 +98,7 @@ public class GeolocationReporter extends AbstractReporter {
       m.set("lon", geolocation.lon);
       m.set("lat", geolocation.lat);
 
-      destination.report(m);
+      return m;
    }
 
    /**
