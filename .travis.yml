@@ -1,0 +1,20 @@
+language: java
+script: "./travis.sh"
+jdk:
+- oraclejdk8
+deploy:
+  provider: releases
+  api_key:
+    secure: s1qK5zQb7glKJpMJ7BW9oQBSz/YJHaiaPhg/KTMOtXsKKsG3pIfRGYIMriRGvSaFiw7R3anS9l+n9+DLq5Tn1Ko8twgxxJNqHlfo81R9LrYjK9Ynb6iFWlCR0RKyZlJkJ6gQ45rGNT3k1TPJ7RvqNE9Q+JGRoAICXCiOq0W0yUM=
+  file:
+    - perfcake-$TRAVIS_TAG-bin.zip
+    - perfcake-$TRAVIS_TAG-bin.tar.gz
+    - perfcake-$TRAVIS_TAG-bin.tar.bz2
+    - perfcake-agent-$TRAVIS_TAG-bin.zip
+    - perfcake-agent-$TRAVIS_TAG-bin.tar.gz
+    - perfcake-agent-$TRAVIS_TAG-bin.tar.bz2
+  overwrite: true
+  skip_cleanup: true
+  on:
+    repo: PerfCake/PerfCake
+    tags: true
