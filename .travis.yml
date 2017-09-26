@@ -10,9 +10,11 @@ deploy:
     - perfcake-$TRAVIS_TAG-bin.zip
     - perfcake-$TRAVIS_TAG-bin.tar.gz
     - perfcake-$TRAVIS_TAG-bin.tar.bz2
+    - perfcake-$TRAVIS_TAG-javadoc.jar
     - perfcake-agent-$TRAVIS_TAG-bin.zip
     - perfcake-agent-$TRAVIS_TAG-bin.tar.gz
     - perfcake-agent-$TRAVIS_TAG-bin.tar.bz2
+    - perfcake-agent-$TRAVIS_TAG-javadoc.jar
   overwrite: true
   skip_cleanup: true
   on:
