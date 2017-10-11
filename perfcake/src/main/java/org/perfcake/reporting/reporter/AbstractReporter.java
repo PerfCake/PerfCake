@@ -32,8 +32,6 @@ import org.perfcake.reporting.destination.Destination;
 import org.perfcake.reporting.reporter.accumulator.Accumulator;
 import org.perfcake.reporting.reporter.accumulator.LastValueAccumulator;
 import org.perfcake.reporting.reporter.accumulator.SumLongAccumulator;
-import org.perfcake.reporting.reporter.filter.KernelEstimationAlgorithm;
-import org.perfcake.reporting.reporter.filter.NumericReportingFilter;
 import org.perfcake.reporting.reporter.filter.ReportingFilter;
 
 import org.apache.logging.log4j.LogManager;
@@ -91,6 +89,11 @@ public abstract class AbstractReporter implements Reporter {
     * The count of reported iterations.
     */
    private LongAdder iterationCounter = new LongAdder();
+
+   /**
+    * A filter to be used to filter reported results and thus reduce their amount.
+    */
+   private ReportingFilter filter = null;
 
    /**
     * Reports a single {@link org.perfcake.reporting.MeasurementUnit} to this reporter. This calls {@link #doReport(MeasurementUnit)} overridden by a child, accumulates results and reports iteration change and percentage change (if any).
@@ -175,12 +178,17 @@ public abstract class AbstractReporter implements Reporter {
 
    @Override
    final public void publishResult(final PeriodType periodType, final Destination destination) throws ReportingException {
-      Measurement m = computeMeasurement(periodType);
+      final Measurement m = computeMeasurement(periodType);
 
-      ReportingFilter filter = new NumericReportingFilter(KernelEstimationAlgorithm.class);
-      Optional<Measurement> measurement = filter.filter(m);
-      if (measurement.isPresent()) {
-         destination.report(computeMeasurement(periodType));
+      if (m != null) {
+         if (filter != null) {
+            final Optional<Measurement> filteredMeasurement = filter.filter(m);
+            if (filteredMeasurement.isPresent()) {
+               destination.report(filteredMeasurement.get());
+            }
+         } else {
+            destination.report(m);
+         }
       }
    }
 
@@ -369,6 +377,22 @@ public abstract class AbstractReporter implements Reporter {
       }
 
       return true;
+   }
+
+   /**
+    * Gets the filter used to filter reported measurements.
+    * @return The currently used measurement filter.
+    */
+   public ReportingFilter getFilter() {
+      return filter;
+   }
+
+   /**
+    * Sets the filter used to filter reported measurements.
+    * @param filter The filter to be used.
+    */
+   public void setFilter(final ReportingFilter filter) {
+      this.filter = filter;
    }
 
    @Override
