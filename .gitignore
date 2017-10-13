@@ -28,6 +28,7 @@ lib/plugins/*.jar
 *.jar
 *.war
 *.ear
+*.zip
 
 src/main/native/*.so
 
