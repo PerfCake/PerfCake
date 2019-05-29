@@ -113,8 +113,14 @@ public class CustomProfileGenerator extends ConstantSpeedMessageGenerator {
          if (lastThreads != request.getThreads()) {
             lastThreads = request.getThreads();
             setThreads(request.getThreads());
-            executorService.setCorePoolSize(request.getThreads());
-            executorService.setMaximumPoolSize(request.getThreads());
+
+            if(request.getThreads() <= executorService.getMaximumPoolSize()) {
+               executorService.setCorePoolSize(request.getThreads());
+               executorService.setMaximumPoolSize(request.getThreads());
+            } else {
+               executorService.setMaximumPoolSize(request.getThreads());
+               executorService.setCorePoolSize(request.getThreads());
+            }
          }
 
          if (lastSpeed != request.getSpeed()) {
