@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,7 +30,8 @@ public class TestUtil {
     * Creates new instance of {@link Properties} based on the couples of strings passed to the method.
     * In case of odd number of arguments, the last one is ignored.
     *
-    * @param pairs The arguments to create properties like arg0->arg1, arg2->arg3, ...
+    * @param pairs
+    *       The arguments to create properties like arg0->arg1, arg2->arg3, ...
     * @return The properties created according to the arguments.
     */
    public static Properties props(final String... pairs) {

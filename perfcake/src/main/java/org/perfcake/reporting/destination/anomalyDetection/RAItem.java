@@ -1,13 +1,14 @@
 package org.perfcake.reporting.destination.anomalyDetection;
 
+import org.perfcake.reporting.Measurement;
+
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.perfcake.reporting.Measurement;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static jdk.nashorn.internal.objects.NativeMath.sqrt;
+//import static jdk.nashorn.internal.objects.NativeMath.sqrt;
 
 /**
  * Implementation of simple regression analysis for detecting anomalies in data set.
@@ -16,7 +17,6 @@ import static jdk.nashorn.internal.objects.NativeMath.sqrt;
  * @author <a href="mailto:kurovamartina@gmail.com">Martina Kůrová</a>
  */
 public class RAItem {
-
 
    public SimpleRegression getRegression() {
       return regression;
@@ -30,8 +30,6 @@ public class RAItem {
     * The regression analysis.
     */
    private SimpleRegression regression;
-
-
 
    /**
     * The value of the independent variable.
@@ -101,59 +99,63 @@ public class RAItem {
     * and important coefficients observation for anomaly identification.
     *
     * Investigated coefficients: b1 (the slope/regression coefficient),
-    *                            p (the significance level of the slope),
-    *                            RSquare (the determination coefficient).
+    * p (the significance level of the slope),
+    * RSquare (the determination coefficient).
     */
-   private PerformanceIssueType analyzeResults(){
+   private PerformanceIssueType analyzeResults() {
       // Pearson's coefficient
-      double sr = sqrt((1-regression.getRSquare()),((Object)(regression.getN()-2)));
-      double pearson = regression.getR()/sr;
+      //ouble sr = sqrt((1-regression.getRSquare()),((Object)(regression.getN()-2)));
+      double sr = Math.sqrt(regression.getN() - 2);
+      double pearson = regression.getR() / sr;
 
       // investigated coefficients
       slope = regression.getSlope();
       r = regression.getR();
       rSquare = regression.getRSquare();
-      t = regression.getSlope()/regression.getSlopeStdErr();
+      t = regression.getSlope() / regression.getSlopeStdErr();
       //System.out.println("N:" + regression.getN());
       TDistribution tDistribution = new TDistribution(regression.getN());
-      p = 2*(1.0 - tDistribution.cumulativeProbability(Math.abs(t)));
+      p = 2 * (1.0 - tDistribution.cumulativeProbability(Math.abs(t)));
 
       // decision tree
       // significant slope value -> increasing/decreasing trend
-      if(slope > 0.4){
+      if (slope > 0.4) {
          // testing statistical hypotheses - dependence between x and y value
-            if(rSquare > 0.7) {
-               return PerformanceIssueType.DEGRADATION;
-            }
+         if (rSquare > 0.7) {
+            return PerformanceIssueType.DEGRADATION;
+         }
       }
       // slope sufficiently far from zero value -> consistent trend
-      else if (slope < 0.3){
-         if(slope < 0.001) return PerformanceIssueType.OK;
+      else if (slope < 0.3) {
+         if (slope < 0.001) {
+            return PerformanceIssueType.OK;
+         }
          if (rSquare < 0.1) {
             // dependence - relative constant values of y - OK
             if (p > alpha) { // confirmation
                return PerformanceIssueType.REGULAR_SPIKES;
             }
+         } else if (rSquare > 0.7) {
+            return PerformanceIssueType.OK;
          }
-         else if(rSquare > 0.7) return PerformanceIssueType.OK;
-            // no dependence - diverse values -> possible spikes
-         else if(p < alpha) { // confirmation
-               return PerformanceIssueType.OK;
-            }
+         // no dependence - diverse values -> possible spikes
+         else if (p < alpha) { // confirmation
+            return PerformanceIssueType.OK;
          }
-         // testing statistical hypotheses - dependence between x and y value
-//         if(p > alpha){
-//            // no dependence - diverse values -> possible spikes
-//            if(rSquare < 0.50) { // confirmation
-//               return PerformanceIssueType.REGULAR_SPIKES;
-//            }
-//         }
-//         else if(p < alpha){
-//            // dependence - relative constant values of y - OK
-//            if(rSquare > 0.50){ // confirmation
-//               return PerformanceIssueType.OK;
-//            }
-//         }
+      }
+      // testing statistical hypotheses - dependence between x and y value
+      //         if(p > alpha){
+      //            // no dependence - diverse values -> possible spikes
+      //            if(rSquare < 0.50) { // confirmation
+      //               return PerformanceIssueType.REGULAR_SPIKES;
+      //            }
+      //         }
+      //         else if(p < alpha){
+      //            // dependence - relative constant values of y - OK
+      //            if(rSquare > 0.50){ // confirmation
+      //               return PerformanceIssueType.OK;
+      //            }
+      //         }
       // cannot decide
       return PerformanceIssueType.OK;
    }
@@ -161,7 +163,7 @@ public class RAItem {
    /**
     * Computes regression with the given data set values.
     */
-   public void run(){
+   public void run() {
       regression = new SimpleRegression();
       addDataSet();
       slope = regression.getSlope();
@@ -169,10 +171,16 @@ public class RAItem {
       rSquare = regression.getRSquare();
       p = regression.getSignificance();
       issueType = analyzeResults();
-      if(!PerformanceIssueType.OK.equals(issueType)){
-         if(PerformanceIssueType.DEGRADATION.equals(issueType)) degradation = true;
-         if(PerformanceIssueType.REGULAR_SPIKES.equals(issueType)) regularSpikes = true;
-         if(PerformanceIssueType.TRAFIC_SPIKE.equals(issueType)) trafficSpike = true;
+      if (!PerformanceIssueType.OK.equals(issueType)) {
+         if (PerformanceIssueType.DEGRADATION.equals(issueType)) {
+            degradation = true;
+         }
+         if (PerformanceIssueType.REGULAR_SPIKES.equals(issueType)) {
+            regularSpikes = true;
+         }
+         if (PerformanceIssueType.TRAFIC_SPIKE.equals(issueType)) {
+            trafficSpike = true;
+         }
       }
 
       System.out.println(".");
@@ -182,11 +190,13 @@ public class RAItem {
       System.out.println("' significance is '" + p + "'.");
    }
 
-   private void addDataSet(){
-      for(Measurement m: dataSet){
+   private void addDataSet() {
+      for (Measurement m : dataSet) {
          x = m.getTime();
          Object value = m.get("Result");
-         if (value == null) continue;
+         if (value == null) {
+            continue;
+         }
          y = Double.valueOf(value.toString().split(" ")[0]);
          regression.addData(x, y);
       }
@@ -207,7 +217,6 @@ public class RAItem {
    public void setThresholdExceeded(boolean thresholdExceeded) {
       this.thresholdExceeded = thresholdExceeded;
    }
-
 
    public double getSlope() {
       return slope;
@@ -242,14 +251,14 @@ public class RAItem {
    }
 
    public List<Measurement> getDataSet() {
-      if(dataSet == null){
+      if (dataSet == null) {
          dataSet = new ArrayList<>();
       }
       return dataSet;
    }
 
    public void setDataSet(List<Measurement> dataSet) {
-      if(dataSet == null){
+      if (dataSet == null) {
          dataSet = new ArrayList<>();
       }
       this.dataSet = dataSet;

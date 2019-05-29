@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -56,8 +56,7 @@ public class C3ChartResponseTimeStatistics implements C3ChartResultsAnalysis {
     */
    private List<String> statParamValueList;
 
-
-   C3ChartResponseTimeStatistics(){
+   C3ChartResponseTimeStatistics() {
       this.raLabelList = new ArrayList<>();
       this.raLabelList.add("Threshold");
       this.raLabelList.add("Average");
@@ -95,7 +94,8 @@ public class C3ChartResponseTimeStatistics implements C3ChartResultsAnalysis {
    /**
     * Sets the list of labels of performed analysis.
     *
-    * @param raLabelList The list of labels.
+    * @param raLabelList
+    *       The list of labels.
     */
    public void setRaLabelList(List<String> raLabelList) {
       this.raLabelList = raLabelList;
@@ -114,7 +114,8 @@ public class C3ChartResponseTimeStatistics implements C3ChartResultsAnalysis {
    /**
     * Sets the list of values of performed analysis.
     *
-    * @param raValueList The list of values.
+    * @param raValueList
+    *       The list of values.
     */
    public void setRaValueList(List<String> raValueList) {
       this.raValueList = raValueList;
@@ -133,7 +134,8 @@ public class C3ChartResponseTimeStatistics implements C3ChartResultsAnalysis {
    /**
     * Sets the list of evaluations of performed analysis.
     *
-    * @param raEvaluationList The list of evaluations.
+    * @param raEvaluationList
+    *       The list of evaluations.
     */
    public void setRaEvaluationList(List<String> raEvaluationList) {
       this.raEvaluationList = raEvaluationList;
@@ -152,7 +154,8 @@ public class C3ChartResponseTimeStatistics implements C3ChartResultsAnalysis {
    /**
     * Sets the list of statistics labels that should be shown in the results analysis part.
     *
-    * @param statParamLabelList The list of labels.
+    * @param statParamLabelList
+    *       The list of labels.
     */
    public void setStatParamLabelList(List<String> statParamLabelList) {
       this.statParamLabelList = statParamLabelList;
@@ -171,12 +174,12 @@ public class C3ChartResponseTimeStatistics implements C3ChartResultsAnalysis {
    /**
     * Sets the list of statistics values that should be shown in the results analysis part.
     *
-    * @param statParamValueList The list of values.
+    * @param statParamValueList
+    *       The list of values.
     */
    public void setStatParamValueList(List<String> statParamValueList) {
       this.statParamValueList = statParamValueList;
    }
-
 
    @Override
    public void addRaValueList(CrystalDestination crystalDestination) {
@@ -218,11 +221,10 @@ public class C3ChartResponseTimeStatistics implements C3ChartResultsAnalysis {
     * @param list
     *       The list of evaluations.
     */
-   void addEvaluation(boolean thresholdExceeded, List<String> list){
-      if(thresholdExceeded){
+   void addEvaluation(boolean thresholdExceeded, List<String> list) {
+      if (thresholdExceeded) {
          list.add("<span class=\"glyphicon glyphicon-remove\">");
-      }
-      else{
+      } else {
          list.add("<span class=\"glyphicon glyphicon-ok\">");
       }
    }
@@ -235,11 +237,10 @@ public class C3ChartResponseTimeStatistics implements C3ChartResultsAnalysis {
     * @param list
     *       The list of evaluations.
     */
-   private void addColoredEvaluation(boolean thresholdExceeded, List<String> list){
-      if(thresholdExceeded){
+   private void addColoredEvaluation(boolean thresholdExceeded, List<String> list) {
+      if (thresholdExceeded) {
          list.add("<span class=\"glyphicon glyphicon-remove\" style=\"color: rgb(221, 72, 20);\">");
-      }
-      else{
+      } else {
          list.add("<span class=\"glyphicon glyphicon-ok\" style=\"color: green;\">");
       }
    }

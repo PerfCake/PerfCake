@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:8.0">
    <run type="iteration" value="${perfcake.run.duration:1000}"/>
-   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:10}" />
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:10}"/>
    <sequences>
-      <sequence class="PrimitiveNumberSequence" id="id" />
-      <sequence class="ThreadIdSequence" id="threadId" />
+      <sequence class="PrimitiveNumberSequence" id="id"/>
+      <sequence class="ThreadIdSequence" id="threadId"/>
    </sequences>
    <sender class="DummySender">
       <target>dummy</target>
@@ -16,8 +16,8 @@
          </destination>
       </reporter>
       <reporter class="ClassifyingReporter">
-         <property name="attribute" value="threadId" />
-         <property name="prefix" value="thread_" />
+         <property name="attribute" value="threadId"/>
+         <property name="prefix" value="thread_"/>
          <destination class="DummyDestination">
             <period type="iteration" value="100"/>
          </destination>

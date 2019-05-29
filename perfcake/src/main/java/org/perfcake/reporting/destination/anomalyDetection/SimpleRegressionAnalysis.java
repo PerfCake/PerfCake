@@ -1,8 +1,9 @@
 package org.perfcake.reporting.destination.anomalyDetection;
 
+import org.perfcake.reporting.Measurement;
+
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
-import org.perfcake.reporting.Measurement;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +16,6 @@ import java.util.List;
  * @author <a href="mailto:kurovamartina@gmail.com">Martina Kůrová</a>
  */
 public class SimpleRegressionAnalysis {
-
 
    /**
     * The simple regression analysis.
@@ -131,47 +131,45 @@ public class SimpleRegressionAnalysis {
     */
    private int trafSPerc = 0;
 
-
    /**
     * Analyzes results of regression analysis - testing statistical hypotheses
     * and important coefficients observation for anomaly identification.
     *
     * Investigated coefficients: b1 (the slope/regression coefficient),
-    *                            p (the significance level of the slope),
-    *                            RSquare (the determination coefficient).
+    * p (the significance level of the slope),
+    * RSquare (the determination coefficient).
     */
-   private PerformanceIssueType analyzeResults(){
+   private PerformanceIssueType analyzeResults() {
       // investigated coefficients
       slope = regression.getSlope();
       r = regression.getR();
       rSquare = regression.getRSquare();
-      t = regression.getSlope()/regression.getSlopeStdErr();
+      t = regression.getSlope() / regression.getSlopeStdErr();
       p = regression.getSignificance();
 
       // decision tree
       // significant slope value -> increasing/decreasing trend
-      if(slope > 0.02){
+      if (slope > 0.02) {
          // testing statistical hypotheses - dependence between x and y value
-         if(p < alpha){
+         if (p < alpha) {
             // dependence -> possibly degradation
             return PerformanceIssueType.DEGRADATION;
-         }else{
+         } else {
             // no dependence -> possible spikes
             return PerformanceIssueType.TRAFIC_SPIKE;
          }
       }
       // slope sufficiently far from zero value -> consistent trend
-      else{
+      else {
          // testing statistical hypotheses - dependence between x and y value
-         if(p > alpha){
+         if (p > alpha) {
             // no dependence - diverse values -> possible spikes
-            if(rSquare < 0.05) { // confirmation
+            if (rSquare < 0.05) { // confirmation
                return PerformanceIssueType.REGULAR_SPIKES;
             }
-         }
-         else if(p < alpha){
+         } else if (p < alpha) {
             // dependence - relative constant values of y - OK
-            if(rSquare > 0.001){ // confirmation
+            if (rSquare > 0.001) { // confirmation
                return PerformanceIssueType.OK;
             }
          }
@@ -183,13 +181,13 @@ public class SimpleRegressionAnalysis {
    /**
     * Computes regression with the given data set values.
     */
-   public void run(){
+   public void run() {
       // skip first 10 records
       //getOptimizedDataSet();
 
       // no window set or not enough records in it -> RA over an entire dataset
       // TODO test this (the minimum records)
-      if(window != 0 && window > 2){
+      if (window != 0 && window > 2) {
          performRAinSlidingWindows();
       }
 
@@ -207,11 +205,14 @@ public class SimpleRegressionAnalysis {
     * Performs regression analysis for given regions in data set and stores detected performance issues
     * for their later highlighting in a chart.
     */
-   private void performRAinSlidingWindows(){
+   private void performRAinSlidingWindows() {
 
       List<Measurement> dset = new ArrayList<>();
-      if(optimizedDataSet != null) dset = optimizedDataSet;
-      else dset = dataSet;
+      if (optimizedDataSet != null) {
+         dset = optimizedDataSet;
+      } else {
+         dset = dataSet;
+      }
       issues = new ArrayList<>();
       System.out.println("ra: dataset size: " + dset.size());
       System.out.println("ra: window: " + window);
@@ -219,23 +220,23 @@ public class SimpleRegressionAnalysis {
       CircularFifoQueue<Measurement> slidingWindow = new CircularFifoQueue(window);
       // set initial values
       int lastIndex = window;
-      for(int i =0; i<window; i++){
+      for (int i = 0; i < window; i++) {
          slidingWindow.add(dset.get(i));
       }
       // sliding and analyzing
-      for(int i = lastIndex; i< dset.size(); i++){
+      for (int i = lastIndex; i < dset.size(); i++) {
          // create RA item
          RAItem raItem = new RAItem();
          // set regression data set
          Iterator itr = slidingWindow.iterator();
-         while(itr.hasNext()) {
+         while (itr.hasNext()) {
             Measurement m = (Measurement) itr.next();
             raItem.getDataSet().add(m);
          }
          // perform regression analysis
          raItem.run();
          // check threshold
-         if(checkThreshold(raItem.getDataSet(), threshold)) {
+         if (checkThreshold(raItem.getDataSet(), threshold)) {
             PerformanceIssueType piTType = PerformanceIssueType.THRESHOLD_EXCEEDED;
             PerformanceIssue performanceIssue = new PerformanceIssue(piTType);
             long fromTime = slidingWindow.get(0).getTime();
@@ -248,11 +249,11 @@ public class SimpleRegressionAnalysis {
          }
          // get detected PI
          PerformanceIssueType piType = raItem.getIssueType();
-         if(!PerformanceIssueType.OK.equals(piType)){
+         if (!PerformanceIssueType.OK.equals(piType)) {
             PerformanceIssue performanceIssue = new PerformanceIssue(piType);
             long fromTime = slidingWindow.get(0).getTime();
             performanceIssue.setFrom(fromTime);
-            long toTime = slidingWindow.get(window-1).getTime();
+            long toTime = slidingWindow.get(window - 1).getTime();
             performanceIssue.setTo(toTime);
             // store PI for later reporting
             issues.add(performanceIssue);
@@ -269,10 +270,10 @@ public class SimpleRegressionAnalysis {
     * Computes regression analysis for all data set at once (all measured values).
     */
    //regression analysis over the entire dataset.
-   private void performRAOverEntireDataset(){
+   private void performRAOverEntireDataset() {
       // cely vzorek
       regression = new SimpleRegression();
-      addDataSet(10,dataSet.size());
+      addDataSet(10, dataSet.size());
       intercept = regression.getIntercept();
       slope = regression.getSlope();
       r = regression.getR();
@@ -283,7 +284,7 @@ public class SimpleRegressionAnalysis {
    /**
     * Set flags of the detected performance issues for the final report.
     */
-   private void setDetectedPerfIssues(){
+   private void setDetectedPerfIssues() {
       // set occurred PI for the whole set
       System.out.println("issues len: " + issues.size());
       degradation = issues.stream().anyMatch(it -> PerformanceIssueType.DEGRADATION.equals(it.getType()));
@@ -297,26 +298,29 @@ public class SimpleRegressionAnalysis {
    /**
     * Compute probabilities of the detected performance issues for a final report.
     */
-   private void setPerfIssuesProbabilities(){
+   private void setPerfIssuesProbabilities() {
       int numberOfPossibilities;
-      if(optimizedDataSet != null) numberOfPossibilities= optimizedDataSet.size();
-      else numberOfPossibilities = dataSet.size();
+      if (optimizedDataSet != null) {
+         numberOfPossibilities = optimizedDataSet.size();
+      } else {
+         numberOfPossibilities = dataSet.size();
+      }
       System.out.println("NoOfPossibilities: " + numberOfPossibilities);
-      if(degradation){
+      if (degradation) {
          int occurrence = (int) issues.stream().filter(PerformanceIssue::isDegradation).count();
-         degPerc = (occurrence*100)/numberOfPossibilities;
+         degPerc = (occurrence * 100) / numberOfPossibilities;
          System.out.println("DEG occurance: " + occurrence + " prob: " + degPerc + "%");
 
       }
-      if(regularSpikes){
-         int regOccurrence = (int)issues.stream().filter(PerformanceIssue::isRegularSpike).count();
-         regsPerc = (100*regOccurrence)/numberOfPossibilities;
+      if (regularSpikes) {
+         int regOccurrence = (int) issues.stream().filter(PerformanceIssue::isRegularSpike).count();
+         regsPerc = (100 * regOccurrence) / numberOfPossibilities;
          System.out.println("REG occurance: " + regOccurrence + " prob: " + regsPerc + "%");
 
       }
-      if(trafficSpike){
+      if (trafficSpike) {
          int trafOccurrence = (int) issues.stream().filter(PerformanceIssue::isTrafficSpike).count();
-         trafSPerc = (100*trafOccurrence)/numberOfPossibilities;
+         trafSPerc = (100 * trafOccurrence) / numberOfPossibilities;
          System.out.println("TRAF occurance: " + trafOccurrence + " prob: " + trafSPerc + "%");
 
       }
@@ -326,44 +330,48 @@ public class SimpleRegressionAnalysis {
    }
 
    /**
-    *
-    *
     * @param from
     * @param to
     */
-   private void addDataSet(int from, int to){
-      for(int i=from; i<to; i++){
+   private void addDataSet(int from, int to) {
+      for (int i = from; i < to; i++) {
          Measurement m = dataSet.get(i);
          x = m.getTime();
          Object value = m.get("Result");
-         if (value == null) continue;
+         if (value == null) {
+            continue;
+         }
          y = Double.valueOf(value.toString().split(" ")[0]).doubleValue();
          // compare y with some THRESHOLD value
-         if(y > threshold) {
+         if (y > threshold) {
             thresholdExceeded = true;
          }
          regression.addData(x, y);
       }
    }
 
-   private void getOptimizedDataSet(){
+   private void getOptimizedDataSet() {
       optimizedDataSet = new ArrayList<>();
-      for(int i=10; i<dataSet.size(); i++){
+      for (int i = 10; i < dataSet.size(); i++) {
          Measurement m = dataSet.get(i);
          x = m.getTime();
          Object value = m.get("Result");
-         if (value == null) continue;
+         if (value == null) {
+            continue;
+         }
          optimizedDataSet.add(m);
       }
    }
 
-   private boolean checkThreshold(List<Measurement> dataSet, double threshold){
-      if(dataSet != null) {
+   private boolean checkThreshold(List<Measurement> dataSet, double threshold) {
+      if (dataSet != null) {
          int size = dataSet.size();
-         for(int i=0; i<size; i++) {
+         for (int i = 0; i < size; i++) {
             Measurement m = dataSet.get(i);
             Object value = m.get("Result");
-            if (value == null) continue;
+            if (value == null) {
+               continue;
+            }
             double y = Double.valueOf(value.toString().split(" ")[0]).doubleValue();
             if (y > threshold) {
                return true;
@@ -434,7 +442,7 @@ public class SimpleRegressionAnalysis {
    }
 
    public void setDataSet(List<Measurement> dataSet) {
-      if(dataSet == null){
+      if (dataSet == null) {
          dataSet = new ArrayList<>();
       }
       this.dataSet = dataSet;

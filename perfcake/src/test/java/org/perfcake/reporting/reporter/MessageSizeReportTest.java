@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,11 +57,9 @@ public class MessageSizeReportTest extends TestSetup {
 
       Assert.assertNotNull(dd[0]);
 
-      @SuppressWarnings("unchecked")
-      final Quantity<Long> responseSize = (Quantity<Long>) dd[0].getLastMeasurement().get(PerfCakeConst.RESPONSE_SIZE_TAG);
+      @SuppressWarnings("unchecked") final Quantity<Long> responseSize = (Quantity<Long>) dd[0].getLastMeasurement().get(PerfCakeConst.RESPONSE_SIZE_TAG);
 
-      @SuppressWarnings("unchecked")
-      final Quantity<Long> requestSize = (Quantity<Long>) dd[0].getLastMeasurement().get(PerfCakeConst.REQUEST_SIZE_TAG);
+      @SuppressWarnings("unchecked") final Quantity<Long> requestSize = (Quantity<Long>) dd[0].getLastMeasurement().get(PerfCakeConst.REQUEST_SIZE_TAG);
 
       Assert.assertEquals((long) responseSize.getNumber(), 256000L);
       Assert.assertEquals((long) requestSize.getNumber(), 256000L);

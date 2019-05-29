@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,17 +30,21 @@ import org.perfcake.util.StringUtil;
 import org.perfcake.util.properties.MandatoryProperty;
 
 import com.google.gson.JsonArray;
-import com.squareup.okhttp.OkHttpClient;
+import com.google.gson.JsonParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.influxdb.InfluxDB;
 import org.influxdb.InfluxDBFactory;
 import org.influxdb.dto.Point;
-import retrofit.client.OkClient;
+import org.influxdb.dto.Query;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
 
 /**
  * Writes the resulting data to InfluxDb using a simple HTTP REST client.
@@ -118,6 +122,11 @@ public class InfluxDbDestination extends AbstractDestination {
    private SSLSocketFactory sslFactory = null;
 
    /**
+    * Initialized SSL Trust Manager factory.
+    */
+   private TrustManagerFactory trustManager = null;
+
+   /**
     * Cached array with tags.
     */
    private JsonArray tagsArray = new JsonArray();
@@ -129,11 +138,15 @@ public class InfluxDbDestination extends AbstractDestination {
 
    @Override
    public void open() {
-      Arrays.stream(tags.split(",")).map(StringUtil::trim).forEach(tagsArray::add);
+      final JsonParser parser = new JsonParser();
+      Arrays.stream(tags.split(",")).map(StringUtil::trim).forEach(tag -> {
+         tagsArray.add(parser.parse(tag));
+      });
 
       try {
          if ((keyStore != null && !"".equals(keyStore)) || (trustStore != null && !"".equals(trustStore))) {
-            sslFactory = SslSocketFactoryFactory.newSslSocketFactory(keyStore, keyStorePassword, trustStore, trustStorePassword);
+            trustManager = SslSocketFactoryFactory.newTrustManagerFactory(trustStore, trustStorePassword);
+            sslFactory = SslSocketFactoryFactory.newSslContext(keyStore, keyStorePassword, trustManager).getSocketFactory();
          }
       } catch (PerfCakeException e) {
          log.warn("Unable to initialize SSL socket factory: ", e);
@@ -141,15 +154,17 @@ public class InfluxDbDestination extends AbstractDestination {
 
       try {
          if (sslFactory != null) {
+            final OkHttpClient.Builder builder = new OkHttpClient.Builder();
+
+            builder.sslSocketFactory(sslFactory, (X509TrustManager) trustManager);
+            builder.hostnameVerifier((hostname, session) -> true);
             final OkHttpClient client = new OkHttpClient();
-            client.setSslSocketFactory(sslFactory);
-            client.setHostnameVerifier((hostname, session) -> true);
-            influxDb = InfluxDBFactory.connect(serverUrl, userName, password, new OkClient(client));
+            influxDb = InfluxDBFactory.connect(serverUrl, userName, password, client.newBuilder());
          } else {
             influxDb = InfluxDBFactory.connect(serverUrl, userName, password);
          }
          if (createDatabase) {
-            influxDb.createDatabase(database);
+            influxDb.query(new Query("CREATE DATABASE IF NOT EXISTS " + database));
          }
          influxDb.enableBatch(100, 500, TimeUnit.MILLISECONDS);
       } catch (RuntimeException rte) {

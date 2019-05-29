@@ -14,12 +14,12 @@
          </destination>
          <destination class="CrystalDestination">
             <period type="time" value="600"/>
-            <property name="path" value="./Testing1/" />
-            <property name="title" value="Response time" />
-            <property name="order" value="1" />
-            <property name="threshold" value="1000" />
-            <property name="resultsAnalysis" value="true" />
-            <property name="window" value="3000" />
+            <property name="path" value="./Testing1/"/>
+            <property name="title" value="Response time"/>
+            <property name="order" value="1"/>
+            <property name="threshold" value="1000"/>
+            <property name="resultsAnalysis" value="true"/>
+            <property name="window" value="3000"/>
             <property name="chartYAxis" value="Response Time [ms]"/>
             <property name="chartGroup" value="response"/>
             <property name="chartAttributes" value="Result,Average"/>

@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,6 +40,7 @@ import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.avaje.agentloader.AgentLoader;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -154,13 +155,18 @@ public class PerfCakeDebug {
     */
    private PerfCakeDebug() { // we do not want external creation
       INSTANCE = this;
+      log.debug("Creating PerfCakeDebug instance.");
 
-      final String pid = getPid();
       try {
-         final Class clazz = Class.forName("org.jboss.byteman.agent.Main");
-         final VirtualMachine vm = VirtualMachine.attach(pid);
-
-         vm.loadAgent(Paths.get(clazz.getProtectionDomain().getCodeSource().getLocation().toURI()).toString(), "listener:false,script:" + saveTmpBytemanRules());
+         final String clazzName = "org.jboss.byteman.agent.Main";
+         log.debug(String.format("Looking for class %s", clazzName));
+         final Class clazz = Class.forName(clazzName);
+         log.debug(String.format("Class found: %s", clazz.toString()));
+         final String params = String.format("listener:false,script:%s", saveTmpBytemanRules());
+         log.debug(String.format("Loading agent by class name %s with parameters: %s", clazz.getName(), params));
+         //final boolean agentLoaded = AgentLoader.loadAgentByMainClass(clazz.getName(), params);
+         final boolean agentLoaded = AgentLoader.loadAgent("/home/pmacik/work/PerfCake/PerfCake.git/perfcake/target/agents/byteman-agent.jar", params);
+         log.debug(String.format("Agent loaded: %s", agentLoaded));
       } catch (Exception e) {
          log.error("Unable to install debug agent, debugging information will not be available: ", e);
       } catch (NoClassDefFoundError ncdfe) {

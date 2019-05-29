@@ -3,16 +3,16 @@
    <run type="iteration" value="10000"/>
    <generator class="DefaultMessageGenerator" threads="1"/>
    <sender class="TestSender">
-   	  <property name="delay" value="1" />
+      <property name="delay" value="1"/>
    </sender>
    <reporting>
       <reporter class="ResponseTimeStatsReporter">
-      	<destination class="ConsoleDestination">
+         <destination class="ConsoleDestination">
             <period type="iteration" value="1000"/>
          </destination>
          <destination class="CsvDestination">
             <period type="iteration" value="1000"/>
-            <property name="path" value="${output.file}-replay.csv" />
+            <property name="path" value="${output.file}-replay.csv"/>
          </destination>
       </reporter>
    </reporting>

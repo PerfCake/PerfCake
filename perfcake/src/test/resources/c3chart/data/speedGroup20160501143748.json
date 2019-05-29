@@ -1,1 +1,17 @@
-{"baseName":"speedGroup20160501143748","name":"My throughput","xAxis":"Time","yAxis":"Throughput msgs/sec","xAxisType":"TIME","attributes":["Time","Result","Average","Result-warmUp","Average-warmUp"],"group":"speedGroup","combined":false,"created":1462106268620}
+{
+  "baseName": "speedGroup20160501143748",
+  "name": "My throughput",
+  "xAxis": "Time",
+  "yAxis": "Throughput msgs/sec",
+  "xAxisType": "TIME",
+  "attributes": [
+    "Time",
+    "Result",
+    "Average",
+    "Result-warmUp",
+    "Average-warmUp"
+  ],
+  "group": "speedGroup",
+  "combined": false,
+  "created": 1462106268620
+}

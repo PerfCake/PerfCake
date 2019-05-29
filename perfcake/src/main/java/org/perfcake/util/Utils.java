@@ -1,15 +1,15 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -66,6 +66,11 @@ import java.util.stream.Collectors;
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
  */
 public class Utils {
+
+   /**
+    * Logger
+    */
+   private static final Logger log = LogManager.getLogger(Utils.class);
 
    /**
     * Default name of resource directory.
@@ -615,7 +620,6 @@ public class Utils {
     *       The desired level.
     */
    public static void setLoggingLevel(final Level level) {
-      final Logger log = LogManager.getLogger(Utils.class);
       final org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) log;
       final LoggerContext context = coreLogger.getContext();
 
@@ -640,7 +644,9 @@ public class Utils {
     * Initializes the debug agent when configured.
     */
    public static void initDebugAgent() {
-      if (Boolean.parseBoolean(System.getProperty(PerfCakeConst.DEBUG_PROPERTY))) {
+      final boolean debug = Boolean.parseBoolean(System.getProperty(PerfCakeConst.DEBUG_PROPERTY));
+      log.debug(String.format("Checking property: %s=%s", PerfCakeConst.DEBUG_PROPERTY, debug));
+      if (debug) {
          PerfCakeDebug.initialize();
       }
    }

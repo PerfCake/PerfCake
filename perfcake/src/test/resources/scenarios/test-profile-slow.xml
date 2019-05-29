@@ -2,9 +2,9 @@
 <scenario xmlns="urn:perfcake:scenario:8.0">
    <run type="time" value="4000"/>
    <generator class="CustomProfileGenerator" threads="30">
-      <property name="profileClass" value="CsvProfile" />
-      <property name="profileSource" value="${perfcake.scenarios.dir}/test-profile-${test.name}.csv" />
-      <property name="senderTaskQueueSize" value="100" />
+      <property name="profileClass" value="CsvProfile"/>
+      <property name="profileSource" value="${perfcake.scenarios.dir}/test-profile-${test.name}.csv"/>
+      <property name="senderTaskQueueSize" value="100"/>
    </generator>
    <sender class="TestSender">
    </sender>

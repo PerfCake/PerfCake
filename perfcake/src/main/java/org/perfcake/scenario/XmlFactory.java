@@ -1,15 +1,15 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -205,7 +205,7 @@ public class XmlFactory implements ScenarioFactory {
             }
 
             return receiver;
-         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
             throw new PerfCakeException("Cannot parse message generator configuration: ", e);
          }
       } else {
@@ -230,7 +230,7 @@ public class XmlFactory implements ScenarioFactory {
             Utils.logProperties(log, Level.DEBUG, correlatorProperties, "   '- ");
 
             return (Correlator) ObjectFactory.summonInstance(correlatorClass, correlatorProperties);
-         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
             throw new PerfCakeException("Cannot parse message generator configuration: ", e);
          }
       } else {
@@ -353,7 +353,7 @@ public class XmlFactory implements ScenarioFactory {
 
          generator = (MessageGenerator) ObjectFactory.summonInstance(generatorClass, generatorProperties);
          generator.setThreads(threads);
-      } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException e) {
+      } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException e) {
          throw new PerfCakeException("Cannot parse message generator configuration: ", e);
       }
 
@@ -580,7 +580,7 @@ public class XmlFactory implements ScenarioFactory {
                }
             }
          }
-      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException | NoSuchMethodException e) {
          throw new PerfCakeException("Cannot parse reporting configuration: ", e);
       }
 
@@ -626,7 +626,7 @@ public class XmlFactory implements ScenarioFactory {
             validationManager.setEnabled(validation.isEnabled());
             validationManager.setFastForward(validation.isFastForward());
          }
-      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
+      } catch (InstantiationException | IllegalAccessException | InvocationTargetException | ClassNotFoundException | NoSuchMethodException e) {
          throw new PerfCakeException("Cannot parse validation configuration: ", e);
       }
 

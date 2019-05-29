@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,8 +19,6 @@
  */
 package org.perfcake.reporting.destination.c3chart;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.Measurement;
 import org.perfcake.reporting.ReportingException;
@@ -28,13 +26,14 @@ import org.perfcake.reporting.destination.ChartDestination;
 import org.perfcake.reporting.destination.CrystalDestination;
 import org.perfcake.reporting.destination.anomalyDetection.PerformanceIssue;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static java.lang.Thread.sleep;
 
 /**
  * Helper class for the ChartDestination. Bridges the destination methods to the corresponding actions of other classes in the package.
@@ -175,11 +174,12 @@ public class C3ChartHelper {
 
    /**
     * Add the content of results analysis section.
+    *
     * @param crystalDestination
     *       The instance carrying results of analyzes.
     * @return Results analysis content for corresponding reporter.
     */
-   private C3ChartResultsAnalysis addResultsAnalysisContent(CrystalDestination crystalDestination){
+   private C3ChartResultsAnalysis addResultsAnalysisContent(CrystalDestination crystalDestination) {
       // TODO ! C3ChartResponseTimeStatistics only
       C3ChartResponseTimeStatistics resultsAnalysis = new C3ChartResponseTimeStatistics();
       resultsAnalysis.addRaValueList(crystalDestination);
@@ -195,15 +195,15 @@ public class C3ChartHelper {
     *       The instance carrying the list of detected issues and other required parameters.
     * @return The list of regions.
     */
-   private List<String> addRegions(CrystalDestination crystalDestination){
+   private List<String> addRegions(CrystalDestination crystalDestination) {
       final List<String> regions = new ArrayList<>();
       List<PerformanceIssue> issues = crystalDestination.getRa().getIssues();
-      if(issues != null) {
+      if (issues != null) {
          for (PerformanceIssue pi : issues) {
             final StringBuilder sb = new StringBuilder();
             sb.append("{'axis': '" + crystalDestination.getChartXAxis() +
-                  "', 'start': " + String.valueOf((int)pi.getFrom()) +
-                  ", 'end': " + String.valueOf((int)pi.getTo()) +
+                  "', 'start': " + String.valueOf((int) pi.getFrom()) +
+                  ", 'end': " + String.valueOf((int) pi.getTo()) +
                   ", 'class': 'regionRed'}");
             regions.add(sb.toString());
          }
@@ -219,11 +219,10 @@ public class C3ChartHelper {
     * @param list
     *       The list of evaluations.
     */
-   private void addEvaluation(boolean thresholdExceeded, List<String> list){
-      if(thresholdExceeded){
+   private void addEvaluation(boolean thresholdExceeded, List<String> list) {
+      if (thresholdExceeded) {
          list.add("<span class=\"glyphicon glyphicon-remove\">");
-      }
-      else{
+      } else {
          list.add("<span class=\"glyphicon glyphicon-ok\">");
       }
    }
@@ -236,11 +235,10 @@ public class C3ChartHelper {
     * @param list
     *       The list of evaluations.
     */
-   private void addColoredEvaluation(boolean thresholdExceeded, List<String> list){
-      if(thresholdExceeded){
+   private void addColoredEvaluation(boolean thresholdExceeded, List<String> list) {
+      if (thresholdExceeded) {
          list.add("<span class=\"glyphicon glyphicon-remove\" style=\"color: rgb(221, 72, 20);\">");
-      }
-      else{
+      } else {
          list.add("<span class=\"glyphicon glyphicon-ok\" style=\"color: green;\">");
       }
    }

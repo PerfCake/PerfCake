@@ -1,7 +1,8 @@
 package org.perfcake.reporting.destination.anomalyDetection;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.perfcake.reporting.Measurement;
+
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,17 +77,19 @@ public class BasicStatisticsAnalysis {
    /**
     * Sets values to analyze.
     */
-   private void setDataSet(){
-      if(dataSet != null) {
+   private void setDataSet() {
+      if (dataSet != null) {
          int size = dataSet.size();
-         for(int i=0; i<size; i++){
+         for (int i = 0; i < size; i++) {
             // skip first 10 values
-            if(i > 10){
+            if (i > 10) {
                Measurement m = dataSet.get(i);
                Object value = m.get("Result");
-               if (value == null) continue;
+               if (value == null) {
+                  continue;
+               }
                double y = Double.valueOf(value.toString().split(" ")[0]).doubleValue();
-               if(y > threshold) {
+               if (y > threshold) {
                   thresholdResultExceeded = true;
                }
                stats.addValue(y);
@@ -98,7 +101,7 @@ public class BasicStatisticsAnalysis {
    /**
     * Sets statistics results.
     */
-   private void setStatisticsResults(){
+   private void setStatisticsResults() {
       mean = stats.getMean();
       standardDeviation = stats.getStandardDeviation();
       percentile95 = stats.getPercentile(95);
@@ -112,7 +115,7 @@ public class BasicStatisticsAnalysis {
    /**
     * Runs the basic statistical analysis.
     */
-   public void run(){
+   public void run() {
       stats = new DescriptiveStatistics();
       setDataSet();
       setStatisticsResults();
@@ -175,7 +178,7 @@ public class BasicStatisticsAnalysis {
    }
 
    public void setDataSet(List<Measurement> dataSet) {
-      if(dataSet == null){
+      if (dataSet == null) {
          dataSet = new ArrayList<>();
       }
       this.dataSet = dataSet;

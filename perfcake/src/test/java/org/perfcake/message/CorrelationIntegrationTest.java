@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,8 +22,11 @@ package org.perfcake.message;
 import org.perfcake.PerfCakeException;
 import org.perfcake.TestSetup;
 import org.perfcake.message.correlator.GenerateHeaderCorrelator;
-import org.perfcake.scenario.Scenario;
-import org.perfcake.scenario.ScenarioLoader;
+
+import org.testng.Assert;
+import org.testng.annotations.Test;
+
+import java.util.Set;
 
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpClient;
@@ -31,10 +34,6 @@ import io.vertx.core.http.HttpServer;
 import io.vertx.core.impl.ConcurrentHashSet;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
-import org.testng.Assert;
-import org.testng.annotations.Test;
-
-import java.util.Set;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>

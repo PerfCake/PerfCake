@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:8.0">
    <run type="iteration" value="1000"/>
-   <generator class="DefaultMessageGenerator" threads="10" />
+   <generator class="DefaultMessageGenerator" threads="10"/>
    <sender class="HttpSender">
       <target>http://127.0.0.1:8091/</target>
-      <property name="storeCookies" value="true" />
+      <property name="storeCookies" value="true"/>
    </sender>
    <messages>
       <message content="Hello Cookie!">

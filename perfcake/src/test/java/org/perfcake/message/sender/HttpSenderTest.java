@@ -1,15 +1,15 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,26 +22,22 @@ package org.perfcake.message.sender;
 import org.perfcake.PerfCakeException;
 import org.perfcake.TestSetup;
 import org.perfcake.message.Message;
-import org.perfcake.message.correlator.GenerateHeaderCorrelator;
 import org.perfcake.message.sender.HttpSender.Method;
 import org.perfcake.util.ObjectFactory;
-
-import io.vertx.core.Vertx;
-import io.vertx.core.http.HttpClient;
-import io.vertx.core.http.HttpServer;
-import io.vertx.core.impl.ConcurrentHashSet;
-import io.vertx.ext.web.Cookie;
-import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.BodyHandler;
-import io.vertx.ext.web.handler.CookieHandler;
 
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpServer;
+import io.vertx.ext.web.Cookie;
+import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
+import io.vertx.ext.web.handler.CookieHandler;
 
 /**
  * Tests {@link org.perfcake.message.sender.HttpSender}.
@@ -52,7 +48,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class HttpSenderTest extends TestSetup {
 
    private static final String URL_GET = "http://httpbin.org/get";
+   private static final String URL_GET_RESPONSE_URL = "https://httpbin.org/get";
    private static final String URL_POST = "http://httpbin.org/post";
+   private static final String URL_POST_RESPONSE_URL = "https://httpbin.org/post";
+
    private static final int RESPONSE_500_SIZE = 10;
    private static final String URL_STATUS_500 = "http://httpbin.org/drip?numbytes=" + RESPONSE_500_SIZE + "&duration=0&delay=0&code=500";
 
@@ -93,7 +92,7 @@ public class HttpSenderTest extends TestSetup {
       }
 
       Assert.assertNotNull(response);
-      Assert.assertTrue(response.contains("\"url\": \"" + URL_GET + "\""));
+      Assert.assertTrue(response.contains("\"url\": \"" + URL_GET_RESPONSE_URL + "\""));
       Assert.assertTrue(response.contains("\"" + TEST_HEADER_NAME + "\": \"" + TEST_HEADER_VALUE + "\""));
       Assert.assertTrue(response.contains("\"" + TEST_PROPERTY_NAME + "\": \"" + TEST_PROPERTY_VALUE + "\""));
    }
@@ -122,7 +121,7 @@ public class HttpSenderTest extends TestSetup {
       }
 
       Assert.assertNotNull(response);
-      Assert.assertTrue(response.contains("\"url\": \"" + URL_GET + "\""));
+      Assert.assertTrue(response.contains("\"url\": \"" + URL_GET_RESPONSE_URL + "\""));
    }
 
    @Test
@@ -139,7 +138,7 @@ public class HttpSenderTest extends TestSetup {
       }
 
       Assert.assertNotNull(response);
-      Assert.assertTrue(response.contains("\"url\": \"" + URL_GET + "\""));
+      Assert.assertTrue(response.contains("\"url\": \"" + URL_GET_RESPONSE_URL + "\""));
    }
 
    @Test
@@ -159,7 +158,7 @@ public class HttpSenderTest extends TestSetup {
          Assert.fail(e.getMessage());
       }
       Assert.assertNotNull(response);
-      Assert.assertTrue(response.contains("\"url\": \"" + URL_POST + "\""));
+      Assert.assertTrue(response.contains("\"url\": \"" + URL_POST_RESPONSE_URL + "\""));
       Assert.assertTrue(response.contains("\"" + TEST_HEADER_NAME + "\": \"" + TEST_HEADER_VALUE + "\""));
    }
 

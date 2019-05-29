@@ -1,15 +1,15 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -212,6 +212,7 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Gets the required response quality of service.
+    *
     * @return The required response quality of service.
     */
    public String getResponseQos() {
@@ -220,7 +221,9 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Sets the required response quality of service.
-    * @param responseQos The required response quality of service.
+    *
+    * @param responseQos
+    *       The required response quality of service.
     * @return Instance of this to support fluent API.
     */
    public MqttSender setResponseQos(final String responseQos) {
@@ -230,6 +233,7 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Gets where to read the response from.
+    *
     * @return Where to read the response from.
     */
    public String getResponseTarget() {
@@ -238,7 +242,9 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Sets where to read the response from.
-    * @param responseTarget Where to read the response from.
+    *
+    * @param responseTarget
+    *       Where to read the response from.
     * @return Instance of this to support fluent API.
     */
    public MqttSender setResponseTarget(final String responseTarget) {
@@ -248,6 +254,7 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Gets the required quality of service.
+    *
     * @return The required quality of service.
     */
    public String getQos() {
@@ -256,7 +263,9 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Sets the required quality of service.
-    * @param qos The required quality of service.
+    *
+    * @param qos
+    *       The required quality of service.
     * @return Instance of this to support fluent API.
     */
    public MqttSender setQos(final String qos) {
@@ -266,6 +275,7 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Gets the MQTT server user name.
+    *
     * @return the MQTT server user name.
     */
    public String getUserName() {
@@ -274,7 +284,9 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Sets the MQTT server user name.
-    * @param userName The MQTT server user name.
+    *
+    * @param userName
+    *       The MQTT server user name.
     * @return Instance of this to support fluent API.
     */
    public MqttSender setUserName(final String userName) {
@@ -284,6 +296,7 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Gets the MQTT server password.
+    *
     * @return The MQTT server password.
     */
    public String getPassword() {
@@ -292,7 +305,9 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Sets the MQTT server password.
-    * @param password The MQTT server password.
+    *
+    * @param password
+    *       The MQTT server password.
     * @return Instance of this to support fluent API.
     */
    public MqttSender setPassword(final String password) {
@@ -302,6 +317,7 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Gets the response server user name.
+    *
     * @return The response server user name.
     */
    public String getResponseUserName() {
@@ -310,7 +326,9 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Sets the tesponse server user name.
-    * @param responseUserName The response server user name.
+    *
+    * @param responseUserName
+    *       The response server user name.
     * @return Instance of this to support fluent API.
     */
    public MqttSender setResponseUserName(final String responseUserName) {
@@ -320,6 +338,7 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Gets the response server password.
+    *
     * @return The response server password.
     */
    public String getResponsePassword() {
@@ -328,7 +347,9 @@ public class MqttSender extends AbstractSender {
 
    /**
     * Sets the response server password.
-    * @param responsePassword The response server password.
+    *
+    * @param responsePassword
+    *       The response server password.
     * @return Instance of this to support fluent API.
     */
    public MqttSender setResponsePassword(final String responsePassword) {

@@ -1,15 +1,15 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -134,7 +134,7 @@ public class XmlFactoryTest extends TestSetup {
 
          // Message 1
          final MessageTemplate mts1 = messageStore.get(0);
-         Assert.assertEquals(mts1.getMultiplicity(), new Long(10), "message1 multiplicity");
+         Assert.assertEquals(mts1.getMultiplicity(), Long.valueOf(10), "message1 multiplicity");
          final Message m1 = mts1.getMessage();
          // Message 1 content
          Assert.assertEquals(m1.getPayload(), MESSAGE1_CONTENT, "message1 content");
@@ -160,7 +160,7 @@ public class XmlFactoryTest extends TestSetup {
 
          // Message 2
          final MessageTemplate mts2 = messageStore.get(1);
-         Assert.assertEquals(mts2.getMultiplicity(), new Long(1), "message2 multiplicity");
+         Assert.assertEquals(mts2.getMultiplicity(), Long.valueOf(1), "message2 multiplicity");
          final Message m2 = mts2.getMessage();
          // Message 2 content
          Assert.assertEquals(m2.getPayload(), MESSAGE2_CONTENT, "message2 content");

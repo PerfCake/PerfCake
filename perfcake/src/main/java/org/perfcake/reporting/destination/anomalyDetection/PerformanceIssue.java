@@ -39,6 +39,7 @@ public class PerformanceIssue {
 
    /**
     * A constructor for performance issue with setting the flag for the issue.
+    *
     * @param type
     *       Type of the issue.
     */
@@ -53,7 +54,9 @@ public class PerformanceIssue {
       return degradation;
    }
 
-   public boolean isRegularSpike() { return regularSpike; }
+   public boolean isRegularSpike() {
+      return regularSpike;
+   }
 
    public boolean isTrafficSpike() {
       return trafficSpike;

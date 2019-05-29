@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:8.0">
    <run type="iteration" value="${perfcake.run.duration:10}"/>
-   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:1}" />
-   <sender class="TestSender" />
+   <generator class="DefaultMessageGenerator" threads="${perfcake.thread.count:1}"/>
+   <sender class="TestSender"/>
    <reporting>
       <reporter class="IterationsPerSecondReporter">
          <destination class="InfluxDbDestination">
             <period type="iteration" value="5"/>
-            <property name="serverUrl" value="http://localhost:8086" />
-            <property name="tags" value="tag1, tag2" />
-            <property name="userName" value="admin" />
-            <property name="password" value="abc123" />
+            <property name="serverUrl" value="http://localhost:8086"/>
+            <property name="tags" value="tag1, tag2"/>
+            <property name="userName" value="admin"/>
+            <property name="password" value="abc123"/>
          </destination>
       </reporter>
    </reporting>

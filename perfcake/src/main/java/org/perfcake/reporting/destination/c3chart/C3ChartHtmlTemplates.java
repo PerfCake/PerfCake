@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,10 +19,11 @@
  */
 package org.perfcake.reporting.destination.c3chart;
 
-import org.apache.commons.lang3.StringUtils;
 import org.perfcake.PerfCakeException;
 import org.perfcake.reporting.destination.ChartDestination;
 import org.perfcake.util.Utils;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,7 +32,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Renders HTML and JavaScript templates to the final chart report.
@@ -187,34 +193,34 @@ public class C3ChartHtmlTemplates {
     *       When it was not possible to read or parse the template.
     */
    private static String getRaDiv(final List<String> labelList, final List<String> valueList, final List<String> evaluationList,
-                                  final List<String> statLabelList, final List<String> statValueList) throws PerfCakeException {
+         final List<String> statLabelList, final List<String> statValueList) throws PerfCakeException {
       final StringBuilder raLabelEntries = new StringBuilder();
       final StringBuilder raValueEntries = new StringBuilder();
       final StringBuilder raEvaluationEntries = new StringBuilder();
       final StringBuilder statParamLabelEntries = new StringBuilder();
       final StringBuilder statParamValueEntries = new StringBuilder();
 
-      if(labelList != null) {
+      if (labelList != null) {
          for (String s : labelList) {
             raLabelEntries.append(getRaTdEntry(s));
          }
       }
-      if(valueList != null) {
+      if (valueList != null) {
          for (String s : valueList) {
             raValueEntries.append(getRaThEntry(s));
          }
       }
-      if(evaluationList != null) {
+      if (evaluationList != null) {
          for (String s : evaluationList) {
             raEvaluationEntries.append(getRaTdEntry(s));
          }
       }
-      if(statLabelList != null) {
+      if (statLabelList != null) {
          for (String s : statLabelList) {
             statParamLabelEntries.append(getRaTdEntry(s));
          }
       }
-      if(statValueList != null) {
+      if (statValueList != null) {
          for (String s : statValueList) {
             statParamValueEntries.append(getRaTdEntry(s));
          }
@@ -402,7 +408,10 @@ public class C3ChartHtmlTemplates {
       props.setProperty("chartName", chart.getName());
       props.setProperty("height", String.valueOf(chart.getHeight()));
       props.setProperty("type", chart.getType() == ChartDestination.ChartType.BAR ? "type: 'bar'," : "");
-      props.setProperty("regions", StringUtils.join(chart.getRegions(), ","));
+      final String regions = StringUtils.join(chart.getRegions(), ",");
+      if (regions != null) {
+         props.setProperty("regions", regions);
+      }
 
       switch (chart.getxAxisType()) {
          case TIME:
