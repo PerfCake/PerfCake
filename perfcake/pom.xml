@@ -493,23 +493,6 @@
                      </artifactItems>
                   </configuration>
                </execution>
-               <execution>
-                  <id>copy-agent</id>
-                  <phase>process-test-classes</phase>
-                  <goals>
-                     <goal>copy</goal>
-                  </goals>
-                  <configuration>
-                     <artifactItems>
-                        <artifactItem>
-                           <groupId>org.jboss.byteman</groupId>
-                           <artifactId>byteman</artifactId>
-                           <outputDirectory>${project.build.directory}/agents</outputDirectory>
-                           <destFileName>byteman-agent.jar</destFileName>
-                        </artifactItem>
-                     </artifactItems>
-                  </configuration>
-               </execution>
             </executions>
          </plugin>
          <plugin>

@@ -164,8 +164,7 @@ public class PerfCakeDebug {
          log.debug(String.format("Class found: %s", clazz.toString()));
          final String params = String.format("listener:false,script:%s", saveTmpBytemanRules());
          log.debug(String.format("Loading agent by class name %s with parameters: %s", clazz.getName(), params));
-         //final boolean agentLoaded = AgentLoader.loadAgentByMainClass(clazz.getName(), params);
-         final boolean agentLoaded = AgentLoader.loadAgent("/home/pmacik/work/PerfCake/PerfCake.git/perfcake/target/agents/byteman-agent.jar", params);
+         final boolean agentLoaded = AgentLoader.loadAgentByMainClass(clazz.getName(), params);
          log.debug(String.format("Agent loaded: %s", agentLoaded));
       } catch (Exception e) {
          log.error("Unable to install debug agent, debugging information will not be available: ", e);

@@ -33,3 +33,6 @@ lib/plugins/*.jar
 src/main/native/*.so
 
 !code-formatting/*.jar
+
+# Visual Code stuff #
+*.vscode

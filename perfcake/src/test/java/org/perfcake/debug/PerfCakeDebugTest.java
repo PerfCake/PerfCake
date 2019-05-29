@@ -46,7 +46,7 @@ public class PerfCakeDebugTest extends TestSetup {
 
    private static final Logger log = LogManager.getLogger(PerfCakeDebugTest.class);
 
-   @Test
+   @Test(enabled = false)
    public void runAgent() throws Exception {
       final Properties props = new Properties();
       props.setProperty(PerfCakeConst.DEBUG_PROPERTY, "true");
@@ -71,6 +71,8 @@ public class PerfCakeDebugTest extends TestSetup {
          }
       });
 
+      Thread.sleep(100000);
+
       Assert.assertEquals(agentResults.get("i:name=ReceiverClassName"), "org.perfcake.message.receiver.DummyReceiver");
       Assert.assertEquals(agentResults.get("i:name=Validation,category1=validator1"), "org.perfcake.validation.DummyValidator");
       Assert.assertEquals(agentResults.get("i:name=GeneratorClassName"), "org.perfcake.message.generator.DefaultMessageGenerator");
@@ -87,5 +89,6 @@ public class PerfCakeDebugTest extends TestSetup {
       Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=SequenceSnapshots")) > 0);
       Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=Validation,category1=validator1")) > 0);
       Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=GeneratedSenderTasks")) > 0);
+
    }
 }

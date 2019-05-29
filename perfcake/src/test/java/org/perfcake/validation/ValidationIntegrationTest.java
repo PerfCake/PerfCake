@@ -153,10 +153,12 @@ public class ValidationIntegrationTest extends TestSetup {
       final ValidationManager validationManager = getValidationManager(scenario);
       final DummyValidator v = (DummyValidator) validationManager.getValidator("v1");
 
+      Assert.assertTrue(validationManager.isFastForward(), "Validation did not loaded properly.");
+
       scenario.init();
       scenario.run();
 
-      Assert.assertTrue(validationManager.isFastForward(), "Validation did not loaded properly.");
+      Assert.assertTrue(validationManager.isFastForward(), "Validation switched off fastForward unexpectedly.");
 
       long lastCalled = v.getPreLastCalledTimestamp();
       long lastCalled2 = v.getLastCalledTimestamp();

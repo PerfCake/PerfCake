@@ -26,6 +26,7 @@
    <Loggers>
       <Logger name="com" level="info"/>
       <Logger name="org" level="info"/>
+      <Logger name="org.avaje" level="info"/>
       <Logger name="org.perfcake" level="info"/>
       <Logger name="org.perfcake.message.sender.JdbcSender" level="debug"/>
       <Logger name="org.perfcake.validation" additivity="false" level="info">
