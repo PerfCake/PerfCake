@@ -168,10 +168,10 @@ fi
 
 sedExecutable=`which sed`
 if [ -n "$sedExecutable" ]; then
-  javaVersion=`$JAVACMD -version 2>&1 | sed 's/.*version "\(.*\)\.\(.*\)\..*"/\1\2/; 1q'`
-  if [[ $javaVersion =~ ^[1-9][0-9]$ ]]; then
-     if [ "$javaVersion" -lt 18 ]; then
-        echo "Unsupported Java version. PerfCake requires Java 8 and higher."
+  javaVersion=`$JAVACMD -version 2>&1 | sed 's/.*version "\(.*\)\.\(.*\)\..*".*/\1\2/; 1q'`
+  if [[ $javaVersion =~ ^[1-9][0-9][0-9]$ ]]; then
+     if [ "$javaVersion" -lt 110 ]; then
+        echo "Unsupported Java version. PerfCake requires Java 11 and higher."
         exit 2
      fi
   else
@@ -195,6 +195,6 @@ PERFCAKE_JAR=$(find "$PERFCAKE_HOME/lib" -type f -regex '.*lib/perfcake-[0-9][0-
 exec "$JAVACMD" \
   -Dlog4j.configurationFile="${PERFCAKE_HOME}/log4j2.xml" \
   -Djava.util.logging.manager=org.apache.logging.log4j.jul.LogManager \
-  -Djava.ext.dirs="${JAVA_HOME}/lib/ext:${JAVA_HOME}/jre/lib/ext:${PERFCAKE_HOME}/lib/ext:${JAVA_HOME}/lib${PERFCAKE_DEBUG}" \
+  -classpath "${JAVA_HOME}/lib/ext:${JAVA_HOME}/jre/lib/ext:${PERFCAKE_HOME}/lib/ext:${JAVA_HOME}/lib${PERFCAKE_DEBUG}" \
   -jar "${PERFCAKE_JAR}" \
   "$@"
