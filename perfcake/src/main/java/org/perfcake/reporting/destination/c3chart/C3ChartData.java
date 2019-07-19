@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,14 +22,14 @@ package org.perfcake.reporting.destination.c3chart;
 import org.perfcake.PerfCakeException;
 import org.perfcake.util.Utils;
 
-import io.vertx.core.json.JsonArray;
-
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import io.vertx.core.json.JsonArray;
 
 /**
  * Data of a C3 chart stored in the .js file as a script building an array.

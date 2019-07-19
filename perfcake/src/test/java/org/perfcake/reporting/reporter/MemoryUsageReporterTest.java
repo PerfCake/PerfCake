@@ -1,15 +1,15 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -80,7 +80,7 @@ public class MemoryUsageReporterTest {
    }
 
    @Test
-   public void testMemoryUsageReporterWithMemoryLeakDetection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException {
+   public void testMemoryUsageReporterWithMemoryLeakDetection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException, NoSuchMethodException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
@@ -107,7 +107,7 @@ public class MemoryUsageReporterTest {
    }
 
    @Test
-   public void testMemoryUsageReporterWithoutMemoryLeakDetection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException {
+   public void testMemoryUsageReporterWithoutMemoryLeakDetection() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException, NoSuchMethodException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
@@ -131,7 +131,7 @@ public class MemoryUsageReporterTest {
    }
 
    @Test
-   public void testMemoryUsageReporterWithoutMemoryLeakDetectionWithGC() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException {
+   public void testMemoryUsageReporterWithoutMemoryLeakDetectionWithGC() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException, NoSuchMethodException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
@@ -156,7 +156,7 @@ public class MemoryUsageReporterTest {
    }
 
    @Test
-   public void testMemoryUsageReporterWithMemoryLeakDetectionWithHeapDump() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, InterruptedException {
+   public void testMemoryUsageReporterWithMemoryLeakDetectionWithHeapDump() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, InterruptedException, NoSuchMethodException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
@@ -165,7 +165,7 @@ public class MemoryUsageReporterTest {
       reporterProperties.put("memoryLeakDetectionEnabled", "true");
       reporterProperties.put("memoryDumpOnLeak", "true");
 
-      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdumpB-" + System.currentTimeMillis() + ".bin");
+      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdumpB-" + System.currentTimeMillis() + ".hprof");
       reporterProperties.put("memoryDumpFile", dumpFile.getAbsoluteFile());
 
       final List<Measurement> measurementList = testMemoryUsageReporter(reporterProperties);
@@ -189,7 +189,7 @@ public class MemoryUsageReporterTest {
    }
 
    @Test
-   public void testMemoryUsageReporterWithMemoryLeakDetectionWithHeapDumpExistingFile() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, InterruptedException {
+   public void testMemoryUsageReporterWithMemoryLeakDetectionWithHeapDumpExistingFile() throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, InterruptedException, NoSuchMethodException {
       final Properties reporterProperties = new Properties();
       reporterProperties.put("agentHostname", AGENT_HOSTNAME);
       reporterProperties.put("agentPort", AGENT_PORT);
@@ -198,18 +198,20 @@ public class MemoryUsageReporterTest {
       reporterProperties.put("memoryLeakDetectionEnabled", "true");
       reporterProperties.put("memoryDumpOnLeak", "true");
 
-      final File dumpFile = new File(TEST_OUTPUT_DIR, "heapdumpA-" + System.currentTimeMillis() + ".bin");
+      final String dumpFileName = TEST_OUTPUT_DIR + "/heapdumpA-" + System.currentTimeMillis();
+
+      final File dumpFile = new File(dumpFileName + ".hprof");
+      final File dumpFile0 = new File(dumpFileName + ".0.hprof");
       Assert.assertTrue(dumpFile.createNewFile());
       reporterProperties.put("memoryDumpFile", dumpFile.getAbsoluteFile());
 
       final List<Measurement> measurementList = testMemoryUsageReporter(reporterProperties);
 
       Assert.assertTrue(dumpFile.exists(), "Dump file " + dumpFile.getAbsolutePath() + " should exist.");
-      final File dumpFile0 = new File(dumpFile.getAbsolutePath() + ".0");
       Assert.assertTrue(dumpFile0.exists(), "Dump file " + dumpFile0.getAbsolutePath() + " should exist.");
    }
 
-   private List<Measurement> testMemoryUsageReporter(final Properties reporterProperties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException {
+   private List<Measurement> testMemoryUsageReporter(final Properties reporterProperties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException, NoSuchMethodException {
       final MemoryUsageReporter mur = (MemoryUsageReporter) ObjectFactory.summonInstance(MemoryUsageReporter.class.getName(), reporterProperties);
 
       Assert.assertNotNull(mur, "Reporter's instance");

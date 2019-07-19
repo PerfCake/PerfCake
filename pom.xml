@@ -89,32 +89,32 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-      <maven.assembly.plugin.version>2.6</maven.assembly.plugin.version>
+      <maven.assembly.plugin.version>3.1.1</maven.assembly.plugin.version>
       <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
       <maven.jar.plugin.version>3.0.2</maven.jar.plugin.version>
       <maven.site.plugin.version>3.5.1</maven.site.plugin.version>
-      <maven.checkstyle.plugin.version>2.17</maven.checkstyle.plugin.version>
-      <maven.compiler.plugin.version>3.5.1</maven.compiler.plugin.version>
+      <maven.checkstyle.plugin.version>3.0.0</maven.checkstyle.plugin.version>
+      <maven.compiler.plugin.version>3.8.0</maven.compiler.plugin.version>
       <maven.license.plugin.version>1.9</maven.license.plugin.version>
       <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
       <maven.findbugs.plugin.version>3.0.4</maven.findbugs.plugin.version>
-      <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
+      <maven.project.info.reports.plugin.version>3.0.0</maven.project.info.reports.plugin.version>
       <maven.exec.plugin.version>1.5.0</maven.exec.plugin.version>
       <maven.source.plugin.version>3.0.1</maven.source.plugin.version>
-      <maven.javadoc.plugin.version>2.10.4</maven.javadoc.plugin.version>
+      <maven.javadoc.plugin.version>3.1.0</maven.javadoc.plugin.version>
       <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
       <maven.xml.plugin.version>1.0.1</maven.xml.plugin.version>
       <maven.surefire.plugin.version>2.19.1</maven.surefire.plugin.version>
       <maven.dependency.plugin.version>2.10</maven.dependency.plugin.version>
       <maven.pit.version>1.1.10</maven.pit.version>
       <maven.plugin.plugin>3.4</maven.plugin.plugin>
-      <maven.versioneye>3.10.2</maven.versioneye>
+      <maven.versioneye>3.11.4</maven.versioneye>
    </properties>
    <modules>
       <module>perfcake-bom</module>
       <module>perfcake-agent</module>
       <module>perfcake</module>
-      <module>perfcake-maven-plugin</module>
+      <!--module>perfcake-maven-plugin</module-->
    </modules>
    <dependencyManagement>
       <dependencies>

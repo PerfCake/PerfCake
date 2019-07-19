@@ -1,15 +1,15 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,8 +21,10 @@ package org.perfcake.reporting.reporter.accumulator;
 
 import org.perfcake.common.TimeSlidingWindow;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Accumulates a value over a set of recently reported values in a time sliding window.
@@ -91,8 +93,8 @@ public abstract class AbstractTimeSlidingWindowAccumulator<T, A extends Accumula
     */
    private A getNewAccumulator() {
       try {
-         return accumulatorClass.newInstance();
-      } catch (InstantiationException | IllegalAccessException e) {
+         return accumulatorClass.getDeclaredConstructor().newInstance();
+      } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
          log.error("Unable to initialize the underlying accumulator: ", e);
       }
 

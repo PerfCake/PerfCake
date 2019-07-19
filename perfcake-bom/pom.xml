@@ -49,59 +49,65 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-      <maven.clean.plugin.version>3.0.0</maven.clean.plugin.version>
+      <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
       <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
       <maven.gpg.plugin.version>1.6</maven.gpg.plugin.version>
-      <maven.project.info.reports.plugin.version>2.9</maven.project.info.reports.plugin.version>
-      <maven.assembly.plugin.version>2.6</maven.assembly.plugin.version>
-      <maven.versioneye>3.10.2</maven.versioneye>
+      <maven.project.info.reports.plugin.version>3.0</maven.project.info.reports.plugin.version>
+      <maven.assembly.plugin.version>3.1.1</maven.assembly.plugin.version>
+      <maven.versioneye>3.11.4</maven.versioneye>
 
-      <version.californium>1.0.4</version.californium>
-      <version.camel>2.17.3</version.camel>
-      <version.drools>6.4.0.Final</version.drools>
-      <version.influxdb>2.2</version.influxdb>
+      <version.californium>1.0.7</version.californium>
+      <version.camel>2.24.0</version.camel>
+      <version.drools>7.21.0.Final</version.drools>
+      <version.influxdb>2.15</version.influxdb>
       <version.jest>2.0.3</version.jest>
-      <version.groovy>2.4.7</version.groovy>
-      <version.slf4j>1.7.21</version.slf4j>
-      <version.log4j>2.6.2</version.log4j>
+      <version.groovy>3.0.0-beta-1</version.groovy>
+      <version.slf4j>1.7.26</version.slf4j>
+      <version.log4j>2.11.2</version.log4j>
       <version.jms-api>2.0.1</version.jms-api>
-      <version.mqtt>1.14</version.mqtt>
-      <version.testng>6.9.10</version.testng>
+      <version.jaxb>2.3.1</version.jaxb>
+      <version.javax.annotation>1.3.2</version.javax.annotation>
+      <version.javax.activation>1.1</version.javax.activation>
+      <version.mqtt>1.15</version.mqtt>
+      <version.testng>6.10</version.testng>
       <version.websocket-api>1.1</version.websocket-api>
       <version.commons.math3>3.6.1</version.commons.math3>
-      <version.commons.io>2.5</version.commons.io>
-      <version.commons.beanutils>1.9.2</version.commons.beanutils>
-      <version.commons.collections>4.1</version.commons.collections>
-      <version.commons.lang>3.4</version.commons.lang>
+      <version.commons.io>2.6</version.commons.io>
+      <version.commons.beanutils>1.9.3</version.commons.beanutils>
+      <version.commons.collections>4.3</version.commons.collections>
+      <version.commons.lang>3.9</version.commons.lang>
       <version.commons.logging>1.2</version.commons.logging>
-      <version.commons.cli>1.3.1</version.commons.cli>
-      <version.hdrhistogram>2.1.9</version.hdrhistogram>
+      <version.commons.cli>1.4</version.commons.cli>
+      <version.hdrhistogram>2.1.11</version.hdrhistogram>
       <version.vertx>3.3.2</version.vertx>
-      <version.jackson>2.7.4</version.jackson>
-      <version.guava>19.0</version.guava>
-      <version.byteman>3.0.6</version.byteman>
+      <version.jackson>2.9.9</version.jackson>
+      <version.guava>27.1-jre</version.guava>
+      <version.byteman>4.0.7</version.byteman>
       <version.servo>0.12.10</version.servo>
+      <version.okhttp>3.14.2</version.okhttp>
+      <version.retrofit>2.2.0</version.retrofit>
+      <version.avaje>3.0.1</version.avaje>
 
-      <version.maven.plugin.api>3.3.9</version.maven.plugin.api>
-      <version.maven.core>3.3.9</version.maven.core>
-      <version.maven.plugin.annotations>3.4</version.maven.plugin.annotations>
+      <version.maven.plugin.api>3.6.1</version.maven.plugin.api>
+      <version.maven.core>3.6.1</version.maven.core>
+      <version.maven.plugin.annotations>3.6.0</version.maven.plugin.annotations>
 
       <!-- Tools -->
       <version.findbugs>3.0.1u2</version.findbugs>
       <version.gmaven>1.5</version.gmaven>
-      <version.jacoco>0.7.7.201606060606</version.jacoco>
+      <version.jacoco>0.8.4</version.jacoco>
 
       <!-- Test dependencies  -->
-      <version.arquillian>1.1.11.Final</version.arquillian>
-      <version.arquillian-container>2.0.0.Final</version.arquillian-container>
-      <version.wildfly>10.1.0.Final</version.wildfly>
-      <version.javassist>3.20.0-GA</version.javassist>
-      <version.amq>5.14.0</version.amq>
-      <version.arquillian-jacoco>1.0.0.Alpha8</version.arquillian-jacoco>
-      <version.mockito>1.10.19</version.mockito>
-      <version.netty>4.1.4.Final</version.netty>
+      <version.arquillian>1.4.1.Final</version.arquillian>
+      <version.arquillian-container>2.2.0.Final</version.arquillian-container>
+      <version.wildfly>16.0.0.Final</version.wildfly>
+      <version.javassist>3.25.0-GA</version.javassist>
+      <version.amq>5.15.9</version.amq>
+      <version.arquillian-jacoco>1.0.0</version.arquillian-jacoco>
+      <version.mockito>2.27.0</version.mockito>
+      <version.netty>4.1.36.Final</version.netty>
 
-      <java.level>1.8</java.level>
+      <java.level>11</java.level>
    </properties>
    <dependencyManagement>
       <dependencies>
@@ -132,22 +138,17 @@
          </dependency>
          <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
-            <version>${version.log4j}</version>
-         </dependency>
-         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-jul</artifactId>
             <version>${version.log4j}</version>
          </dependency>
          <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
+            <artifactId>slf4j-api</artifactId>
             <version>${version.slf4j}</version>
          </dependency>
          <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
+            <artifactId>slf4j-nop</artifactId>
             <version>${version.slf4j}</version>
          </dependency>
 
@@ -193,7 +194,7 @@
          <!-- Groovy -->
          <dependency>
             <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
+            <artifactId>groovy</artifactId>
             <version>${version.groovy}</version>
          </dependency>
 
@@ -203,6 +204,28 @@
             <artifactId>javax.jms-api</artifactId>
             <version>${version.jms-api}</version>
          </dependency>
+
+         <!-- JAXB -->
+         <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${version.jaxb}</version>
+         </dependency>
+
+         <!-- JAVAX -->
+         <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+            <version>${version.javax.annotation}</version>
+         </dependency>
+
+         <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>${version.javax.activation}</version>
+         </dependency>
+
+
 
          <!-- Javassist -->
          <dependency>
@@ -238,6 +261,25 @@
             <groupId>org.eclipse.californium</groupId>
             <artifactId>californium-core</artifactId>
             <version>${version.californium}</version>
+         </dependency>
+
+         <!-- OKHTTP -->
+         <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>${version.okhttp}</version>
+         </dependency>
+
+         <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>retrofit</artifactId>
+            <version>${version.retrofit}</version>
+         </dependency>
+
+         <dependency>
+            <groupId>com.squareup.retrofit2</groupId>
+            <artifactId>converter-gson</artifactId>
+            <version>${version.retrofit}</version>
          </dependency>
 
          <!-- Commons -->
@@ -357,6 +399,13 @@
             <scope>test</scope>
          </dependency>
 
+         <!-- Java Agent loader -->
+         <dependency>
+            <groupId>org.avaje</groupId>
+            <artifactId>avaje-agentloader</artifactId>
+            <version>${version.avaje}</version>
+         </dependency>
+
          <!-- Test of senders in an JEE Container -->
          <dependency>
             <groupId>org.jboss.arquillian.testng</groupId>
@@ -414,7 +463,7 @@
          <!-- Mockito -->
          <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
+            <artifactId>mockito-core</artifactId>
             <version>${version.mockito}</version>
             <scope>test</scope>
          </dependency>
@@ -465,6 +514,14 @@
          </plugins>
       </pluginManagement>
       <plugins>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>versions-maven-plugin</artifactId>
+            <version>2.5</version>
+            <configuration>
+               <generateBackupPoms>false</generateBackupPoms>
+            </configuration>
+         </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>

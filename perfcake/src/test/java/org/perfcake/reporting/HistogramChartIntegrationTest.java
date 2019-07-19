@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -66,7 +66,7 @@ public class HistogramChartIntegrationTest extends TestSetup {
    }
 
    @Test(dataProvider = "attributes")
-   public void integrationTest(final String attributesRequired, final boolean hasWarmUp, final boolean hasThreadsAttribute, final int records, final int minAttributes) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, PerfCakeException, IOException {
+   public void integrationTest(final String attributesRequired, final boolean hasWarmUp, final boolean hasThreadsAttribute, final int records, final int minAttributes) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException, PerfCakeException, IOException, NoSuchMethodException {
       final String dir = "target/hdr-charts";
       final Properties reporterProperties = TestUtil.props("detail", "1", "precision", "1", "maxExpectedValue", "100", "correctionMode", "user",
             "expectedValue", "2");

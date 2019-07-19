@@ -26,6 +26,7 @@
    <Loggers>
       <Logger name="com" level="info"/>
       <Logger name="org" level="info"/>
+      <Logger name="org.avaje" level="info"/>
       <Logger name="org.perfcake" level="info"/>
       <Logger name="org.perfcake.message.sender.JdbcSender" level="debug"/>
       <Logger name="org.perfcake.validation" additivity="false" level="info">
@@ -34,7 +35,7 @@
       <Logger name="org.perfcake.validation.ValidationManager" additivity="true" level="info">
          <AppenderRef ref="ASYNC"/>
       </Logger>
-      <Root level="info">
+      <Root level="debug">
          <AppenderRef ref="ASYNC"/>
       </Root>
    </Loggers>

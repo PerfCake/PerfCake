@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,31 +20,23 @@
 package org.perfcake.debug;
 
 import org.perfcake.PerfCakeConst;
-import org.perfcake.PerfCakeException;
 import org.perfcake.ScenarioExecution;
 import org.perfcake.TestSetup;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.lang.management.ManagementFactory;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
-import javax.management.Attribute;
-import javax.management.AttributeValueExp;
-import javax.management.InstanceNotFoundException;
-import javax.management.IntrospectionException;
 import javax.management.MBeanAttributeInfo;
-import javax.management.MBeanInfo;
 import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectInstance;
-import javax.management.ObjectName;
 import javax.management.Query;
-import javax.management.ReflectionException;
 
 /**
  * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
@@ -52,7 +44,9 @@ import javax.management.ReflectionException;
 @Test(groups = "integration")
 public class PerfCakeDebugTest extends TestSetup {
 
-   @Test
+   private static final Logger log = LogManager.getLogger(PerfCakeDebugTest.class);
+
+   @Test(enabled = false)
    public void runAgent() throws Exception {
       final Properties props = new Properties();
       props.setProperty(PerfCakeConst.DEBUG_PROPERTY, "true");
@@ -62,6 +56,7 @@ public class PerfCakeDebugTest extends TestSetup {
 
       final MBeanServer server = ManagementFactory.getPlatformMBeanServer();
       final Set<ObjectInstance> instances = server.queryMBeans(null, Query.isInstanceOf(Query.value("com.netflix.servo.jmx.MonitorMBean")));
+      log.info(instances.toString());
       final Map<String, String> agentResults = new HashMap<>();
       instances.forEach(v -> {
          try {
@@ -75,6 +70,8 @@ public class PerfCakeDebugTest extends TestSetup {
             Assert.fail("Could not communicate with the MBean server.", e);
          }
       });
+
+      Thread.sleep(100000);
 
       Assert.assertEquals(agentResults.get("i:name=ReceiverClassName"), "org.perfcake.message.receiver.DummyReceiver");
       Assert.assertEquals(agentResults.get("i:name=Validation,category1=validator1"), "org.perfcake.validation.DummyValidator");
@@ -92,5 +89,6 @@ public class PerfCakeDebugTest extends TestSetup {
       Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=SequenceSnapshots")) > 0);
       Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=Validation,category1=validator1")) > 0);
       Assert.assertTrue(Integer.valueOf(agentResults.get("c:name=GeneratedSenderTasks")) > 0);
+
    }
 }

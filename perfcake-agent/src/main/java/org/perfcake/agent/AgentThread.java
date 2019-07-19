@@ -21,13 +21,7 @@ package org.perfcake.agent;
 
 import com.sun.management.HotSpotDiagnosticMXBean;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -112,17 +106,22 @@ public class AgentThread implements Runnable {
                      response = String.valueOf(rt.totalMemory() - rt.freeMemory());
                   } else if (command.startsWith(AgentCommand.DUMP.name())) {
                      final int colonIndex = command.indexOf(":");
-                     String dumpFileName;
+                     String dumpFileNamePrefix = "dump-" + System.currentTimeMillis();
+                     String dumpFileName = dumpFileNamePrefix + ".hprof";;
                      if (colonIndex >= 0) {
                         dumpFileName = command.substring(colonIndex + 1);
-                     } else {
-                        dumpFileName = "dump-" + System.currentTimeMillis() + ".bin";
+                        if (!dumpFileName.endsWith(".hprof")) {
+                           dumpFileName = dumpFileName + ".hprof";
+                           log("WARNING: Heap dump file must end with .hprof extension. Renaming to '" + dumpFileName + "'");
+                        }
+                        dumpFileNamePrefix = dumpFileName.substring(0, dumpFileName.lastIndexOf(".hprof"));
                      }
+
                      int dumpNameIndex = 0;
                      File dumpFile = new File(dumpFileName);
                      while (dumpFile.exists()) {
                         log("WARNING: File " + dumpFileName + " already exists. Trying another file name.");
-                        dumpFile = new File(dumpFileName + "." + (dumpNameIndex++));
+                        dumpFile = new File(dumpFileNamePrefix + "." + (dumpNameIndex++) + ".hprof");
                      }
                      log("Saving a heap dump to " + dumpFile.getAbsolutePath());
                      try {

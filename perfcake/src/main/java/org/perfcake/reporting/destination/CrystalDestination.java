@@ -1,15 +1,15 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,9 +19,9 @@
  */
 package org.perfcake.reporting.destination;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import static org.perfcake.common.PeriodType.TIME;
+import static org.perfcake.reporting.destination.ChartDestination.ChartType.LINE;
+
 import org.perfcake.PerfCakeException;
 import org.perfcake.common.BoundPeriod;
 import org.perfcake.common.PeriodType;
@@ -30,15 +30,20 @@ import org.perfcake.reporting.ReportingException;
 import org.perfcake.reporting.destination.anomalyDetection.BasicStatisticsAnalysis;
 import org.perfcake.reporting.destination.anomalyDetection.SimpleRegressionAnalysis;
 import org.perfcake.reporting.destination.c3chart.C3ChartHelper;
-import org.perfcake.util.properties.MandatoryProperty;
 
-import java.util.*;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
-import static org.perfcake.common.PeriodType.*;
-import static org.perfcake.reporting.destination.ChartDestination.ChartType.LINE;
 
 /**
  * A destination that performs heuristics for anomalies detection and
@@ -168,15 +173,13 @@ public class CrystalDestination extends AbstractDestination {
     */
    private ChartDestination.ChartType chartType = LINE;
 
-
    @Override
    public void open() {
       System.out.println("PerfTestName: " + title);
-      if(title == null) {
+      if (title == null) {
          resultSetKey = "mock";
          title = resultSetKey;
-      }
-      else {
+      } else {
          resultSetKey = title;
       }
       sharedResultsMap.putIfAbsent(resultSetKey, new ArrayList<>());
@@ -209,26 +212,26 @@ public class CrystalDestination extends AbstractDestination {
    /**
     * According to an actual reporter, performs adequate heuristics for detection anomalies.
     */
-   private void processAnomalyDetection(){
+   private void processAnomalyDetection() {
       String actualReporter = this.getParentReporter().getClass().getSimpleName();
-      switch (actualReporter){
+      switch (actualReporter) {
          case "ResponseTimeHistogramReporter":
          case "ResponseTimeStatsReporter":
-         //case "ThroughputStatsReporter":
-         //case "IterationsPerSecondReporter":
+            //case "ThroughputStatsReporter":
+            //case "IterationsPerSecondReporter":
             // perform regression analysis
             List<Measurement> dataSet = sharedResultsMap.get(resultSetKey);
             ra = new SimpleRegressionAnalysis();
             ra.setThreshold(threshold.doubleValue());
             Set<BoundPeriod<Destination>> reportingPeriods = getParentReporter().getReportingPeriods();
             int numberOfRecordsInWindow = 0;
-            for(BoundPeriod<Destination> bpd: reportingPeriods){
-               if("CrystalDestination".equals(bpd.getBinding().getClass().getSimpleName())){
-                  switch (bpd.getPeriodType()){
+            for (BoundPeriod<Destination> bpd : reportingPeriods) {
+               if ("CrystalDestination".equals(bpd.getBinding().getClass().getSimpleName())) {
+                  switch (bpd.getPeriodType()) {
                      case TIME:
-                        numberOfRecordsInWindow = window/(int)bpd.getPeriod();
+                        numberOfRecordsInWindow = window / (int) bpd.getPeriod();
                         System.out.println("window: " + window);
-                        System.out.println("period: " + String.valueOf((int)bpd.getPeriod()));
+                        System.out.println("period: " + String.valueOf((int) bpd.getPeriod()));
                         System.out.println("numberOfRecordsInWindow: " + numberOfRecordsInWindow);
                         break;
                      default:
@@ -270,7 +273,7 @@ public class CrystalDestination extends AbstractDestination {
          System.out.println(resultSetKey + " : generating chart for : " + e.getKey());
          // generate C3 chart
          C3ChartHelper helper = new C3ChartHelper(instances.get(e.getKey()));
-         for(Measurement m : measurements){
+         for (Measurement m : measurements) {
             try {
                helper.appendResult(m);
             } catch (ReportingException e1) {
@@ -348,7 +351,7 @@ public class CrystalDestination extends AbstractDestination {
     * Sets the order of test result within the final report.
     *
     * @param order
-    *   The order of test result.
+    *       The order of test result.
     * @return Instance of this to support fluent API.
     */
    public CrystalDestination setOrder(Integer order) {
@@ -377,6 +380,7 @@ public class CrystalDestination extends AbstractDestination {
 
    /**
     * Gets the threshold for the monitored metrics.
+    *
     * @return The threshold value.
     */
    public Double getThreshold() {
@@ -385,8 +389,9 @@ public class CrystalDestination extends AbstractDestination {
 
    /**
     * Sets the threshold for monitored metrics.
+    *
     * @param threshold
-    *    The threshold value.
+    *       The threshold value.
     * @return Instance of this to support fluent API.
     */
    public CrystalDestination setThreshold(Double threshold) {
@@ -395,7 +400,6 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @return
     */
    public int getWindow() {
@@ -403,7 +407,6 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @param window
     */
    public void setWindow(int window) {
@@ -457,7 +460,6 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @return
     */
    public String getChartGroup() {
@@ -465,7 +467,6 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @param chartGroup
     */
    public void setChartGroup(String chartGroup) {
@@ -473,7 +474,6 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @return
     */
    public String getChartYAxis() {
@@ -481,7 +481,6 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @param chartYAxis
     */
    public void setChartYAxis(String chartYAxis) {
@@ -489,7 +488,6 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @return
     */
    public String getChartXAxis() {
@@ -497,7 +495,6 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @param chartXAxis
     */
    public void setChartXAxis(String chartXAxis) {
@@ -505,7 +502,6 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @return
     */
    public PeriodType getChartXAxisType() {
@@ -513,7 +509,6 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @param chartXAxisType
     */
    public void setChartXAxisType(PeriodType chartXAxisType) {
@@ -521,7 +516,6 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @return
     */
    public int getChartHeight() {
@@ -529,13 +523,11 @@ public class CrystalDestination extends AbstractDestination {
    }
 
    /**
-    *
     * @param chartHeight
     */
    public void setChartHeight(int chartHeight) {
       this.chartHeight = chartHeight;
    }
-
 
    /**
     * Gets the chart's graphics type - either line or bar. Line is the default.

@@ -1,15 +1,15 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -153,12 +153,12 @@ public class ObjectFactory {
     * @throws InvocationTargetException
     *       When it was not possible to call any of the properties setters.
     */
-   public static Object summonInstance(final String className, final Properties properties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+   public static Object summonInstance(final String className, final Properties properties) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
       if (log.isTraceEnabled()) {
          log.trace(String.format("Summoning a new instance of class '%s'.", className));
       }
 
-      final Object object = Class.forName(className, false, getPluginClassLoader()).newInstance();
+      final Object object = Class.forName(className, false, getPluginClassLoader()).getDeclaredConstructor().newInstance();
       setPropertiesOnObject(object, properties);
 
       return object;

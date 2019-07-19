@@ -1,15 +1,15 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -95,7 +95,7 @@ public class CsvDestinationTest {
          destination.close();
 
          assertCSVFileContent(csvFile, "Time,Iterations," + Measurement.DEFAULT_RESULT + ",another\n34:17:36," + ITERATION + ",1111.11,222.22");
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException | NoSuchMethodException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -124,7 +124,7 @@ public class CsvDestinationTest {
          destination.close();
 
          assertCSVFileContent(defaultCSVFile, "Time;Iterations;" + Measurement.DEFAULT_RESULT + ";another\n34:17:36;" + ITERATION + ";1111.11;222.22");
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException | NoSuchMethodException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       } finally {
@@ -173,7 +173,7 @@ public class CsvDestinationTest {
 
          assertCSVFileContent(csvFile, "Time;Iterations;singleResult\n34:17:36;" + ITERATION + ";100");
          assertCSVFileContent(secondPath, "Time;Iterations;singleResult\n34:17:36;" + ITERATION + ";100");
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException | NoSuchMethodException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -204,7 +204,7 @@ public class CsvDestinationTest {
          destination.close();
 
          assertCSVFileContent(csvFile, "Time;Iterations;" + Measurement.DEFAULT_RESULT + ";another\n34:17:36;" + ITERATION + ";1111.11;222.22\n34:17:37;" + (ITERATION + 1) + ";2222.22;333.33");
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException | InterruptedException e) {
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException | InterruptedException | NoSuchMethodException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -228,7 +228,7 @@ public class CsvDestinationTest {
          destination.close();
 
          assertCSVFileContent(csvFile, "Time;Iterations;singleResult\n34:17:36;" + ITERATION + ";100");
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException | NoSuchMethodException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -253,7 +253,7 @@ public class CsvDestinationTest {
          destination.close();
 
          assertCSVFileContent(csvFile, "Time;Iterations;" + Measurement.DEFAULT_RESULT + ";StringResult\n34:17:36;" + ITERATION + ";StringValue;StringValue2");
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException | NoSuchMethodException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -273,7 +273,7 @@ public class CsvDestinationTest {
          destination.open();
          destination.report(measurement);
          destination.close();
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException e) {
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | NoSuchMethodException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -300,7 +300,7 @@ public class CsvDestinationTest {
          destination.open();
          destination.report(measurement);
          destination.close();
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException e) {
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | NoSuchMethodException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       } catch (final ReportingException re) {
@@ -463,7 +463,7 @@ public class CsvDestinationTest {
          assertCSVFileContent(csvFile, "Time;Iterations;" + Measurement.DEFAULT_RESULT + ";StringResult\n"
                + "34:17:36;" + ITERATION + ";StringValue;StringValue2\n"
                + "34:17:36;" + (ITERATION + 2) + ";StringValue+2;StringValue2+2");
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException | NoSuchMethodException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -506,7 +506,7 @@ public class CsvDestinationTest {
                + "34:17:36;" + ITERATION + ";StringValue;StringValue2\n"
                + "34:17:36;" + (ITERATION + 1) + ";StringValue;null\n"
                + "34:17:36;" + (ITERATION + 2) + ";StringValue+2;StringValue2+2");
-      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException e) {
+      } catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException | ReportingException | NoSuchMethodException e) {
          e.printStackTrace();
          Assert.fail(e.getMessage());
       }
@@ -517,85 +517,85 @@ public class CsvDestinationTest {
       return new Object[][] {
             { "param1,param2", "Time;Iterations;Result;param1;param2",
                   "0:00:01;2;1;10;12\n"
-                  + "0:00:02;3;2;20;null\n"
-                  + "0:00:03;4;3;30;null\n"
-                  + "0:00:04;5;4;null;40\n"
-                  + "0:00:05;6;5;13;50\n"
-                  + "0:00:06;7;6;null;null", CsvDestination.MissingStrategy.NULL },
+                        + "0:00:02;3;2;20;null\n"
+                        + "0:00:03;4;3;30;null\n"
+                        + "0:00:04;5;4;null;40\n"
+                        + "0:00:05;6;5;13;50\n"
+                        + "0:00:06;7;6;null;null", CsvDestination.MissingStrategy.NULL },
             { "param1,param2", "Time;Iterations;Result;param1;param2",
                   "0:00:01;2;1;10;12\n"
-                  + "0:00:05;6;5;13;50", CsvDestination.MissingStrategy.SKIP },
+                        + "0:00:05;6;5;13;50", CsvDestination.MissingStrategy.SKIP },
             { "param*", "Time;Iterations;Result;param1;param2",
                   "0:00:01;2;1;10;12\n"
-                  + "0:00:02;3;2;20;null\n"
-                  + "0:00:03;4;3;30;null\n"
-                  + "0:00:04;5;4;null;40\n"
-                  + "0:00:05;6;5;13;50\n"
-                  + "0:00:06;7;6;null;null", CsvDestination.MissingStrategy.NULL },
+                        + "0:00:02;3;2;20;null\n"
+                        + "0:00:03;4;3;30;null\n"
+                        + "0:00:04;5;4;null;40\n"
+                        + "0:00:05;6;5;13;50\n"
+                        + "0:00:06;7;6;null;null", CsvDestination.MissingStrategy.NULL },
             { "param*", "Time;Iterations;Result;param1;param2",
                   "0:00:01;2;1;10;12\n"
-                  + "0:00:05;6;5;13;50", CsvDestination.MissingStrategy.SKIP },
+                        + "0:00:05;6;5;13;50", CsvDestination.MissingStrategy.SKIP },
             { "param1,param2,warmUp", "Time;Iterations;Result;param1;param2;warmUp",
                   "0:00:01;2;1;10;12;true\n"
-                  + "0:00:02;3;2;20;null;true\n"
-                  + "0:00:03;4;3;30;null;false\n"
-                  + "0:00:04;5;4;null;40;false\n"
-                  + "0:00:05;6;5;13;50;false\n"
-                  + "0:00:06;7;6;null;null;false", CsvDestination.MissingStrategy.NULL },
+                        + "0:00:02;3;2;20;null;true\n"
+                        + "0:00:03;4;3;30;null;false\n"
+                        + "0:00:04;5;4;null;40;false\n"
+                        + "0:00:05;6;5;13;50;false\n"
+                        + "0:00:06;7;6;null;null;false", CsvDestination.MissingStrategy.NULL },
             { "param1,param2,warmUp", "Time;Iterations;Result;param1;param2;warmUp",
                   "0:00:01;2;1;10;12;true\n"
-                  + "0:00:05;6;5;13;50;false", CsvDestination.MissingStrategy.SKIP },
+                        + "0:00:05;6;5;13;50;false", CsvDestination.MissingStrategy.SKIP },
             { "param*,warmUp", "Time;Iterations;Result;param1;param2;warmUp",
                   "0:00:01;2;1;10;12;true\n"
-                  + "0:00:02;3;2;20;null;true\n"
-                  + "0:00:03;4;3;30;null;false\n"
-                  + "0:00:04;5;4;null;40;false\n"
-                  + "0:00:05;6;5;13;50;false\n"
-                  + "0:00:06;7;6;null;null;false", CsvDestination.MissingStrategy.NULL },
+                        + "0:00:02;3;2;20;null;true\n"
+                        + "0:00:03;4;3;30;null;false\n"
+                        + "0:00:04;5;4;null;40;false\n"
+                        + "0:00:05;6;5;13;50;false\n"
+                        + "0:00:06;7;6;null;null;false", CsvDestination.MissingStrategy.NULL },
             { "param*,warmUp", "Time;Iterations;Result;param1;param2;warmUp",
                   "0:00:01;2;1;10;12;true\n"
-                  + "0:00:05;6;5;13;50;false", CsvDestination.MissingStrategy.SKIP },
+                        + "0:00:05;6;5;13;50;false", CsvDestination.MissingStrategy.SKIP },
             { "*", "Time;Iterations;Result;Result;param1;param2",
                   "0:00:01;2;1;1;10;12\n"
-                  + "0:00:02;3;2;2;20;null\n"
-                  + "0:00:03;4;3;3;30;null\n"
-                  + "0:00:04;5;4;4;null;40\n"
-                  + "0:00:05;6;5;5;13;50\n"
-                  + "0:00:06;7;6;6;null;null", CsvDestination.MissingStrategy.NULL },
+                        + "0:00:02;3;2;2;20;null\n"
+                        + "0:00:03;4;3;3;30;null\n"
+                        + "0:00:04;5;4;4;null;40\n"
+                        + "0:00:05;6;5;5;13;50\n"
+                        + "0:00:06;7;6;6;null;null", CsvDestination.MissingStrategy.NULL },
             { "*", "Time;Iterations;Result;Result;param1;param2",
                   "0:00:01;2;1;1;10;12\n"
-                  + "0:00:05;6;5;5;13;50", CsvDestination.MissingStrategy.SKIP },
+                        + "0:00:05;6;5;5;13;50", CsvDestination.MissingStrategy.SKIP },
             { "*,warmUp", "Time;Iterations;Result;Result;param1;param2;warmUp",
                   "0:00:01;2;1;1;10;12;true\n"
-                  + "0:00:02;3;2;2;20;null;true\n"
-                  + "0:00:03;4;3;3;30;null;false\n"
-                  + "0:00:04;5;4;4;null;40;false\n"
-                  + "0:00:05;6;5;5;13;50;false\n"
-                  + "0:00:06;7;6;6;null;null;false", CsvDestination.MissingStrategy.NULL },
+                        + "0:00:02;3;2;2;20;null;true\n"
+                        + "0:00:03;4;3;3;30;null;false\n"
+                        + "0:00:04;5;4;4;null;40;false\n"
+                        + "0:00:05;6;5;5;13;50;false\n"
+                        + "0:00:06;7;6;6;null;null;false", CsvDestination.MissingStrategy.NULL },
             { "*,warmUp", "Time;Iterations;Result;Result;param1;param2;warmUp",
                   "0:00:01;2;1;1;10;12;true\n"
-                  + "0:00:05;6;5;5;13;50;false", CsvDestination.MissingStrategy.SKIP },
+                        + "0:00:05;6;5;5;13;50;false", CsvDestination.MissingStrategy.SKIP },
             { "warmUp", "Time;Iterations;Result;warmUp",
                   "0:00:01;2;1;true\n"
-                  + "0:00:02;3;2;true\n"
-                  + "0:00:03;4;3;false\n"
-                  + "0:00:04;5;4;false\n"
-                  + "0:00:05;6;5;false\n"
-                  + "0:00:06;7;6;false", CsvDestination.MissingStrategy.NULL },
+                        + "0:00:02;3;2;true\n"
+                        + "0:00:03;4;3;false\n"
+                        + "0:00:04;5;4;false\n"
+                        + "0:00:05;6;5;false\n"
+                        + "0:00:06;7;6;false", CsvDestination.MissingStrategy.NULL },
             { "warmUp", "Time;Iterations;Result;warmUp",
                   "0:00:01;2;1;true\n"
-                  + "0:00:02;3;2;true\n"
-                  + "0:00:03;4;3;false\n"
-                  + "0:00:04;5;4;false\n"
-                  + "0:00:05;6;5;false\n"
-                  + "0:00:06;7;6;false", CsvDestination.MissingStrategy.SKIP },
+                        + "0:00:02;3;2;true\n"
+                        + "0:00:03;4;3;false\n"
+                        + "0:00:04;5;4;false\n"
+                        + "0:00:05;6;5;false\n"
+                        + "0:00:06;7;6;false", CsvDestination.MissingStrategy.SKIP },
             { "", "Time;Iterations;Result;param1;param2;warmUp",
                   "0:00:01;2;1;10;12;true\n"
-                  + "0:00:02;3;2;20;null;true\n"
-                  + "0:00:03;4;3;30;null;false\n"
-                  + "0:00:04;5;4;null;40;false\n"
-                  + "0:00:05;6;5;13;50;false\n"
-                  + "0:00:06;7;6;null;null;false", CsvDestination.MissingStrategy.NULL }
+                        + "0:00:02;3;2;20;null;true\n"
+                        + "0:00:03;4;3;30;null;false\n"
+                        + "0:00:04;5;4;null;40;false\n"
+                        + "0:00:05;6;5;13;50;false\n"
+                        + "0:00:06;7;6;null;null;false", CsvDestination.MissingStrategy.NULL }
       };
    }
 
@@ -655,7 +655,6 @@ public class CsvDestinationTest {
 
       delete(outf);
    }
-
 
    private void assertCSVFileContent(final File file, final String expected) {
       try (Scanner scanner = new Scanner(file, Utils.getDefaultEncoding()).useDelimiter("\\Z")) {

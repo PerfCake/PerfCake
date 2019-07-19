@@ -47,7 +47,7 @@ import java.nio.file.Paths
  * The scenario in the DSL format is a Groovy script. A set of ugly classes in this file
  * permits the use of various wild language constructs.
  *
- * @author <a href="mailto:marvenec@gmail.com">Martin Večeřa</a>
+ * @author <ahref="mailto:marvenec@gmail.com" > Martin Večeřa</a>
  */
 
 /**
@@ -286,7 +286,6 @@ class DslScenario extends PropertiesBacked {
             builder.putMessageValidator(it.id, it.buildValidator())
          }
       }
-
 
       if (messages) {
          messages.each {

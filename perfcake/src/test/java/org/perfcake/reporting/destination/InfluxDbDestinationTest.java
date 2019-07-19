@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -70,11 +70,11 @@ public class InfluxDbDestinationTest extends TestSetup {
       Assert.assertEquals(results.size(), 2); // batch update, all data are in the second entry
 
       // create database
-      Assert.assertEquals(results.get(0).get(0), "http://localhost:8086/query?u=admin&p=abc123&q=CREATE%20DATABASE%20IF%20NOT%20EXISTS%20%22perfcake%22");
+      Assert.assertEquals(results.get(0).get(0), "http://localhost:8086/query?q=CREATE+DATABASE+IF+NOT+EXISTS+perfcake");
       Assert.assertEquals(results.get(0).get(1), "GET");
 
       // send measurements
-      Assert.assertEquals(results.get(1).get(0), "http://localhost:8086/write?u=admin&p=abc123&db=perfcake&rp=default&precision=n&consistency=one");
+      Assert.assertEquals(results.get(1).get(0), "http://localhost:8086/write?db=perfcake&rp=default&precision=n&consistency=one");
       Assert.assertEquals(results.get(1).get(1), "POST");
 
       final List<String> records = new ArrayList<>(Arrays.asList(results.get(1).get(2).split("results ")));

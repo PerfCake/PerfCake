@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,10 +21,8 @@ package org.perfcake.message.receiver;
 
 import org.perfcake.PerfCakeException;
 import org.perfcake.message.correlator.Correlator;
-import org.perfcake.message.generator.DefaultMessageGenerator;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,12 +55,12 @@ public abstract class AbstractAutoSpawnReceiver extends AbstractReceiver impleme
 
    @Override
    public void start() throws PerfCakeException {
-      receiverThreads =  (ThreadPoolExecutor) Executors.newFixedThreadPool(threads, new ThreadFactoryBuilder()
+      receiverThreads = (ThreadPoolExecutor) Executors.newFixedThreadPool(threads, new ThreadFactoryBuilder()
             .setDaemon(true).setNameFormat("PerfCake-receiver-thread-%d").build());
 
       for (int i = 0; i < threads; i++) {
          try {
-            receiverThreads.submit(getClass().newInstance());
+            receiverThreads.submit(getClass().getDeclaredConstructor().newInstance());
          } catch (ReflectiveOperationException e) {
             throw new PerfCakeException("Unable to start receiver threads: ", e);
          }

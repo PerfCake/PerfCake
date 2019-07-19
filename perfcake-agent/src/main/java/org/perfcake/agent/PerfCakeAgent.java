@@ -34,7 +34,7 @@
  */
 package org.perfcake.agent;
 
-import com.sun.tools.attach.VirtualMachine;
+import org.avaje.agentloader.AgentLoader;
 
 /**
  * Java implementation of a PerfCake agent that can be used to monitor tested system's JVM.
@@ -54,7 +54,8 @@ import com.sun.tools.attach.VirtualMachine;
  *
  * <p><code>java -cp ${JAVA_HOME}/lib/tools.jar:&lt;perfcake_agent_jar&gt; org.perfcake.agent.PerfCakeAgent &lt;PID&gt; hostname=&lt;hostname&gt;,port=&lt;port&gt;</code></p>
  *
- * <table summary="PerfCakeAgent Commands">
+ * <table>
+ * <caption>PerfCakeAgent Commands</caption>
  * <thead>
  * <tr>
  * <th>Command</th>
@@ -163,10 +164,8 @@ public class PerfCakeAgent {
       }
 
       try {
-         final VirtualMachine vm = VirtualMachine.attach(args[0]);
          final String path = PerfCakeAgent.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath();
-         vm.loadAgent(path, agentArgs.toString());
-         vm.detach();
+         AgentLoader.loadAgent(path, agentArgs.toString());
       } catch (Exception e) {
          System.err.println("Unable to attach to the PID " + args[0]);
          e.printStackTrace(System.err);

@@ -47,11 +47,11 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-      <version.jacoco>0.7.7.201606060606</version.jacoco>
+      <version.jacoco>0.8.4</version.jacoco>
       <version.velocity>1.7</version.velocity>
-      <version.puppycrawl>7.1</version.puppycrawl>
+      <version.puppycrawl>8.20</version.puppycrawl>
 
-      <java.level>1.7</java.level>
+      <java.level>9</java.level>
    </properties>
    <dependencyManagement>
       <dependencies>
@@ -70,14 +70,6 @@
          <groupId>org.apache.logging.log4j</groupId>
          <artifactId>log4j-core</artifactId>
       </dependency>
-      <dependency>
-         <groupId>org.apache.logging.log4j</groupId>
-         <artifactId>log4j-1.2-api</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-log4j12</artifactId>
-      </dependency>
 
       <dependency>
          <groupId>org.testng</groupId>
@@ -93,6 +85,11 @@
          <groupId>com.google.code.findbugs</groupId>
          <artifactId>annotations</artifactId>
          <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+         <groupId>org.avaje</groupId>
+         <artifactId>avaje-agentloader</artifactId>
       </dependency>
    </dependencies>
    <build>
@@ -248,8 +245,7 @@
                <artifactId>maven-compiler-plugin</artifactId>
                <version>${maven.compiler.plugin.version}</version>
                <configuration>
-                  <source>${java.level}</source>
-                  <target>${java.level}</target>
+                  <release>${java.level}</release>
                </configuration>
             </plugin>
             <plugin>
@@ -419,30 +415,6 @@
                </plugin>
             </plugins>
          </build>
-      </profile>
-
-      <profile>
-         <!--Only use this dependency if a tools.jar file exists in the JDK's lib directory-->
-         <id>toosjar-profile</id>
-         <activation>
-            <file>
-               <exists>${java.home}/../lib/tools.jar</exists>
-            </file>
-         </activation>
-         <properties>
-            <toolsjar>${java.home}/../lib/tools.jar</toolsjar>
-         </properties>
-         <dependencies>
-            <dependency>
-               <!--Need tools.jar in compilation classpath. JDK 1.7 no longer has it there by default: -->
-               <groupId>com.sun</groupId>
-               <artifactId>tools</artifactId>
-               <!-- version number is irrelevant since we exclude this from the dependencies plugin: -->
-               <version>99.9.9</version>
-               <scope>system</scope>
-               <systemPath>${java.home}/../lib/tools.jar</systemPath>
-            </dependency>
-         </dependencies>
       </profile>
 
       <profile>

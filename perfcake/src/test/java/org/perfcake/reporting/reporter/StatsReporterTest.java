@@ -1,15 +1,15 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
@@ -60,7 +59,7 @@ public class StatsReporterTest extends TestSetup {
    private static final List<Throwable> throwablesFromThreads = new LinkedList<>();
 
    @Test
-   public void testDefaults() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException {
+   public void testDefaults() throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException {
       final ThroughputStatsReporter tsr = (ThroughputStatsReporter) ObjectFactory.summonInstance(ThroughputStatsReporter.class.getName(), new Properties());
       Assert.assertTrue(tsr.isAverageEnabled());
       Assert.assertTrue(tsr.isMinimumEnabled());
@@ -109,7 +108,7 @@ public class StatsReporterTest extends TestSetup {
    }
 
    @Test(dataProvider = "reporterProperties")
-   public void testReporters(final StatsReporter reporter, final boolean averageEnabled, final boolean minimumEnabled, final boolean maximumEnabled) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException {
+   public void testReporters(final StatsReporter reporter, final boolean averageEnabled, final boolean minimumEnabled, final boolean maximumEnabled) throws InstantiationException, IllegalAccessException, ClassNotFoundException, InvocationTargetException, InterruptedException, NoSuchMethodException {
       final String reporterName = reporter.getClass().getName();
 
       final Properties reporterProperties = new Properties();

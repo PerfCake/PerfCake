@@ -1,9 +1,9 @@
 /*
  * -----------------------------------------------------------------------\
  * PerfCake
- *  
+ *
  * Copyright (C) 2010 - 2016 the original author or authors.
- *  
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -32,15 +32,10 @@ import org.perfcake.util.properties.MandatoryProperty;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestClientFactory;
-import io.searchbox.client.JestResult;
-import io.searchbox.client.config.HttpClientConfig;
-import io.searchbox.core.Index;
-import io.searchbox.indices.CreateIndex;
+import com.google.gson.JsonParser;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -50,6 +45,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import javax.net.ssl.SSLContext;
+
+import io.searchbox.client.JestClient;
+import io.searchbox.client.JestClientFactory;
+import io.searchbox.client.JestResult;
+import io.searchbox.client.config.HttpClientConfig;
+import io.searchbox.core.Index;
+import io.searchbox.indices.CreateIndex;
 
 /**
  * Writes the resulting data to Elasticsearch using a simple HTTP REST client.
@@ -172,7 +174,11 @@ public class ElasticsearchDestination extends AbstractDestination {
          builder.sslSocketFactory(new SSLConnectionSocketFactory(sslContext));
       }
 
-      Arrays.stream(tags.split(",")).map(StringUtil::trim).forEach(tagsArray::add);
+      final JsonParser parser = new JsonParser();
+
+      Arrays.stream(tags.split(",")).map(StringUtil::trim).forEach(tag -> {
+         tagsArray.add(parser.parse(tag));
+      });
 
       builder.multiThreaded(true);
 

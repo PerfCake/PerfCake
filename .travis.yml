@@ -1,7 +1,9 @@
 language: java
-script: "./travis.sh"
+script:
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis-tests.sh; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis.sh; fi'
 jdk:
-- oraclejdk8
+- openjdk11
 deploy:
   provider: releases
   api_key:

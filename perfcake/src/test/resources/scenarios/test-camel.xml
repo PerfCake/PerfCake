@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <scenario xmlns="urn:perfcake:scenario:8.0">
    <run type="iteration" value="100"/>
-   <generator class="DefaultMessageGenerator" threads="5" />
+   <generator class="DefaultMessageGenerator" threads="5"/>
    <sender class="CamelSender">
       <target>http:127.0.0.1:8283/perfcake?param1=value1</target>
    </sender>
    <messages>
       <message content="Hello from Camel">
-         <header name="CamelHttpMethod" value="POST" />
+         <header name="CamelHttpMethod" value="POST"/>
       </message>
    </messages>
 </scenario>

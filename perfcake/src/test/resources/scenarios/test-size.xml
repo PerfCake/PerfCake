@@ -3,12 +3,12 @@
    <run type="iteration" value="1000"/>
    <generator class="DefaultMessageGenerator" threads="10"/>
    <sender class="TestSender">
-   	  <property name="delay" value="1" />
+      <property name="delay" value="1"/>
    </sender>
    <reporting>
       <reporter class="ResponseTimeStatsReporter">
          <destination class="ConsoleDestination">
-            <period type="iteration" value="100" />
+            <period type="iteration" value="100"/>
          </destination>
          <destination class="DummyDestination">
             <period type="iteration" value="100"/>
@@ -16,6 +16,6 @@
       </reporter>
    </reporting>
    <messages>
-      <message uri="message3.txt" />
+      <message uri="message3.txt"/>
    </messages>
 </scenario>

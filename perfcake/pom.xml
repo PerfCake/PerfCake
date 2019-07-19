@@ -47,20 +47,20 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-      <version.gmaven>1.5</version.gmaven>
-      <version.groovy>2.4.7</version.groovy>
-      <version.jacoco>0.7.7.201606060606</version.jacoco>
-      <version.arquillian>1.1.11.Final</version.arquillian>
+      <version.gmavenplus>1.7.0</version.gmavenplus>
+      <version.groovy>3.0.0-beta-1</version.groovy>
+      <version.jacoco>0.8.4</version.jacoco>
+      <version.arquillian>1.4.1.Final</version.arquillian>
       <version.wildfly>10.1.0.Final</version.wildfly>
       <version.velocity>1.7</version.velocity>
-      <version.puppycrawl>7.1</version.puppycrawl>
+      <version.puppycrawl>8.20</version.puppycrawl>
 
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
       <server.port>8080</server.port>
       <transform.scenarios.outputDir>${project.build.directory}/scenarios</transform.scenarios.outputDir>
 
-      <java.level>1.8</java.level>
+      <java.level>11</java.level>
    </properties>
    <dependencyManagement>
       <dependencies>
@@ -94,19 +94,15 @@
       </dependency>
       <dependency>
          <groupId>org.apache.logging.log4j</groupId>
-         <artifactId>log4j-1.2-api</artifactId>
-      </dependency>
-      <dependency>
-         <groupId>org.apache.logging.log4j</groupId>
          <artifactId>log4j-jul</artifactId>
       </dependency>
       <dependency>
          <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-log4j12</artifactId>
+         <artifactId>slf4j-api</artifactId>
       </dependency>
       <dependency>
          <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-api</artifactId>
+         <artifactId>slf4j-nop</artifactId>
       </dependency>
 
       <!-- Test NG -->
@@ -145,13 +141,30 @@
       <!-- Groovy -->
       <dependency>
          <groupId>org.codehaus.groovy</groupId>
-         <artifactId>groovy-all</artifactId>
+         <artifactId>groovy</artifactId>
       </dependency>
 
       <!-- JMS API -->
       <dependency>
          <groupId>javax.jms</groupId>
          <artifactId>javax.jms-api</artifactId>
+      </dependency>
+
+      <!-- JAXB -->
+      <dependency>
+         <groupId>javax.xml.bind</groupId>
+         <artifactId>jaxb-api</artifactId>
+      </dependency>
+
+      <!-- JAVAX -->
+      <dependency>
+         <groupId>javax.annotation</groupId>
+         <artifactId>javax.annotation-api</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>javax.activation</groupId>
+         <artifactId>activation</artifactId>
       </dependency>
 
       <!-- Javassist -->
@@ -183,6 +196,21 @@
       <dependency>
          <groupId>org.eclipse.californium</groupId>
          <artifactId>californium-core</artifactId>
+      </dependency>
+
+      <!-- OKHTTP -->
+      <dependency>
+         <groupId>com.squareup.okhttp3</groupId>
+         <artifactId>okhttp</artifactId>
+      </dependency>
+
+      <dependency>
+         <groupId>com.squareup.retrofit2</groupId>
+         <artifactId>retrofit</artifactId>
+      </dependency>
+      <dependency>
+         <groupId>com.squareup.retrofit2</groupId>
+         <artifactId>converter-gson</artifactId>
       </dependency>
 
       <!-- Camel -->
@@ -265,6 +293,12 @@
          <scope>test</scope>
       </dependency>
 
+      <!-- Java Agent loader -->
+      <dependency>
+         <groupId>org.avaje</groupId>
+         <artifactId>avaje-agentloader</artifactId>
+      </dependency>
+
       <!-- Test of senders in an JEE Container -->
       <dependency>
          <groupId>org.jboss.arquillian.testng</groupId>
@@ -310,7 +344,7 @@
       <!-- Mockito -->
       <dependency>
          <groupId>org.mockito</groupId>
-         <artifactId>mockito-all</artifactId>
+         <artifactId>mockito-core</artifactId>
          <scope>test</scope>
       </dependency>
       <dependency>
@@ -480,22 +514,16 @@
             </dependencies>
          </plugin>
          <plugin>
-            <groupId>org.codehaus.gmaven</groupId>
-            <artifactId>gmaven-plugin</artifactId>
-            <version>${version.gmaven}</version>
+            <groupId>org.codehaus.gmavenplus</groupId>
+            <artifactId>gmavenplus-plugin</artifactId>
+            <version>${version.gmavenplus}</version>
             <configuration>
-               <providerSelection>2.0</providerSelection>
                <sourceEncoding>UTF-8</sourceEncoding>
             </configuration>
             <dependencies>
                <dependency>
-                  <groupId>org.codehaus.gmaven.runtime</groupId>
-                  <artifactId>gmaven-runtime-2.0</artifactId>
-                  <version>${version.gmaven}</version>
-               </dependency>
-               <dependency>
                   <groupId>org.codehaus.groovy</groupId>
-                  <artifactId>groovy-all</artifactId>
+                  <artifactId>groovy</artifactId>
                   <version>${version.groovy}</version>
                </dependency>
             </dependencies>
@@ -505,7 +533,7 @@
                      <goal>generateStubs</goal>
                      <goal>compile</goal>
                      <goal>generateTestStubs</goal>
-                     <goal>testCompile</goal>
+                     <goal>compileTests</goal>
                   </goals>
                </execution>
             </executions>
@@ -581,8 +609,8 @@
                <artifactId>maven-compiler-plugin</artifactId>
                <version>${maven.compiler.plugin.version}</version>
                <configuration>
-                  <source>${java.level}</source>
-                  <target>${java.level}</target>
+                  <release>${java.level}</release>
+                  <forceJavacCompilerUse>true</forceJavacCompilerUse>
                </configuration>
             </plugin>
             <plugin>
@@ -762,6 +790,27 @@
                <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-surefire-plugin</artifactId>
+               </plugin>
+            </plugins>
+         </build>
+      </profile>
+      <profile>
+         <id>travis-tests</id>
+         <build>
+            <plugins>
+               <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-surefire-plugin</artifactId>
+                  <version>${maven.surefire.plugin.version}</version>
+                  <configuration>
+                     <!-- Fork every test because it will launch a separate AS instance -->
+                     <forkCount>1</forkCount>
+                     <reuseForks>false</reuseForks>
+                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                     <systemPropertyVariables>
+                        <log4j.skipJansi>true</log4j.skipJansi>
+                     </systemPropertyVariables>
+                  </configuration>
                </plugin>
             </plugins>
          </build>
