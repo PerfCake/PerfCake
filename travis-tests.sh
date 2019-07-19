@@ -1,3 +1,5 @@
 #!/bin/bash
 export MAVEN_OPTS="-Xmx326m";
-mvn test
+set -x
+mvn -ntp clean package -DskipTests
+mvn test -P travis-tests
