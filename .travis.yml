@@ -1,5 +1,7 @@
 language: java
-script: "./travis.sh"
+script:
+  - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then bash ./travis-tests.sh; fi'
+  - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash ./travis.sh; fi'
 jdk:
 - openjdk11
 deploy:
