@@ -99,7 +99,7 @@
       <version.amq>5.14.0</version.amq>
       <version.arquillian-jacoco>1.0.0.Alpha8</version.arquillian-jacoco>
       <version.mockito>1.10.19</version.mockito>
-      <version.netty>4.1.4.Final</version.netty>
+      <version.netty>4.1.42.Final</version.netty>
 
       <java.level>1.8</java.level>
    </properties>
