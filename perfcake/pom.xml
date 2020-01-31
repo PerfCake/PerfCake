@@ -53,7 +53,7 @@
       <version.arquillian>1.1.11.Final</version.arquillian>
       <version.wildfly>10.1.0.Final</version.wildfly>
       <version.velocity>1.7</version.velocity>
-      <version.puppycrawl>7.1</version.puppycrawl>
+      <version.puppycrawl>8.29</version.puppycrawl>
 
       <!-- Runtime properties -->
       <server.host>localhost</server.host>
