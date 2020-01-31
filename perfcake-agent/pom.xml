@@ -49,7 +49,7 @@
 
       <version.jacoco>0.7.7.201606060606</version.jacoco>
       <version.velocity>1.7</version.velocity>
-      <version.puppycrawl>7.1</version.puppycrawl>
+      <version.puppycrawl>8.29</version.puppycrawl>
 
       <java.level>1.7</java.level>
    </properties>
