@@ -63,7 +63,7 @@
       <version.jest>2.0.3</version.jest>
       <version.groovy>2.4.7</version.groovy>
       <version.slf4j>1.7.21</version.slf4j>
-      <version.log4j>2.6.2</version.log4j>
+      <version.log4j>2.13.3</version.log4j>
       <version.jms-api>2.0.1</version.jms-api>
       <version.mqtt>1.14</version.mqtt>
       <version.testng>6.9.10</version.testng>
