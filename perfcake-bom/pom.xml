@@ -58,7 +58,7 @@
 
       <version.californium>1.0.4</version.californium>
       <version.camel>2.17.3</version.camel>
-      <version.drools>6.4.0.Final</version.drools>
+      <version.drools>7.60.0.Final</version.drools>
       <version.influxdb>2.2</version.influxdb>
       <version.jest>2.0.3</version.jest>
       <version.groovy>2.4.7</version.groovy>
